@@ -9,6 +9,8 @@ export default function HomePage() {
         </h1>
 
         <CloudinaryImage />
+        <CloudinaryImage src="cld-sample-4" />
+        <CloudinaryImage src="main-sample" />
       </div>
     </main>
   );

@@ -1,13 +1,16 @@
 "use client";
 import { CldImage } from "next-cloudinary";
 
+type Props = {
+  src?: string;
+};
 // By default, the CldImage component applies auto-format and auto-quality to all delivery URLs for optimized delivery.
-export default function CloudinaryImage() {
+export default function CloudinaryImage({ src }: Props) {
   return (
     <CldImage
-      src="cld-sample-5" // Use this sample image or upload your own via the Media Explorer
-      width="500" // Transform the image: auto-crop to square aspect_ratio
-      height="500"
+      src={src ?? "cld-sample-5"}
+      width="200" // Transform the image: auto-crop to square aspect_ratio
+      height="200"
       crop={{
         type: "auto",
         source: true,
