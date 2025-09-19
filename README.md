@@ -41,7 +41,10 @@ Bootstrapped with [create-t3-app](https://create.t3.gg/).
 - [Next.js](https://nextjs.org)
 - [Tailwind CSS](https://tailwindcss.com)
 - Cloudinary for image storage, optimisation and CDN. (optional upgrade toCloudflare R2 and custom pipeline later).
+  - https://console.cloudinary.com/
 - Supabase for Postgres db
+  - https://supabase.com/dashboard
+  - `pnpm install @supabase/supabase-js
 - Supabase for auth
 - [Drizzle](https://orm.drizzle.team)
 - Storybook for com-onent management
@@ -53,7 +56,7 @@ Use this?
 
 ## CI/CD + Deployment
 
-vercel for deployment
+[vercel](https://vercel.com/timmdays-projects/coin-cabinet/deployments) for deployment
 
 ## Learn More
 

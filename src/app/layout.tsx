@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import Navbar from "~/components/layout/Navbar";
+import { ReactQueryProvider } from "~/components/providers/react-query-provider";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -20,8 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable}`}>
       <body>
-        <Navbar />
-        {children}
+        <ReactQueryProvider>
+          <Navbar />
+          {children}
+        </ReactQueryProvider>
       </body>
     </html>
   );
