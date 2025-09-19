@@ -74,10 +74,7 @@ async function insertFruit(fruitName: string): Promise<Fruit> {
 }
 
 async function deleteFruit(id: number): Promise<void> {
-  const { error } = await supabase
-    .from("Test")
-    .delete()
-    .eq("id", id);
+  const { error } = await supabase.from("Test").delete().eq("id", id);
 
   if (error) {
     throw new Error(`Failed to delete fruit: ${error.message}`);

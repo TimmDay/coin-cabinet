@@ -3,11 +3,11 @@
 import React from "react";
 import { useFruits, useAddFruit, useDeleteFruit } from "~/lib/api/fruits";
 
-interface Fruit {
+type Fruit = {
   id?: number;
   fruitName: string;
   created_at?: string;
-}
+};
 
 export default function AboutPage() {
   const [fruitName, setFruitName] = React.useState("");
@@ -57,7 +57,10 @@ export default function AboutPage() {
         {/* A list of each piece of the fetched fruit data, the object key "fruitName" */}
         <ul className="w-full max-w-md space-y-2">
           {fruitData.map((fruit: Fruit, idx: number) => (
-            <li key={fruit.id ?? idx} className="flex items-center justify-between rounded bg-white/10 p-3">
+            <li
+              key={fruit.id ?? idx}
+              className="flex items-center justify-between rounded bg-white/10 p-3"
+            >
               <span className="text-white">{fruit.fruitName}</span>
               {fruit.id && (
                 <button
