@@ -9,12 +9,16 @@ The goal of this app is to provide a visual interactive website to view (images 
 - [x] Config Cloudinary with a couple of demo images. Just plonk them for now.
 - [ ] fix cloudinary to not point to work email
 - [ ] Upload a few legit coin photos (suffixed with -b, -o, -r, -hq, and with appropriate quality).
-- [ ] Config Supabase and the postgres db.
+- [x] Config Supabase and the postgres db.
 - [ ] Seed data for three Severan coins.
+- [ ] Set up a prod and a dev database
 - [ ] Learn about ho to take good quality macro coin photos.
 - [ ] Learn how to trim the photos such that they have transparent bg around the coin.
-- [ ] Attach db to UI.
+- [x] Attach db to UI.
 - [ ] Config: Supabase auth
+- [ ] what is drizzle and how should I use it?
+- [ ] design schema for coin details
+- [ ] Explore UI component libraries. Pick one.
 - [ ] get three routes working, with demo pages with a title for now.
   - About
   - Cabinet
@@ -28,11 +32,46 @@ The goal of this app is to provide a visual interactive website to view (images 
 - [ ] Analytics.
 - [ ] Ratelimiting.
 
-- [ ] My Collection page, is locked behind auth.
-  - user can upload a photo
+- [ ] Admin page
+  - upload locked behind auth
+  - I can upload a photo
   - fill in a form of info for that coin
-  - write a blog post, identification guide and reference links
+  - write and upload a blog post, identification guide and reference links
   - drag and drop customisable drawer builder
+
+- [ ] Coin cabinet page DESKTOP
+  - dropdown menu with set of pre-selected filters to choose from. Opens on mouse hover
+    - Roman -> republican, imperatorial, imperial
+    - Greek
+    - Persian (Parthia, Sassanian)
+    - Celtic
+
+  - year in coins
+    - page/article by year. a grid of thumbnails
+      - click for card (card contains link to coin page with that coin highlighted)
+  - sets
+    - Severan Dynasty
+    - Imperial Women
+    - Constantinian Dynasty
+    - First Tetrachy
+    - Hoards
+  - Of Provenance
+
+- [ ] Coin Cabinet page MOBILE
+  - instead of dropdown menus, accordions.
+
+- [ ] Blog page
+  - articles
+  - guides
+
+- [ ] Map page
+- mapbox. coins in collection displayed at mint. circle over mint in size proportional to number of coins in collection are from there.
+- full set of filters
+
+Components
+
+- [ ] breadcrumb
+- [ ] coin card
 
 ## Stack
 
@@ -42,13 +81,14 @@ Bootstrapped with [create-t3-app](https://create.t3.gg/).
 - [Tailwind CSS](https://tailwindcss.com)
 - Cloudinary for image storage, optimisation and CDN. (optional upgrade toCloudflare R2 and custom pipeline later).
   - https://console.cloudinary.com/
-- Supabase for Postgres db
+- [Supabase](https://supabase.com) for Postgres db
   - https://supabase.com/dashboard
   - `pnpm install @supabase/supabase-js
 - Supabase for auth
 - [Drizzle](https://orm.drizzle.team)
-- Storybook for com-onent management
+- Storybook for component management
 - Vitest + Storybook for testing
+- Shadcn / radix UI for fast component prototyping.
 
 Use this?
 
