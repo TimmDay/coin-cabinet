@@ -8,7 +8,9 @@ import NextLink from "next/link";
 import {
   coinCabinetItems,
   setsSubmenu,
+  romanSubmenu,
   simpleTopLevel,
+  type SubmenuTypes,
 } from "./navigation-schema";
 
 const HOVER_DELAY = 200; // milliseconds
@@ -16,7 +18,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
+  const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null);
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -35,20 +37,20 @@ export default function Navbar() {
   const handleDropdownLeave = () => {
     dropdownTimeoutRef.current = setTimeout(() => {
       setIsDropdownOpen(false);
-      setIsSubmenuOpen(false); // Also close submenu when main dropdown closes
+      setOpenSubmenu(null); // Also close submenu when main dropdown closes
     }, HOVER_DELAY);
   };
 
-  const handleSubmenuEnter = () => {
+  const handleSubmenuEnter = (itemName: SubmenuTypes) => {
     if (submenuTimeoutRef.current) {
       clearTimeout(submenuTimeoutRef.current);
     }
-    setIsSubmenuOpen(true);
+    setOpenSubmenu(itemName);
   };
 
   const handleSubmenuLeave = () => {
     submenuTimeoutRef.current = setTimeout(() => {
-      setIsSubmenuOpen(false);
+      setOpenSubmenu(null);
     }, HOVER_DELAY);
   };
 
@@ -57,7 +59,7 @@ export default function Navbar() {
     switch (event.key) {
       case "Escape":
         setIsDropdownOpen(false);
-        setIsSubmenuOpen(false);
+        setOpenSubmenu(null);
         break;
       case "ArrowDown":
         if (!isDropdownOpen) {
@@ -69,32 +71,35 @@ export default function Navbar() {
         if (isDropdownOpen) {
           event.preventDefault();
           setIsDropdownOpen(false);
-          setIsSubmenuOpen(false);
+          setOpenSubmenu(null);
         }
         break;
     }
   };
 
-  const handleSubmenuKeyDown = (event: React.KeyboardEvent) => {
+  const handleSubmenuKeyDown = (
+    event: React.KeyboardEvent,
+    itemName: SubmenuTypes,
+  ) => {
     switch (event.key) {
       case "Enter":
       case " ":
         event.preventDefault();
-        setIsSubmenuOpen(true);
+        setOpenSubmenu(itemName);
         break;
       case "ArrowRight":
         event.preventDefault();
-        setIsSubmenuOpen(true);
+        setOpenSubmenu(itemName);
         break;
       case "ArrowLeft":
-        if (isSubmenuOpen) {
+        if (openSubmenu === itemName) {
           event.preventDefault();
-          setIsSubmenuOpen(false);
+          setOpenSubmenu(null);
         }
         break;
       case "Escape":
         setIsDropdownOpen(false);
-        setIsSubmenuOpen(false);
+        setOpenSubmenu(null);
         break;
     }
   };
@@ -109,12 +114,24 @@ export default function Navbar() {
         event.preventDefault();
         router.push(href);
         setIsDropdownOpen(false);
-        setIsSubmenuOpen(false);
+        setOpenSubmenu(null);
         break;
       case "Escape":
         setIsDropdownOpen(false);
-        setIsSubmenuOpen(false);
+        setOpenSubmenu(null);
         break;
+    }
+  };
+
+  // Helper function to get the appropriate submenu items
+  const getSubmenuItems = (itemName: string) => {
+    switch (itemName) {
+      case "Sets":
+        return setsSubmenu;
+      case "Roman":
+        return romanSubmenu;
+      default:
+        return [];
     }
   };
 
@@ -136,14 +153,14 @@ export default function Navbar() {
       const target = event.target as HTMLElement;
       if (!target.closest('[data-dropdown="coin-cabinet"]')) {
         setIsDropdownOpen(false);
-        setIsSubmenuOpen(false);
+        setOpenSubmenu(null);
       }
     };
 
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsDropdownOpen(false);
-        setIsSubmenuOpen(false);
+        setOpenSubmenu(null);
       }
     };
 
@@ -217,9 +234,13 @@ export default function Navbar() {
                   {item.hasSubmenu ? (
                     <div
                       className="flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap text-gray-700 transition-colors duration-150 hover:bg-blue-50 hover:text-blue-900 focus:bg-blue-50 focus:text-blue-900 focus:outline-none"
-                      onMouseEnter={handleSubmenuEnter}
+                      onMouseEnter={() =>
+                        handleSubmenuEnter(item.name as SubmenuTypes)
+                      }
                       onMouseLeave={handleSubmenuLeave}
-                      onKeyDown={handleSubmenuKeyDown}
+                      onKeyDown={(e) =>
+                        handleSubmenuKeyDown(e, item.name as SubmenuTypes)
+                      }
                       onClick={() => {
                         router.push(item.href);
                         setIsDropdownOpen(false);
@@ -227,7 +248,7 @@ export default function Navbar() {
                       role="menuitem"
                       tabIndex={0}
                       aria-haspopup="menu"
-                      aria-expanded={isSubmenuOpen}
+                      aria-expanded={openSubmenu === item.name}
                       aria-label={`${item.name} submenu`}
                     >
                       <span>{item.name}</span>
@@ -248,23 +269,25 @@ export default function Navbar() {
                     </NextLink>
                   )}
 
-                  {item.hasSubmenu && isSubmenuOpen && (
+                  {item.hasSubmenu && openSubmenu === item.name && (
                     <div
                       className="absolute top-0 left-full z-60 ml-1 min-w-max rounded-md border bg-white shadow-lg"
-                      onMouseEnter={handleSubmenuEnter}
+                      onMouseEnter={() =>
+                        handleSubmenuEnter(item.name as SubmenuTypes)
+                      }
                       onMouseLeave={handleSubmenuLeave}
                       role="menu"
                       aria-label={`${item.name} submenu`}
                     >
                       <div className="flex flex-col gap-1 p-4">
-                        {setsSubmenu.map((submenuItem) => (
+                        {getSubmenuItems(item.name).map((submenuItem) => (
                           <div
                             key={submenuItem.name}
                             className="block cursor-pointer rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap text-gray-700 transition-colors duration-150 hover:bg-blue-50 hover:text-blue-900 focus:bg-blue-50 focus:text-blue-900 focus:outline-none"
                             onClick={() => {
                               router.push(submenuItem.href);
                               setIsDropdownOpen(false);
-                              setIsSubmenuOpen(false);
+                              setOpenSubmenu(null);
                             }}
                             onKeyDown={(e) =>
                               handleSubmenuItemKeyDown(e, submenuItem.href)
