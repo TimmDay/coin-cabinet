@@ -4,33 +4,36 @@
 
 The goal of this app is to provide a visual interactive website to view (images of) coins and explore information about them. There will also be a store page where certain items can be offered for sale.
 
-- [x] swap out prisma for drizzle.
-- [x] Config: make it deploy to vercel.
-- [x] Config Cloudinary with a couple of demo images. Just plonk them for now.
 - [ ] fix cloudinary to not point to work email
 - [ ] Upload a few legit coin photos (suffixed with -b, -o, -r, -hq, and with appropriate quality).
-- [x] Config Supabase and the postgres db.
 - [ ] Seed data for three Severan coins.
 - [ ] Set up a prod and a dev database
 - [ ] Learn about ho to take good quality macro coin photos.
 - [ ] Learn how to trim the photos such that they have transparent bg around the coin.
-- [x] Attach db to UI.
 - [ ] Config: Supabase auth
 - [ ] what is drizzle and how should I use it?
 - [ ] design schema for coin details
 - [ ] Explore UI component libraries. Pick one.
-- [ ] get three routes working, with demo pages with a title for now.
-  - About
-  - Cabinet
-  - Store
 - [ ] config Storybook.
   - Set up a demo Button component in it.
   - Be able to run it locally
-- [ ] config tailwind + theme.
+- [ ] config tailwind + site theme.
+- [ ] style up the header and menu
+- [ ] include dummy site logo image
+- [ ] create a beautiful site logo/image
+- [ ] style up the menus
+- [ ] create up style up the breadcrumb component
+- [ ] style up the default page titles
   - work out how responsive / breakpoints is going to work.
 - [ ] Work on the 'Severan Dynasty' drawer layout component
 - [ ] Analytics.
 - [ ] Ratelimiting.
+
+- [ ] replace radix imports with local code
+- [ ] replace lucide icons with local svgs
+- [ ] a11y audit (nav dropdowns and accordions esp). Bring in a component library. Storybook tests.
+- [ ] i18n. Make a system for translating everything to German to start (French/Spanish/Portuguese).
+- [ ] is twMerge(clsx...) really necessary?
 
 - [ ] Admin page
   - upload locked behind auth
@@ -41,20 +44,11 @@ The goal of this app is to provide a visual interactive website to view (images 
 
 - [ ] Coin cabinet page DESKTOP
   - dropdown menu with set of pre-selected filters to choose from. Opens on mouse hover
-    - Roman -> republican, imperatorial, imperial
-    - Greek
-    - Persian (Parthia, Sassanian)
-    - Celtic
 
   - year in coins
     - page/article by year. a grid of thumbnails
       - click for card (card contains link to coin page with that coin highlighted)
   - sets
-    - Severan Dynasty
-    - Imperial Women
-    - Constantinian Dynasty
-    - First Tetrachy
-    - Hoards
   - Of Provenance
 
 - [ ] Coin Cabinet page MOBILE
