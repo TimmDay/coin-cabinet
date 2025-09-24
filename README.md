@@ -4,6 +4,8 @@
 
 The goal of this app is to provide a visual interactive website to view (images of) coins and explore information about them. There will also be a store page where certain items can be offered for sale.
 
+- [ ] Mint year can be a range, and it can handle the BC to AC crossover.
+
 - [ ] Upload a few legit coin photos (suffixed with -b, -o, -r, -hq, and with appropriate quality).
 - [ ] Seed data for three Severan coins.
 - [ ] Set up a prod and a dev database
@@ -34,8 +36,9 @@ The goal of this app is to provide a visual interactive website to view (images 
 - [ ] i18n. Make a system for translating everything to German to start (French/Spanish/Portuguese).
 - [ ] is twMerge(clsx...) really necessary?
 - [ ] performance audit.
-      [ ] add storybook v9 (when released). current version has compatibility issues with nextjs and react 19.
+- [ ] add storybook v9 (when released). current version has compatibility issues with nextjs and react 19.
 - [ ] fix cloudinary to not point to work email
+- [ ] RLS policy on db. Only auth users can add (INSERT) to coin_collection table.
 
 - [ ] Admin page
   - upload locked behind auth

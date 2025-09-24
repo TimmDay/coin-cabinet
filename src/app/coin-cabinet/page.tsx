@@ -1,11 +1,66 @@
+"use client";
+
+import { useState } from "react";
+import { CoinForm, type CoinFormData } from "~/components/forms/CoinForm";
+
+type ApiResponse = {
+  success: boolean;
+  message?: string;
+};
+
 export default function CoinCabinetPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const handleFormSubmit = async (data: CoinFormData) => {
+    setIsLoading(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch("/api/coin-collection/add-marcus", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = (await response.json()) as ApiResponse;
+
+      if (result.success) {
+        setMessage("✅ Coin added successfully to your collection!");
+      } else {
+        setMessage(`❌ Error: ${result.message}`);
+      }
+    } catch (error) {
+      setMessage("❌ Failed to add coin to collection");
+      console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Coin Cabinet
-        </h1>
-        <p className="text-xl text-white">Under construction</p>
+    <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+      <div className="container mx-auto px-4 py-16">
+        <div className="mb-12 text-center">
+          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+            Coin Cabinet
+          </h1>
+          <p className="mt-4 text-xl text-white">
+            Add a new coin to your collection
+          </p>
+        </div>
+
+        <div className="mx-auto max-w-2xl">
+          <CoinForm onSubmit={handleFormSubmit} isLoading={isLoading} />
+
+          {message && (
+            <div className="mt-8 rounded-lg bg-white/10 p-4 text-center">
+              <p className="text-lg font-medium">{message}</p>
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );
