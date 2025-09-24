@@ -284,6 +284,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   { value: "Copper", label: "Copper" },
                   { value: "Electrum", label: "Electrum" },
                 ]}
+                placeholder="Select metal"
                 error={errors.metal?.message}
               />
             </div>

@@ -4,8 +4,9 @@
 
 The goal of this app is to provide a visual interactive website to view (images of) coins and explore information about them. There will also be a store page where certain items can be offered for sale.
 
-- [ ] Mint year can be a range, and it can handle the BC to AC crossover.
-- [ ] approx silver content field.
+- RLS security for INSERT coin_collection_dev.
+  - Make it from my localhost only (ie not from vercel site)
+  - Make it for signed in users only
 - [ ] setup dev and prod DBs. default it points to dev. I have to manually put in the prod details to use that one.
 - [ ] Mint name dropdown
 - [ ] Another table. Mint names with the associated lat/lng of each mint

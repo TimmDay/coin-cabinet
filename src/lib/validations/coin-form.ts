@@ -159,19 +159,6 @@ export const coinFormSchema = z
       message: "Lot number is required when auction name is provided",
       path: ["auction_lot"],
     },
-  )
-  .refine(
-    (data) => {
-      // Custom validation: silver_content is required if metal is "Silver"
-      if (data.metal && data.metal.toLowerCase() === "silver") {
-        return data.silver_content !== undefined && data.silver_content !== null;
-      }
-      return true;
-    },
-    {
-      message: "Silver content is required when metal is Silver",
-      path: ["silver_content"],
-    },
   );
 
 export type CoinFormData = z.infer<typeof coinFormSchema>;

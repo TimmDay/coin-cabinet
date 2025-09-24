@@ -19,13 +19,9 @@ export async function POST(request: Request) {
     // Insert the data using Supabase client with environment-specific table
     const tableName = env.COIN_COLLECTION_TABLE;
     console.log("Using table:", tableName);
-    
+
     const result: PostgrestSingleResponse<Record<string, unknown>> =
-      await supabase
-        .from(tableName)
-        .insert(validatedData)
-        .select()
-        .single();
+      await supabase.from(tableName).insert(validatedData).select().single();
 
     const { data, error } = result;
 
