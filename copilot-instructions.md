@@ -2,6 +2,8 @@
 
 Project context (read first)
 
+Assume that developers are working on macs.
+
 Framework/Hosting: Next.js (App Router) on Vercel (Node runtime for server code & webhooks).
 
 Styling: Tailwind CSS. Allow targeted CSS Modules for complex layouts (e.g., gallery).
@@ -186,3 +188,10 @@ Do not echo Stripe errors or secrets to clients.
 - Client-side Stripe card collection (use Checkout).
 - Ad-hoc image transforms scattered across components (use the helper).
 - If a suggested completion conflicts with any rule above, prefer these instructions.
+
+## Syntax Preferences
+
+- Use `type` instead of `interface` for defining types.
+- Use explicit return types on all functions
+- Use `const` and `let` instead of `var`
+- Use `function` keyword for function declarations instead of arrow functions

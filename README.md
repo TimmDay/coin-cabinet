@@ -5,6 +5,10 @@
 The goal of this app is to provide a visual interactive website to view (images of) coins and explore information about them. There will also be a store page where certain items can be offered for sale.
 
 - [ ] Mint year can be a range, and it can handle the BC to AC crossover.
+- [ ] approx silver content field.
+- [ ] setup dev and prod DBs. default it points to dev. I have to manually put in the prod details to use that one.
+- [ ] Mint name dropdown
+- [ ] Another table. Mint names with the associated lat/lng of each mint
 
 - [ ] Upload a few legit coin photos (suffixed with -b, -o, -r, -hq, and with appropriate quality).
 - [ ] Seed data for three Severan coins.

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "~/supabase-client";
 import { env } from "~/env";
 import { coinFormSchema } from "~/lib/validations/coin-form";
 import { ZodError } from "zod";
@@ -7,11 +7,7 @@ import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 export async function POST(request: Request) {
   try {
-    // Create Supabase client with anon key (same as the working fruits API)
-    const supabase = createClient(
-      env.NEXT_PUBLIC_SUPABASE_URL,
-      env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    );
+    // Use the same Supabase client as the working fruits API
 
     // Parse and validate the request body
     const body: unknown = await request.json();
@@ -20,10 +16,13 @@ export async function POST(request: Request) {
     const validatedData = coinFormSchema.parse(body);
     console.log("Validated data:", JSON.stringify(validatedData, null, 2));
 
-    // Insert the data using Supabase client
+    // Insert the data using Supabase client with environment-specific table
+    const tableName = env.COIN_COLLECTION_TABLE;
+    console.log("Using table:", tableName);
+    
     const result: PostgrestSingleResponse<Record<string, unknown>> =
       await supabase
-        .from("coin_collection")
+        .from(tableName)
         .insert(validatedData)
         .select()
         .single();

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CoinForm, type CoinFormData } from "~/components/forms/CoinForm";
+import { CoinForm } from "~/components/forms/CoinForm";
+import type { CoinFormData } from "~/lib/validations/coin-form";
 
 type ApiResponse = {
   success: boolean;
@@ -17,7 +18,7 @@ export default function CoinCabinetPage() {
     setMessage(null);
 
     try {
-      const response = await fetch("/api/coin-collection/add-marcus", {
+      const response = await fetch("/api/coin-collection/add-coin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

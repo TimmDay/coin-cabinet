@@ -2,49 +2,16 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { coinFormSchema } from "~/lib/validations/coin-form";
+import { coinFormSchema, type CoinFormData } from "~/lib/validations/coin-form";
 import { RedRoundButton } from "~/components/ui/RedRoundButton";
 import { Select } from "~/components/ui/Select";
-
-export type CoinFormData = {
-  name: string;
-  authority: string;
-  denomination: string;
-  civ: string;
-  reign_start?: number;
-  reign_end?: number;
-  metal: string;
-  diameter?: number;
-  mass?: number;
-  die_axis?: string;
-  mint?: string;
-  mint_year?: number;
-  legend_o?: string;
-  desc_o?: string;
-  legend_r?: string;
-  desc_r?: string;
-  reference?: string;
-  purchase_type?: string;
-  purchase_date?: string;
-  price_aud?: number;
-  price_shipping_aud?: number;
-  purchase_vendor?: string;
-  auction_name?: string;
-  auction_lot?: number;
-  purchase_link?: string;
-  provenance?: string;
-  grading_vendor?: string;
-  reference_link?: string;
-  notes?: string;
-  notes_history?: string;
-};
 
 type CoinFormProps = {
   onSubmit: (data: CoinFormData) => Promise<void>;
   isLoading: boolean;
 };
 
-const denominations = [
+const denominationOptions = [
   { value: "Denarius", label: "Denarius" },
   { value: "Antoninianus", label: "Antoninianus" },
   { value: "Follis", label: "Follis" },
@@ -62,7 +29,7 @@ const denominations = [
   { value: "Other", label: "Other" },
 ];
 
-const authorities = [
+const authorityOptions = [
   { value: "King", label: "King" },
   { value: "Caesar", label: "Caesar" },
   { value: "Augustus", label: "Augustus" },
@@ -70,7 +37,7 @@ const authorities = [
   { value: "Commemorative", label: "Commemorative" },
 ];
 
-const civilizations = [
+const civilizationOptions = [
   { value: "Roman Republic", label: "Roman Republic" },
   { value: "Roman Imperial", label: "Roman Imperial" },
   { value: "Byzantine", label: "Byzantine" },
@@ -84,7 +51,7 @@ const civilizations = [
   },
 ];
 
-const dieAxis = [
+const dieAxisOptions = [
   { value: "12h", label: "12h (↑↑)" },
   { value: "11h", label: "11h" },
   { value: "10h", label: "10h" },
@@ -98,8 +65,6 @@ const dieAxis = [
   { value: "2h", label: "2h" },
   { value: "1h", label: "1h" },
 ];
-
-// LOT optional
 
 export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
   const {
@@ -170,7 +135,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               <Select
                 {...register("authority")}
                 id="authority"
-                options={authorities}
+                options={authorityOptions}
                 placeholder={"Select authority"}
                 error={errors.authority?.message}
               />
@@ -183,7 +148,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               <Select
                 {...register("denomination")}
                 id="denomination"
-                options={denominations}
+                options={denominationOptions}
                 placeholder="Select denomination"
                 error={errors.denomination?.message}
               />
@@ -196,7 +161,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               <Select
                 {...register("civ")}
                 id="civ"
-                options={civilizations}
+                options={civilizationOptions}
                 placeholder="Select Civilisation"
                 error={errors.civ?.message}
               />
@@ -232,25 +197,6 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               {errors.reign_end && (
                 <p className={errorClass}>{errors.reign_end.message}</p>
               )}
-            </div>
-
-            <div>
-              <label className={labelClass} htmlFor="metal">
-                Metal*
-              </label>
-              <Select
-                {...register("metal")}
-                id="metal"
-                options={[
-                  { value: "Silver", label: "Silver" },
-                  { value: "Bronze", label: "Bronze" },
-                  { value: "Billon", label: "Billon" },
-                  { value: "Gold", label: "Gold" },
-                  { value: "Copper", label: "Copper" },
-                  { value: "Electrum", label: "Electrum" },
-                ]}
-                error={errors.metal?.message}
-              />
             </div>
           </div>
 
@@ -316,14 +262,48 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               <Select
                 {...register("die_axis")}
                 id="die_axis"
-                options={dieAxis}
+                options={dieAxisOptions}
                 placeholder="Select axis"
               />
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
+            <div>
+              <label className={labelClass} htmlFor="metal">
+                Metal*
+              </label>
+              <Select
+                {...register("metal")}
+                id="metal"
+                options={[
+                  { value: "Silver", label: "Silver" },
+                  { value: "Bronze", label: "Bronze" },
+                  { value: "Billon", label: "Billon" },
+                  { value: "Gold", label: "Gold" },
+                  { value: "Copper", label: "Copper" },
+                  { value: "Electrum", label: "Electrum" },
+                ]}
+                error={errors.metal?.message}
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="silver_content">
+                Approx Silver Content
+              </label>
+              <input
+                {...register("silver_content", { valueAsNumber: true })}
+                id="silver_content"
+                type="number"
+                className={inputClass}
+                placeholder="e.g., 45"
+              />
+            </div>
+          </div>
+
           {/* Mint Information */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div>
               <label className={labelClass} htmlFor="mint">
                 Mint
@@ -338,15 +318,28 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
             </div>
 
             <div>
-              <label className={labelClass} htmlFor="mint_year">
-                Mint Year
+              <label className={labelClass} htmlFor="mint_year_earliest">
+                Mint Year Earliest
               </label>
               <input
-                {...register("mint_year", { valueAsNumber: true })}
-                id="mint_year"
+                {...register("mint_year_earliest", { valueAsNumber: true })}
+                id="mint_year_earliest"
                 type="number"
                 className={inputClass}
                 placeholder="e.g., 170"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="mint_year_latest">
+                Mint Year Latest
+              </label>
+              <input
+                {...register("mint_year_latest", { valueAsNumber: true })}
+                id="mint_year_latest"
+                type="number"
+                className={inputClass}
+                placeholder="e.g., 172"
               />
             </div>
           </div>
@@ -421,17 +414,32 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
           </div>
 
           {/* Reference */}
-          <div>
-            <label className={labelClass} htmlFor="reference">
-              Reference
-            </label>
-            <input
-              {...register("reference")}
-              id="reference"
-              type="text"
-              className={inputClass}
-              placeholder="e.g., RIC IV 245"
-            />
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
+            <div>
+              <label className={labelClass} htmlFor="reference">
+                Reference
+              </label>
+              <input
+                {...register("reference")}
+                id="reference"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., RIC IV 245"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="reference_link">
+                Reference Link
+              </label>
+              <input
+                {...register("reference_link")}
+                id="reference_link"
+                type="url"
+                className={inputClass}
+                placeholder="e.g., https://reference.com"
+              />
+            </div>
           </div>
         </div>
 
@@ -451,7 +459,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 id="purchase_type"
                 options={[
                   { value: "auction", label: "Auction" },
-                  { value: "dealer", label: "Dealer" },
+                  { value: "retail", label: "Retail" },
                   { value: "private", label: "Private Sale" },
                   { value: "gift", label: "Gift" },
                   { value: "inheritance", label: "Inheritance" },
@@ -576,34 +584,6 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               className={inputClass}
               placeholder="e.g., Ex. John Smith collection"
             />
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className={labelClass} htmlFor="grading_vendor">
-                Grading Service
-              </label>
-              <input
-                {...register("grading_vendor")}
-                id="grading_vendor"
-                type="text"
-                className={inputClass}
-                placeholder="e.g., NGC, PCGS"
-              />
-            </div>
-
-            <div>
-              <label className={labelClass} htmlFor="reference_link">
-                Reference Link
-              </label>
-              <input
-                {...register("reference_link")}
-                id="reference_link"
-                type="url"
-                className={inputClass}
-                placeholder="e.g., https://reference.com"
-              />
-            </div>
           </div>
 
           <div>

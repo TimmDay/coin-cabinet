@@ -26,8 +26,14 @@ export const coinFormSchema = z
       .string()
       .min(1, "Authority is required")
       .max(100, "Authority is too long"),
-
-    // Reign period
+    denomination: z
+      .string()
+      .min(1, "Denomination is required")
+      .max(50, "Denomination is too long"),
+    civ: z
+      .string()
+      .min(1, "Civilization is required")
+      .max(50, "Civilization is too long"),
     reign_start: optionalNumber(
       z
         .number()
@@ -44,36 +50,6 @@ export const coinFormSchema = z
     ),
 
     // Physical characteristics
-    denomination: z
-      .string()
-      .min(1, "Denomination is required")
-      .max(50, "Denomination is too long"),
-    civ: z
-      .string()
-      .min(1, "Civilization is required")
-      .max(50, "Civilization is too long"),
-    metal: z.string().min(1, "Metal is required").max(30, "Metal is too long"),
-
-    // Obverse details
-    legend_o: optionalString(),
-    desc_o: optionalString(),
-    name_o: optionalString(),
-
-    // Reverse details
-    legend_r: optionalString(),
-    desc_r: optionalString(),
-    name_r: optionalString(),
-
-    // Minting information
-    mint: optionalString(),
-    mint_year_acbc: optionalString(),
-    mint_year: optionalNumber(
-      z
-        .number()
-        .int()
-        .min(-1000, "Invalid mint year")
-        .max(2100, "Invalid mint year"),
-    ),
 
     // Physical measurements
     diameter: optionalNumber(
@@ -86,34 +62,64 @@ export const coinFormSchema = z
       z.number().min(0.01, "Mass must be positive").max(1000, "Mass too large"),
     ),
     die_axis: optionalString(),
+    metal: z.string().min(1, "Metal is required").max(30, "Metal is too long"),
+    silver_content: optionalNumber(
+      z
+        .number()
+        .min(0, "Silver content cannot be negative")
+        .max(100, "Invalid silver content"),
+    ),
+    // Minting information
+    mint: optionalString(),
+    mint_year_earliest: optionalNumber(
+      z
+        .number()
+        .int()
+        .min(-800, "Invalid mint year")
+        .max(2025, "Invalid mint year"),
+    ),
+    mint_year_latest: optionalNumber(
+      z
+        .number()
+        .int()
+        .min(-1000, "Invalid mint year")
+        .max(2100, "Invalid mint year"),
+    ),
+
+    // Obverse details
+    legend_o: optionalString(),
+    desc_o: optionalString(),
+
+    // Reverse details
+    legend_r: optionalString(),
+    desc_r: optionalString(),
 
     // Reference
     reference: optionalString(),
+    reference_link: optionalUrl(),
 
     // Purchase information
     purchase_type: z
-      .enum(["auction", "dealer", "private", "gift", "inheritance", "other"])
+      .enum(["auction", "retail", "private", "gift", "inheritance", "other"])
       .optional(),
+    purchase_date: optionalString(),
     price_aud: optionalNumber(z.number().min(0, "Price cannot be negative")),
     price_shipping_aud: optionalNumber(
       z.number().min(0, "Shipping cost cannot be negative"),
     ),
-    purchase_date: optionalString(),
     purchase_vendor: optionalString(),
+    purchase_link: optionalUrl(),
 
     // Auction details
     auction_name: optionalString(),
     auction_lot: optionalNumber(
       z.number().int().min(1, "Lot number must be positive"),
     ),
-    purchase_link: optionalUrl(),
 
     // Additional information
     provenance: optionalString(),
-    grading_vendor: optionalString(),
     notes: optionalString(),
     notes_history: optionalString(),
-    reference_link: optionalUrl(),
   })
   .refine(
     (data) => {
@@ -127,49 +133,45 @@ export const coinFormSchema = z
       message: "Reign end year must be after or equal to start year",
       path: ["reign_end"],
     },
+  )
+  .refine(
+    (data) => {
+      // Custom validation: mint_year_latest should be >= mint_year_earliest if both are provided
+      if (data.mint_year_latest && data.mint_year_earliest) {
+        return data.mint_year_latest >= data.mint_year_earliest;
+      }
+      return true;
+    },
+    {
+      message: "Can't be before earliest mint year",
+      path: ["mint_year_latest"],
+    },
+  )
+  .refine(
+    (data) => {
+      // Custom validation: auction_lot is required if auction_name is provided
+      if (data.auction_name && data.auction_name.trim() !== "") {
+        return data.auction_lot !== undefined && data.auction_lot !== null;
+      }
+      return true;
+    },
+    {
+      message: "Lot number is required when auction name is provided",
+      path: ["auction_lot"],
+    },
+  )
+  .refine(
+    (data) => {
+      // Custom validation: silver_content is required if metal is "Silver"
+      if (data.metal && data.metal.toLowerCase() === "silver") {
+        return data.silver_content !== undefined && data.silver_content !== null;
+      }
+      return true;
+    },
+    {
+      message: "Silver content is required when metal is Silver",
+      path: ["silver_content"],
+    },
   );
 
 export type CoinFormData = z.infer<typeof coinFormSchema>;
-
-// Explicit type for form data to ensure compatibility
-export type CoinFormInputData = {
-  name: string;
-  authority: string;
-  reign_start?: number;
-  reign_end?: number;
-  denomination: string;
-  civ: string;
-  metal: string;
-  legend_o?: string;
-  desc_o?: string;
-  name_o?: string;
-  legend_r?: string;
-  desc_r?: string;
-  name_r?: string;
-  mint?: string;
-  mint_year_acbc?: string;
-  mint_year?: number;
-  diameter?: number;
-  mass?: number;
-  die_axis?: string;
-  reference?: string;
-  purchase_type?:
-    | "auction"
-    | "dealer"
-    | "private"
-    | "gift"
-    | "inheritance"
-    | "other";
-  price_aud?: number;
-  price_shipping_aud?: number;
-  purchase_date?: string;
-  purchase_vendor?: string;
-  auction_name?: string;
-  auction_lot?: number;
-  purchase_link?: string;
-  provenance?: string;
-  grading_vendor?: string;
-  notes?: string;
-  notes_history?: string;
-  reference_link?: string;
-};
