@@ -12,6 +12,7 @@ import {
   simpleTopLevel,
   type SubmenuTypes,
 } from "./navigation-schema";
+import { UserMenu } from "~/components/auth/UserMenu";
 
 const HOVER_DELAY = 200; // milliseconds
 export default function Navbar() {
@@ -179,10 +180,11 @@ export default function Navbar() {
 
   return (
     <nav
-      className="flex h-16 items-center space-x-8 border-b border-gray-200 bg-white px-4 shadow-sm sm:px-6 lg:px-8"
+      className="flex h-16 items-center justify-between space-x-8 border-b border-gray-200 bg-white px-4 shadow-sm sm:px-6 lg:px-8"
       role="navigation"
       aria-label="Main navigation"
     >
+      <div className="flex items-center space-x-8">
       {simpleTopLevel.map((item) => {
         const itemIsActive = pathname === item.href;
         return (
@@ -307,6 +309,9 @@ export default function Navbar() {
           </div>
         )}
       </div>
+      </div>
+      
+      <UserMenu />
     </nav>
   );
 }

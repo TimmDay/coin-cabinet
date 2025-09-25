@@ -1,0 +1,41 @@
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next()
+  const supabase = createMiddlewareClient({ req, res })
+
+  // Check if the route is an API route that needs protection
+  const needsAuth = req.nextUrl.pathname.startsWith('/api/coin-collection/add-coin') ||
+    (req.nextUrl.pathname.startsWith('/api/fruits') && req.method !== 'GET')
+  
+  if (needsAuth) {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
+    // If no session, return 401 Unauthorized
+    if (!session) {
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          message: 'Authentication required' 
+        }),
+        { 
+          status: 401, 
+          headers: { 'content-type': 'application/json' } 
+        }
+      )
+    }
+  }
+
+  return res
+}
+
+export const config = {
+  matcher: [
+    '/api/coin-collection/add-coin',
+    '/api/fruits/:path*'
+  ]
+}

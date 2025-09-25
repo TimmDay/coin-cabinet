@@ -1,12 +1,7 @@
-# Coin Cabinet
-
 ## TODO
 
 The goal of this app is to provide a visual interactive website to view (images of) coins and explore information about them. There will also be a store page where certain items can be offered for sale.
 
-- RLS security for INSERT coin_collection_dev.
-  - Make it from my localhost only (ie not from vercel site)
-  - Make it for signed in users only
 - [ ] setup dev and prod DBs. default it points to dev. I have to manually put in the prod details to use that one.
 - [ ] Mint name dropdown
 - [ ] Another table. Mint names with the associated lat/lng of each mint
@@ -70,7 +65,9 @@ The goal of this app is to provide a visual interactive website to view (images 
 
 - [ ] Map page
 - mapbox. coins in collection displayed at mint. circle over mint in size proportional to number of coins in collection are from there.
-- full set of filters
+- [ ] full set of filters
+
+- [ ] future: users can signup/signin in order to create their own coin collection (table) and upload exclusively to that one (and view it)
 
 Components
 

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { supabase } from "~/supabase-client";
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 import { env } from "~/env";
 import { coinFormSchema } from "~/lib/validations/coin-form";
 import { ZodError } from "zod";
@@ -7,7 +8,21 @@ import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 export async function POST(request: Request) {
   try {
-    // Use the same Supabase client as the working fruits API
+    // Create authenticated Supabase client
+    const cookieStore = cookies()
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    
+    // Check authentication
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
+    if (!session) {
+      return NextResponse.json(
+        { success: false, message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
 
     // Parse and validate the request body
     const body: unknown = await request.json();
