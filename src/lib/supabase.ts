@@ -14,15 +14,24 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
+// Singleton instance for browser client to prevent multiple instances
+let browserClient: ReturnType<typeof createClient> | null = null;
+
 // Client-side Supabase client (for browser/React components)
 export const createBrowserClient = () => {
-  return createClient(supabaseUrl, supabaseAnonKey, {
+  if (browserClient) {
+    return browserClient;
+  }
+
+  browserClient = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       flowType: "pkce",
       autoRefreshToken: true,
       persistSession: true,
     },
   });
+
+  return browserClient;
 };
 
 // Public Supabase client (no authentication, for public data access)

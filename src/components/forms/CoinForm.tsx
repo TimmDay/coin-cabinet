@@ -1,10 +1,15 @@
+// TODO: look into these later
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { coinFormSchema, type CoinFormData } from "~/lib/validations/coin-form";
+import { useForm } from "react-hook-form";
 import { RedRoundButton } from "~/components/ui/RedRoundButton";
 import { Select } from "~/components/ui/Select";
+import { coinFormSchema, type CoinFormData } from "~/lib/validations/coin-form";
 
 type CoinFormProps = {
   onSubmit: (data: CoinFormData) => Promise<void>;
@@ -72,13 +77,9 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm({
-    resolver: zodResolver(coinFormSchema),
+  } = useForm<CoinFormData>({
+    resolver: zodResolver(coinFormSchema) as any,
     defaultValues: {
-      //   authority: "Augustus",
-      //   civ: "Roman Imperial",
-      //   denomination: "Denarius",
-      //   metal: "Silver",
       purchase_type: "auction",
     },
   });
@@ -345,7 +346,41 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
             </div>
           </div>
 
-          {/* Obverse and Reverse Details */}
+          {/* Reference */}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
+            <div>
+              <label className={labelClass} htmlFor="reference">
+                Reference
+              </label>
+              <input
+                {...register("reference")}
+                id="reference"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., RIC IV 245"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="reference_link">
+                Reference Link
+              </label>
+              <input
+                {...register("reference_link")}
+                id="reference_link"
+                type="url"
+                className={inputClass}
+                placeholder="e.g., https://reference.com"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Obverse and Reverse Details */}
+        <div className="space-y-4">
+          <h3 className="mb-4 text-lg font-semibold text-purple-300">
+            Obverse and Reverse Details
+          </h3>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Obverse Column */}
             <div className="space-y-4">
@@ -379,21 +414,32 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 />
               </div>
 
-              <div>
-                <label className={labelClass} htmlFor="image_link_o">
-                  Obverse Image Link
-                </label>
-                <input
-                  {...register("image_link_o")}
-                  id="image_link_o"
-                  type="url"
-                  className={inputClass}
-                  placeholder="e.g., https://example.com/obverse.jpg"
-                />
-              </div>
-            </div>
+                  <div>
+                    <label className={labelClass} htmlFor="image_link_o">
+                      Obverse Image Link
+                    </label>
+                    <input
+                      {...register("image_link_o")}
+                      id="image_link_o"
+                      type="url"
+                      className={inputClass}
+                      placeholder="e.g., https://example.com/obverse.jpg"
+                    />
+                  </div>
 
-            {/* Reverse Column */}
+                  <div>
+                    <label className={labelClass} htmlFor="image_link_zoom_o">
+                      Obverse Zoom Image Link
+                    </label>
+                    <input
+                      {...register("image_link_zoom_o")}
+                      id="image_link_zoom_o"
+                      type="url"
+                      className={inputClass}
+                      placeholder="e.g., https://example.com/obverse-zoom.jpg"
+                    />
+                  </div>
+                </div>            {/* Reverse Column */}
             <div className="space-y-4">
               <h4 className="text-md font-medium text-purple-200">
                 Reverse Details
@@ -437,50 +483,34 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   placeholder="e.g., https://example.com/reverse.jpg"
                 />
               </div>
+
+              <div>
+                <label className={labelClass} htmlFor="image_link_zoom_r">
+                  Reverse Zoom Image Link
+                </label>
+                <input
+                  {...register("image_link_zoom_r")}
+                  id="image_link_zoom_r"
+                  type="url"
+                  className={inputClass}
+                  placeholder="e.g., https://example.com/reverse-zoom.jpg"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Both Sides Image Link */}
+          {/* Flavor Text */}
           <div>
-            <label className={labelClass} htmlFor="image_link_b">
-              Both Sides Image Link
+            <label className={labelClass} htmlFor="flavour_text">
+              Flavor Text
             </label>
-            <input
-              {...register("image_link_b")}
-              id="image_link_b"
-              type="url"
+            <textarea
+              {...register("flavour_text")}
+              id="flavour_text"
+              rows={3}
               className={inputClass}
-              placeholder="e.g., https://example.com/both-sides.jpg"
+              placeholder="Descriptive text about the coin's historical significance or unique characteristics..."
             />
-          </div>
-
-          {/* Reference */}
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
-            <div>
-              <label className={labelClass} htmlFor="reference">
-                Reference
-              </label>
-              <input
-                {...register("reference")}
-                id="reference"
-                type="text"
-                className={inputClass}
-                placeholder="e.g., RIC IV 245"
-              />
-            </div>
-
-            <div>
-              <label className={labelClass} htmlFor="reference_link">
-                Reference Link
-              </label>
-              <input
-                {...register("reference_link")}
-                id="reference_link"
-                type="url"
-                className={inputClass}
-                placeholder="e.g., https://reference.com"
-              />
-            </div>
           </div>
         </div>
 
@@ -517,8 +547,9 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               <input
                 {...register("purchase_date")}
                 id="purchase_date"
-                type="date"
+                type="text"
                 className={inputClass}
+                placeholder="e.g., 2023-12-15"
               />
             </div>
 
@@ -623,6 +654,19 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 type="url"
                 className={inputClass}
                 placeholder="e.g., https://example.com/auction"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="antiquities_register">
+                Antiquities Registry Number
+              </label>
+              <input
+                {...register("antiquities_register")}
+                id="antiquities_register"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., Registration number or antiquities tracking information"
               />
             </div>
           </div>

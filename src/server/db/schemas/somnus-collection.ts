@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import { index, pgTable } from "drizzle-orm/pg-core";
 
-// Somnus collection table (same schema as coin_collection)
+// Somnus collection table
 export const somnus_collection = pgTable(
   "somnus_collection",
   (d) => ({
@@ -14,9 +14,7 @@ export const somnus_collection = pgTable(
       .timestamp({ withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    user_id: d
-      .uuid()
-      .notNull(),
+    user_id: d.uuid().notNull(),
 
     // Basic coin information (matching Zod schema order)
     nickname: d.text().notNull(),
@@ -66,9 +64,13 @@ export const somnus_collection = pgTable(
     // Image links
     image_link_o: d.text(), // Obverse image link
     image_link_r: d.text(), // Reverse image link
-    image_link_b: d.text(), // Both sides/composite image link
+    image_link_zoom_o: d.text(), // Obverse zoom photography URL
+    image_link_zoom_r: d.text(), // Reverse zoom photography URL
+    image_rotation: d.text().array(), // Array of image links with rotation suffixes
 
     // Additional information
+    flavour_text: d.text(), // Descriptive flavor text about the coin
+    antiquities_register: d.text(), // Antiquities register information
     provenance: d.text(),
     notes: d.text(),
     notes_history: d.text(),

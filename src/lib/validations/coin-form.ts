@@ -1,26 +1,5 @@
 import { z } from "zod";
 
-// Helper function to convert empty strings to undefined for optional numeric fields
-const optionalNumber = (schema: z.ZodNumber) =>
-  z.preprocess(
-    (val) =>
-      val === "" || val === null || val === undefined || Number.isNaN(val)
-        ? undefined
-        : val,
-    schema.optional(),
-  );
-
-// Helper function to convert empty strings to undefined for optional URL fields
-const optionalUrl = () =>
-  z.preprocess(
-    (val) => (val === "" ? undefined : val),
-    z.string().url("Invalid URL").optional(),
-  );
-
-// Helper function to convert empty strings to undefined for optional string fields
-const optionalString = () =>
-  z.preprocess((val) => (val === "" ? undefined : val), z.string().optional());
-
 export const coinFormSchema = z
   .object({
     // Basic coin information
@@ -40,69 +19,64 @@ export const coinFormSchema = z
       .string()
       .min(1, "Civilization is required")
       .max(50, "Civilization is too long"),
-    reign_start: optionalNumber(
-      z
-        .number()
-        .int()
-        .min(-1000, "Invalid start year")
-        .max(2100, "Invalid start year"),
-    ),
-    reign_end: optionalNumber(
-      z
-        .number()
-        .int()
-        .min(-1000, "Invalid end year")
-        .max(2100, "Invalid end year"),
-    ),
-
-    // Physical characteristics
+    reign_start: z
+      .number()
+      .int()
+      .min(-1000, "Invalid start year")
+      .max(2100, "Invalid start year")
+      .optional(),
+    reign_end: z
+      .number()
+      .int()
+      .min(-1000, "Invalid end year")
+      .max(2100, "Invalid end year")
+      .optional(),
 
     // Physical measurements
-    diameter: optionalNumber(
-      z
-        .number()
-        .min(0.1, "Diameter must be positive")
-        .max(100, "Diameter too large"),
-    ),
-    mass: optionalNumber(
-      z.number().min(0.01, "Mass must be positive").max(1000, "Mass too large"),
-    ),
-    die_axis: optionalString(),
+    diameter: z
+      .number()
+      .min(0.1, "Diameter must be positive")
+      .max(100, "Diameter too large")
+      .optional(),
+    mass: z
+      .number()
+      .min(0.01, "Mass must be positive")
+      .max(1000, "Mass too large")
+      .optional(),
+    die_axis: z.string().optional(),
     metal: z.string().min(1, "Metal is required").max(30, "Metal is too long"),
-    silver_content: optionalNumber(
-      z
-        .number()
-        .min(0, "Silver content cannot be negative")
-        .max(100, "Invalid silver content"),
-    ),
+    silver_content: z
+      .number()
+      .min(0, "Silver content cannot be negative")
+      .max(100, "Invalid silver content")
+      .optional(),
+
     // Minting information
-    mint: optionalString(),
-    mint_year_earliest: optionalNumber(
-      z
-        .number()
-        .int()
-        .min(-800, "Invalid mint year")
-        .max(2025, "Invalid mint year"),
-    ),
-    mint_year_latest: optionalNumber(
-      z
-        .number()
-        .int()
-        .min(-1000, "Invalid mint year")
-        .max(2100, "Invalid mint year"),
-    ),
+    mint: z.string().optional(),
+    mint_year_earliest: z
+      .number()
+      .int()
+      .min(-800, "Invalid mint year")
+      .max(2025, "Invalid mint year")
+      .optional(),
+    mint_year_latest: z
+      .number()
+      .int()
+      .min(-1000, "Invalid mint year")
+      .max(2100, "Invalid mint year")
+      .optional(),
 
     // Obverse details
-    legend_o: optionalString(),
-    desc_o: optionalString(),
+    legend_o: z.string().optional(),
+    desc_o: z.string().optional(),
 
     // Reverse details
-    legend_r: optionalString(),
-    desc_r: optionalString(),
+    legend_r: z.string().optional(),
+    desc_r: z.string().optional(),
 
     // Reference
-    reference: optionalString(),
-    reference_link: optionalUrl(),
+    reference: z.string().optional(),
+    reference_link: z.string().url("Invalid URL").optional(),
 
     // Purchase information
     purchase_type: z
@@ -116,30 +90,36 @@ export const coinFormSchema = z
         "other",
       ])
       .optional(),
-    purchase_date: optionalString(),
-    price_aud: optionalNumber(z.number().min(0, "Price cannot be negative")),
-    price_shipping_aud: optionalNumber(
-      z.number().min(0, "Shipping cost cannot be negative"),
-    ),
-    purchase_vendor: optionalString(),
-    purchase_link: optionalUrl(),
-    vendor_grading_notes: optionalString(),
+    purchase_date: z.string().optional(),
+    price_aud: z.number().min(0, "Price cannot be negative").optional(),
+    price_shipping_aud: z
+      .number()
+      .min(0, "Shipping cost cannot be negative")
+      .optional(),
+    purchase_vendor: z.string().optional(),
+    purchase_link: z.string().url("Invalid URL").optional(),
+    vendor_grading_notes: z.string().optional(),
 
     // Auction details
-    auction_name: optionalString(),
-    auction_lot: optionalNumber(
-      z.number().int().min(0, "Lot number cannot be negative"),
-    ),
+    auction_name: z.string().optional(),
+    auction_lot: z
+      .number()
+      .int()
+      .min(0, "Lot number cannot be negative")
+      .optional(),
 
     // Image links
-    image_link_o: optionalUrl(),
-    image_link_r: optionalUrl(),
-    image_link_b: optionalUrl(),
+    image_link_o: z.string().url("Invalid URL").optional(),
+    image_link_r: z.string().url("Invalid URL").optional(),
+    image_link_zoom_o: z.string().url("Invalid URL").optional(),
+    image_link_zoom_r: z.string().url("Invalid URL").optional(),
 
     // Additional information
-    provenance: optionalString(),
-    notes: optionalString(),
-    notes_history: optionalString(),
+    flavour_text: z.string().optional(),
+    antiquities_register: z.string().optional(),
+    provenance: z.string().optional(),
+    notes: z.string().optional(),
+    notes_history: z.string().optional(),
   })
   .refine(
     (data) => {
