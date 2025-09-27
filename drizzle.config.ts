@@ -7,5 +7,5 @@ export default {
   dbCredentials: {
     url: env.DATABASE_URL,
   },
-  tablesFilter: ["coin-cabinet_*"],
+  tablesFilter: ["somnus_collection*", "Test"],
 } satisfies Config;

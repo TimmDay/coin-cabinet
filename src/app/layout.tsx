@@ -3,6 +3,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import Navbar from "~/components/layout/Navbar";
 import { ReactQueryProvider } from "~/components/providers/react-query-provider";
+import { AuthProvider } from "~/components/providers/auth-provider";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -21,10 +22,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable}`}>
       <body>
-        <ReactQueryProvider>
-          <Navbar />
-          {children}
-        </ReactQueryProvider>
+        <AuthProvider>
+          <ReactQueryProvider>
+            <Navbar />
+            {children}
+          </ReactQueryProvider>
+        </AuthProvider>
       </body>
     </html>
   );

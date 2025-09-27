@@ -1,4 +1,3 @@
-import { supabase } from "~/supabase-client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export type Fruit = {
@@ -45,38 +44,48 @@ export function useDeleteFruit() {
   });
 }
 
-// Supabase utility functions
+// API utility functions
 async function fetchFruits(): Promise<Fruit[]> {
-  const { data, error } = await supabase
-    .from("Test")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const response = await fetch('/api/fruits');
+  const result = await response.json() as { success: boolean; message?: string; data?: Fruit[] };
 
-  if (error) {
-    throw new Error(`Failed to fetch fruits: ${error.message}`);
+  if (!response.ok || !result.success) {
+    throw new Error(result.message ?? 'Failed to fetch fruits');
   }
 
-  return (data as Fruit[]) || [];
+  return result.data ?? [];
 }
 
 async function insertFruit(fruitName: string): Promise<Fruit> {
-  const result = await supabase
-    .from("Test")
-    .insert([{ fruitName }])
-    .select()
-    .single();
+  const response = await fetch('/api/fruits', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ fruitName }),
+  });
 
-  if (result.error) {
-    throw new Error(`Failed to insert fruit: ${result.error.message}`);
+  const result = await response.json() as { success: boolean; message?: string; data?: Fruit };
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message ?? 'Failed to add fruit');
   }
 
-  return result.data as Fruit;
+  return result.data!;
 }
 
 async function deleteFruit(id: number): Promise<void> {
-  const { error } = await supabase.from("Test").delete().eq("id", id);
+  const response = await fetch('/api/fruits', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id }),
+  });
 
-  if (error) {
-    throw new Error(`Failed to delete fruit: ${error.message}`);
+  const result = await response.json() as { success: boolean; message?: string };
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message ?? 'Failed to delete fruit');
   }
 }

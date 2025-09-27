@@ -1,0 +1,683 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { coinFormSchema, type CoinFormData } from "~/lib/validations/coin-form";
+import { RedRoundButton } from "~/components/ui/RedRoundButton";
+import { Select } from "~/components/ui/Select";
+
+type CoinFormProps = {
+  onSubmit: (data: CoinFormData) => Promise<void>;
+  isLoading: boolean;
+};
+
+const denominationOptions = [
+  { value: "Denarius", label: "Denarius" },
+  { value: "Antoninianus", label: "Antoninianus" },
+  { value: "Follis", label: "Follis" },
+  { value: "Sestertius", label: "Sestertius" },
+  { value: "Dupondius / As", label: "Dupondius / As" },
+  { value: "Aureus", label: "Aureus" },
+  { value: "Solidus", label: "Solidus" },
+  { value: "Tetradrachm", label: "Tetradrachm" },
+  { value: "Drachm", label: "Drachm" },
+  { value: "Obol", label: "Obol" },
+  { value: "Æ1", label: "Æ1" },
+  { value: "Æ2", label: "Æ2" },
+  { value: "Æ3", label: "Æ3" },
+  { value: "Æ4", label: "Æ4" },
+  { value: "Other", label: "Other" },
+];
+
+const authorityOptions = [
+  { value: "King", label: "King" },
+  { value: "Caesar", label: "Caesar" },
+  { value: "Augustus", label: "Augustus" },
+  { value: "Augusta", label: "Augusta" },
+  { value: "Commemorative", label: "Commemorative" },
+];
+
+const civilizationOptions = [
+  { value: "Roman Republic", label: "Roman Republic" },
+  { value: "Roman Imperial", label: "Roman Imperial" },
+  { value: "Byzantine", label: "Byzantine" },
+  {
+    value: "Ancient Greece, Kingdom of Macedon",
+    label: "Ancient Greece, Kingdom of Macedon",
+  },
+  {
+    value: "Ancient Greece, Kingdom of Cappdocia",
+    label: "Ancient Greece, Kingdom of Cappdocia",
+  },
+];
+
+const dieAxisOptions = [
+  { value: "12h", label: "12h (↑↑)" },
+  { value: "11h", label: "11h" },
+  { value: "10h", label: "10h" },
+  { value: "9h", label: "9h (←↑)" },
+  { value: "8h", label: "8h" },
+  { value: "7h", label: "7h" },
+  { value: "6h", label: "6h (↓↓)" },
+  { value: "5h", label: "5h" },
+  { value: "4h", label: "4h" },
+  { value: "3h", label: "3h (→↑)" },
+  { value: "2h", label: "2h" },
+  { value: "1h", label: "1h" },
+];
+
+export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(coinFormSchema),
+    defaultValues: {
+      //   authority: "Augustus",
+      //   civ: "Roman Imperial",
+      //   denomination: "Denarius",
+      //   metal: "Silver",
+      purchase_type: "auction",
+    },
+  });
+
+  const handleFormSubmit = async (data: CoinFormData) => {
+    try {
+      await onSubmit(data);
+
+      // Don't clear form on success for now to allow multiple similar entries.
+      // Clear form button is at base.
+      reset(); // Clear form on success
+    } catch (error) {
+      console.error("Form submission error:", error);
+    }
+  };
+
+  const inputClass =
+    "w-full px-3 py-2 rounded border border-gray-300 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none";
+  const labelClass = "block text-sm font-medium text-white mb-1";
+  const errorClass = "text-red-400 text-sm mt-1";
+
+  return (
+    <div className="mx-auto w-full max-w-4xl rounded-lg bg-white/10 p-6 backdrop-blur-sm">
+      <h2 className="mb-6 text-2xl font-bold text-white">Add New Coin</h2>
+
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
+        {/* Basic Information Section */}
+        <div className="space-y-4">
+          <h3 className="mb-4 text-lg font-semibold text-purple-300">
+            Basic Information
+          </h3>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className={labelClass} htmlFor="nickname">
+                Nickname*
+              </label>
+              <input
+                {...register("nickname")}
+                id="nickname"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., Marcus Aurelius Denarius"
+              />
+              {errors.nickname && (
+                <p className={errorClass}>{errors.nickname.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="authority">
+                Authority*
+              </label>
+              <Select
+                {...register("authority")}
+                id="authority"
+                options={authorityOptions}
+                placeholder={"Select authority"}
+                error={errors.authority?.message}
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="denomination">
+                Denomination*
+              </label>
+              <Select
+                {...register("denomination")}
+                id="denomination"
+                options={denominationOptions}
+                placeholder="Select denomination"
+                error={errors.denomination?.message}
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="civ">
+                Civilization*
+              </label>
+              <Select
+                {...register("civ")}
+                id="civ"
+                options={civilizationOptions}
+                placeholder="Select Civilisation"
+                error={errors.civ?.message}
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="reign_start">
+                Reign Start Year
+              </label>
+              <input
+                {...register("reign_start", { valueAsNumber: true })}
+                id="reign_start"
+                type="number"
+                className={inputClass}
+                placeholder="e.g., 161"
+              />
+              {errors.reign_start && (
+                <p className={errorClass}>{errors.reign_start.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="reign_end">
+                Reign End Year
+              </label>
+              <input
+                {...register("reign_end", { valueAsNumber: true })}
+                id="reign_end"
+                type="number"
+                className={inputClass}
+                placeholder="e.g., 180"
+              />
+              {errors.reign_end && (
+                <p className={errorClass}>{errors.reign_end.message}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2"></div>
+        </div>
+
+        {/* Coin Details Section */}
+        <div className="space-y-4">
+          <h3 className="mb-4 text-lg font-semibold text-purple-300">
+            Coin Details
+          </h3>
+
+          {/* Physical Properties */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div>
+              <label className={labelClass} htmlFor="diameter">
+                Diameter (mm)
+              </label>
+              <input
+                {...register("diameter", { valueAsNumber: true })}
+                id="diameter"
+                type="number"
+                step="0.1"
+                className={inputClass}
+                placeholder="e.g., 19.2"
+                onFocus={(e) => {
+                  if (!e.target.value) {
+                    e.target.value = "18";
+                  }
+                }}
+              />
+              {errors.diameter && (
+                <p className={errorClass}>{errors.diameter.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="mass">
+                Weight (grams)
+              </label>
+              <input
+                {...register("mass", { valueAsNumber: true })}
+                id="mass"
+                type="number"
+                step="0.01"
+                className={inputClass}
+                placeholder="e.g., 3.45"
+                onFocus={(e) => {
+                  if (!e.target.value) {
+                    e.target.value = "3";
+                  }
+                }}
+              />
+              {errors.mass && (
+                <p className={errorClass}>{errors.mass.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="die_axis">
+                Die Axis
+              </label>
+              <Select
+                {...register("die_axis")}
+                id="die_axis"
+                options={dieAxisOptions}
+                placeholder="Select axis"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
+            <div>
+              <label className={labelClass} htmlFor="metal">
+                Metal*
+              </label>
+              <Select
+                {...register("metal")}
+                id="metal"
+                options={[
+                  { value: "Silver", label: "Silver" },
+                  { value: "Bronze", label: "Bronze" },
+                  { value: "Billon", label: "Billon" },
+                  { value: "Gold", label: "Gold" },
+                  { value: "Copper", label: "Copper" },
+                  { value: "Electrum", label: "Electrum" },
+                ]}
+                placeholder="Select metal"
+                error={errors.metal?.message}
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="silver_content">
+                Approx Silver Content
+              </label>
+              <input
+                {...register("silver_content", { valueAsNumber: true })}
+                id="silver_content"
+                type="number"
+                className={inputClass}
+                placeholder="e.g., 45"
+              />
+            </div>
+          </div>
+
+          {/* Mint Information */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div>
+              <label className={labelClass} htmlFor="mint">
+                Mint
+              </label>
+              <input
+                {...register("mint")}
+                id="mint"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., Rome"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="mint_year_earliest">
+                Mint Year Earliest
+              </label>
+              <input
+                {...register("mint_year_earliest", { valueAsNumber: true })}
+                id="mint_year_earliest"
+                type="number"
+                className={inputClass}
+                placeholder="e.g., 170"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="mint_year_latest">
+                Mint Year Latest
+              </label>
+              <input
+                {...register("mint_year_latest", { valueAsNumber: true })}
+                id="mint_year_latest"
+                type="number"
+                className={inputClass}
+                placeholder="e.g., 172"
+              />
+            </div>
+          </div>
+
+          {/* Obverse and Reverse Details */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {/* Obverse Column */}
+            <div className="space-y-4">
+              <h4 className="text-md font-medium text-purple-200">
+                Obverse Details
+              </h4>
+
+              <div>
+                <label className={labelClass} htmlFor="legend_o">
+                  Obverse Legend
+                </label>
+                <input
+                  {...register("legend_o")}
+                  id="legend_o"
+                  type="text"
+                  className={inputClass}
+                  placeholder="e.g., M ANTONINVS AVG GERM SARM"
+                />
+              </div>
+
+              <div>
+                <label className={labelClass} htmlFor="desc_o">
+                  Obverse Description
+                </label>
+                <textarea
+                  {...register("desc_o")}
+                  id="desc_o"
+                  rows={4}
+                  className={inputClass}
+                  placeholder="e.g., Laureate head of Marcus Aurelius right"
+                />
+              </div>
+
+              <div>
+                <label className={labelClass} htmlFor="image_link_o">
+                  Obverse Image Link
+                </label>
+                <input
+                  {...register("image_link_o")}
+                  id="image_link_o"
+                  type="url"
+                  className={inputClass}
+                  placeholder="e.g., https://example.com/obverse.jpg"
+                />
+              </div>
+            </div>
+
+            {/* Reverse Column */}
+            <div className="space-y-4">
+              <h4 className="text-md font-medium text-purple-200">
+                Reverse Details
+              </h4>
+
+              <div>
+                <label className={labelClass} htmlFor="legend_r">
+                  Reverse Legend
+                </label>
+                <input
+                  {...register("legend_r")}
+                  id="legend_r"
+                  type="text"
+                  className={inputClass}
+                  placeholder="e.g., TR P XXX IMP VIII COS III PP"
+                />
+              </div>
+
+              <div>
+                <label className={labelClass} htmlFor="desc_r">
+                  Reverse Description
+                </label>
+                <textarea
+                  {...register("desc_r")}
+                  id="desc_r"
+                  rows={4}
+                  className={inputClass}
+                  placeholder="e.g., Salus standing left, feeding serpent"
+                />
+              </div>
+
+              <div>
+                <label className={labelClass} htmlFor="image_link_r">
+                  Reverse Image Link
+                </label>
+                <input
+                  {...register("image_link_r")}
+                  id="image_link_r"
+                  type="url"
+                  className={inputClass}
+                  placeholder="e.g., https://example.com/reverse.jpg"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Both Sides Image Link */}
+          <div>
+            <label className={labelClass} htmlFor="image_link_b">
+              Both Sides Image Link
+            </label>
+            <input
+              {...register("image_link_b")}
+              id="image_link_b"
+              type="url"
+              className={inputClass}
+              placeholder="e.g., https://example.com/both-sides.jpg"
+            />
+          </div>
+
+          {/* Reference */}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
+            <div>
+              <label className={labelClass} htmlFor="reference">
+                Reference
+              </label>
+              <input
+                {...register("reference")}
+                id="reference"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., RIC IV 245"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="reference_link">
+                Reference Link
+              </label>
+              <input
+                {...register("reference_link")}
+                id="reference_link"
+                type="url"
+                className={inputClass}
+                placeholder="e.g., https://reference.com"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Purchase Information Section */}
+        <div className="space-y-4">
+          <h3 className="mb-4 text-lg font-semibold text-purple-300">
+            Purchase Information
+          </h3>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className={labelClass} htmlFor="purchase_type">
+                Purchase Type
+              </label>
+              <Select
+                {...register("purchase_type")}
+                id="purchase_type"
+                options={[
+                  { value: "auction", label: "Auction" },
+                  { value: "retail", label: "Retail" },
+                  { value: "private", label: "Private Sale" },
+                  { value: "gift", label: "Gift" },
+                  { value: "inheritance", label: "Inheritance" },
+                  { value: "other", label: "Other" },
+                ]}
+                placeholder="Select type"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="purchase_date">
+                Purchase Date
+              </label>
+              <input
+                {...register("purchase_date")}
+                id="purchase_date"
+                type="date"
+                className={inputClass}
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="price_aud">
+                Price (AUD)
+              </label>
+              <input
+                {...register("price_aud", { valueAsNumber: true })}
+                id="price_aud"
+                type="number"
+                step="0.01"
+                className={inputClass}
+                placeholder="e.g., 150.00"
+              />
+              {errors.price_aud && (
+                <p className={errorClass}>{errors.price_aud.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="price_shipping_aud">
+                Shipping Cost (AUD)
+              </label>
+              <input
+                {...register("price_shipping_aud", { valueAsNumber: true })}
+                id="price_shipping_aud"
+                type="number"
+                step="0.01"
+                className={inputClass}
+                placeholder="e.g., 25.00"
+              />
+              {errors.price_shipping_aud && (
+                <p className={errorClass}>
+                  {errors.price_shipping_aud.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="purchase_vendor">
+                Vendor
+              </label>
+              <input
+                {...register("purchase_vendor")}
+                id="purchase_vendor"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., CNG Auctions"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="vendor_grading_notes">
+                Vendor Grading Notes
+              </label>
+              <input
+                {...register("vendor_grading_notes")}
+                id="vendor_grading_notes"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., VF, light scratches"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="auction_name">
+                Auction Name
+              </label>
+              <input
+                {...register("auction_name")}
+                id="auction_name"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., January Ancient Coins Sale"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="auction_lot">
+                Lot Number
+              </label>
+              <input
+                {...register("auction_lot", { valueAsNumber: true })}
+                id="auction_lot"
+                type="number"
+                className={inputClass}
+                placeholder="e.g., 156"
+              />
+              {errors.auction_lot && (
+                <p className={errorClass}>{errors.auction_lot.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="purchase_link">
+                Purchase Link
+              </label>
+              <input
+                {...register("purchase_link")}
+                id="purchase_link"
+                type="url"
+                className={inputClass}
+                placeholder="e.g., https://example.com/auction"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass} htmlFor="provenance">
+              Provenance
+            </label>
+            <textarea
+              {...register("provenance")}
+              id="provenance"
+              rows={2}
+              className={inputClass}
+              placeholder="e.g., Ex. John Smith collection"
+            />
+          </div>
+
+          <div>
+            <label className={labelClass} htmlFor="notes">
+              General Notes
+            </label>
+            <textarea
+              {...register("notes")}
+              id="notes"
+              rows={4}
+              className={inputClass}
+              placeholder="Any additional notes about this coin..."
+            />
+          </div>
+
+          <div>
+            <label className={labelClass} htmlFor="notes_history">
+              Historical Notes
+            </label>
+            <textarea
+              {...register("notes_history")}
+              id="notes_history"
+              rows={3}
+              className={inputClass}
+              placeholder="Historical context, significance, etc."
+            />
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex justify-center pt-6">
+          <RedRoundButton
+            type="submit"
+            disabled={isLoading}
+            className="min-w-[200px]"
+          >
+            {isLoading ? "Adding Coin..." : "Add Coin"}
+          </RedRoundButton>
+        </div>
+      </form>
+    </div>
+  );
+}
