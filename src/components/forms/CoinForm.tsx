@@ -113,18 +113,18 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className={labelClass} htmlFor="name">
+              <label className={labelClass} htmlFor="nickname">
                 Nickname*
               </label>
               <input
-                {...register("name")}
-                id="name"
+                {...register("nickname")}
+                id="nickname"
                 type="text"
                 className={inputClass}
                 placeholder="e.g., Marcus Aurelius Denarius"
               />
-              {errors.name && (
-                <p className={errorClass}>{errors.name.message}</p>
+              {errors.nickname && (
+                <p className={errorClass}>{errors.nickname.message}</p>
               )}
             </div>
 
@@ -378,6 +378,19 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   placeholder="e.g., Laureate head of Marcus Aurelius right"
                 />
               </div>
+
+              <div>
+                <label className={labelClass} htmlFor="image_link_o">
+                  Obverse Image Link
+                </label>
+                <input
+                  {...register("image_link_o")}
+                  id="image_link_o"
+                  type="url"
+                  className={inputClass}
+                  placeholder="e.g., https://example.com/obverse.jpg"
+                />
+              </div>
             </div>
 
             {/* Reverse Column */}
@@ -411,7 +424,34 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   placeholder="e.g., Salus standing left, feeding serpent"
                 />
               </div>
+
+              <div>
+                <label className={labelClass} htmlFor="image_link_r">
+                  Reverse Image Link
+                </label>
+                <input
+                  {...register("image_link_r")}
+                  id="image_link_r"
+                  type="url"
+                  className={inputClass}
+                  placeholder="e.g., https://example.com/reverse.jpg"
+                />
+              </div>
             </div>
+          </div>
+
+          {/* Both Sides Image Link */}
+          <div>
+            <label className={labelClass} htmlFor="image_link_b">
+              Both Sides Image Link
+            </label>
+            <input
+              {...register("image_link_b")}
+              id="image_link_b"
+              type="url"
+              className={inputClass}
+              placeholder="e.g., https://example.com/both-sides.jpg"
+            />
           </div>
 
           {/* Reference */}
@@ -528,6 +568,19 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 type="text"
                 className={inputClass}
                 placeholder="e.g., CNG Auctions"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="vendor_grading_notes">
+                Vendor Grading Notes
+              </label>
+              <input
+                {...register("vendor_grading_notes")}
+                id="vendor_grading_notes"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., VF, light scratches"
               />
             </div>
 

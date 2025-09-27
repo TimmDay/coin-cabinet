@@ -9,8 +9,8 @@ export default function HomePage() {
         </h1>
 
         <CloudinaryImage />
-        <CloudinaryImage src="cld-sample-4" />
-        <CloudinaryImage src="main-sample" />
+        <CloudinaryImage src="1_faustina_II_sestertius_o" />
+        <CloudinaryImage src="1_faustina_II_sestertius_r" />
       </div>
     </main>
   );

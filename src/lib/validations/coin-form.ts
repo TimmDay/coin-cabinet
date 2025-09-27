@@ -3,7 +3,10 @@ import { z } from "zod";
 // Helper function to convert empty strings to undefined for optional numeric fields
 const optionalNumber = (schema: z.ZodNumber) =>
   z.preprocess(
-    (val) => (val === "" || val === null ? undefined : val),
+    (val) =>
+      val === "" || val === null || val === undefined || Number.isNaN(val)
+        ? undefined
+        : val,
     schema.optional(),
   );
 
@@ -21,7 +24,10 @@ const optionalString = () =>
 export const coinFormSchema = z
   .object({
     // Basic coin information
-    name: z.string().min(1, "Name is required").max(100, "Name is too long"),
+    nickname: z
+      .string()
+      .min(1, "Nickname is required")
+      .max(100, "Nickname is too long"),
     authority: z
       .string()
       .min(1, "Authority is required")
@@ -100,7 +106,15 @@ export const coinFormSchema = z
 
     // Purchase information
     purchase_type: z
-      .enum(["auction", "retail", "private", "gift", "inheritance", "other"])
+      .enum([
+        "auction",
+        "auction aftermarket",
+        "retail",
+        "private",
+        "gift",
+        "inheritance",
+        "other",
+      ])
       .optional(),
     purchase_date: optionalString(),
     price_aud: optionalNumber(z.number().min(0, "Price cannot be negative")),
@@ -109,12 +123,18 @@ export const coinFormSchema = z
     ),
     purchase_vendor: optionalString(),
     purchase_link: optionalUrl(),
+    vendor_grading_notes: optionalString(),
 
     // Auction details
     auction_name: optionalString(),
     auction_lot: optionalNumber(
-      z.number().int().min(1, "Lot number must be positive"),
+      z.number().int().min(0, "Lot number cannot be negative"),
     ),
+
+    // Image links
+    image_link_o: optionalUrl(),
+    image_link_r: optionalUrl(),
+    image_link_b: optionalUrl(),
 
     // Additional information
     provenance: optionalString(),

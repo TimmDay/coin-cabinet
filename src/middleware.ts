@@ -8,7 +8,9 @@ export async function middleware(req: NextRequest) {
 
   // Check if the route is an API route that needs protection
   const needsAuth = req.nextUrl.pathname.startsWith('/api/coin-collection/add-coin') ||
-    (req.nextUrl.pathname.startsWith('/api/fruits') && req.method !== 'GET')
+    req.nextUrl.pathname.startsWith('/api/somnus-collection/add-coin') ||
+    (req.nextUrl.pathname.startsWith('/api/fruits') && req.method !== 'GET') ||
+    (req.nextUrl.pathname.startsWith('/api/somnus-collection') && req.method !== 'GET')
   
   if (needsAuth) {
     const {
@@ -36,6 +38,7 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     '/api/coin-collection/add-coin',
+    '/api/somnus-collection/:path*',
     '/api/fruits/:path*'
   ]
 }

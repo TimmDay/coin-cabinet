@@ -20,7 +20,15 @@ export default function CoinCabinetPage() {
     setMessage(null);
 
     try {
-      const response = await fetch("/api/coin-collection/add-coin", {
+      // Check if the user is timmday.info@gmail.com to route to somnus collection
+      const isTimmDay = user?.email === "timmday.info@gmail.com";
+      const endpoint = isTimmDay 
+        ? "/api/somnus-collection/add-coin" 
+        : "/api/coin-collection/add-coin";
+      
+      const collectionName = isTimmDay ? "somnus collection" : "collection";
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,7 +39,7 @@ export default function CoinCabinetPage() {
       const result = (await response.json()) as ApiResponse;
 
       if (result.success) {
-        setMessage("✅ Coin added successfully to your collection!");
+        setMessage(`✅ Coin added successfully to your ${collectionName}!`);
       } else {
         setMessage(`❌ Error: ${result.message}`);
       }
@@ -85,8 +93,13 @@ export default function CoinCabinetPage() {
             Coin Cabinet
           </h1>
           <p className="mt-4 text-xl text-white">
-            Add a new coin to your collection
+            Add a new coin to your {user?.email === "timmday.info@gmail.com" ? "somnus collection" : "collection"}
           </p>
+          {user?.email === "timmday.info@gmail.com" && (
+            <p className="mt-2 text-sm text-purple-300">
+              🌙 Routing to somnus collection for timmday.info@gmail.com
+            </p>
+          )}
         </div>
 
         <div className="mx-auto max-w-2xl">
