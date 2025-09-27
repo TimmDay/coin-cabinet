@@ -20,15 +20,7 @@ export default function CoinCabinetPage() {
     setMessage(null);
 
     try {
-      // Check if the user is timmday.info@gmail.com to route to somnus collection
-      const isTimmDay = user?.email === "timmday.info@gmail.com";
-      const endpoint = isTimmDay 
-        ? "/api/somnus-collection/add-coin" 
-        : "/api/coin-collection/add-coin";
-      
-      const collectionName = isTimmDay ? "somnus collection" : "collection";
-
-      const response = await fetch(endpoint, {
+      const response = await fetch("/api/somnus-collection/add-coin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,7 +31,7 @@ export default function CoinCabinetPage() {
       const result = (await response.json()) as ApiResponse;
 
       if (result.success) {
-        setMessage(`✅ Coin added successfully to your ${collectionName}!`);
+        setMessage("✅ Coin added successfully to your collection!");
       } else {
         setMessage(`❌ Error: ${result.message}`);
       }
