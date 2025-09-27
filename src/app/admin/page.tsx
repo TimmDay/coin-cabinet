@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { useFruits, useAddFruit, useDeleteFruit } from "~/lib/api/fruits";
 import { useAuth } from "~/components/providers/auth-provider";
+import { useAddFruit, useDeleteFruit, useFruits } from "~/lib/api/fruits";
 
 type Fruit = {
   id?: number;
@@ -14,7 +14,7 @@ export default function AdminPage() {
   const [fruitName, setFruitName] = React.useState("");
 
   // Use auth and custom hooks
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { data: fruitData = [], isLoading, error } = useFruits();
   const addFruitMutation = useAddFruit();
   const deleteFruitMutation = useDeleteFruit();
@@ -27,13 +27,31 @@ export default function AdminPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+        <div className="text-center">
+          <p className="text-xl">Loading...</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Fruits
-        </h1>
+        <div className="text-center">
+          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+            Fruits
+          </h1>
+          {!user && (
+            <p className="mt-4 text-lg text-white/80">
+              Sign in to add or delete fruits
+            </p>
+          )}
+        </div>
 
+        {/* Add Fruit Form - Only show for authenticated users */}
         {user && (
           <form onSubmit={handleSubmit}>
             <input
@@ -54,10 +72,11 @@ export default function AdminPage() {
           </form>
         )}
 
+        {/* Loading and Error States */}
         {isLoading && <p>Loading fruits...</p>}
         {error && <p>Error loading fruits: {error.message}</p>}
 
-        {/* A list of each piece of the fetched fruit data */}
+        {/* Fruits List - Show to everyone, but only show delete buttons to authenticated users */}
         <ul className="w-full max-w-md space-y-2">
           {fruitData.map((fruit: Fruit, idx: number) => (
             <li
@@ -65,6 +84,7 @@ export default function AdminPage() {
               className="flex items-center justify-between rounded bg-white/10 p-3"
             >
               <span className="text-white">{fruit.fruitName}</span>
+              {/* Delete button - Only show for authenticated users */}
               {user && fruit.id && (
                 <button
                   onClick={() => deleteFruitMutation.mutate(fruit.id!)}
@@ -77,6 +97,18 @@ export default function AdminPage() {
             </li>
           ))}
         </ul>
+
+        {/* Sign in prompt for non-authenticated users */}
+        {!user && fruitData.length > 0 && (
+          <div className="text-center">
+            <a
+              href="/login"
+              className="inline-block rounded bg-purple-600 px-6 py-3 text-white transition-colors hover:bg-purple-700"
+            >
+              Sign In to Manage Fruits
+            </a>
+          </div>
+        )}
       </div>
     </main>
   );

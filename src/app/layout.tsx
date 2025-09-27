@@ -1,9 +1,9 @@
-import "~/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import Navbar from "~/components/layout/Navbar";
-import { ReactQueryProvider } from "~/components/providers/react-query-provider";
 import { AuthProvider } from "~/components/providers/auth-provider";
+import { ReactQueryProvider } from "~/components/providers/react-query-provider";
+import "~/styles/globals.css";
 
 export const metadata: Metadata = {
   title: "Create T3 App",

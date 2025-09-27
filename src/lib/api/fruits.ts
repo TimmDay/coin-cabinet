@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export type Fruit = {
   id?: number;
@@ -46,46 +46,68 @@ export function useDeleteFruit() {
 
 // API utility functions
 async function fetchFruits(): Promise<Fruit[]> {
-  const response = await fetch('/api/fruits');
-  const result = await response.json() as { success: boolean; message?: string; data?: Fruit[] };
+  const response = await fetch("/api/fruits", {
+    credentials: "include",
+  });
+  const result = (await response.json()) as {
+    success: boolean;
+    message?: string;
+    data?: Fruit[];
+  };
 
   if (!response.ok || !result.success) {
-    throw new Error(result.message ?? 'Failed to fetch fruits');
+    throw new Error(result.message ?? "Failed to fetch fruits");
   }
 
   return result.data ?? [];
 }
 
 async function insertFruit(fruitName: string): Promise<Fruit> {
-  const response = await fetch('/api/fruits', {
-    method: 'POST',
+  const response = await fetch("/api/fruits", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify({ fruitName }),
   });
 
-  const result = await response.json() as { success: boolean; message?: string; data?: Fruit };
+  const result = (await response.json()) as {
+    success: boolean;
+    message?: string;
+    data?: Fruit;
+  };
 
   if (!response.ok || !result.success) {
-    throw new Error(result.message ?? 'Failed to add fruit');
+    throw new Error(result.message ?? "Failed to add fruit");
   }
 
   return result.data!;
 }
 
 async function deleteFruit(id: number): Promise<void> {
-  const response = await fetch('/api/fruits', {
-    method: 'DELETE',
+  const response = await fetch("/api/fruits", {
+    method: "DELETE",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify({ id }),
   });
 
-  const result = await response.json() as { success: boolean; message?: string };
+  const result = (await response.json()) as {
+    success: boolean;
+    message?: string;
+    error?: string;
+  };
 
   if (!response.ok || !result.success) {
-    throw new Error(result.message ?? 'Failed to delete fruit');
+    const errorMessage =
+      result.error ?? result.message ?? "Failed to delete fruit";
+    console.error("Delete fruit error:", {
+      status: response.status,
+      result,
+    });
+    throw new Error(errorMessage);
   }
 }

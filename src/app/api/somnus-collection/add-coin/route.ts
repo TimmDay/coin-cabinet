@@ -1,18 +1,28 @@
 import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
-import { createServerClient } from "~/lib/supabase-server";
+import { createClient } from "~/lib/supabase-server";
 import { coinFormSchema } from "~/lib/validations/coin-form";
 
 export async function POST(request: Request) {
   try {
+    console.log("🚀 POST /api/somnus-collection/add-coin - Adding coin to collection");
+    
     // Use server client for authenticated requests
-    const supabase = await createServerClient();
+    const supabase = await createClient();
 
     // Check authentication
     const {
       data: { session },
+      error: authError,
     } = await supabase.auth.getSession();
+
+    console.log("🔐 Auth check:", {
+      hasSession: !!session,
+      userId: session?.user?.id,
+      userEmail: session?.user?.email,
+      authError: authError?.message,
+    });
 
     if (!session) {
       return NextResponse.json(

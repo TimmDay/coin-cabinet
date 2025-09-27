@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
-import { createPublicClient } from "~/lib/supabase";
-import { createServerClient } from "~/lib/supabase-server";
+import { createClient } from "~/lib/supabase-server";
 
 export async function GET() {
   try {
-    // Use public client for public access
-    const supabase = createPublicClient();
+    console.log("🚀 GET /api/somnus-collection - Fetching coins (public access)");
 
-    // Fetch somnus coins (public access)
+    // Use server client but don't require authentication for GET
+    const supabase = await createClient();
+
+    // Fetch somnus coins (public access - no auth required)
     const { data, error } = await supabase
       .from("somnus_collection")
       .select("*")
@@ -25,6 +26,7 @@ export async function GET() {
       );
     }
 
+    console.log(`📋 Found ${data.length} coins in collection`);
     return NextResponse.json({
       success: true,
       data,
@@ -45,7 +47,7 @@ export async function GET() {
 export async function DELETE(request: Request) {
   try {
     // Use server client for authenticated requests
-    const supabase = await createServerClient();
+    const supabase = await createClient();
 
     // Check authentication
     const {

@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
-import { createPublicClient } from "~/lib/supabase";
-import { createServerClient } from "~/lib/supabase-server";
+import { createClient } from "~/lib/supabase-server";
 
 export async function GET() {
   try {
-    // Use public client for public access
-    const supabase = createPublicClient();
-
-    // Fetch fruits (public access)
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("Test")
       .select("*")
@@ -25,10 +21,7 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      data,
-    });
+    return NextResponse.json({ success: true, data });
   } catch (error: unknown) {
     console.error("Error fetching fruits:", error);
     return NextResponse.json(
@@ -44,28 +37,36 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    // Use server client for authenticated requests
-    const supabase = await createServerClient();
+    console.log("🚀 POST /api/fruits - Adding fruit");
 
-    // Check authentication
+    // Require authentication for POST operations
+    const supabase = await createClient();
     const {
       data: { session },
     } = await supabase.auth.getSession();
 
     if (!session) {
+      console.log("❌ No session found for POST operation");
       return NextResponse.json(
-        { success: false, message: "Authentication required" },
+        {
+          success: false,
+          message: "Authentication required for adding fruits",
+        },
         { status: 401 },
       );
     }
 
+    console.log("✅ Authenticated user:", session.user.email);
+
     // Parse request body
     const body = (await request.json()) as { fruitName?: string };
     const { fruitName } = body;
+    console.log("📦 Request body:", body);
+    console.log("🔍 Attempting to insert fruit:", fruitName);
 
     if (!fruitName || typeof fruitName !== "string") {
       return NextResponse.json(
-        { success: false, message: "Valid fruitName is required" },
+        { success: false, message: "Fruit name is required" },
         { status: 400 },
       );
     }
@@ -76,6 +77,8 @@ export async function POST(request: Request) {
       .insert([{ fruitName }])
       .select()
       .single();
+
+    console.log("💾 Insert result:", result);
 
     if (result.error) {
       console.error("Supabase error:", result.error);
@@ -91,12 +94,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      data: result.data,
       message: "Fruit added successfully!",
-      data: result.data as {
-        id: number;
-        fruitName: string;
-        created_at: string;
-      },
     });
   } catch (error: unknown) {
     console.error("Error adding fruit:", error);
@@ -113,34 +113,53 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    // Use server client for authenticated requests
-    const supabase = await createServerClient();
-
-    // Check authentication
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      return NextResponse.json(
-        { success: false, message: "Authentication required" },
-        { status: 401 },
-      );
-    }
-
-    // Parse request body
+    console.log("🚀 DELETE /api/fruits - Deleting fruit");
     const body = (await request.json()) as { id?: number };
     const { id } = body;
+    console.log("📦 Request body:", { id });
 
     if (!id || typeof id !== "number") {
+      console.log("❌ Invalid ID");
       return NextResponse.json(
         { success: false, message: "Valid id is required" },
         { status: 400 },
       );
     }
 
-    // Delete fruit
+    console.log("🔍 Attempting to delete fruit with ID:", id);
+
+    // Debug: Check what cookies we're receiving
+    const cookieHeader = request.headers.get("cookie");
+    console.log("🍪 Raw cookies received:", cookieHeader);
+
+    const supabase = await createClient();
+
+    // Check if user is authenticated
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
+    console.log("🔐 Auth check:", {
+      hasSession: !!session,
+      userId: session?.user?.id,
+      userEmail: session?.user?.email,
+      authError: authError?.message,
+    });
+
+    // Check if user is authenticated before attempting delete
+    if (!session) {
+      console.log("❌ No session found - delete will fail due to RLS");
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Authentication required for delete operation",
+        },
+        { status: 401 },
+      );
+    }
+
     const { error } = await supabase.from("Test").delete().eq("id", id);
+    console.log("💾 Delete result:", { error });
 
     if (error) {
       console.error("Supabase error:", error);

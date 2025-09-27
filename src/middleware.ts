@@ -1,42 +1,44 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
-import { createMiddlewareClient } from "~/lib/supabase";
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
 
-  const supabase = createMiddlewareClient(req.headers.get("cookie") ?? "");
-
-  // Check if the route is an API route that needs protection
-  const needsAuth =
-    req.nextUrl.pathname.startsWith("/api/somnus-collection/add-coin") ||
-    (req.nextUrl.pathname.startsWith("/api/fruits") && req.method !== "GET") ||
-    (req.nextUrl.pathname.startsWith("/api/somnus-collection") &&
-      req.method !== "GET");
-
-  if (needsAuth) {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    // If no session, return 401 Unauthorized
-    if (!session) {
-      return new NextResponse(
-        JSON.stringify({
-          success: false,
-          message: "Authentication required",
-        }),
-        {
-          status: 401,
-          headers: { "content-type": "application/json" },
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
         },
-      );
-    }
-  }
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          );
+          response = NextResponse.next({
+            request,
+          });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options),
+          );
+        },
+      },
+    },
+  );
 
-  return res;
+  // This will refresh session if expired - required for Server Components
+  await supabase.auth.getUser();
+
+  return response;
 }
 
 export const config = {
-  matcher: ["/api/somnus-collection/:path*", "/api/fruits/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
