@@ -1,6 +1,7 @@
 export const simpleTopLevel = [
   { name: "Main", href: "/" },
   { name: "Admin", href: "/admin" },
+  { name: "Add Coin", href: "/add-coin" },
 ];
 
 export const coinCabinetItems = [

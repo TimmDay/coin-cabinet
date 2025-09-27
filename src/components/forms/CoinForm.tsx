@@ -250,6 +250,11 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 className={inputClass}
                 placeholder="e.g., 45"
               />
+              {errors.silver_content && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.silver_content.message}
+                </p>
+              )}
             </div>
           </div>
 
@@ -374,6 +379,11 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   className={inputClass}
                   placeholder="e.g., https://example.com/obverse.jpg"
                 />
+                {errors.image_link_o && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.image_link_o.message}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -387,6 +397,11 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   className={inputClass}
                   placeholder="e.g., https://example.com/obverse-zoom.jpg"
                 />
+                {errors.image_link_zoom_o && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.image_link_zoom_o.message}
+                  </p>
+                )}
               </div>
             </div>
             {/* Reverse Column */}
@@ -432,6 +447,11 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   className={inputClass}
                   placeholder="e.g., https://example.com/reverse.jpg"
                 />
+                {errors.image_link_r && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.image_link_r.message}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -445,6 +465,11 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   className={inputClass}
                   placeholder="e.g., https://example.com/reverse-zoom.jpg"
                 />
+                {errors.image_link_zoom_r && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.image_link_zoom_r.message}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -497,10 +522,15 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               <input
                 {...register("purchase_date")}
                 id="purchase_date"
-                type="text"
+                type="date"
                 className={inputClass}
-                placeholder="e.g., 2023-12-15"
+                max={new Date().toISOString().split("T")[0]}
               />
+              {errors.purchase_date && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.purchase_date.message}
+                </p>
+              )}
             </div>
 
             <div>
@@ -580,7 +610,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
 
             <div>
               <label className={labelClass} htmlFor="auction_lot">
-                Lot Number
+                Lot Number (required with auction name)
               </label>
               <input
                 {...register("auction_lot", { valueAsNumber: true })}
@@ -590,7 +620,9 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 placeholder="e.g., 156"
               />
               {errors.auction_lot && (
-                <p className={errorClass}>{errors.auction_lot.message}</p>
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.auction_lot.message}
+                </p>
               )}
             </div>
 
@@ -605,6 +637,11 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 className={inputClass}
                 placeholder="e.g., https://example.com/auction"
               />
+              {errors.purchase_link && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.purchase_link.message}
+                </p>
+              )}
             </div>
 
             <div>

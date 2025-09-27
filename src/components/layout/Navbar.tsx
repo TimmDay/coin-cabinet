@@ -4,6 +4,7 @@ import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { UserMenu } from "~/components/auth/UserMenu";
+import { useAuth } from "~/components/providers/auth-provider";
 import { cn } from "~/lib/utils";
 import { NextLink as Link } from "./Link";
 import {
@@ -18,6 +19,7 @@ const HOVER_DELAY = 200; // milliseconds
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { user } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null);
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -178,6 +180,15 @@ export default function Navbar() {
 
   const isActive = pathname.startsWith("/coin-cabinet");
 
+  // Filter navigation items based on authentication status
+  const visibleNavItems = simpleTopLevel.filter((item) => {
+    // Only show "Add Coin" for authenticated users
+    if (item.name === "Add Coin") {
+      return !!user;
+    }
+    return true;
+  });
+
   return (
     <nav
       className="flex h-16 items-center justify-between space-x-8 border-b border-gray-200 bg-white px-4 shadow-sm sm:px-6 lg:px-8"
@@ -185,7 +196,7 @@ export default function Navbar() {
       aria-label="Main navigation"
     >
       <div className="flex items-center space-x-8">
-        {simpleTopLevel.map((item) => {
+        {visibleNavItems.map((item) => {
           const itemIsActive = pathname === item.href;
           return (
             <Link key={item.name} href={item.href} isActive={itemIsActive}>

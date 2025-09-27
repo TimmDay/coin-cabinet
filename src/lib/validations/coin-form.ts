@@ -21,50 +21,100 @@ export const coinFormSchema = z
       .max(50, "Civilization is too long"),
     reign_start: z
       .number()
-      .int()
-      .min(-1000, "Invalid start year")
-      .max(2100, "Invalid start year")
-      .optional(),
+      .or(z.nan())
+      .optional()
+      .transform((val) => (Number.isNaN(val) ? undefined : val))
+      .pipe(
+        z
+          .number()
+          .int()
+          .min(-1000, "Invalid start year")
+          .max(2100, "Invalid start year")
+          .optional(),
+      ),
     reign_end: z
       .number()
-      .int()
-      .min(-1000, "Invalid end year")
-      .max(2100, "Invalid end year")
-      .optional(),
+      .or(z.nan())
+      .optional()
+      .transform((val) => (Number.isNaN(val) ? undefined : val))
+      .pipe(
+        z
+          .number()
+          .int()
+          .min(-1000, "Invalid end year")
+          .max(2100, "Invalid end year")
+          .optional(),
+      ),
 
     // Physical measurements
     diameter: z
       .number()
-      .min(0.1, "Diameter must be positive")
-      .max(100, "Diameter too large")
-      .optional(),
+      .or(z.nan())
+      .optional()
+      .transform((val) => (Number.isNaN(val) ? undefined : val))
+      .pipe(
+        z
+          .number()
+          .min(0.1, "Diameter must be positive")
+          .max(100, "Diameter too large")
+          .optional(),
+      ),
     mass: z
       .number()
-      .min(0.01, "Mass must be positive")
-      .max(1000, "Mass too large")
-      .optional(),
+      .or(z.nan())
+      .optional()
+      .transform((val) => (Number.isNaN(val) ? undefined : val))
+      .pipe(
+        z
+          .number()
+          .min(0.01, "Mass must be positive")
+          .max(1000, "Mass too large")
+          .optional(),
+      ),
     die_axis: z.string().optional(),
     metal: z.string().min(1, "Metal is required").max(30, "Metal is too long"),
     silver_content: z
       .number()
-      .min(0, "Silver content cannot be negative")
-      .max(100, "Invalid silver content")
-      .optional(),
+      .or(z.nan())
+      .optional()
+      .nullable()
+      .transform((val) => (Number.isNaN(val) ? undefined : val))
+      .pipe(
+        z
+          .number()
+          .min(0, "Silver content cannot be negative")
+          .max(100, "Invalid silver content")
+          .optional(),
+      ),
 
     // Minting information
     mint: z.string().optional(),
     mint_year_earliest: z
       .number()
-      .int()
-      .min(-800, "Invalid mint year")
-      .max(2025, "Invalid mint year")
-      .optional(),
+      .or(z.nan())
+      .optional()
+      .transform((val) => (Number.isNaN(val) ? undefined : val))
+      .pipe(
+        z
+          .number()
+          .int()
+          .min(-800, "Invalid mint year")
+          .max(2025, "Invalid mint year")
+          .optional(),
+      ),
     mint_year_latest: z
       .number()
-      .int()
-      .min(-1000, "Invalid mint year")
-      .max(2100, "Invalid mint year")
-      .optional(),
+      .or(z.nan())
+      .optional()
+      .transform((val) => (Number.isNaN(val) ? undefined : val))
+      .pipe(
+        z
+          .number()
+          .int()
+          .min(-1000, "Invalid mint year")
+          .max(2100, "Invalid mint year")
+          .optional(),
+      ),
 
     // Obverse details
     legend_o: z.string().optional(),
@@ -76,7 +126,12 @@ export const coinFormSchema = z
 
     // Reference
     reference: z.string().optional(),
-    reference_link: z.string().url("Invalid URL").optional(),
+    reference_link: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val))
+      .pipe(z.string().url("Invalid URL").optional()),
 
     // Purchase information
     purchase_type: z
@@ -90,29 +145,74 @@ export const coinFormSchema = z
         "other",
       ])
       .optional(),
-    purchase_date: z.string().optional(),
-    price_aud: z.number().min(0, "Price cannot be negative").optional(),
+    purchase_date: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val))
+      .pipe(
+        z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format")
+          .optional(),
+      ),
+    price_aud: z
+      .number()
+      .or(z.nan())
+      .optional()
+      .transform((val) => (Number.isNaN(val) ? undefined : val))
+      .pipe(z.number().min(0, "Price cannot be negative").optional()),
     price_shipping_aud: z
       .number()
-      .min(0, "Shipping cost cannot be negative")
-      .optional(),
+      .or(z.nan())
+      .optional()
+      .transform((val) => (Number.isNaN(val) ? undefined : val))
+      .pipe(z.number().min(0, "Shipping cost cannot be negative").optional()),
     purchase_vendor: z.string().optional(),
-    purchase_link: z.string().url("Invalid URL").optional(),
+    purchase_link: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val))
+      .pipe(z.string().url("Invalid URL").optional()),
     vendor_grading_notes: z.string().optional(),
 
     // Auction details
     auction_name: z.string().optional(),
     auction_lot: z
       .number()
-      .int()
-      .min(0, "Lot number cannot be negative")
-      .optional(),
+      .or(z.nan())
+      .optional()
+      .transform((val) => (Number.isNaN(val) ? undefined : val))
+      .pipe(
+        z.number().int().min(0, "Lot number cannot be negative").optional(),
+      ),
 
     // Image links
-    image_link_o: z.string().url("Invalid URL").optional(),
-    image_link_r: z.string().url("Invalid URL").optional(),
-    image_link_zoom_o: z.string().url("Invalid URL").optional(),
-    image_link_zoom_r: z.string().url("Invalid URL").optional(),
+    image_link_o: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val))
+      .pipe(z.string().url("Invalid URL").optional()),
+    image_link_r: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val))
+      .pipe(z.string().url("Invalid URL").optional()),
+    image_link_zoom_o: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val))
+      .pipe(z.string().url("Invalid URL").optional()),
+    image_link_zoom_r: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val))
+      .pipe(z.string().url("Invalid URL").optional()),
 
     // Additional information
     flavour_text: z.string().optional(),
