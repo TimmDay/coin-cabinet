@@ -1,34 +1,38 @@
-import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import { coinFormSchema } from "~/lib/validations/coin-form";
-import { ZodError } from "zod";
 import type { PostgrestSingleResponse } from "@supabase/supabase-js";
+import { NextResponse } from "next/server";
+import { ZodError } from "zod";
+import { createServerClient } from "~/lib/supabase-server";
+import { coinFormSchema } from "~/lib/validations/coin-form";
 
 export async function POST(request: Request) {
   try {
-    // Create authenticated Supabase client
-    const cookieStore = cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
-    
+    // Use server client for authenticated requests
+    const supabase = await createServerClient();
+
     // Check authentication
     const {
       data: { session },
-    } = await supabase.auth.getSession()
+    } = await supabase.auth.getSession();
 
     if (!session) {
       return NextResponse.json(
-        { success: false, message: 'Authentication required' },
-        { status: 401 }
-      )
+        { success: false, message: "Authentication required" },
+        { status: 401 },
+      );
     }
 
     // Parse and validate the request body
     const body: unknown = await request.json();
-    console.log("Received request body for somnus collection:", JSON.stringify(body, null, 2));
+    console.log(
+      "Received request body for somnus collection:",
+      JSON.stringify(body, null, 2),
+    );
 
     const validatedData = coinFormSchema.parse(body);
-    console.log("Validated data for somnus collection:", JSON.stringify(validatedData, null, 2));
+    console.log(
+      "Validated data for somnus collection:",
+      JSON.stringify(validatedData, null, 2),
+    );
 
     // Insert the data into somnus_collection table with user_id
     const tableName = "somnus_collection";
@@ -37,7 +41,7 @@ export async function POST(request: Request) {
     // Add user_id to the validated data
     const dataWithUserId = {
       ...validatedData,
-      user_id: session.user.id
+      user_id: session.user.id,
     };
 
     const result: PostgrestSingleResponse<Record<string, unknown>> =

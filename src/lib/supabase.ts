@@ -1,34 +1,54 @@
 /**
  * Supabase Client Utilities
- * 
+ *
  * This file exports the appropriate Supabase client for different contexts:
- * - Client components: Use createClientComponentClient()
- * - API routes: Use createRouteHandlerClient() 
+ * - Client components: Use createBrowserClient()
+ * - Public access: Use createPublicClient()
  * - Middleware: Use createMiddlewareClient()
- * 
- * Each client type is needed for proper authentication context.
+ *
+ * For server-side clients, import createServerClient from server-only files.
  */
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
-import type { NextRequest, NextResponse } from 'next/server'
-import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
+import { createClient } from "@supabase/supabase-js";
 
-// For use in client components (React hooks, event handlers)
-export function getClientComponentSupabase() {
-  return createClientComponentClient()
-}
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-// For use in API routes - requires cookies parameter
-export function getRouteHandlerSupabase(cookies: () => Promise<ReadonlyRequestCookies>) {
-  return createRouteHandlerClient({ cookies })
-}
+// Client-side Supabase client (for browser/React components)
+export const createBrowserClient = () => {
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      flowType: "pkce",
+      autoRefreshToken: true,
+      persistSession: true,
+    },
+  });
+};
 
-// For use in middleware - requires req and res parameters  
-export function getMiddlewareSupabase(req: NextRequest, res: NextResponse) {
-  return createMiddlewareClient({ req, res })
-}
+// Public Supabase client (no authentication, for public data access)
+export const createPublicClient = () => {
+  return createClient(supabaseUrl, supabaseAnonKey);
+};
+
+// Middleware Supabase client (for Next.js middleware with custom cookie handling)
+export const createMiddlewareClient = (cookieString: string) => {
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      flowType: "pkce",
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+      persistSession: false,
+    },
+    global: {
+      headers: {
+        cookie: cookieString,
+      },
+    },
+  });
+};
+
+// Legacy function for backward compatibility
+export const getBrowserSupabase = createBrowserClient;
 
 // Re-export common Supabase types for convenience
-export type { User, Session } from '@supabase/auth-helpers-nextjs'
+export type { Session, User } from "@supabase/supabase-js";
