@@ -65,7 +65,7 @@ export default function AddCoinPage() {
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12 text-center">
           <h1 className="text-5xl font-bold tracking-tight text-slate-200 sm:text-6xl">
-            Add <span className="heading-accent">Coin</span>
+            Add <span className="text-auth-accent">Coin</span>
           </h1>
           <p className="coin-description mt-4 text-xl">
             {user

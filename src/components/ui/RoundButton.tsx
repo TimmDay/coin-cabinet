@@ -17,7 +17,7 @@ export interface RoundButtonProps {
   /**
    * Button color variant
    */
-  variant?: "primary" | "secondary" | "danger";
+  variant?: "primary" | "secondary" | "danger" | "auth";
   /**
    * Whether the button is disabled
    */
@@ -45,6 +45,7 @@ const variantClasses = {
     "bg-slate-600 text-slate-200 hover:bg-slate-500 active:bg-slate-700 focus:ring-slate-500",
   danger:
     "bg-rose-800/80 text-rose-100 hover:bg-rose-700/80 active:bg-rose-900/80 focus:ring-rose-600",
+  auth: "bg-auth-accent text-slate-900 hover:bg-auth-accent/90 active:bg-auth-accent/80 focus:ring-auth-accent",
 };
 
 /**

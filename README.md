@@ -30,7 +30,7 @@ Use kebab-case inside fields (readable and again easy to split).
 
 Where:
 
-- coinId: date of purchase in yyyymmdd format, followed by a single letter a-z corresponding to whatever position it had on the invoice.
+- coinId: date of purchase in yyyymmdd format. If multiple similar coins obtained on the same day, name the filename unique by editing the rootslug.
 - rootSlug: human readable identifier for the coin. Whatever I want to name it (often emperor-denomination). kebab-case.
 - view: one of
   - `o` (obverse),

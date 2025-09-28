@@ -34,6 +34,10 @@
   --accent: 25 55% 45%; /* Warm copper accent */
   --accent-foreground: 210 15% 92%;
 
+  /* Auth accent - Purple accent for auth-related elements */
+  --auth-accent: 273 76% 76%; /* Purple-300 equivalent */
+  --auth-accent-foreground: 210 15% 92%;
+
   /* Destructive - Warm red that fits the palette */
   --destructive: 0 65% 55%;
   --destructive-foreground: 210 15% 92%;
@@ -65,6 +69,23 @@ body {
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
+}
+
+/* Auth accent utility classes */
+.text-auth-accent {
+  color: hsl(var(--auth-accent));
+}
+
+.bg-auth-accent {
+  background-color: hsl(var(--auth-accent));
+}
+
+.bg-auth-accent\/90 {
+  background-color: hsl(var(--auth-accent) / 0.9);
+}
+
+.ring-auth-accent {
+  --tw-ring-color: hsl(var(--auth-accent));
 }
 
 /* Enhanced typography for numismatic content */
