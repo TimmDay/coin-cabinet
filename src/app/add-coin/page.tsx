@@ -50,10 +50,10 @@ export default function AddCoinPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+      <main className="min-h-screen">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
-            <p className="text-xl">Loading...</p>
+            <p className="coin-description text-xl">Loading...</p>
           </div>
         </div>
       </main>
@@ -61,13 +61,13 @@ export default function AddCoinPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+    <main className="min-h-screen">
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12 text-center">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            Add Coin
+          <h1 className="text-5xl font-bold tracking-tight text-slate-200 sm:text-6xl">
+            Add <span className="heading-accent">Coin</span>
           </h1>
-          <p className="mt-4 text-xl text-white">
+          <p className="coin-description mt-4 text-xl">
             {user
               ? "Add a new coin to your collection"
               : "Sign in to add coins to your collection"}
@@ -78,16 +78,16 @@ export default function AddCoinPage() {
           {user ? (
             <CoinForm onSubmit={handleFormSubmit} isLoading={isLoading} />
           ) : (
-            <div className="rounded-lg bg-white/10 p-8 text-center">
-              <h2 className="mb-4 text-2xl font-semibold">
+            <div className="artemis-card p-8 text-center">
+              <h2 className="coin-title mb-4 text-2xl font-semibold">
                 Authentication Required
               </h2>
-              <p className="mb-6 text-lg">
+              <p className="coin-description mb-6 text-lg">
                 Please sign in to add coins to your collection.
               </p>
               <a
                 href="/login"
-                className="inline-block rounded bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
+                className="artemis-button inline-block px-6 py-3 transition-colors"
               >
                 Sign In
               </a>
@@ -95,7 +95,7 @@ export default function AddCoinPage() {
           )}
 
           {message && (
-            <div className="mt-8 rounded-lg bg-white/10 p-4 text-center">
+            <div className="artemis-card mt-8 p-4 text-center">
               <p className="text-lg font-medium">{message}</p>
             </div>
           )}

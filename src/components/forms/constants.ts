@@ -17,17 +17,20 @@ export const denominationOptions = [
 ];
 
 export const authorityOptions = [
-  { value: "King", label: "King" },
-  { value: "Caesar", label: "Caesar" },
   { value: "Augustus", label: "Augustus" },
+  { value: "Caesar", label: "Caesar" },
   { value: "Augusta", label: "Augusta" },
+  { value: "King", label: "King" },
   { value: "Commemorative", label: "Commemorative" },
 ];
 
 export const civilizationOptions = [
-  { value: "Roman Republic", label: "Roman Republic" },
   { value: "Roman Imperial", label: "Roman Imperial" },
+  { value: "Roman Republic", label: "Roman Republic" },
   { value: "Byzantine", label: "Byzantine" },
+  { value: "Persian", label: "Persian" },
+  { value: "Parthian", label: "Parthian" },
+  { value: "Sassanian", label: "Sassanian" },
   {
     value: "Ancient Greece, Kingdom of Macedon",
     label: "Ancient Greece, Kingdom of Macedon",

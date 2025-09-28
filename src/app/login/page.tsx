@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { LoginForm } from '~/components/auth/LoginForm';
-import { useAuth } from '~/components/providers/auth-provider';
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { LoginForm } from "~/components/auth/LoginForm";
+import { useAuth } from "~/components/providers/auth-provider";
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
@@ -12,16 +12,16 @@ export default function LoginPage() {
   useEffect(() => {
     if (user && !loading) {
       // Redirect to admin if already logged in
-      router.push('/admin');
+      router.push("/admin");
     }
   }, [user, loading, router]);
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+      <main className="min-h-screen">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
-            <p className="text-xl">Loading...</p>
+            <p className="coin-description text-xl">Loading...</p>
           </div>
         </div>
       </main>
@@ -30,10 +30,10 @@ export default function LoginPage() {
 
   if (user) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+      <main className="min-h-screen">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
-            <p className="text-xl">Redirecting to admin...</p>
+            <p className="coin-description text-xl">Redirecting to admin...</p>
           </div>
         </div>
       </main>
@@ -41,13 +41,13 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+    <main className="min-h-screen">
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12 text-center">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            Sign In
+          <h1 className="text-5xl font-bold tracking-tight text-slate-200 sm:text-6xl">
+            Sign <span className="heading-accent">In</span>
           </h1>
-          <p className="mt-4 text-xl text-white">
+          <p className="coin-description mt-4 text-xl">
             Sign in to manage your collection
           </p>
         </div>

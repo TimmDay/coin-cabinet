@@ -5,25 +5,123 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+/* Artemis Collection Inspired Color Palette */
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+  /* Primary - Deep slate blue/navy inspired by Artemis */
+  --background: 218 23% 11%;  /* Deep dark blue-gray */
+  --foreground: 210 15% 92%;  /* Warm off-white */
+  
+  /* Cards and surfaces */
+  --card: 217 25% 14%;        /* Slightly lighter than background */
+  --card-foreground: 210 15% 92%;
+  --popover: 217 25% 14%;
+  --popover-foreground: 210 15% 92%;
+  
+  /* Primary accent - Warm bronze/gold inspired by ancient coins */
+  --primary: 36 45% 50%;      /* Rich bronze/gold */
+  --primary-foreground: 217 25% 14%;
+  
+  /* Secondary - Muted blue-gray */
+  --secondary: 216 20% 20%;   /* Medium dark blue-gray */
+  --secondary-foreground: 210 15% 85%;
+  
+  /* Muted elements */
+  --muted: 216 18% 18%;       /* Darker muted background */
+  --muted-foreground: 210 10% 65%; /* Muted text */
+  
+  /* Accent - Warm copper/amber tones */
+  --accent: 25 55% 45%;       /* Warm copper accent */
+  --accent-foreground: 210 15% 92%;
+  
+  /* Destructive - Warm red that fits the palette */
+  --destructive: 0 65% 55%;
+  --destructive-foreground: 210 15% 92%;
+  
+  /* Borders and inputs */
+  --border: 216 15% 25%;      /* Subtle border color */
+  --input: 216 15% 25%;       /* Input background */
+  --ring: 36 45% 50%;         /* Focus ring matches primary */
+  
+  --radius: 0.375rem;         /* Slightly smaller radius for elegance */
+}
+
+/* Light mode override for better coin photo visibility when needed */
+.light-mode {
+  --background: 210 15% 97%;
+  --foreground: 217 25% 14%;
   --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222.2 84% 4.9%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96%;
-  --accent-foreground: 222.2 84% 4.9%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 222.2 84% 4.9%;
-  --radius: 0.5rem;
+  --card-foreground: 217 25% 14%;
+  --border: 216 15% 85%;
+}
+
+/* Custom styles inspired by Artemis Collection */
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Enhanced typography for numismatic content */
+.coin-title {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: hsl(var(--primary));
+}
+
+.heading-accent {
+  color: hsl(var(--primary));
+}
+
+.coin-description {
+  line-height: 1.7;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Elegant card styling */
+.artemis-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+}
+
+.artemis-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+/* Navigation styling to match Artemis aesthetic */
+.artemis-nav {
+  background: hsl(var(--card));
+  border-bottom: 1px solid hsl(var(--border));
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* Button styling inspired by Artemis */
+.artemis-button {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.artemis-button:hover {
+  background: hsl(var(--primary) / 0.9);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.artemis-button-secondary {
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: 1px solid hsl(var(--border));
+}
+
+.artemis-button-secondary:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
 }

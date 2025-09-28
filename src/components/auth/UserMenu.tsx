@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "../providers/auth-provider";
-import { RedRoundButton } from "../ui/RedRoundButton";
+import { RoundButton } from "../ui/RoundButton";
 
 export function UserMenu() {
   const { user, signOut, loading } = useAuth();
@@ -34,8 +34,8 @@ export function UserMenu() {
     return (
       <div className="flex items-center space-x-4">
         <Link
-          href="/cc-admin"
-          className="text-sm text-gray-700 underline hover:text-gray-900"
+          href="/login"
+          className="text-sm text-slate-300 underline transition-colors hover:text-amber-300"
         >
           Admin Login
         </Link>
@@ -45,14 +45,15 @@ export function UserMenu() {
 
   return (
     <div className="flex items-center space-x-4">
-      <span className="text-sm text-gray-700">{user.email}</span>
-      <RedRoundButton
+      <span className="text-sm text-slate-300">{user.email}</span>
+      <RoundButton
         onClick={handleSignOut}
         disabled={isSigningOut}
-        className="px-3 py-1 text-xs"
+        variant="secondary"
+        size="sm"
       >
         {isSigningOut ? "Signing Out..." : "Sign Out"}
-      </RedRoundButton>
+      </RoundButton>
     </div>
   );
 }

@@ -1,16 +1,44 @@
-import CloudinaryImage from "~/components/CloudinaryImage";
+import { CoinCard } from "~/components/ui/CoinCard";
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+    <main className="flex min-h-screen flex-col items-center justify-center">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Coin <span className="text-[hsl(280,100%,70%)]">Cabinet</span>
-        </h1>
+        <div className="text-center space-y-6">
+          <h1 className="text-5xl font-bold tracking-tight text-slate-200 sm:text-6xl lg:text-7xl">
+            The Coin <span className="heading-accent">Cabinet</span>
+          </h1>
+          <p className="text-xl coin-description max-w-2xl mx-auto">
+            A curated collection of ancient coins, combining the art of numismatics 
+            with modern photography and digital presentation.
+          </p>
+        </div>
 
-        <CloudinaryImage />
-        <CloudinaryImage src="1_faustina_II_sestertius_o" />
-        <CloudinaryImage src="1_faustina_II_sestertius_r" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+          <CoinCard
+            title="Featured Coin"
+            description="Explore the details of our latest acquisition"
+          />
+          <CoinCard
+            imageSrc="1_faustina_II_sestertius_o"
+            title="Faustina II"
+            description="Sestertius, obverse view"
+          />
+          <CoinCard
+            imageSrc="1_faustina_II_sestertius_r"
+            title="Faustina II"
+            description="Sestertius, reverse view"
+          />
+        </div>
+        
+        <div className="mt-12 text-center">
+          <p className="coin-description mb-6">
+            Discover the fascinating world of ancient numismatics through our carefully documented collection.
+          </p>
+          <button className="artemis-button px-8 py-3 text-lg font-medium">
+            Explore the Collection
+          </button>
+        </div>
       </div>
     </main>
   );

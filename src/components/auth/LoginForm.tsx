@@ -1,47 +1,50 @@
 "use client";
 
-import { useState } from 'react'
-import { useAuth } from '../providers/auth-provider'
-import { RedRoundButton } from '../ui/RedRoundButton'
+import { useState } from "react";
+import { useAuth } from "../providers/auth-provider";
+import { RoundButton } from "../ui/RoundButton";
 
 export function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isSignUp, setIsSignUp] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState('')
-  
-  const { signIn, signUp } = useAuth()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const { signIn, signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setMessage('')
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
 
     try {
-      const { error } = isSignUp 
+      const { error } = isSignUp
         ? await signUp(email, password)
-        : await signIn(email, password)
+        : await signIn(email, password);
 
       if (error) {
-        setMessage(error.message ?? 'An error occurred')
+        setMessage(error.message ?? "An error occurred");
       } else if (isSignUp) {
-        setMessage('Check your email for the confirmation link!')
+        setMessage("Check your email for the confirmation link!");
       }
     } catch (error: unknown) {
-      setMessage(error instanceof Error ? error.message : 'An unexpected error occurred')
+      setMessage(
+        error instanceof Error ? error.message : "An unexpected error occurred",
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const inputClass = "w-full px-3 py-2 rounded border border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none"
-  const labelClass = "block text-sm font-medium text-white mb-1"
+  const inputClass =
+    "w-full px-3 py-2 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none transition-colors";
+  const labelClass = "block text-sm font-medium text-slate-300 mb-1";
 
   return (
-    <div className="mx-auto w-full max-w-md rounded-lg bg-white/10 p-6 backdrop-blur-sm">
-      <h2 className="mb-6 text-2xl font-bold text-white text-center">
-        {isSignUp ? 'Sign Up' : 'Sign In'}
+    <div className="artemis-card mx-auto w-full max-w-md p-8">
+      <h2 className="coin-title mb-6 text-center text-2xl font-bold">
+        {isSignUp ? "Sign Up" : "Sign In"}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -76,34 +79,36 @@ export function LoginForm() {
         </div>
 
         {message && (
-          <div className={`text-sm p-3 rounded ${
-            message.includes('Check your email') 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-red-100 text-red-800'
-          }`}>
+          <div
+            className={`rounded p-3 text-sm ${
+              message.includes("Check your email")
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            }`}
+          >
             {message}
           </div>
         )}
 
-        <RedRoundButton
+        <RoundButton
           type="submit"
           disabled={loading}
+          variant="primary"
           className="w-full"
         >
-          {loading ? 'Loading...' : (isSignUp ? 'Sign Up' : 'Sign In')}
-        </RedRoundButton>
+          {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+        </RoundButton>
 
         <button
           type="button"
           onClick={() => setIsSignUp(!isSignUp)}
-          className="w-full text-sm text-purple-200 hover:text-purple-100 underline"
+          className="w-full text-sm text-amber-300 underline transition-colors hover:text-amber-200"
         >
-          {isSignUp 
-            ? 'Already have an account? Sign in' 
-            : "Don't have an account? Sign up"
-          }
+          {isSignUp
+            ? "Already have an account? Sign in"
+            : "Don't have an account? Sign up"}
         </button>
       </form>
     </div>
-  )
+  );
 }

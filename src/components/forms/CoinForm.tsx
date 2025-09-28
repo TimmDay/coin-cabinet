@@ -5,7 +5,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { RedRoundButton } from "~/components/ui/RedRoundButton";
+import { RoundButton } from "~/components/ui/RoundButton";
 import { Select } from "~/components/ui/Select";
 import { coinFormSchema, type CoinFormData } from "~/lib/validations/coin-form";
 import {
@@ -46,18 +46,18 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
   };
 
   const inputClass =
-    "w-full px-3 py-2 rounded border border-gray-300 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none";
-  const labelClass = "block text-sm font-medium text-white mb-1";
+    "w-full px-3 py-2 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none transition-colors";
+  const labelClass = "block text-sm font-medium text-slate-300 mb-1";
   const errorClass = "text-red-400 text-sm mt-1";
 
   return (
-    <div className="mx-auto w-full max-w-4xl rounded-lg bg-white/10 p-6 backdrop-blur-sm">
-      <h2 className="mb-6 text-2xl font-bold text-white">Add New Coin</h2>
+    <div className="artemis-card mx-auto w-full max-w-4xl p-8">
+      <h2 className="coin-title mb-6 text-3xl font-bold">Add New Coin</h2>
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
         {/* Basic Information Section */}
         <div className="space-y-4">
-          <h3 className="mb-4 text-lg font-semibold text-purple-300">
+          <h3 className="coin-title mb-4 text-xl font-semibold">
             Basic Information
           </h3>
 
@@ -700,13 +700,15 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
 
         {/* Submit Button */}
         <div className="flex justify-center pt-6">
-          <RedRoundButton
+          <RoundButton
             type="submit"
             disabled={isLoading}
+            variant="primary"
+            size="lg"
             className="min-w-[200px]"
           >
             {isLoading ? "Adding Coin..." : "Add Coin"}
-          </RedRoundButton>
+          </RoundButton>
         </div>
       </form>
     </div>
