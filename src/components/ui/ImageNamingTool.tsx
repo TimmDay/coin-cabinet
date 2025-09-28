@@ -47,18 +47,23 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
   const generateSourceSlug = (vendorName: string): string => {
     if (!vendorName) return "src";
 
-    // Convert vendor name to kebab-case
-    return vendorName
+    // Convert vendor name to kebab-case and prefix with 'src-'
+    const kebabVendor = vendorName
       .toLowerCase()
       .replace(/\s+/g, "-") // Replace spaces with hyphens
       .replace(/[^a-z0-9\-]/g, "") // Remove special characters except hyphens
       .replace(/-+/g, "-") // Replace multiple hyphens with single
       .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
+
+    return `src-${kebabVendor}`;
   };
 
   const coinId = generateCoinId(purchaseDate);
   const rootSlug = generateRootSlug(nickname, denomination);
   const sourceSlug = timTookPhotos ? "src-timmday" : generateSourceSlug(vendor);
+
+  // Check if source is valid (either checkbox checked OR vendor has content)
+  const hasValidSource = timTookPhotos || (vendor && vendor.trim().length > 0);
 
   // Define the seven views as per the schema
   const views = [
@@ -73,7 +78,7 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
 
   // Generate filename for a specific view
   const generateFilename = (view: string): string => {
-    if (!coinId || !rootSlug) return "";
+    if (!coinId || !rootSlug || !hasValidSource) return "";
     return `${coinId}__${rootSlug}__${view}__${sourceSlug}.jpg`;
   };
 
@@ -152,13 +157,16 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
         })}
       </div>
 
-      {(!coinId || !rootSlug) && (
+      {(!coinId || !rootSlug || !hasValidSource) && (
         <div className="mt-4 rounded border border-slate-600 bg-slate-800/50 p-3">
           <p className="text-sm text-slate-400">
             <strong>Missing data:</strong>
             {!coinId && " Purchase Date"}
             {!coinId && !rootSlug && ","}
             {!rootSlug && " Nickname/Denomination"}
+            {(!coinId || !rootSlug) && !hasValidSource && ","}
+            {!hasValidSource &&
+              " Source (either fill Vendor field or check 'Tim took these photos')"}
           </p>
         </div>
       )}

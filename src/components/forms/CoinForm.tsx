@@ -155,24 +155,6 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   <p className={errorClass}>{errors.reign_end.message}</p>
                 )}
               </div>
-
-              <div className="">
-                <label className={labelClass} htmlFor="purchase_date">
-                  Purchase Date
-                </label>
-                <input
-                  {...register("purchase_date")}
-                  id="purchase_date"
-                  type="date"
-                  className={inputClass}
-                  max={new Date().toISOString().split("T")[0]}
-                />
-                {errors.purchase_date && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.purchase_date.message}
-                  </p>
-                )}
-              </div>
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2"></div>
@@ -520,26 +502,44 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               Purchase Information
             </h3>
 
-            <div>
-              <label className={labelClass} htmlFor="purchase_type">
-                Purchase Type
-              </label>
-              <Select
-                {...register("purchase_type")}
-                id="purchase_type"
-                options={[
-                  { value: "auction", label: "Auction" },
-                  { value: "retail", label: "Retail" },
-                  { value: "private", label: "Private Sale" },
-                  { value: "gift", label: "Gift" },
-                  { value: "inheritance", label: "Inheritance" },
-                  { value: "other", label: "Other" },
-                ]}
-                placeholder="Select type"
-              />
-            </div>
-
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label className={labelClass} htmlFor="purchase_date">
+                  Purchase Date
+                </label>
+                <input
+                  {...register("purchase_date")}
+                  id="purchase_date"
+                  type="date"
+                  className={inputClass}
+                  max={new Date().toISOString().split("T")[0]}
+                />
+                {errors.purchase_date && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.purchase_date.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className={labelClass} htmlFor="purchase_type">
+                  Purchase Type
+                </label>
+                <Select
+                  {...register("purchase_type")}
+                  id="purchase_type"
+                  options={[
+                    { value: "auction", label: "Auction" },
+                    { value: "retail", label: "Retail" },
+                    { value: "private", label: "Private Sale" },
+                    { value: "gift", label: "Gift" },
+                    { value: "inheritance", label: "Inheritance" },
+                    { value: "other", label: "Other" },
+                  ]}
+                  placeholder="Select type"
+                />
+              </div>
+
               <div>
                 <label className={labelClass} htmlFor="price_aud">
                   Price (AUD)
