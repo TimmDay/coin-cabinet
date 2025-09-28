@@ -40,6 +40,7 @@ Where:
   - `sketch-o` (line drawing of obverse),
   - `sketch-r` (line drawing of reverse),
   - `rotation-<degree>` (image showing the coin rotated to a certain degree, eg 45, 90, 180)
-- `src-<source>`: where the image came from. If it is `src-tim` it is fine to use. If it is src-something else (i.e. src-numisbids, src-vcoins, src-acsearch etc) then it may be copyrighted and needing permission.
+- `src-<source>`: where the image came from. If it is `src-timmday` it is from Tim and fine to use without credit. When it is src-something else (where something else should be the original vendor who took the photo, not an aggregator like biddr or vcoins) then a photo credit in the UI should be given when displaying the image. Use this vendor name and the date to generate the credit
+  (i.e. src-imperial-numismatics, src-the-coin-cabinet etc)
 
 I have made a tool at the base of the add coin page (auth users only), that will generate a file name from the entered data that you can copy/paste to rename old files so they match up as you add them to the db.

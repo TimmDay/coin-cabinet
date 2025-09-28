@@ -32,7 +32,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
     resolver: zodResolver(coinFormSchema) as any,
     defaultValues: {
       purchase_type: "auction",
-      purchase_date: `${new Date().getFullYear()}-01-01`,
+      purchase_date: new Date().toISOString().split("T")[0],
     },
   });
 

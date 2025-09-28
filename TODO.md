@@ -18,6 +18,8 @@
 ## images
 
 - [ ] collect all the coin images I have into a folder. Back it up in gdrive.
+- [ ] find a way to quickly split one image into two
+- [ ] or alternatively, upload them a side by sides, and split them in the FE when needed? (bigger payload but FE trickery)
 - [ ] Upload any decent coin photos (suffixed with -o, -r, -zoom_o, -zoom_r and with appropriate quality).
 - [ ] Learn how to bulk remove the background (transparent) of coin images on bulk upload to cloudinary...
 - [ ] then download them all and backup to gdrive
@@ -35,6 +37,7 @@
 - [ ] Config: review Supabase auth. Is it secure, how can I hide it from normal visitor UI.
 - [ ] what is drizzle and how should I use it?
 - [ ] consider site functionality going forward. Will a regular visitor ever need to login (ie maintain their own collection?)
+- [ ] have sign in using google instead of (in addition to?) user/pass. MFA etc.
 
 ## components
 
@@ -62,13 +65,11 @@
 
 ## site styles
 
-- [ ] config tailwind + site theme.
-- [ ] style up the default page titles
-- [ ] style up the header and menus
-- [ ] include dummy site logo image
 - [ ] style up the menus
 - [ ] work out how responsive / breakpoints is going to work.
 - [ ] work out decent mobile design
+- [ ] go deep on the color scheme. simplify and clean.
+- [ ] AI STUCK: on add-coin page, make it so the image naming tool position stickies with the top of the form, so it stickies to the top of viewport only if the scroll goes passed that point.
 
 ## features product
 

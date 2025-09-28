@@ -11,11 +11,13 @@ interface ImageNamingToolProps {
 
 export function ImageNamingTool({ watch }: ImageNamingToolProps) {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false);
 
   // Watch relevant form fields
   const nickname = watch("nickname") ?? "";
   const denomination = watch("denomination") ?? "";
   const purchaseDate = watch("purchase_date") ?? "";
+  const vendor = watch("purchase_vendor") ?? "";
 
   // Generate coinId from purchase date
   const generateCoinId = (date: string): string => {
@@ -41,8 +43,22 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
       .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
   };
 
+  // Generate source slug from vendor field
+  const generateSourceSlug = (vendorName: string): string => {
+    if (!vendorName) return "src";
+
+    // Convert vendor name to kebab-case
+    return vendorName
+      .toLowerCase()
+      .replace(/\s+/g, "-") // Replace spaces with hyphens
+      .replace(/[^a-z0-9\-]/g, "") // Remove special characters except hyphens
+      .replace(/-+/g, "-") // Replace multiple hyphens with single
+      .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
+  };
+
   const coinId = generateCoinId(purchaseDate);
   const rootSlug = generateRootSlug(nickname, denomination);
+  const sourceSlug = timTookPhotos ? "src-timmday" : generateSourceSlug(vendor);
 
   // Define the seven views as per the schema
   const views = [
@@ -58,7 +74,7 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
   // Generate filename for a specific view
   const generateFilename = (view: string): string => {
     if (!coinId || !rootSlug) return "";
-    return `${coinId}__${rootSlug}__${view}__src-tim.jpg`;
+    return `${coinId}__${rootSlug}__${view}__${sourceSlug}.jpg`;
   };
 
   // Copy to clipboard function
@@ -79,6 +95,20 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
       <h3 className="text-auth-accent mb-4 text-xl font-semibold">
         Image File Naming Tool
       </h3>
+
+      {/* Tim took photos checkbox */}
+      <div className="mb-4">
+        <label className="flex items-center gap-2 text-sm text-slate-300">
+          <input
+            type="checkbox"
+            checked={timTookPhotos}
+            onChange={(e) => setTimTookPhotos(e.target.checked)}
+            className="text-auth-accent focus:ring-auth-accent rounded border-slate-600 bg-slate-800/50 focus:ring-offset-slate-800"
+          />
+          Tim took these photos
+        </label>
+      </div>
+
       <p className="coin-description mb-6 text-sm">
         Check the source is honest for copyright
       </p>
