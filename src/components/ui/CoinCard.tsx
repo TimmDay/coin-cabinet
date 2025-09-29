@@ -1,19 +1,37 @@
 import CloudinaryImage from "~/components/CloudinaryImage";
 
-interface CoinCardProps {
+interface GridCoinCardProps {
   /** Cloudinary image source */
   imageSrc?: string;
   /** Coin title */
   title: string;
   /** Coin description */
   description: string;
+  /** Click handler for opening modal */
+  onClick?: () => void;
 }
 
-export function CoinCard({ imageSrc, title, description }: CoinCardProps) {
+export function GridCoinCard({
+  imageSrc,
+  title,
+  description,
+  onClick,
+}: GridCoinCardProps) {
+  const handleClick = () => {
+    onClick?.();
+  };
+
   return (
     <div
-      className="group text-center transition-all duration-300 outline-none"
+      className="group cursor-pointer text-center transition-all duration-300 outline-none"
       tabIndex={0}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
     >
       <div className="flex justify-center transition-transform duration-300 group-focus-within:scale-110 group-hover:scale-110">
         <CloudinaryImage src={imageSrc} />

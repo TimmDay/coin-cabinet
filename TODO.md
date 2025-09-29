@@ -18,8 +18,17 @@
 ## images
 
 - [ ] collect all the coin images I have into a folder. Back it up in gdrive.
-- [ ] find a way to quickly split one image into two
-- [ ] or alternatively, upload them a side by sides, and split them in the FE when needed? (bigger payload but FE trickery)
+- [ ] CLOUDINARY CLI TUTORIAL
+  - find a way to quickly split one image into two on upload
+  - find a way to remove bg on upload
+  - find a way to trim image size to main content after removing bg
+  - find a way to do all that in bulk
+
+- [ ] onsider image storage. split into o + r or as single image?
+  - upload them a side by sides, and split them in the FE when needed? (bigger payload but FE trickery)
+  - BUT mobile design. single side images will be easier to stack. Also easier to lay out content relative to both images (since we cant align to width within the image.)
+
+- [ ] also make sure images are trimmed right to the edge (so the edge of coin is edge of image). Will help with aligning web content,
 - [ ] Upload any decent coin photos (suffixed with -o, -r, -zoom_o, -zoom_r and with appropriate quality).
 - [ ] Learn how to bulk remove the background (transparent) of coin images on bulk upload to cloudinary...
 - [ ] then download them all and backup to gdrive
@@ -55,9 +64,8 @@
   - expanded info, inc flavour text, dims, expanded legends, comparison sketches
   - expanded map showing the Mint and nearest cities
 
-- [ ] breadcrumb component. create up style it up
-
-- [ ] footer component
+- [x] breadcrumb component. create up style it up
+- [x] footer component
 
 - [ ] GridCard component (currently CoinCard). attach click handler, work out how I am going to serve the coin detail screen/card/overlay
 
@@ -65,7 +73,7 @@
 
 ## site styles
 
-- [ ] style up the menus
+- [x] style up the menus
 - [ ] work out how responsive / breakpoints is going to work.
 - [ ] work out decent mobile design
 - [ ] go deep on the color scheme. simplify and clean.
@@ -76,6 +84,7 @@
 - [ ] site logo - create a beautiful one. Somnus or something related. Maybe Gordy boy?
 
 - [ ] a (free to use) map of the roman empire area. Zoomable, pannable.
+  - [ ] needs it's own page/route
   - [ ] with a layer with province boundaries at Severan time (can make other layers for other times later)
   - [ ] lat/lngs from Mints table can cause pins to show on the map in the right place
 
