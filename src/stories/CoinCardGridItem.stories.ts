@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import { CoinCardGridItem } from "../components/ui/CoinCardGridItem";
 
 const meta: Meta<typeof CoinCardGridItem> = {
