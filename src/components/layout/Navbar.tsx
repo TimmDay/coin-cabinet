@@ -191,7 +191,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="somnus-nav relative flex h-48 flex-col justify-end px-4 shadow-sm sm:px-6 lg:px-8"
+      className="somnus-nav relative flex h-48 flex-col justify-end px-4 sm:px-6 lg:px-8"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -229,10 +229,10 @@ export default function Navbar() {
               onClick={handleCoinCabinetClick}
               onKeyDown={handleKeyDown}
               className={cn(
-                "inline-flex items-center border-b-2 px-1 pt-1 text-base font-medium transition-colors duration-200",
+                "inline-flex items-center border-b-2 px-1 pt-1 text-base font-normal transition-colors duration-200",
                 isActive
-                  ? "border-transparent text-slate-600"
-                  : "hover:border-primary/50 hover:text-primary/80 border-transparent text-slate-300",
+                  ? "border-transparent text-slate-500"
+                  : "hover:border-primary/50 border-transparent text-slate-300 hover:text-slate-500",
               )}
               aria-expanded={isDropdownOpen}
               aria-haspopup="menu"
@@ -260,7 +260,7 @@ export default function Navbar() {
                     <div key={item.name} className="relative">
                       {item.hasSubmenu ? (
                         <div
-                          className="flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-base font-medium whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                          className="flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
                           onMouseEnter={() =>
                             handleSubmenuEnter(item.name as SubmenuTypes)
                           }
@@ -287,7 +287,7 @@ export default function Navbar() {
                       ) : (
                         <NextLink
                           href={item.href}
-                          className="flex items-center justify-between rounded-md px-3 py-2 text-base font-medium whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                          className="flex items-center justify-between rounded-md px-3 py-2 text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
                           onClick={() => setIsDropdownOpen(false)}
                           role="menuitem"
                           tabIndex={0}
@@ -310,7 +310,7 @@ export default function Navbar() {
                             {getSubmenuItems(item.name).map((submenuItem) => (
                               <div
                                 key={submenuItem.name}
-                                className="block cursor-pointer rounded-md px-3 py-2 text-base font-medium whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                                className="block cursor-pointer rounded-md px-3 py-2 text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
                                 onClick={() => {
                                   router.push(submenuItem.href);
                                   setIsDropdownOpen(false);

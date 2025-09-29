@@ -69,6 +69,20 @@ body {
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure no unwanted borders or margins */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+main {
+  border: none;
+  outline: none;
 }
 
 /* Auth accent utility classes */
@@ -125,7 +139,6 @@ body {
 /* Navigation styling to match Somnus aesthetic */
 .somnus-nav {
   background: hsl(var(--card));
-  border-bottom: 1px solid hsl(var(--border));
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
