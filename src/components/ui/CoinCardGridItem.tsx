@@ -59,7 +59,7 @@ export function CoinCardGridItem({
 
   return (
     <div
-      className="group cursor-pointer text-center transition-all duration-300 outline-none"
+      className="group w-fit cursor-pointer text-center transition-all duration-300 outline-none"
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={(e) => {
@@ -84,12 +84,14 @@ export function CoinCardGridItem({
           </div>
         )}
       </div>
-      <div className="mt-4 opacity-0 transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100">
-        <p className="text-sm text-slate-300">
-          {civ.toUpperCase()}. {nickname && `${nickname} `}
-          {denomination}
+      <div className="mt-4 flex w-0 min-w-full flex-col items-center opacity-0 transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100">
+        <p className="text-sm whitespace-nowrap text-slate-300">
+          {civ.toUpperCase()}
+          {nickname && `. ${nickname}`}
         </p>
-        <p className="text-sm text-slate-300">{formatMintYearRange()}</p>
+        <p className="text-sm whitespace-nowrap text-slate-300">
+          {denomination} {formatMintYearRange()}
+        </p>
       </div>
     </div>
   );

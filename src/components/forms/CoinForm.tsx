@@ -31,7 +31,6 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
   } = useForm<CoinFormData>({
     resolver: zodResolver(coinFormSchema) as any,
     defaultValues: {
-      purchase_type: "auction",
       purchase_date: new Date().toISOString().split("T")[0],
     },
   });
@@ -523,7 +522,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
 
               <div>
                 <label className={labelClass} htmlFor="purchase_type">
-                  Purchase Type
+                  Purchase Type*
                 </label>
                 <Select
                   {...register("purchase_type")}
@@ -537,6 +536,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                     { value: "other", label: "Other" },
                   ]}
                   placeholder="Select type"
+                  error={errors.purchase_type?.message}
                 />
               </div>
 

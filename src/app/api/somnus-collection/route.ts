@@ -3,16 +3,20 @@ import { createClient } from "~/lib/supabase-server";
 
 export async function GET() {
   try {
-    console.log("🚀 GET /api/somnus-collection - Fetching coins (public access)");
+    console.log(
+      "🚀 GET /api/somnus-collection - Fetching coins (public access)",
+    );
 
     // Use server client but don't require authentication for GET
     const supabase = await createClient();
 
-    // Fetch somnus coins (public access - no auth required)
+    // Fetch somnus coins with obverse images, sorted by earliest mint year (public access - no auth required)
     const { data, error } = await supabase
       .from("somnus_collection")
       .select("*")
-      .order("created_at", { ascending: false });
+      .not("image_link_o", "is", null)
+      .neq("image_link_o", "")
+      .order("mint_year_earliest", { ascending: true, nullsFirst: false });
 
     if (error) {
       console.error("Supabase error:", error);
@@ -26,7 +30,7 @@ export async function GET() {
       );
     }
 
-    console.log(`📋 Found ${data.length} coins in collection`);
+    console.log(`📋 Found ${data.length} coins with obverse images`);
     return NextResponse.json({
       success: true,
       data,

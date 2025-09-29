@@ -134,8 +134,8 @@ export const coinFormSchema = z
       .pipe(z.string().url("Invalid URL").optional()),
 
     // Purchase information
-    purchase_type: z
-      .enum([
+    purchase_type: z.enum(
+      [
         "auction",
         "auction aftermarket",
         "retail",
@@ -143,8 +143,12 @@ export const coinFormSchema = z
         "gift",
         "inheritance",
         "other",
-      ])
-      .optional(),
+      ],
+      {
+        required_error: "Purchase type is required",
+        invalid_type_error: "Please select a valid purchase type",
+      },
+    ),
     purchase_date: z
       .string()
       .optional()

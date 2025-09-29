@@ -12,12 +12,13 @@ export function CoinGrid() {
     focusTarget: "previous" | "next" | null;
   }>({ isOpen: false, currentIndex: 0, focusTarget: null });
 
-  // Fetch coins from database and filter out those missing obverse images
-  const { data: allCoins, isLoading, error } = useSomnusCoins();
-  const coins =
-    allCoins?.filter(
-      (coin) => coin.image_link_o && coin.image_link_o.trim() !== "",
-    ) ?? [];
+  const [viewMode, setViewMode] = useState<"obverse" | "reverse" | "both">(
+    "obverse",
+  );
+
+  // Fetch coins from database (already filtered for obverse images at DB level)
+  const { data: coins, isLoading, error } = useSomnusCoins();
+  const coinsList = coins ?? [];
 
   const openModal = (index: number) => {
     setModalState({ isOpen: true, currentIndex: index, focusTarget: null });
@@ -39,7 +40,7 @@ export function CoinGrid() {
     setModalState((prev) => ({
       ...prev,
       currentIndex:
-        prev.currentIndex === 0 ? coins.length - 1 : prev.currentIndex - 1,
+        prev.currentIndex === 0 ? coinsList.length - 1 : prev.currentIndex - 1,
       focusTarget: "previous",
     }));
   };
@@ -48,12 +49,12 @@ export function CoinGrid() {
     setModalState((prev) => ({
       ...prev,
       currentIndex:
-        prev.currentIndex === coins.length - 1 ? 0 : prev.currentIndex + 1,
+        prev.currentIndex === coinsList.length - 1 ? 0 : prev.currentIndex + 1,
       focusTarget: "next",
     }));
   };
 
-  const currentCoin = coins[modalState.currentIndex];
+  const currentCoin = coinsList[modalState.currentIndex];
 
   // Handle loading state
   if (isLoading) {
@@ -77,7 +78,7 @@ export function CoinGrid() {
   }
 
   // Handle empty state
-  if (coins.length === 0) {
+  if (coinsList.length === 0) {
     return (
       <div className="mt-12 flex justify-center">
         <div className="text-slate-400">
@@ -89,8 +90,55 @@ export function CoinGrid() {
 
   return (
     <>
-      <div className="mt-12 grid grid-cols-1 gap-12 md:grid-cols-2 xl:grid-cols-3">
-        {coins.map((coin, index) => (
+      {/* View Mode Controls */}
+      <div className="mt-6 flex justify-center">
+        <div className="flex items-center gap-6 rounded-lg bg-slate-800/30 px-4 py-2 backdrop-blur-sm">
+          <label className="flex cursor-pointer items-center gap-2">
+            <input
+              type="radio"
+              name="viewMode"
+              value="obverse"
+              checked={viewMode === "obverse"}
+              onChange={(e) =>
+                setViewMode(e.target.value as "obverse" | "reverse" | "both")
+              }
+              className="h-4 w-4 border-slate-600 bg-slate-700 text-amber-400 focus:ring-amber-400 focus:ring-offset-slate-800"
+            />
+            <span className="text-sm text-slate-300">Obverse</span>
+          </label>
+
+          <label className="flex cursor-pointer items-center gap-2">
+            <input
+              type="radio"
+              name="viewMode"
+              value="reverse"
+              checked={viewMode === "reverse"}
+              onChange={(e) =>
+                setViewMode(e.target.value as "obverse" | "reverse" | "both")
+              }
+              className="h-4 w-4 border-slate-600 bg-slate-700 text-amber-400 focus:ring-amber-400 focus:ring-offset-slate-800"
+            />
+            <span className="text-sm text-slate-300">Reverse</span>
+          </label>
+
+          <label className="flex cursor-pointer items-center gap-2">
+            <input
+              type="radio"
+              name="viewMode"
+              value="both"
+              checked={viewMode === "both"}
+              onChange={(e) =>
+                setViewMode(e.target.value as "obverse" | "reverse" | "both")
+              }
+              className="h-4 w-4 border-slate-600 bg-slate-700 text-amber-400 focus:ring-amber-400 focus:ring-offset-slate-800"
+            />
+            <span className="text-sm text-slate-300">Both</span>
+          </label>
+        </div>
+      </div>
+
+      <div className="mt-8 flex flex-wrap justify-center gap-x-12 gap-y-6">
+        {coinsList.map((coin, index) => (
           <CoinCardGridItem
             key={coin.id || index}
             civ={coin.civ}
@@ -100,6 +148,7 @@ export function CoinGrid() {
             mintYearLatest={coin.mint_year_latest}
             obverseImageId={coin.image_link_o}
             reverseImageId={coin.image_link_r}
+            view={viewMode}
             onClick={() => openModal(index)}
           />
         ))}
