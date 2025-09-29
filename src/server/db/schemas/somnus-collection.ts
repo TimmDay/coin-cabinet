@@ -78,11 +78,10 @@ export const somnus_collection = pgTable(
   (t) => [
     index("somnus_collection_user_id_idx").on(t.user_id),
     index("somnus_collection_nickname_idx").on(t.nickname),
-    index("somnus_collection_authority_idx").on(t.authority),
     index("somnus_collection_denomination_idx").on(t.denomination),
     index("somnus_collection_civ_idx").on(t.civ),
-    index("somnus_collection_metal_idx").on(t.metal),
     index("somnus_collection_mint_idx").on(t.mint),
+    index("somnus_collection_mint_year_earliest_idx").on(t.mint_year_earliest),
     index("somnus_collection_purchase_date_idx").on(t.purchase_date),
     index("somnus_collection_created_at_idx").on(t.created_at),
   ],
