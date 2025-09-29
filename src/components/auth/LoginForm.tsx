@@ -42,7 +42,7 @@ export function LoginForm() {
   const labelClass = "block text-sm font-medium text-slate-300 mb-1";
 
   return (
-    <div className="artemis-card mx-auto w-full max-w-md p-8">
+    <div className="somnus-card mx-auto w-full max-w-md p-8">
       <h2 className="coin-title mb-6 text-center text-2xl font-bold">
         {isSignUp ? "Sign Up" : "Sign In"}
       </h2>

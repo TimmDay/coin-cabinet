@@ -36,7 +36,7 @@ export default function HomePage() {
             Discover the fascinating world of ancient numismatics through our
             carefully documented collection.
           </p>
-          <button className="artemis-button px-8 py-3 text-lg font-medium">
+          <button className="somnus-button px-8 py-3 text-lg font-medium">
             Explore the Collection
           </button>
         </div>

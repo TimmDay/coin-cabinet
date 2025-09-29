@@ -6,9 +6,9 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-/* Artemis Collection Inspired Color Palette */
+/* Somnus Collection Inspired Color Palette */
 :root {
-  /* Primary - Deep slate blue/navy inspired by Artemis */
+  /* Primary - Deep slate blue/navy inspired by Somnus */
   --background: 218 23% 11%; /* Deep dark blue-gray */
   --foreground: 210 15% 92%; /* Warm off-white */
 
@@ -59,7 +59,7 @@
   --border: 216 15% 85%;
 }
 
-/* Custom styles inspired by Artemis Collection */
+/* Custom styles inspired by Somnus Collection */
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
@@ -105,7 +105,7 @@ body {
 }
 
 /* Elegant card styling */
-.artemis-card {
+.somnus-card {
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
@@ -115,23 +115,23 @@ body {
   transition: all 0.2s ease;
 }
 
-.artemis-card:hover {
+.somnus-card:hover {
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border-color: hsl(var(--primary) / 0.3);
 }
 
-/* Navigation styling to match Artemis aesthetic */
-.artemis-nav {
+/* Navigation styling to match Somnus aesthetic */
+.somnus-nav {
   background: hsl(var(--card));
   border-bottom: 1px solid hsl(var(--border));
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 
-/* Button styling inspired by Artemis */
-.artemis-button {
+/* Button styling inspired by Somnus */
+.somnus-button {
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   border: none;
@@ -140,18 +140,18 @@ body {
   transition: all 0.2s ease;
 }
 
-.artemis-button:hover {
+.somnus-button:hover {
   background: hsl(var(--primary) / 0.9);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.artemis-button-secondary {
+.somnus-button-secondary {
   background: hsl(var(--secondary));
   color: hsl(var(--secondary-foreground));
   border: 1px solid hsl(var(--border));
 }
 
-.artemis-button-secondary:hover {
+.somnus-button-secondary:hover {
   background: hsl(var(--accent));
   color: hsl(var(--accent-foreground));
 }

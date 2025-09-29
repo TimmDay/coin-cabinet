@@ -57,7 +57,7 @@ export default function AdminPage() {
         <div className="flex flex-col items-center gap-8">
           {/* Add Fruit Form - Only show for authenticated users */}
           {user && (
-            <div className="artemis-card p-6">
+            <div className="somnus-card p-6">
               <h2 className="coin-title mb-4 text-xl">Add New Fruit</h2>
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <input
@@ -71,7 +71,7 @@ export default function AdminPage() {
                 <button
                   type="submit"
                   disabled={addFruitMutation.isPending}
-                  className="artemis-button px-4 py-2 disabled:opacity-50"
+                  className="somnus-button px-4 py-2 disabled:opacity-50"
                 >
                   {addFruitMutation.isPending ? "Adding..." : "Add Fruit"}
                 </button>

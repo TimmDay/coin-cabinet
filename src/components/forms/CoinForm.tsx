@@ -56,7 +56,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
   return (
     <div className="relative">
       {/* Main centered form */}
-      <div className="artemis-card mx-auto w-full max-w-4xl p-8">
+      <div className="somnus-card mx-auto w-full max-w-4xl p-8">
         <h2 className="mb-6 text-3xl font-bold">
           <span className="text-auth-accent">Add New Coin</span>
         </h2>

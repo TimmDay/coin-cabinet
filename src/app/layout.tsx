@@ -1,6 +1,7 @@
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import Navbar from "~/components/layout/Navbar";
+import { PageWrapper } from "~/components/layout/PageWrapper";
 import { AuthProvider } from "~/components/providers/auth-provider";
 import { ReactQueryProvider } from "~/components/providers/react-query-provider";
 import "~/styles/globals.css";
@@ -25,7 +26,7 @@ export default function RootLayout({
         <AuthProvider>
           <ReactQueryProvider>
             <Navbar />
-            {children}
+            <PageWrapper>{children}</PageWrapper>
           </ReactQueryProvider>
         </AuthProvider>
       </body>

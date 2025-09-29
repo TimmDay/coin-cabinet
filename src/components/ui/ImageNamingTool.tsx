@@ -96,7 +96,7 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
   // Always show the tool for better user feedback
 
   return (
-    <div className="artemis-card p-6">
+    <div className="somnus-card p-6">
       <h3 className="text-auth-accent mb-4 text-xl font-semibold">
         Image File Naming Tool
       </h3>
