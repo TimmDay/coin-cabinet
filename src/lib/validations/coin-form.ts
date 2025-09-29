@@ -194,25 +194,25 @@ export const coinFormSchema = z
       .optional()
       .or(z.literal(""))
       .transform((val) => (val === "" ? undefined : val))
-      .pipe(z.string().url("Invalid URL").optional()),
+      .pipe(z.string().optional()),
     image_link_r: z
       .string()
       .optional()
       .or(z.literal(""))
       .transform((val) => (val === "" ? undefined : val))
-      .pipe(z.string().url("Invalid URL").optional()),
+      .pipe(z.string().optional()),
     image_link_zoom_o: z
       .string()
       .optional()
       .or(z.literal(""))
       .transform((val) => (val === "" ? undefined : val))
-      .pipe(z.string().url("Invalid URL").optional()),
+      .pipe(z.string().optional()),
     image_link_zoom_r: z
       .string()
       .optional()
       .or(z.literal(""))
       .transform((val) => (val === "" ? undefined : val))
-      .pipe(z.string().url("Invalid URL").optional()),
+      .pipe(z.string().optional()),
 
     // Additional information
     flavour_text: z.string().optional(),

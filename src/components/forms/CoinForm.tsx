@@ -377,14 +377,14 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
 
                 <div>
                   <label className={labelClass} htmlFor="image_link_o">
-                    Obverse Image Link
+                    Obverse Image Id
                   </label>
                   <input
                     {...register("image_link_o")}
                     id="image_link_o"
-                    type="url"
+                    type="text"
                     className={inputClass}
-                    placeholder="e.g., https://example.com/obverse.jpg"
+                    placeholder="e.g., marcus_aurelius_sestertius_o"
                   />
                   {errors.image_link_o && (
                     <p className="mt-1 text-sm text-red-500">
@@ -395,14 +395,14 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
 
                 <div>
                   <label className={labelClass} htmlFor="image_link_zoom_o">
-                    Obverse Zoom Image Link
+                    Obverse Zoom Image Id
                   </label>
                   <input
                     {...register("image_link_zoom_o")}
                     id="image_link_zoom_o"
-                    type="url"
+                    type="text"
                     className={inputClass}
-                    placeholder="e.g., https://example.com/obverse-zoom.jpg"
+                    placeholder="e.g., marcus_aurelius_sestertius_zoom_o"
                   />
                   {errors.image_link_zoom_o && (
                     <p className="mt-1 text-sm text-red-500">
@@ -445,14 +445,14 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
 
                 <div>
                   <label className={labelClass} htmlFor="image_link_r">
-                    Reverse Image Link
+                    Reverse Image Id
                   </label>
                   <input
                     {...register("image_link_r")}
                     id="image_link_r"
-                    type="url"
+                    type="text"
                     className={inputClass}
-                    placeholder="e.g., https://example.com/reverse.jpg"
+                    placeholder="e.g., marcus_aurelius_sestertius_r"
                   />
                   {errors.image_link_r && (
                     <p className="mt-1 text-sm text-red-500">
@@ -463,14 +463,14 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
 
                 <div>
                   <label className={labelClass} htmlFor="image_link_zoom_r">
-                    Reverse Zoom Image Link
+                    Reverse Zoom Image Id
                   </label>
                   <input
                     {...register("image_link_zoom_r")}
                     id="image_link_zoom_r"
-                    type="url"
+                    type="text"
                     className={inputClass}
-                    placeholder="e.g., https://example.com/reverse-zoom.jpg"
+                    placeholder="e.g., marcus_aurelius_sestertius_zoom_r"
                   />
                   {errors.image_link_zoom_r && (
                     <p className="mt-1 text-sm text-red-500">

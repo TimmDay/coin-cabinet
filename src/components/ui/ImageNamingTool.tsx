@@ -79,7 +79,7 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
   // Generate filename for a specific view
   const generateFilename = (view: string): string => {
     if (!coinId || !rootSlug || !hasValidSource) return "";
-    return `${coinId}__${rootSlug}__${view}__${sourceSlug}.jpg`;
+    return `${coinId}__${rootSlug}__${view}__${sourceSlug}`;
   };
 
   // Copy to clipboard function
@@ -98,7 +98,7 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
   return (
     <div className="somnus-card p-6">
       <h3 className="text-auth-accent mb-4 text-xl font-semibold">
-        Image File Naming Tool
+        Image Id Generator
       </h3>
 
       {/* Tim took photos checkbox */}
@@ -134,7 +134,7 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
                   readOnly
                   className="flex-1 rounded border border-slate-600 bg-slate-800/30 px-3 py-2 text-sm text-slate-300 focus:outline-none"
                   placeholder={
-                    filename ? "" : "Fill in form fields to generate filename"
+                    filename ? "" : "Fill in form fields to generate image id"
                   }
                 />
                 <RoundButton
