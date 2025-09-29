@@ -73,14 +73,14 @@ export function CoinCardGridItem({
         {/* Obverse Image */}
         {(view === "obverse" || view === "both") && (
           <div className="flex-shrink-0">
-            <CloudinaryImage src={obverseImageId || undefined} />
+            <CloudinaryImage src={obverseImageId ?? undefined} />
           </div>
         )}
 
         {/* Reverse Image */}
         {(view === "reverse" || view === "both") && (
           <div className="flex-shrink-0">
-            <CloudinaryImage src={reverseImageId || undefined} />
+            <CloudinaryImage src={reverseImageId ?? undefined} />
           </div>
         )}
       </div>

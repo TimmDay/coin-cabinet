@@ -17,7 +17,7 @@ export function CoinGrid() {
   const coins =
     allCoins?.filter(
       (coin) => coin.image_link_o && coin.image_link_o.trim() !== "",
-    ) || [];
+    ) ?? [];
 
   const openModal = (index: number) => {
     setModalState({ isOpen: true, currentIndex: index, focusTarget: null });
@@ -109,10 +109,10 @@ export function CoinGrid() {
         isOpen={modalState.isOpen}
         onClose={closeModal}
         imageSrc={
-          currentCoin?.image_link_o || currentCoin?.image_link_r || undefined
+          currentCoin?.image_link_o ?? currentCoin?.image_link_r ?? undefined
         }
-        title={`${currentCoin?.nickname || ""} ${currentCoin?.denomination || ""}`.trim()}
-        description={`${currentCoin?.civ || ""} coin`}
+        title={`${currentCoin?.nickname ?? ""} ${currentCoin?.denomination ?? ""}`.trim()}
+        description={`${currentCoin?.civ ?? ""} coin`}
         onPrevious={handlePreviousWithFocus}
         onNext={handleNextWithFocus}
         currentIndex={modalState.currentIndex}
