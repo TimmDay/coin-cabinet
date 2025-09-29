@@ -4,9 +4,9 @@ import { usePathname } from "next/navigation";
 import { Footer } from "~/components/layout/Footer";
 import { Breadcrumb } from "~/components/ui/Breadcrumb";
 
-interface PageWrapperProps {
+type PageWrapperProps = {
   children: React.ReactNode;
-}
+};
 
 export function PageWrapper({ children }: PageWrapperProps) {
   const pathname = usePathname();

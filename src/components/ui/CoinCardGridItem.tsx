@@ -1,6 +1,6 @@
 import CloudinaryImage from "~/components/CloudinaryImage";
 
-interface GridCoinCardProps {
+type CoinCardGridItemProps = {
   /** Cloudinary image source */
   imageSrc?: string;
   /** Coin title */
@@ -9,14 +9,14 @@ interface GridCoinCardProps {
   description: string;
   /** Click handler for opening modal */
   onClick?: () => void;
-}
+};
 
-export function GridCoinCard({
+export function CoinCardGridItem({
   imageSrc,
   title,
   description,
   onClick,
-}: GridCoinCardProps) {
+}: CoinCardGridItemProps) {
   const handleClick = () => {
     onClick?.();
   };

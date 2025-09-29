@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "~/lib/utils";
 
-export interface RoundButtonProps {
+export type RoundButtonProps = {
   /**
    * The content to display inside the button
    */

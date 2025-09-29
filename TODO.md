@@ -66,8 +66,10 @@
 
 - [x] breadcrumb component. create up style it up
 - [x] footer component
+- [x] CoinCardGridItem component (currently CoinCard). attach click handler, work out how I am going to serve the coin detail screen/card/overlay
 
-- [ ] GridCard component (currently CoinCard). attach click handler, work out how I am going to serve the coin detail screen/card/overlay
+- [ ] can/should we use the semantic html5 elements like <article>, <section>, <nav> etc?
+- [ ] can we use the new popover html element for the CoinModalSummary?
 
 - [ ] toggle for collection display grid page -> show obverse/reverse/both/obverse+sketch/reverse+sketch
 

@@ -2,9 +2,9 @@
 
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { CldImage } from "next-cloudinary";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-interface CoinModalProps {
+type CoinModalSummaryProps = {
   isOpen: boolean;
   onClose: () => void;
   imageSrc?: string;
@@ -13,9 +13,11 @@ interface CoinModalProps {
   onPrevious?: () => void;
   onNext?: () => void;
   currentIndex?: number;
-}
+  focusTarget?: "previous" | "next" | null;
+  onFocusTargetHandled?: () => void;
+};
 
-export function CoinModal({
+export function CoinModalSummary({
   isOpen,
   onClose,
   imageSrc,
@@ -24,58 +26,122 @@ export function CoinModal({
   onPrevious,
   onNext,
   currentIndex: _currentIndex = 0,
-}: CoinModalProps) {
+  focusTarget,
+  onFocusTargetHandled: _onFocusTargetHandled,
+}: CoinModalSummaryProps) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
     null,
   );
   const [displayKey, setDisplayKey] = useState(0);
   const [isSlideIn, setIsSlideIn] = useState(false);
+  
+  // Refs for chevron buttons
+  const previousButtonRef = useRef<HTMLButtonElement>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+  
+  // Rapid interaction detection
+  const lastInteractionTime = useRef<number>(0);
+  const TRANSITION_DURATION = 610; // Total time for both transitions (300ms + 300ms + buffer)
 
   // Handle navigation with slide out then slide in
   const handlePrevious = useCallback(() => {
     if (!isTransitioning && onPrevious) {
-      setIsTransitioning(true);
-      setSlideDirection("right"); // Slide right when going to previous
-      setTimeout(() => {
+      const now = Date.now();
+      const timeSinceLastInteraction = now - lastInteractionTime.current;
+      const isRapidInteraction = timeSinceLastInteraction < TRANSITION_DURATION;
+      
+      lastInteractionTime.current = now;
+      
+      if (isRapidInteraction) {
+        // Skip transition for rapid interactions
         onPrevious();
-        // Reset slide out, then trigger slide in
+        setDisplayKey((prev) => prev + 1); // Force re-render with new key
+      } else {
+        // Normal transition
+        setIsTransitioning(true);
+        setSlideDirection("right"); // Slide right when going to previous
         setTimeout(() => {
-          setIsTransitioning(false);
-          setSlideDirection("left"); // New image will slide in from left
-          setIsSlideIn(true);
-          setDisplayKey((prev) => prev + 1); // Force re-render with new key
-          // Clear slide in after animation
+          onPrevious();
+          // Reset slide out, then trigger slide in
           setTimeout(() => {
-            setIsSlideIn(false);
-            setSlideDirection(null);
-          }, 300);
-        }, 10);
-      }, 300);
+            setIsTransitioning(false);
+            setSlideDirection("left"); // New image will slide in from left
+            setIsSlideIn(true);
+            setDisplayKey((prev) => prev + 1); // Force re-render with new key
+            // Clear slide in after animation
+            setTimeout(() => {
+              setIsSlideIn(false);
+              setSlideDirection(null);
+            }, 300);
+          }, 10);
+        }, 300);
+      }
     }
   }, [isTransitioning, onPrevious]);
 
   const handleNext = useCallback(() => {
     if (!isTransitioning && onNext) {
-      setIsTransitioning(true);
-      setSlideDirection("left"); // Slide left when going to next
-      setTimeout(() => {
+      const now = Date.now();
+      const timeSinceLastInteraction = now - lastInteractionTime.current;
+      const isRapidInteraction = timeSinceLastInteraction < TRANSITION_DURATION;
+      
+      lastInteractionTime.current = now;
+      
+      if (isRapidInteraction) {
+        // Skip transition for rapid interactions
         onNext();
-        // Reset slide out, then trigger slide in
+        setDisplayKey((prev) => prev + 1); // Force re-render with new key
+      } else {
+        // Normal transition
+        setIsTransitioning(true);
+        setSlideDirection("left"); // Slide left when going to next
         setTimeout(() => {
-          setIsTransitioning(false);
-          setSlideDirection("right"); // New image will slide in from right
-          setIsSlideIn(true);
-          setDisplayKey((prev) => prev + 1); // Force re-render with new key
-          // Clear slide in after animation
+          onNext();
+          // Reset slide out, then trigger slide in
           setTimeout(() => {
-            setIsSlideIn(false);
-            setSlideDirection(null);
-          }, 300);
-        }, 10);
-      }, 300);
+            setIsTransitioning(false);
+            setSlideDirection("right"); // New image will slide in from right
+            setIsSlideIn(true);
+            setDisplayKey((prev) => prev + 1); // Force re-render with new key
+            // Clear slide in after animation
+            setTimeout(() => {
+              setIsSlideIn(false);
+              setSlideDirection(null);
+            }, 300);
+          }, 10);
+        }, 300);
+      }
     }
   }, [isTransitioning, onNext]);
+
+  // Handle keyboard events on buttons
+  const handlePreviousKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && onPrevious) {
+      e.preventDefault();
+      handlePrevious();
+    }
+  }, [handlePrevious, onPrevious]);
+
+  const handleNextKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && onNext) {
+      e.preventDefault();
+      handleNext();
+    }
+  }, [handleNext, onNext]);
+
+  // Handle focus restoration after navigation
+  useEffect(() => {
+    if (isOpen && focusTarget && !isTransitioning) {
+      const targetButton = focusTarget === "previous" ? previousButtonRef.current : nextButtonRef.current;
+      if (targetButton) {
+        // Small delay to ensure the transition has completed
+        setTimeout(() => {
+          targetButton.focus();
+        }, 100);
+      }
+    }
+  }, [isOpen, focusTarget, isTransitioning]);
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -114,7 +180,9 @@ export function CoinModal({
       <div className="relative z-10 flex max-h-[90vh] w-full max-w-4xl flex-col items-center p-4">
         {/* Previous Button */}
         <button
+          ref={previousButtonRef}
           onClick={handlePrevious}
+          onKeyDown={handlePreviousKeyDown}
           disabled={isTransitioning}
           className="absolute top-1/2 left-4 -translate-y-1/2 rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
           aria-label="Previous coin"
@@ -124,7 +192,9 @@ export function CoinModal({
 
         {/* Next Button */}
         <button
+          ref={nextButtonRef}
           onClick={handleNext}
+          onKeyDown={handleNextKeyDown}
           disabled={isTransitioning}
           className="absolute top-1/2 right-4 -translate-y-1/2 rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
           aria-label="Next coin"

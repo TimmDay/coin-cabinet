@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { GridCoinCard } from "~/components/ui/CoinCard";
-import { CoinModal } from "~/components/ui/CoinModal";
+import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem";
+import { CoinModalSummary } from "~/components/ui/CoinModalSummary";
 
 // Define the coin data
 const coins = [
@@ -27,29 +27,42 @@ export default function HomePage() {
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     currentIndex: number;
-  }>({ isOpen: false, currentIndex: 0 });
+    focusTarget: "previous" | "next" | null;
+  }>({ isOpen: false, currentIndex: 0, focusTarget: null });
 
   const openModal = (index: number) => {
-    setModalState({ isOpen: true, currentIndex: index });
+    setModalState({ isOpen: true, currentIndex: index, focusTarget: null });
   };
 
   const closeModal = () => {
-    setModalState({ isOpen: false, currentIndex: 0 });
+    setModalState({ isOpen: false, currentIndex: 0, focusTarget: null });
   };
 
-  const goToPrevious = () => {
+
+
+  const handleFocusTargetHandled = () => {
+    // Clear the focus target after it's been handled
+    setModalState((prev) => ({
+      ...prev,
+      focusTarget: null,
+    }));
+  };
+
+  const handlePreviousWithFocus = () => {
     setModalState((prev) => ({
       ...prev,
       currentIndex:
         prev.currentIndex === 0 ? coins.length - 1 : prev.currentIndex - 1,
+      focusTarget: "previous",
     }));
   };
 
-  const goToNext = () => {
+  const handleNextWithFocus = () => {
     setModalState((prev) => ({
       ...prev,
       currentIndex:
         prev.currentIndex === coins.length - 1 ? 0 : prev.currentIndex + 1,
+      focusTarget: "next",
     }));
   };
 
@@ -69,7 +82,7 @@ export default function HomePage() {
 
         <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
           {coins.map((coin, index) => (
-            <GridCoinCard
+            <CoinCardGridItem
               key={index}
               title={coin.title}
               description={coin.description}
@@ -90,15 +103,17 @@ export default function HomePage() {
         </div>
       </div>
 
-      <CoinModal
+      <CoinModalSummary
         isOpen={modalState.isOpen}
         onClose={closeModal}
         imageSrc={currentCoin?.imageSrc}
         title={currentCoin?.title ?? ""}
         description={currentCoin?.description ?? ""}
-        onPrevious={goToPrevious}
-        onNext={goToNext}
+        onPrevious={handlePreviousWithFocus}
+        onNext={handleNextWithFocus}
         currentIndex={modalState.currentIndex}
+        focusTarget={modalState.focusTarget}
+        onFocusTargetHandled={handleFocusTargetHandled}
       />
     </main>
   );

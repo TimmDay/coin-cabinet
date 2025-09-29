@@ -5,14 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "~/lib/utils";
 
-interface BreadcrumbItem {
+type BreadcrumbItem = {
   label: string;
   href: string;
-}
+};
 
-interface BreadcrumbProps {
+type BreadcrumbProps = {
   className?: string;
-}
+};
 
 // Function to generate breadcrumb items from pathname
 const generateBreadcrumbs = (pathname: string): BreadcrumbItem[] => {

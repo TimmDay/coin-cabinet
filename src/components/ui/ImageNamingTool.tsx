@@ -4,10 +4,10 @@ import { Copy } from "lucide-react";
 import { useState } from "react";
 import { RoundButton } from "~/components/ui/RoundButton";
 
-interface ImageNamingToolProps {
+type ImageNamingToolProps = {
   /** Watch function from react-hook-form to get current form values */
   watch: (fieldName: string) => string | undefined;
-}
+};
 
 export function ImageNamingTool({ watch }: ImageNamingToolProps) {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
