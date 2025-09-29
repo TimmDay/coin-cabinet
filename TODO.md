@@ -53,9 +53,10 @@
 - [ ] Explore UI component libraries. Pick one as a reference and put it in copilot-instructions. (shadcn or daisy)
 
 - [ ] add storybook v9 (when released). current version has compatibility issues with nextjs and react 19.
-- [ ] config Storybook.
+- [x] config Storybook.
   - Set up a demo Button component in it.
   - Be able to run it locally
+- [ ] clean up the stories dir, which has a lot of examples in it we don't need.
 
 - [ ] Coin Card detail
   - the coin images o + r
