@@ -30,7 +30,7 @@ export type RoundButtonProps = {
    * Button type for forms
    */
   type?: "button" | "submit" | "reset";
-}
+};
 
 const sizeClasses = {
   sm: "px-3 py-1.5 text-sm",

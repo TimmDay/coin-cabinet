@@ -35,11 +35,11 @@ export function CoinModalSummary({
   );
   const [displayKey, setDisplayKey] = useState(0);
   const [isSlideIn, setIsSlideIn] = useState(false);
-  
+
   // Refs for chevron buttons
   const previousButtonRef = useRef<HTMLButtonElement>(null);
   const nextButtonRef = useRef<HTMLButtonElement>(null);
-  
+
   // Rapid interaction detection
   const lastInteractionTime = useRef<number>(0);
   const TRANSITION_DURATION = 610; // Total time for both transitions (300ms + 300ms + buffer)
@@ -50,9 +50,9 @@ export function CoinModalSummary({
       const now = Date.now();
       const timeSinceLastInteraction = now - lastInteractionTime.current;
       const isRapidInteraction = timeSinceLastInteraction < TRANSITION_DURATION;
-      
+
       lastInteractionTime.current = now;
-      
+
       if (isRapidInteraction) {
         // Skip transition for rapid interactions
         onPrevious();
@@ -85,9 +85,9 @@ export function CoinModalSummary({
       const now = Date.now();
       const timeSinceLastInteraction = now - lastInteractionTime.current;
       const isRapidInteraction = timeSinceLastInteraction < TRANSITION_DURATION;
-      
+
       lastInteractionTime.current = now;
-      
+
       if (isRapidInteraction) {
         // Skip transition for rapid interactions
         onNext();
@@ -116,24 +116,33 @@ export function CoinModalSummary({
   }, [isTransitioning, onNext]);
 
   // Handle keyboard events on buttons
-  const handlePreviousKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && onPrevious) {
-      e.preventDefault();
-      handlePrevious();
-    }
-  }, [handlePrevious, onPrevious]);
+  const handlePreviousKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" && onPrevious) {
+        e.preventDefault();
+        handlePrevious();
+      }
+    },
+    [handlePrevious, onPrevious],
+  );
 
-  const handleNextKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && onNext) {
-      e.preventDefault();
-      handleNext();
-    }
-  }, [handleNext, onNext]);
+  const handleNextKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" && onNext) {
+        e.preventDefault();
+        handleNext();
+      }
+    },
+    [handleNext, onNext],
+  );
 
   // Handle focus restoration after navigation
   useEffect(() => {
     if (isOpen && focusTarget && !isTransitioning) {
-      const targetButton = focusTarget === "previous" ? previousButtonRef.current : nextButtonRef.current;
+      const targetButton =
+        focusTarget === "previous"
+          ? previousButtonRef.current
+          : nextButtonRef.current;
       if (targetButton) {
         // Small delay to ensure the transition has completed
         setTimeout(() => {
