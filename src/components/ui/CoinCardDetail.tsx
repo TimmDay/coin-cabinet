@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { CldImage } from "next-cloudinary";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { prefetchCloudinaryImage } from "~/components/CloudinaryImage";
 import { formatYearRange } from "~/lib/utils/date-formatting";
 import { InfoTooltip } from "./InfoTooltip";
 
@@ -104,23 +105,18 @@ export function CoinCardDetail({
     ? Math.round((new Date().getFullYear() - mint_year_latest) / 50) * 50
     : null;
 
-  // Image prefetching utility
-  const prefetchImage = useCallback((src: string | undefined) => {
-    if (!src) return;
-    const img = new Image();
-    img.src = `https://res.cloudinary.com/dhl7aimx7/image/upload/c_auto,w_600,h_600/${src}`;
-  }, []);
-
-  // Prefetch handlers for chevron hover
+  // Prefetch handlers for chevron hover - only prefetch the current view (obverse or reverse)
   const handlePreviousHover = useCallback(() => {
-    if (previousImageSrc) prefetchImage(previousImageSrc);
-    if (previousReverseImageSrc) prefetchImage(previousReverseImageSrc);
-  }, [previousImageSrc, previousReverseImageSrc, prefetchImage]);
+    const imageToPrefetch = isReverse
+      ? previousReverseImageSrc
+      : previousImageSrc;
+    prefetchCloudinaryImage(imageToPrefetch, 600, 600);
+  }, [previousImageSrc, previousReverseImageSrc, isReverse]);
 
   const handleNextHover = useCallback(() => {
-    if (nextImageSrc) prefetchImage(nextImageSrc);
-    if (nextReverseImageSrc) prefetchImage(nextReverseImageSrc);
-  }, [nextImageSrc, nextReverseImageSrc, prefetchImage]);
+    const imageToPrefetch = isReverse ? nextReverseImageSrc : nextImageSrc;
+    prefetchCloudinaryImage(imageToPrefetch, 600, 600);
+  }, [nextImageSrc, nextReverseImageSrc, isReverse]);
 
   // Handle image zoom
   const handleImageClick = useCallback(

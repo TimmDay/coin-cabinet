@@ -11,6 +11,8 @@
 
 - [ ] update db schema: image_link_sketch_o, image_link_sketch_r
 
+- [ ] include photo credits (if present in the image id). on hover for grid items and explicitly in CoinCardDetail info area.
+
 COIN GRID
 
 - [ ] pre-fetch the coin card detail when the grid item is hovered for X ms (so it opens instantly when clicked)
