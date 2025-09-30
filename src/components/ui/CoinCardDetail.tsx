@@ -11,6 +11,10 @@ type CoinCardDetailProps = {
   onClose: () => void;
   imageSrc?: string;
   reverseImageSrc?: string;
+  nextImageSrc?: string;
+  nextReverseImageSrc?: string;
+  previousImageSrc?: string;
+  previousReverseImageSrc?: string;
   civ?: string;
   denomination?: string;
   mint?: string;
@@ -36,6 +40,10 @@ export function CoinCardDetail({
   onClose,
   imageSrc,
   reverseImageSrc,
+  nextImageSrc,
+  nextReverseImageSrc,
+  previousImageSrc,
+  previousReverseImageSrc,
   civ,
   denomination,
   mint,
@@ -95,6 +103,24 @@ export function CoinCardDetail({
   const coinAge = mint_year_latest
     ? Math.round((new Date().getFullYear() - mint_year_latest) / 50) * 50
     : null;
+
+  // Image prefetching utility
+  const prefetchImage = useCallback((src: string | undefined) => {
+    if (!src) return;
+    const img = new Image();
+    img.src = `https://res.cloudinary.com/dhl7aimx7/image/upload/c_auto,w_600,h_600/${src}`;
+  }, []);
+
+  // Prefetch handlers for chevron hover
+  const handlePreviousHover = useCallback(() => {
+    if (previousImageSrc) prefetchImage(previousImageSrc);
+    if (previousReverseImageSrc) prefetchImage(previousReverseImageSrc);
+  }, [previousImageSrc, previousReverseImageSrc, prefetchImage]);
+
+  const handleNextHover = useCallback(() => {
+    if (nextImageSrc) prefetchImage(nextImageSrc);
+    if (nextReverseImageSrc) prefetchImage(nextReverseImageSrc);
+  }, [nextImageSrc, nextReverseImageSrc, prefetchImage]);
 
   // Handle image zoom
   const handleImageClick = useCallback(
@@ -165,7 +191,7 @@ export function CoinCardDetail({
             setTimeout(() => {
               setIsSlideIn(false);
               setSlideDirection(null);
-            }, 200);
+            }, 150);
           }, 10);
         }, 200);
       }
@@ -202,7 +228,7 @@ export function CoinCardDetail({
             setTimeout(() => {
               setIsSlideIn(false);
               setSlideDirection(null);
-            }, 200);
+            }, 150);
           }, 10);
         }, 200);
       }
@@ -272,7 +298,7 @@ export function CoinCardDetail({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto py-4 lg:items-center lg:py-0">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
@@ -280,12 +306,13 @@ export function CoinCardDetail({
       />
 
       {/* Modal Content */}
-      <div className="relative z-10 flex max-h-[90vh] w-full max-w-7xl p-4">
+      <div className="relative z-10 flex min-h-full w-full max-w-7xl p-4 lg:max-h-[90vh] lg:min-h-0">
         {/* Previous Button */}
         <button
           ref={previousButtonRef}
           onClick={handlePrevious}
           onKeyDown={handlePreviousKeyDown}
+          onMouseEnter={handlePreviousHover}
           disabled={isTransitioning}
           className="absolute top-1/2 left-4 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
           aria-label="Previous coin"
@@ -298,6 +325,7 @@ export function CoinCardDetail({
           ref={nextButtonRef}
           onClick={handleNext}
           onKeyDown={handleNextKeyDown}
+          onMouseEnter={handleNextHover}
           disabled={isTransitioning}
           className="absolute top-1/2 right-4 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50 lg:right-auto lg:left-1/2 lg:translate-x-[calc(33.33%+5rem)]"
           aria-label="Next coin"
@@ -333,8 +361,8 @@ export function CoinCardDetail({
                       : "translate-x-full" // Slide right when going to previous
                     : isSlideIn
                       ? slideDirection === "left"
-                        ? "animate-[slideInFromLeft_200ms_ease-in-out_forwards]" // Slide in from left
-                        : "animate-[slideInFromRight_200ms_ease-in-out_forwards]" // Slide in from right
+                        ? "animate-[slideInFromLeft_150ms_ease-in-out_forwards]" // Slide in from left
+                        : "animate-[slideInFromRight_150ms_ease-in-out_forwards]" // Slide in from right
                       : "translate-x-0"
                 } ${isZoomed ? "scale-[2.4]" : "scale-100"}`}
                 {...(isZoomed && {
@@ -365,7 +393,7 @@ export function CoinCardDetail({
           </div>
 
           {/* Bottom/Right Side - Information Panel */}
-          <div className="mr-0 max-h-[60vh] overflow-y-auto rounded-lg bg-black p-4 backdrop-blur-sm lg:-mr-4 lg:max-h-[80vh] lg:flex-1 lg:p-6">
+          <div className="mr-0 rounded-lg bg-black p-6 backdrop-blur-sm lg:-mr-8 lg:max-h-[80vh] lg:flex-1 lg:overflow-y-auto lg:p-8">
             <div
               className={`text-center transition-opacity duration-200 ${
                 isTransitioning ? "opacity-0" : "opacity-100"

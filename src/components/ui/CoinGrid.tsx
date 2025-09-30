@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem";
-import { CoinModalSummary } from "~/components/ui/CoinModalSummary";
+import { CoinCardDetail } from "~/components/ui/CoinCardDetail";
 import { useSomnusCoins } from "~/lib/api/somnus-collection";
 
 export function CoinGrid() {
@@ -28,13 +28,7 @@ export function CoinGrid() {
     setModalState({ isOpen: false, currentIndex: 0, focusTarget: null });
   };
 
-  const handleFocusTargetHandled = () => {
-    // Clear the focus target after it's been handled
-    setModalState((prev) => ({
-      ...prev,
-      focusTarget: null,
-    }));
-  };
+
 
   const handlePreviousWithFocus = () => {
     setModalState((prev) => ({
@@ -157,19 +151,49 @@ export function CoinGrid() {
         ))}
       </div>
 
-      <CoinModalSummary
+      <CoinCardDetail
         isOpen={modalState.isOpen}
         onClose={closeModal}
-        imageSrc={
-          currentCoin?.image_link_o ?? currentCoin?.image_link_r ?? undefined
+        imageSrc={currentCoin?.image_link_o ?? undefined}
+        reverseImageSrc={currentCoin?.image_link_r ?? undefined}
+        nextImageSrc={
+          modalState.currentIndex < coinsList.length - 1
+            ? coinsList[modalState.currentIndex + 1]?.image_link_o ?? undefined
+            : coinsList[0]?.image_link_o ?? undefined
         }
-        title={`${currentCoin?.nickname ?? ""} ${currentCoin?.denomination ?? ""}`.trim()}
-        description={`${currentCoin?.civ ?? ""} coin`}
+        nextReverseImageSrc={
+          modalState.currentIndex < coinsList.length - 1
+            ? coinsList[modalState.currentIndex + 1]?.image_link_r ?? undefined
+            : coinsList[0]?.image_link_r ?? undefined
+        }
+        previousImageSrc={
+          modalState.currentIndex > 0
+            ? coinsList[modalState.currentIndex - 1]?.image_link_o ?? undefined
+            : coinsList[coinsList.length - 1]?.image_link_o ?? undefined
+        }
+        previousReverseImageSrc={
+          modalState.currentIndex > 0
+            ? coinsList[modalState.currentIndex - 1]?.image_link_r ?? undefined
+            : coinsList[coinsList.length - 1]?.image_link_r ?? undefined
+        }
+        civ={currentCoin?.civ ?? undefined}
+        denomination={currentCoin?.denomination ?? undefined}
+        mint={currentCoin?.mint ?? undefined}
+        mint_year_earliest={currentCoin?.mint_year_earliest ?? undefined}
+        mint_year_latest={currentCoin?.mint_year_latest ?? undefined}
+        diameter={currentCoin?.diameter ?? undefined}
+        mass={currentCoin?.mass ?? undefined}
+        die_axis={currentCoin?.die_axis ?? undefined}
+        legend_o={currentCoin?.legend_o ?? undefined}
+        desc_o={currentCoin?.desc_o ?? undefined}
+        legend_r={currentCoin?.legend_r ?? undefined}
+        desc_r={currentCoin?.desc_r ?? undefined}
+        reference={currentCoin?.reference ?? undefined}
+        provenance={currentCoin?.provenance ?? undefined}
+        flavour_text={currentCoin?.flavour_text ?? undefined}
         onPrevious={handlePreviousWithFocus}
         onNext={handleNextWithFocus}
-        currentIndex={modalState.currentIndex}
         focusTarget={modalState.focusTarget}
-        onFocusTargetHandled={handleFocusTargetHandled}
       />
     </>
   );

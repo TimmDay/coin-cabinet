@@ -41,6 +41,12 @@ export const Interactive: Story = {
     );
 
     const currentCoin = mockCoins[currentIndex] ?? mockCoins[0]!;
+    const nextIndex =
+      currentIndex === mockCoins.length - 1 ? 0 : currentIndex + 1;
+    const previousIndex =
+      currentIndex === 0 ? mockCoins.length - 1 : currentIndex - 1;
+    const nextCoin = mockCoins[nextIndex]!;
+    const previousCoin = mockCoins[previousIndex]!;
 
     const handlePrevious = () => {
       setCurrentIndex((prev) => (prev === 0 ? mockCoins.length - 1 : prev - 1));
@@ -84,6 +90,10 @@ export const Interactive: Story = {
           onClose={handleClose}
           imageSrc={currentCoin.image_link_o}
           reverseImageSrc={currentCoin.image_link_r}
+          nextImageSrc={nextCoin.image_link_o}
+          nextReverseImageSrc={nextCoin.image_link_r}
+          previousImageSrc={previousCoin.image_link_o}
+          previousReverseImageSrc={previousCoin.image_link_r}
           civ={currentCoin.civ}
           denomination={currentCoin.denomination}
           mint={currentCoin.mint}
