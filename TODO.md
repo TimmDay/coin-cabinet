@@ -2,16 +2,16 @@
 
 ## Next Thing
 
-### components
-
-COIN GRID
-
 - [ ] Coin Card detail
   - the coin images o + r
   - the coin sketches
   - minimal summary info (user focus to the image)
   - expanded info, inc flavour text, dims, expanded legends, comparison sketches
   - expanded map showing the Mint and nearest cities
+
+- [ ] update db schema: image_link_sketch_o, image_link_sketch_r
+
+COIN GRID
 
 - [ ] pre-fetch the coin card detail when the grid item is hovered for X ms (so it opens instantly when clicked)
 - [ ] likewise when the next chevron is hovered.
