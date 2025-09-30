@@ -137,7 +137,9 @@ export function CoinGrid() {
         </div>
       </div>
 
-      <div className="mt-8 flex flex-wrap justify-center">
+      <div
+        className={`mt-8 flex flex-wrap justify-center ${viewMode === "both" ? "gap-x-12" : ""}`}
+      >
         {coinsList.map((coin, index) => (
           <CoinCardGridItem
             key={coin.id || index}

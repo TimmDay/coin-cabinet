@@ -2,20 +2,9 @@
 
 ## Next Thing
 
-- [x] CoinGrid renders items in earliest mint year order (oldest first)
-- [x] load up another 3 coins.
-- [ ] work out a better cloudinary workflow
-  - [ ] how to not automatically add the uid at the end of the image id. I just want what the file was called when I uploaded it.
-
 ### components
 
-- [ ] Explore UI component libraries. Pick one as a reference and put it in copilot-instructions. (shadcn or daisy)
-
 COIN GRID
-
-- [ ] toggle for CoinGrid -> obv | rev | both (default to obverse maybe?). The width of the grid items will need to change based on what is selected.
-- [ ] single side images themselves can also be bigger. grid item component might need 2 variants.
-- [ ] CoinCardGridItem: play around with relatively scaling the images (when in single side variant) based on the actual diameters of the coins.
 
 - [ ] Coin Card detail
   - the coin images o + r
@@ -25,11 +14,14 @@ COIN GRID
   - expanded map showing the Mint and nearest cities
 
 - [ ] pre-fetch the coin card detail when the grid item is hovered for X ms (so it opens instantly when clicked)
+- [ ] likewise when the next chevron is hovered.
 
 - [ ] can/should we use the semantic html5 elements like <article>, <section>, <nav> etc?
 - [ ] can we use the new popover html element for the CoinModalSummary?
 
-- [ ] toggle for collection display grid page -> show obverse/reverse/both/obverse+sketch/reverse+sketch
+- [ ] style up the CoinGrid controls (radio group)
+
+- [ ] Explore UI component libraries. Pick one as a reference and put it in copilot-instructions. (shadcn or daisy)
 
 ### database
 
@@ -72,14 +64,14 @@ COIN GRID
 
 ## site styles
 
+- [ ] go deep on the color scheme. simplify and clean.
 - [ ] work out how responsive / breakpoints is going to work.
 - [ ] work out decent mobile design
-- [ ] go deep on the color scheme. simplify and clean.
 - [ ] AI STUCK: on add-coin page, make it so the image naming tool position stickies with the top of the form, so it stickies to the top of viewport only if the scroll goes passed that point.
 
 ### features product
 
-- [ ] site logo - create a beautiful one. Somnus or something related. Maybe Gordy boy?
+- [ ] site logo - create a beautiful one. Somnus or something related.
 - [ ] site favicon
 
 - [ ] a (free to use) map of the roman empire area. Zoomable, pannable.
@@ -87,10 +79,18 @@ COIN GRID
   - [ ] with a layer with province boundaries at Severan time (can make other layers for other times later)
   - [ ] lat/lngs from Mints table can cause pins to show on the map in the right place
 
-- [ ] Sets Display pages. Set list, but main feature is a 'wooden' drawer with the coin images laid out as they would be in real life
-  - [ ] Work on the 'Severan Dynasty' drawer layout component
+### Set Page(s)
+
+Set list, but main feature is a 'wooden' drawer with the coin images laid out as they would be in real life.
+
+- [ ] work out the css effects. Let's do dark wood grainy look, blue felt and red felt.
+- [ ] work on the 'hole' effect, to make it look like a recess for the coin to go in.
+- [ ] do the custom layout for Severan. Mindful of breakpoints. Stack on mobile for now, but consider a 'drawer nav' for mobile where you can click on the coin dots to sutoscroll to it.
+- [ ] Work on the 'Severan Dynasty' drawer layout component
 
 ### features inf
+
+- [ ] consider react context. Maybe need it for view (obv,rev,both), drawer preference (wood,red felt, blue felt), maybe some filters make sense (denomination)?
 
 - [ ] hook up specific menus to filtered db requests. Does each thing get it's own page? If not how to manage the breadcrumb?
 
@@ -128,7 +128,7 @@ Use this?
 
 articles, guides
 
-- [ ] first write a post
+- [ ] first write a post - how roman coins were made.
 - [ ] make the page showing all posts
 - [ ] do up a posts db etc
 - [ ] make a page for individual posts
@@ -141,6 +141,12 @@ articles, guides
 
 - [ ] Coin Cabinet page MOBILE
   - instead of dropdown menus, accordions.
+
+#### components for embedding in blog posts
+
+- [ ] before/after image slider component (for showing coins pre and post cleaning) [example](https://artemis-collection.com/showcase/cleaning-coins/)
+
+- [ ] interactive map component (for showing mint location and significant places)
 
 ### About page
 
@@ -173,3 +179,9 @@ articles, guides
 - [x] CoinCardGridItem component (currently CoinCard). attach click handler, work out how I am going to serve the coin detail screen/card/overlay
 - [x] style up the menus
 - [x] image file names generator tool (on add coin page, see readme for file name schema).
+- [x] CoinGrid renders items in earliest mint year order (oldest first, do db indexing for it)
+- [x] toggle for CoinGrid -> obv | rev | both (default to obverse maybe?). The width of the grid items will need to change based on what is selected.
+- [x] single side images themselves can also be bigger. grid item component might need 2 variants.
+- [x] CoinCardGridItem: play around with relatively scaling the images (when in single side variant) based on the actual diameters of the coins.
+- [x] cloudinary. how to not automatically add the uid at the end of the image id. I just want what the file was called when I uploaded it.
+- [x] toggle for collection display grid page -> show obverse/reverse/both/obverse+sketch/reverse+sketch

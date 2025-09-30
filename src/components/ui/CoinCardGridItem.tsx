@@ -40,9 +40,8 @@ export function CoinCardGridItem({
     onClick?.();
   };
 
-  // Calculate image size based on diameter for single-side views
-  // 270px = 32mm baseline, proportionally scale for other diameters
-  const calculateImageSize = () => {
+  // Calculate proportional image size based on diameter for single-side views
+  function calculateImageSize() {
     if (view === "both") {
       return 200; // Fixed size for dual-image view
     }
@@ -56,9 +55,37 @@ export function CoinCardGridItem({
 
     // Proportional scaling: (actual diameter / base diameter) * base size
     return Math.round((diameter / baseDiameter) * baseSize);
-  };
+  }
 
   const imageSize = calculateImageSize();
+
+  // Keep consistent container sizes but calculate dynamic text positioning
+  function getContainerClasses() {
+    if (view === "both") {
+      return "h-[200px] w-[200px]";
+    }
+    return "h-[270px] w-[270px]";
+  }
+
+  // Calculate negative margin to pull text closer for smaller images
+  function getTextMarginClass() {
+    if (view === "both") {
+      return "mt-4";
+    }
+
+    const maxImageSize = 250;
+    const sizeDifference = maxImageSize - imageSize;
+    const marginReduction = Math.floor(sizeDifference / 2);
+
+    if (marginReduction >= 40) return "-mt-10"; // Very small coins - pull up more
+    if (marginReduction >= 30) return "-mt-6"; // Small coins - pull up significantly
+    if (marginReduction >= 20) return "-mt-4"; // Medium-small coins - pull up moderately
+    if (marginReduction >= 10) return "-mt-2"; // Medium coins - pull up slightly
+    return "mt-2"; // Large coins - reduce from mt-4 to mt-2
+  }
+
+  const containerClasses = getContainerClasses();
+  const textMarginClass = getTextMarginClass();
 
   return (
     <div
@@ -76,7 +103,7 @@ export function CoinCardGridItem({
         {/* Obverse Image */}
         {(view === "obverse" || view === "both") && (
           <div
-            className={`flex flex-shrink-0 items-center justify-center ${view === "both" ? "h-[200px] w-[200px]" : "h-[270px] w-[270px]"}`}
+            className={`flex flex-shrink-0 items-center justify-center ${containerClasses}`}
           >
             <CloudinaryImage
               src={obverseImageId ?? undefined}
@@ -89,7 +116,7 @@ export function CoinCardGridItem({
         {/* Reverse Image */}
         {(view === "reverse" || view === "both") && (
           <div
-            className={`flex flex-shrink-0 items-center justify-center ${view === "both" ? "h-[200px] w-[200px]" : "h-[270px] w-[270px]"}`}
+            className={`flex flex-shrink-0 items-center justify-center ${containerClasses}`}
           >
             <CloudinaryImage
               src={reverseImageId ?? undefined}
@@ -99,7 +126,9 @@ export function CoinCardGridItem({
           </div>
         )}
       </div>
-      <div className="mt-4 flex w-0 min-w-full flex-col items-center opacity-0 transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100">
+      <div
+        className={`${textMarginClass} flex w-0 min-w-full flex-col items-center opacity-0 transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100`}
+      >
         <p className="text-sm whitespace-nowrap text-slate-300">
           {civ.toUpperCase()}
           {nickname && `. ${nickname}`}
