@@ -137,7 +137,7 @@ export function CoinGrid() {
         </div>
       </div>
 
-      <div className="mt-8 flex flex-wrap justify-center gap-x-12 gap-y-6">
+      <div className="mt-8 flex flex-wrap justify-center">
         {coinsList.map((coin, index) => (
           <CoinCardGridItem
             key={coin.id || index}
@@ -148,6 +148,7 @@ export function CoinGrid() {
             mintYearLatest={coin.mint_year_latest}
             obverseImageId={coin.image_link_o}
             reverseImageId={coin.image_link_r}
+            diameter={coin.diameter}
             view={viewMode}
             onClick={() => openModal(index)}
           />

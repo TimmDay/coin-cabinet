@@ -1,4 +1,5 @@
 import CloudinaryImage from "~/components/CloudinaryImage";
+import { formatYearRange } from "~/lib/utils/date-formatting";
 
 type CoinCardGridItemProps = {
   /** Civilization of the coin */
@@ -15,6 +16,8 @@ type CoinCardGridItemProps = {
   obverseImageId?: string | null;
   /** Reverse image identifier */
   reverseImageId?: string | null;
+  /** Coin diameter in millimeters */
+  diameter?: number | null;
   /** Which coin side(s) to display */
   view?: "obverse" | "reverse" | "both";
   /** Click handler for opening modal */
@@ -29,6 +32,7 @@ export function CoinCardGridItem({
   mintYearLatest,
   obverseImageId,
   reverseImageId,
+  diameter,
   view = "both",
   onClick,
 }: CoinCardGridItemProps) {
@@ -36,26 +40,25 @@ export function CoinCardGridItem({
     onClick?.();
   };
 
-  // Format the mint year range with proper BCE/CE handling
-  const formatMintYearRange = () => {
-    if (!mintYearEarliest || !mintYearLatest) return "";
-
-    const earliest = mintYearEarliest;
-    const latest = mintYearLatest;
-
-    if (earliest > 0 && latest > 0) {
-      // Both positive - use CE
-      return `(${earliest}—${latest} CE)`;
-    } else if (earliest < 0 && latest < 0) {
-      // Both negative - use BCE, strip negative signs, keep chronological order
-      return `(${Math.abs(earliest)}—${Math.abs(latest)} BCE)`;
-    } else if (earliest < 0 && latest > 0) {
-      // Crosses BCE/CE boundary
-      return `(${Math.abs(earliest)} BCE—${latest} CE)`;
+  // Calculate image size based on diameter for single-side views
+  // 270px = 32mm baseline, proportionally scale for other diameters
+  const calculateImageSize = () => {
+    if (view === "both") {
+      return 200; // Fixed size for dual-image view
     }
 
-    return "";
+    const baseSize = 250; // pixels.
+    const baseDiameter = 28; // mm. Largest is actually 32mm but tweaking the limit for space.
+
+    if (!diameter || diameter <= 0 || diameter > baseDiameter) {
+      return baseSize;
+    }
+
+    // Proportional scaling: (actual diameter / base diameter) * base size
+    return Math.round((diameter / baseDiameter) * baseSize);
   };
+
+  const imageSize = calculateImageSize();
 
   return (
     <div
@@ -72,15 +75,27 @@ export function CoinCardGridItem({
       <div className="flex justify-center gap-2 transition-transform duration-300 group-focus-within:scale-110 group-hover:scale-110">
         {/* Obverse Image */}
         {(view === "obverse" || view === "both") && (
-          <div className="flex-shrink-0">
-            <CloudinaryImage src={obverseImageId ?? undefined} />
+          <div
+            className={`flex flex-shrink-0 items-center justify-center ${view === "both" ? "h-[200px] w-[200px]" : "h-[270px] w-[270px]"}`}
+          >
+            <CloudinaryImage
+              src={obverseImageId ?? undefined}
+              width={imageSize}
+              height={imageSize}
+            />
           </div>
         )}
 
         {/* Reverse Image */}
         {(view === "reverse" || view === "both") && (
-          <div className="flex-shrink-0">
-            <CloudinaryImage src={reverseImageId ?? undefined} />
+          <div
+            className={`flex flex-shrink-0 items-center justify-center ${view === "both" ? "h-[200px] w-[200px]" : "h-[270px] w-[270px]"}`}
+          >
+            <CloudinaryImage
+              src={reverseImageId ?? undefined}
+              width={imageSize}
+              height={imageSize}
+            />
           </div>
         )}
       </div>
@@ -90,7 +105,7 @@ export function CoinCardGridItem({
           {nickname && `. ${nickname}`}
         </p>
         <p className="text-sm whitespace-nowrap text-slate-300">
-          {denomination} {formatMintYearRange()}
+          {denomination} {formatYearRange(mintYearEarliest, mintYearLatest)}
         </p>
       </div>
     </div>
