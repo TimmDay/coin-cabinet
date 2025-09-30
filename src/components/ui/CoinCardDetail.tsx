@@ -11,8 +11,6 @@ type CoinCardDetailProps = {
   onClose: () => void;
   imageSrc?: string;
   reverseImageSrc?: string;
-  title: string;
-  description: string;
   civ?: string;
   denomination?: string;
   mint?: string;
@@ -30,9 +28,7 @@ type CoinCardDetailProps = {
   flavour_text?: string;
   onPrevious?: () => void;
   onNext?: () => void;
-  currentIndex?: number;
   focusTarget?: "previous" | "next" | null;
-  onFocusTargetHandled?: () => void;
 };
 
 export function CoinCardDetail({
@@ -40,8 +36,6 @@ export function CoinCardDetail({
   onClose,
   imageSrc,
   reverseImageSrc,
-  title,
-  description,
   civ,
   denomination,
   mint,
@@ -59,9 +53,7 @@ export function CoinCardDetail({
   flavour_text,
   onPrevious,
   onNext,
-  currentIndex: _currentIndex = 0,
   focusTarget,
-  onFocusTargetHandled: _onFocusTargetHandled,
 }: CoinCardDetailProps) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
@@ -81,7 +73,7 @@ export function CoinCardDetail({
 
   // Rapid interaction detection
   const lastInteractionTime = useRef<number>(0);
-  const TRANSITION_DURATION = 610; // Total time for both transitions (300ms + 300ms + buffer)
+  const TRANSITION_DURATION = 410; // Total time for both transitions (200ms + 200ms + buffer)
 
   // Handle flip between obverse and reverse
   const handleFlip = useCallback(() => {
@@ -173,9 +165,9 @@ export function CoinCardDetail({
             setTimeout(() => {
               setIsSlideIn(false);
               setSlideDirection(null);
-            }, 300);
+            }, 200);
           }, 10);
-        }, 300);
+        }, 200);
       }
     }
   }, [isTransitioning, onPrevious]);
@@ -210,9 +202,9 @@ export function CoinCardDetail({
             setTimeout(() => {
               setIsSlideIn(false);
               setSlideDirection(null);
-            }, 300);
+            }, 200);
           }, 10);
-        }, 300);
+        }, 200);
       }
     }
   }, [isTransitioning, onNext]);
@@ -334,15 +326,15 @@ export function CoinCardDetail({
               {/* Current Image */}
               <div
                 key={displayKey}
-                className={`transition-all duration-300 ease-in-out ${isFlipFading ? "opacity-0" : "opacity-100"} ${
+                className={`transition-all duration-200 ease-in-out ${isFlipFading ? "opacity-0" : "opacity-100"} ${
                   isTransitioning
                     ? slideDirection === "left"
                       ? "-translate-x-full" // Slide left when going to next
                       : "translate-x-full" // Slide right when going to previous
                     : isSlideIn
                       ? slideDirection === "left"
-                        ? "animate-[slideInFromLeft_300ms_ease-in-out_forwards]" // Slide in from left
-                        : "animate-[slideInFromRight_300ms_ease-in-out_forwards]" // Slide in from right
+                        ? "animate-[slideInFromLeft_200ms_ease-in-out_forwards]" // Slide in from left
+                        : "animate-[slideInFromRight_200ms_ease-in-out_forwards]" // Slide in from right
                       : "translate-x-0"
                 } ${isZoomed ? "scale-[2.4]" : "scale-100"}`}
                 {...(isZoomed && {
@@ -362,7 +354,11 @@ export function CoinCardDetail({
                     type: "auto",
                     source: true,
                   }}
-                  alt={title}
+                  alt={
+                    isReverse
+                      ? (desc_r ?? "Reverse side of coin")
+                      : (desc_o ?? "Obverse side of coin")
+                  }
                 />
               </div>
             </div>
@@ -371,7 +367,7 @@ export function CoinCardDetail({
           {/* Bottom/Right Side - Information Panel */}
           <div className="mr-0 max-h-[60vh] overflow-y-auto rounded-lg bg-black p-4 backdrop-blur-sm lg:-mr-4 lg:max-h-[80vh] lg:flex-1 lg:p-6">
             <div
-              className={`text-center transition-opacity duration-300 ${
+              className={`text-center transition-opacity duration-200 ${
                 isTransitioning ? "opacity-0" : "opacity-100"
               }`}
             >
