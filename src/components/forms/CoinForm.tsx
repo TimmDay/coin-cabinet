@@ -12,6 +12,7 @@ import { coinFormSchema, type CoinFormData } from "~/lib/validations/coin-form";
 import {
   authorityOptions,
   civilizationOptions,
+  civSpecificOptions,
   denominationOptions,
   dieAxisOptions,
 } from "./constants";
@@ -98,19 +99,6 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               </div>
 
               <div>
-                <label className={labelClass} htmlFor="denomination">
-                  Denomination*
-                </label>
-                <Select
-                  {...register("denomination")}
-                  id="denomination"
-                  options={denominationOptions}
-                  placeholder="Select denomination"
-                  error={errors.denomination?.message}
-                />
-              </div>
-
-              <div>
                 <label className={labelClass} htmlFor="civ">
                   Civilization*
                 </label>
@@ -120,6 +108,51 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   options={civilizationOptions}
                   placeholder="Select Civilization"
                   error={errors.civ?.message}
+                />
+              </div>
+
+              <div>
+                <label
+                  className={`${labelClass} ${
+                    !watch("civ") ||
+                    !civSpecificOptions[
+                      watch("civ") as keyof typeof civSpecificOptions
+                    ]
+                      ? "opacity-50"
+                      : ""
+                  }`}
+                  htmlFor="civ_specific"
+                >
+                  Civilization Details
+                </label>
+                <Select
+                  {...register("civ_specific")}
+                  id="civ_specific"
+                  options={
+                    watch("civ") &&
+                    civSpecificOptions[
+                      watch("civ") as keyof typeof civSpecificOptions
+                    ]
+                      ? civSpecificOptions[
+                          watch("civ") as keyof typeof civSpecificOptions
+                        ]
+                      : []
+                  }
+                  placeholder={
+                    watch("civ") &&
+                    civSpecificOptions[
+                      watch("civ") as keyof typeof civSpecificOptions
+                    ]
+                      ? "Select details"
+                      : "Select civilization first"
+                  }
+                  disabled={
+                    !watch("civ") ||
+                    !civSpecificOptions[
+                      watch("civ") as keyof typeof civSpecificOptions
+                    ]
+                  }
+                  error={errors.civ_specific?.message}
                 />
               </div>
 
@@ -154,6 +187,19 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   <p className={errorClass}>{errors.reign_end.message}</p>
                 )}
               </div>
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="denomination">
+                Denomination*
+              </label>
+              <Select
+                {...register("denomination")}
+                id="denomination"
+                options={denominationOptions}
+                placeholder="Select denomination"
+                error={errors.denomination?.message}
+              />
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2"></div>
@@ -393,6 +439,24 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 </div>
 
                 <div>
+                  <label className={labelClass} htmlFor="image_link_sketch_o">
+                    Obverse Sketch Image Id
+                  </label>
+                  <input
+                    {...register("image_link_sketch_o")}
+                    id="image_link_sketch_o"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., marcus_aurelius_sestertius_sketch_o"
+                  />
+                  {errors.image_link_sketch_o && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.image_link_sketch_o.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
                   <label className={labelClass} htmlFor="image_link_zoom_o">
                     Obverse Zoom Image Id
                   </label>
@@ -456,6 +520,24 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   {errors.image_link_r && (
                     <p className="mt-1 text-sm text-red-500">
                       {errors.image_link_r.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className={labelClass} htmlFor="image_link_sketch_r">
+                    Reverse Sketch Image Id
+                  </label>
+                  <input
+                    {...register("image_link_sketch_r")}
+                    id="image_link_sketch_r"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., marcus_aurelius_sestertius_sketch_r"
+                  />
+                  {errors.image_link_sketch_r && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.image_link_sketch_r.message}
                     </p>
                   )}
                 </div>

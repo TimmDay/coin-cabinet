@@ -2,26 +2,23 @@
 
 ## Next Thing
 
-- [ ] Coin Card detail
-  - the coin images o + r
-  - the coin sketches
-  - minimal summary info (user focus to the image)
-  - expanded info, inc flavour text, dims, expanded legends, comparison sketches
+- [x] update db schema: image_link_sketch_o, image_link_sketch_r
+- [ ] name all the images that I have
+- [ ] upload all the coins to db
+
+- [ ] include photo credits in UI (if present in the image id -src). on hover for grid items and explicitly in CoinCardDetail info area.
+
+### UI
+
+- [ ] Coin Card detail ENHANCED
+  - comparison coin sketches
   - expanded map showing the Mint and nearest cities
-
-- [ ] update db schema: image_link_sketch_o, image_link_sketch_r
-
-- [ ] include photo credits (if present in the image id). on hover for grid items and explicitly in CoinCardDetail info area.
-
-COIN GRID
-
-- [ ] pre-fetch the coin card detail when the grid item is hovered for X ms (so it opens instantly when clicked)
-- [ ] likewise when the next chevron is hovered.
-
-- [ ] can/should we use the semantic html5 elements like <article>, <section>, <nav> etc?
-- [ ] can we use the new popover html element for the CoinModalSummary?
+  - historical notes?
 
 - [ ] style up the CoinGrid controls (radio group)
+- [ ] pre-fetch the coin card detail when the grid item is hovered for X ms (so it opens instantly when clicked)
+
+- [ ] can/should we use the semantic html5 elements like <article>, <section>, <nav> etc?
 
 - [ ] Explore UI component libraries. Pick one as a reference and put it in copilot-instructions. (shadcn or daisy)
 
@@ -33,20 +30,13 @@ COIN GRID
 
 ### images
 
-- [ ] collect all the coin images I have into a folder. Back it up in gdrive.
-- [ ] CLOUDINARY CLI TUTORIAL
-  - find a way to quickly split one image into two on upload
-  - find a way to remove bg on upload
-  - find a way to trim image size to main content after removing bg
-  - find a way to do all that in bulk
-
-- [ ] also make sure images are trimmed right to the edge (so the edge of coin is edge of image). Will help with aligning web content,
+- [ ] collect all the raw coin images I have into a folder. Back it up in gdrive.
+- [ ] also make sure images are trimmed right to the edge (so the edge of coin is edge of image). Will help with aligning web content
 - [ ] Upload any decent coin photos (suffixed with -o, -r, -zoom_o, -zoom_r and with appropriate quality).
-- [ ] Learn how to bulk remove the background (transparent) of coin images on bulk upload to cloudinary...
-- [ ] then download them all and backup to gdrive
+- [ ] then download all transparent images and backup to gdrive
 - [ ] optimise cloudinary for perf on the site (ie work out caching)
-- [ ] on screens with lots of images, think about lazy loading images when they are X% out of the viewport
-- [ ] how to label image files?
+- [ ] apply prefetch/lazy loading strategies (tactfully, don't overdo it)
+  - [ ] on screens with lots of images, think about lazy loading images when they are X% out of the viewport
 
 ### photography
 
@@ -55,7 +45,9 @@ COIN GRID
 
 ### real world
 
-- [ ] measure the diameters of the items that are missing diameters
+- [ ] find scale and weigh coins to confirm current data.
+- [ ] order coin capsules to bulk up supply.
+- [ ] research/plan beginner macro photography setup (getting most out of phone that I can).
 
 ### auth
 
@@ -100,10 +92,7 @@ Set list, but main feature is a 'wooden' drawer with the coin images laid out as
 - [ ] Analytics.
 - [ ] Ratelimiting.
 - [ ] performance audit.
-
-Use this?
-
-- [tRPC](https://trpc.io)
+- [ ] this useful? [tRPC](https://trpc.io)
 
 ### coin sketches
 
@@ -180,6 +169,7 @@ articles, guides
 - [x] footer component
 - [x] CoinCardGridItem component (currently CoinCard). attach click handler, work out how I am going to serve the coin detail screen/card/overlay
 - [x] style up the menus
+- [x] image file naming schema
 - [x] image file names generator tool (on add coin page, see readme for file name schema).
 - [x] CoinGrid renders items in earliest mint year order (oldest first, do db indexing for it)
 - [x] toggle for CoinGrid -> obv | rev | both (default to obverse maybe?). The width of the grid items will need to change based on what is selected.
@@ -187,3 +177,9 @@ articles, guides
 - [x] CoinCardGridItem: play around with relatively scaling the images (when in single side variant) based on the actual diameters of the coins.
 - [x] cloudinary. how to not automatically add the uid at the end of the image id. I just want what the file was called when I uploaded it.
 - [x] toggle for collection display grid page -> show obverse/reverse/both/obverse+sketch/reverse+sketch
+- [x] CLOUDINARY CLI TUTORIAL - remove bg on upload
+- [x] find a way to quickly split one image into two on upload
+- [x] work out a decently fast image upload workflow
+- [x] measure the diameters of the items that are missing diameters
+- [x] pre-fetch when the next chevron is hovered.
+- [x] Coin Card detail MVP. coin images o + r, summary info, flavour text

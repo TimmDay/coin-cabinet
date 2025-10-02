@@ -19,6 +19,7 @@ export const coinFormSchema = z
       .string()
       .min(1, "Civilization is required")
       .max(50, "Civilization is too long"),
+    civ_specific: z.string().optional(),
     reign_start: z
       .number()
       .or(z.nan())
@@ -200,6 +201,18 @@ export const coinFormSchema = z
       .transform((val) => (val === "" ? undefined : val))
       .pipe(z.string().optional()),
     image_link_r: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val))
+      .pipe(z.string().optional()),
+    image_link_sketch_o: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val))
+      .pipe(z.string().optional()),
+    image_link_sketch_r: z
       .string()
       .optional()
       .or(z.literal(""))

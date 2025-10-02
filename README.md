@@ -44,15 +44,3 @@ Where:
   (i.e. src-imperial-numismatics, src-the-coin-cabinet etc)
 
 I have made a tool at the base of the add coin page (auth users only), that will generate a file name from the entered data that you can copy/paste to rename old files so they match up as you add them to the db.
-
-## Uploading Images wirh Cloudinary CLI tool
-
-cld config
-cld admin usage
-
-upload single file
-cld uploader upload ./photo.jpg -o folder test -o tags "via_cli"
-
-### If you need to split an image horizontally into two images
-
-- see script `split-double-images` and do it locally.

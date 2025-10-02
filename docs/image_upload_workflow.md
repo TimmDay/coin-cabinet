@@ -16,9 +16,10 @@
 
    Upload all images with transparent background and quality preservation.
    note: Cloudinary CLI doesn't support batch uploads, so loop is required.
+   note: Trim (crop to up the coin edge) can perhaps be applied on image fetch later.
 
    ```bash
-   for file in ~/Desktop/somnus_collection_images/test_upload/*.jpg; do
+   for file in ~/Desktop/somnus_collection_images/named_for_upload/*.{jpg,jpeg}; do
    filename=$(basename "$file")
    echo "Uploading $filename..."
    # Extract just the filename without extension for clean public_id

@@ -13,6 +13,7 @@ export const denominationOptions = [
   { value: "Æ2", label: "Æ2" },
   { value: "Æ3", label: "Æ3" },
   { value: "Æ4", label: "Æ4" },
+  { value: "Æ", label: "Æ" },
   { value: "Other", label: "Other" },
 ];
 
@@ -27,18 +28,12 @@ export const authorityOptions = [
 export const civilizationOptions = [
   { value: "Roman Imperial", label: "Roman Imperial" },
   { value: "Roman Republic", label: "Roman Republic" },
+  { value: "Roman Provincial", label: "Roman Provincial" },
   { value: "Byzantine", label: "Byzantine" },
+  { value: "Ancient Greece", label: "Ancient Greece" },
   { value: "Persian", label: "Persian" },
   { value: "Parthian", label: "Parthian" },
   { value: "Sassanian", label: "Sassanian" },
-  {
-    value: "Ancient Greece, Kingdom of Macedon",
-    label: "Ancient Greece, Kingdom of Macedon",
-  },
-  {
-    value: "Ancient Greece, Kingdom of Cappdocia",
-    label: "Ancient Greece, Kingdom of Cappdocia",
-  },
 ];
 
 export const dieAxisOptions = [
@@ -55,3 +50,17 @@ export const dieAxisOptions = [
   { value: "2h", label: "2h" },
   { value: "1h", label: "1h" },
 ];
+
+// Civilization-specific options
+export const civSpecificOptions = {
+  "Ancient Greece": [
+    { value: "Kingdom of Macedon", label: "Kingdom of Macedon" },
+    { value: "Kingdom of Cappadocia", label: "Kingdom of Cappadocia" },
+  ],
+  "Roman Provincial": [
+    { value: "Alexandria", label: "Alexandria" },
+    { value: "Antioch", label: "Antioch" },
+    { value: "Moesia Superior", label: "Moesia Superior" },
+    { value: "Moesia Inferior", label: "Moesia Inferior" },
+  ],
+};

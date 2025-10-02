@@ -21,6 +21,7 @@ export const somnus_collection = pgTable(
     authority: d.text().notNull(),
     denomination: d.text().notNull(),
     civ: d.text().notNull(), // Civilization/Culture
+    civ_specific: d.text(), // Specific civilization details
     reign_start: d.integer(),
     reign_end: d.integer(),
 
@@ -64,6 +65,8 @@ export const somnus_collection = pgTable(
     // Image links
     image_link_o: d.text(), // Obverse image link
     image_link_r: d.text(), // Reverse image link
+    image_link_sketch_o: d.text(), // Obverse sketch image link
+    image_link_sketch_r: d.text(), // Reverse sketch image link
     image_link_zoom_o: d.text(), // Obverse zoom photography URL
     image_link_zoom_r: d.text(), // Reverse zoom photography URL
     image_rotation: d.text().array(), // Array of image links with rotation suffixes
