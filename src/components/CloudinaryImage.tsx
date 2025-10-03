@@ -22,9 +22,10 @@ export function prefetchCloudinaryImage(
     width,
     height,
     crop: {
-      type: "auto",
+      type: "pad",
       source: true,
     },
+    background: "transparent",
   });
 }
 
@@ -43,12 +44,13 @@ export default function CloudinaryImage({
   return (
     <CldImage
       src={src}
-      width={width} // Transform the image: auto-crop to square aspect_ratio
+      width={width}
       height={height}
       crop={{
-        type: "auto",
+        type: "pad",
         source: true,
       }}
+      background="transparent"
       alt={alt}
     />
   );

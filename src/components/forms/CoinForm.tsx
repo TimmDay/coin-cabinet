@@ -5,6 +5,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { CoinsWithoutImages } from "~/components/ui/CoinsWithoutImages";
 import { ImageNamingTool } from "~/components/ui/ImageNamingTool";
 import { RoundButton } from "~/components/ui/RoundButton";
 import { Select } from "~/components/ui/Select";
@@ -805,11 +806,17 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
       {/* Image Naming Tool - Positioned to the right on wide screens */}
       <div className="absolute top-0 left-full ml-8 hidden w-80 xl:block">
         <ImageNamingTool watch={watch} />
+        <div className="mt-6">
+          <CoinsWithoutImages />
+        </div>
       </div>
 
       {/* Image Naming Tool - Below form on smaller screens */}
       <div className="mt-8 xl:hidden">
         <ImageNamingTool watch={watch} />
+        <div className="mt-6">
+          <CoinsWithoutImages />
+        </div>
       </div>
     </div>
   );

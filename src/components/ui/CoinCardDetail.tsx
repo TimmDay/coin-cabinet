@@ -375,9 +375,10 @@ export function CoinCardDetail({
                   width="600"
                   height="600"
                   crop={{
-                    type: "auto",
+                    type: "pad",
                     source: true,
                   }}
+                  background="transparent"
                   alt={
                     isReverse
                       ? (desc_r ?? "Reverse side of coin")

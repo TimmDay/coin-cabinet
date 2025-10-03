@@ -19,19 +19,52 @@
    note: Trim (crop to up the coin edge) can perhaps be applied on image fetch later.
 
    ```bash
-   for file in ~/Desktop/somnus_collection_images/named_for_upload/*.{jpg,jpeg}; do
-   filename=$(basename "$file")
-   echo "Uploading $filename..."
-   # Extract just the filename without extension for clean public_id
-   filename_no_ext="${filename%.*}"
-   cld uploader upload "$file" \
-       -o public_id "$filename_no_ext" \
-       -o use_filename false \
-       -o unique_filename false \
-       -o effect "background_removal" \
-       -o format "png" \
-       -o quality "auto:best" || echo "Failed to upload $filename"
+   # Set shell options to handle missing files gracefully
+   shopt -s nullglob 2>/dev/null || setopt null_glob 2>/dev/null
+
+   # Process each file type separately to avoid glob expansion issues
+   for ext in jpg jpeg png; do
+       for file in ~/Desktop/somnus_collection_images/named_for_upload/*.$ext; do
+           # Skip if no files of this extension exist
+           [ ! -f "$file" ] && continue
+
+           filename=$(basename "$file")
+           echo "Uploading $filename..."
+           # Extract just the filename without extension for clean public_id
+           filename_no_ext="${filename%.*}"
+
+           # Try background removal with error handling
+           if cld uploader upload "$file" \
+               -o public_id "$filename_no_ext" \
+               -o use_filename false \
+               -o unique_filename false \
+               -o effect "background_removal" \
+               -o format "png" \
+               -o quality "lossless" \
+               -o flags "preserve_transparency" 2>/dev/null; then
+               echo "✅ Success: $filename"
+           else
+               echo "⚠️  Background removal failed for $filename, trying alternative method..."
+               # Fallback: try with improved edge detection
+               if cld uploader upload "$file" \
+                   -o public_id "$filename_no_ext" \
+                   -o use_filename false \
+                   -o unique_filename false \
+                   -o effect "improve" \
+                   -o effect "background_removal:fine_edges" \
+                   -o format "png" \
+                   -o quality "lossless" \
+                   -o flags "preserve_transparency"; then
+                   echo "✅ Success with alternative method: $filename"
+               else
+                   echo "❌ Failed completely: $filename - may need manual processing"
+               fi
+           fi
+       done
    done
+
+   # Reset shell options
+   shopt -u nullglob 2>/dev/null || unsetopt null_glob 2>/dev/null
    ```
 
 4. You can now use the image ids in the CloudinaryImage component and they will pull from the image store, auto optimise, etc.

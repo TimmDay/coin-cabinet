@@ -1,11 +1,18 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { SomnusCollection, NewSomnusCollection } from "~/server/db/schema";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { NewSomnusCollection, SomnusCollection } from "~/server/db/schema";
 
 // Custom React Query hooks for somnus collection
 export function useSomnusCoins() {
   return useQuery({
     queryKey: ["somnus-coins"],
     queryFn: fetchSomnusCoins,
+  });
+}
+
+export function useAllSomnusCoins() {
+  return useQuery({
+    queryKey: ["all-somnus-coins"],
+    queryFn: fetchAllSomnusCoins,
   });
 }
 
@@ -41,46 +48,76 @@ export function useDeleteSomnusCoin() {
 
 // API utility functions
 async function fetchSomnusCoins(): Promise<SomnusCollection[]> {
-  const response = await fetch('/api/somnus-collection');
-  const result = await response.json() as { success: boolean; message?: string; data?: SomnusCollection[] };
+  const response = await fetch("/api/somnus-collection");
+  const result = (await response.json()) as {
+    success: boolean;
+    message?: string;
+    data?: SomnusCollection[];
+  };
 
   if (!response.ok || !result.success) {
-    throw new Error(result.message ?? 'Failed to fetch somnus coins');
+    throw new Error(result.message ?? "Failed to fetch somnus coins");
   }
 
   return result.data ?? [];
 }
 
-async function insertSomnusCoin(coinData: NewSomnusCollection): Promise<SomnusCollection> {
-  const response = await fetch('/api/somnus-collection/add-coin', {
-    method: 'POST',
+async function fetchAllSomnusCoins(): Promise<SomnusCollection[]> {
+  const response = await fetch("/api/somnus-collection?includeAll=true");
+  const result = (await response.json()) as {
+    success: boolean;
+    message?: string;
+    data?: SomnusCollection[];
+  };
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message ?? "Failed to fetch all somnus coins");
+  }
+
+  return result.data ?? [];
+}
+
+async function insertSomnusCoin(
+  coinData: NewSomnusCollection,
+): Promise<SomnusCollection> {
+  const response = await fetch("/api/somnus-collection/add-coin", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(coinData),
   });
 
-  const result = await response.json() as { success: boolean; message?: string; coin?: SomnusCollection };
+  const result = (await response.json()) as {
+    success: boolean;
+    message?: string;
+    coin?: SomnusCollection;
+  };
 
   if (!response.ok || !result.success) {
-    throw new Error(result.message ?? 'Failed to add coin to somnus collection');
+    throw new Error(
+      result.message ?? "Failed to add coin to somnus collection",
+    );
   }
 
   return result.coin!;
 }
 
 async function deleteSomnusCoin(id: number): Promise<void> {
-  const response = await fetch('/api/somnus-collection', {
-    method: 'DELETE',
+  const response = await fetch("/api/somnus-collection", {
+    method: "DELETE",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ id }),
   });
 
-  const result = await response.json() as { success: boolean; message?: string };
+  const result = (await response.json()) as {
+    success: boolean;
+    message?: string;
+  };
 
   if (!response.ok || !result.success) {
-    throw new Error(result.message ?? 'Failed to delete somnus coin');
+    throw new Error(result.message ?? "Failed to delete somnus coin");
   }
 }

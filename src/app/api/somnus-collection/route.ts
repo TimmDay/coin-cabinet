@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "~/lib/supabase-server";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     console.log(
       "🚀 GET /api/somnus-collection - Fetching coins (public access)",
@@ -10,13 +10,21 @@ export async function GET() {
     // Use server client but don't require authentication for GET
     const supabase = await createClient();
 
-    // Fetch somnus coins with obverse images, sorted by earliest mint year (public access - no auth required)
-    const { data, error } = await supabase
-      .from("somnus_collection")
-      .select("*")
-      .not("image_link_o", "is", null)
-      .neq("image_link_o", "")
-      .order("mint_year_earliest", { ascending: true, nullsFirst: false });
+    // Check if we should include all coins (for admin purposes)
+    const { searchParams } = new URL(request.url);
+    const includeAll = searchParams.get("includeAll") === "true";
+
+    let query = supabase.from("somnus_collection").select("*");
+
+    // Only filter for coins with obverse images if not requesting all coins
+    if (!includeAll) {
+      query = query.not("image_link_o", "is", null).neq("image_link_o", "");
+    }
+
+    const { data, error } = await query.order("mint_year_earliest", {
+      ascending: true,
+      nullsFirst: false,
+    });
 
     if (error) {
       console.error("Supabase error:", error);
@@ -30,7 +38,9 @@ export async function GET() {
       );
     }
 
-    console.log(`📋 Found ${data.length} coins with obverse images`);
+    console.log(
+      `📋 Found ${data.length} coins${includeAll ? " (including all)" : " with obverse images"}`,
+    );
     return NextResponse.json({
       success: true,
       data,
