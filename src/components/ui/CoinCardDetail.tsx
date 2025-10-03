@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { CldImage } from "next-cloudinary";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { prefetchCloudinaryImage } from "~/components/CloudinaryImage";
+import { useViewport } from "~/hooks/useViewport";
 import { formatYearRange } from "~/lib/utils/date-formatting";
 import { InfoTooltip } from "./InfoTooltip";
 
@@ -17,6 +18,7 @@ type CoinCardDetailProps = {
   previousImageSrc?: string;
   previousReverseImageSrc?: string;
   civ?: string;
+  civ_specific?: string;
   denomination?: string;
   mint?: string;
   mint_year_earliest?: number;
@@ -46,6 +48,7 @@ export function CoinCardDetail({
   previousImageSrc,
   previousReverseImageSrc,
   civ,
+  civ_specific,
   denomination,
   mint,
   mint_year_earliest,
@@ -75,6 +78,7 @@ export function CoinCardDetail({
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 }); // percentage values
   const [isFlipFading, setIsFlipFading] = useState(false);
   const imageRef = useRef<HTMLDivElement>(null);
+  const { isMobile } = useViewport();
 
   // Refs for chevron buttons
   const previousButtonRef = useRef<HTMLButtonElement>(null);
@@ -303,45 +307,75 @@ export function CoinCardDetail({
 
       {/* Modal Content */}
       <div className="relative z-10 flex min-h-full w-full max-w-7xl p-4 lg:max-h-[90vh] lg:min-h-0">
-        {/* Previous Button */}
-        <button
-          ref={previousButtonRef}
-          onClick={handlePrevious}
-          onKeyDown={handlePreviousKeyDown}
-          onMouseEnter={handlePreviousHover}
-          disabled={isTransitioning}
-          className="absolute top-1/2 left-4 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
-          aria-label="Previous coin"
-        >
-          <ChevronLeft className="h-8 w-8" />
-        </button>
-
-        {/* Next Button */}
-        <button
-          ref={nextButtonRef}
-          onClick={handleNext}
-          onKeyDown={handleNextKeyDown}
-          onMouseEnter={handleNextHover}
-          disabled={isTransitioning}
-          className="absolute top-1/2 right-4 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50 lg:right-auto lg:left-1/2 lg:translate-x-[calc(33.33%+5rem)]"
-          aria-label="Next coin"
-        >
-          <ChevronRight className="h-8 w-8" />
-        </button>
-
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute -top-12 right-0 z-20 rounded-full bg-slate-800/50 p-2 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white"
+          className="absolute top-4 right-4 z-20 rounded-full bg-slate-800/50 p-2 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white lg:-top-12"
           aria-label="Close modal"
         >
           <X className="h-6 w-6" />
         </button>
 
+        {/* Desktop Chevrons */}
+        {!isMobile && (
+          <>
+            <button
+              onClick={handlePrevious}
+              onKeyDown={handlePreviousKeyDown}
+              onMouseEnter={handlePreviousHover}
+              disabled={isTransitioning}
+              className="absolute top-1/2 left-4 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
+              aria-label="Previous coin"
+            >
+              <ChevronLeft className="h-8 w-8" />
+            </button>
+
+            <button
+              onClick={handleNext}
+              onKeyDown={handleNextKeyDown}
+              onMouseEnter={handleNextHover}
+              disabled={isTransitioning}
+              className="absolute top-1/2 left-1/2 z-20 translate-x-[calc(33.33%+5rem)] -translate-y-1/2 cursor-pointer rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
+              aria-label="Next coin"
+            >
+              <ChevronRight className="h-8 w-8" />
+            </button>
+          </>
+        )}
+
         {/* Main Content Layout */}
         <div className="flex w-full flex-col gap-6 lg:flex-row lg:gap-8">
           {/* Top/Left Side - Image */}
-          <div className="flex items-center justify-center lg:flex-[2]">
+          <div className="relative flex items-center justify-center lg:flex-[2]">
+            {/* Mobile Chevrons */}
+            {isMobile && (
+              <>
+                <button
+                  ref={previousButtonRef}
+                  onClick={handlePrevious}
+                  onKeyDown={handlePreviousKeyDown}
+                  onMouseEnter={handlePreviousHover}
+                  disabled={isTransitioning}
+                  className="absolute bottom-4 left-4 z-20 cursor-pointer rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
+                  aria-label="Previous coin"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+
+                <button
+                  ref={nextButtonRef}
+                  onClick={handleNext}
+                  onKeyDown={handleNextKeyDown}
+                  onMouseEnter={handleNextHover}
+                  disabled={isTransitioning}
+                  className="absolute right-4 bottom-4 z-20 cursor-pointer rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
+                  aria-label="Next coin"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+              </>
+            )}
+
             <div
               className="relative cursor-pointer overflow-visible"
               onClick={handleImageClick}
@@ -396,9 +430,8 @@ export function CoinCardDetail({
                 isTransitioning ? "opacity-0" : "opacity-100"
               }`}
             >
-              {/* Nickname Header */}
               <h2 className="text-l mb-3 text-slate-400">
-                {`${civ?.toUpperCase()}. ${mint}. ${formatYearRange(mint_year_earliest, mint_year_latest)}`}
+                {`${civ?.toUpperCase()}${civ_specific ? ` (${civ_specific})` : ""}. ${mint}. ${formatYearRange(mint_year_earliest, mint_year_latest)}`}
               </h2>
 
               {/* Physical Properties Line */}

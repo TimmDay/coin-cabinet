@@ -6,6 +6,13 @@
 - [ ] name all the images that I have
 - [ ] upload all the coins to db
 
+- [ ] re-style the page titles. thinner, classier text. smaller. underline of small width at center of heading
+
+- [ ] tweak styles for CoinCardDetail.
+  - [ ] flip btn under image. chevrons either side of that, rather that either side of image.
+  - [x] info area includes the civ_detail field (if present) directly after the civ field display.
+- [ ] mobile styles for the CoinCardDetail
+
 - [ ] include photo credits in UI (if present in the image id -src). on hover for grid items and explicitly in CoinCardDetail info area.
 
 ### UI

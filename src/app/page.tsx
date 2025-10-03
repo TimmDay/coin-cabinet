@@ -8,10 +8,10 @@ export default function HomePage() {
           <h1 className="text-5xl font-bold tracking-tight text-slate-200 sm:text-6xl lg:text-7xl">
             The Coin <span className="heading-accent">Cabinet</span>
           </h1>
-          <p className="coin-description mx-auto max-w-2xl text-xl">
+          {/* <p className="coin-description mx-auto max-w-2xl text-xl">
             A curated collection of ancient coins, combining the art of
             numismatics with modern photography and digital presentation.
-          </p>
+          </p> */}
         </div>
 
         <CoinGrid />

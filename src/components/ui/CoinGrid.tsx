@@ -177,6 +177,7 @@ export function CoinGrid() {
             : coinsList[coinsList.length - 1]?.image_link_r ?? undefined
         }
         civ={currentCoin?.civ ?? undefined}
+        civ_specific={currentCoin?.civ_specific ?? undefined}
         denomination={currentCoin?.denomination ?? undefined}
         mint={currentCoin?.mint ?? undefined}
         mint_year_earliest={currentCoin?.mint_year_earliest ?? undefined}
