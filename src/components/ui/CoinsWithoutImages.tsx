@@ -35,7 +35,7 @@ export function CoinsWithoutImages() {
       const missingReverse =
         !coin.image_link_r || coin.image_link_r.trim() === "";
       return missingObverse || missingReverse;
-    }) || [];
+    }) ?? [];
 
   // Debug: log the filtering results
   console.log("All coins:", coins?.length);
