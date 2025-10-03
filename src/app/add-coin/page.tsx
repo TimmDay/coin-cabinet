@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CoinForm } from "~/components/forms/CoinForm";
 import { useAuth } from "~/components/providers/auth-provider";
+import { PageTitle } from "~/components/ui/PageTitle";
 import type { CoinFormData } from "~/lib/validations/coin-form";
 
 type ApiResponse = {
@@ -64,10 +65,10 @@ export default function AddCoinPage() {
     <main className="min-h-screen">
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12 text-center">
-          <h1 className="text-5xl font-bold tracking-tight text-slate-200 sm:text-6xl">
-            Add <span className="text-auth-accent">Coin</span>
-          </h1>
-          <p className="coin-description mt-4 text-xl">
+          <PageTitle authPage className="mb-6">
+            Add Coin
+          </PageTitle>
+          <p className="coin-description text-xl">
             {user
               ? "Add a new coin to your collection"
               : "Sign in to add coins to your collection"}

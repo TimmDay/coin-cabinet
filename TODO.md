@@ -5,9 +5,8 @@
 - [ ] name all the images that I have
 - [ ] upload all the coins to db
 
-- [ ] re-style the page titles. thinner, classier text. smaller. underline of small width at center of heading
-
-- [ ] include photo credits in UI (if present in the image id -src). on hover for grid items and explicitly in CoinCardDetail info area.
+- [ ] db schema updates. legend_o_expanded, legend_r_expanded, (latin_translation_o, latin_translation_r)
+- [ ] db schema updates. ex_somnus (bool), is_somnus (bool), is_stock (bool)
 
 ### UI
 
@@ -17,13 +16,16 @@
   - historical notes?
 
 - [ ] style up the CoinGrid controls (radio group)
+
 - [ ] pre-fetch the coin card detail when the grid item is hovered for X ms (so it opens instantly when clicked)
 
 - [ ] can/should we use the semantic html5 elements like <article>, <section>, <nav> etc?
 
 - [ ] Explore UI component libraries. Pick one as a reference and put it in copilot-instructions. (shadcn or daisy)
 
-- [ ] icon alignm,ent. chevrons don't look centered in their circles. maybe pull it out to a common component too./
+- [ ] AI STUCK icon alignment. chevrons don't look centered in their circles. maybe pull it out to a common component too. manual attention required.
+
+- [ ] include photo credits in UI (if present in the image id -src). on hover for grid items and explicitly in CoinCardDetail info area.
 
 ### database
 
@@ -51,13 +53,15 @@
 - [ ] find scale and weigh coins to confirm current data.
 - [ ] order coin capsules to bulk up supply.
 - [ ] research/plan beginner macro photography setup (getting most out of phone that I can).
+- [ ] research how I will make coin sketches from plates (ipad?)
+- [ ] research expanded latin and translation text for legends.
 
 ### auth
 
 - [ ] Config: review Supabase auth. Is it secure, how can I hide it from normal visitor UI.
+- [ ] have sign in using google instead of (in addition to?) user/pass. MFA etc.
 - [ ] what is drizzle and how should I use it?
 - [ ] consider site functionality going forward. Will a regular visitor ever need to login (ie maintain their own collection?)
-- [ ] have sign in using google instead of (in addition to?) user/pass. MFA etc.
 
 ## site styles
 
@@ -70,6 +74,8 @@
 
 - [ ] site logo - create a beautiful one. Somnus or something related.
 - [ ] site favicon
+- [ ] expanded legends - research them and save to the db.
+- [ ] expanded info. Flavour text, but also expanded legends and latin translation. Is icons with popovers the best way to do it?
 
 - [ ] a (free to use) map of the roman empire area. Zoomable, pannable.
   - [ ] needs it's own page/route
@@ -191,3 +197,4 @@ articles, guides
 - [x] tweak styles for CoinCardDetail.
 - [x] flip btn reposition on mobile.
 - [x] mobile styles for the CoinCardDetail
+- [x] re-style the page titles. thinner, classier text. smaller. underline of small width at center of heading

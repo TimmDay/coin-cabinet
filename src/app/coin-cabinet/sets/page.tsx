@@ -1,12 +1,12 @@
+import { PageTitle } from "~/components/ui/PageTitle";
+
 export default function SetsPage() {
   return (
     <main className="min-h-screen">
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12 text-center">
-          <h1 className="text-5xl font-bold tracking-tight text-slate-200 sm:text-6xl">
-            Themed <span className="heading-accent">Sets</span>
-          </h1>
-          <p className="coin-description mt-4 text-xl">
+          <PageTitle className="mb-6">Themed Sets</PageTitle>
+          <p className="coin-description text-xl">
             Curated collections organized by period, theme, or provenance
           </p>
         </div>

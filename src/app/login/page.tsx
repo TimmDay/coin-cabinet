@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { LoginForm } from "~/components/auth/LoginForm";
 import { useAuth } from "~/components/providers/auth-provider";
+import { PageTitle } from "~/components/ui/PageTitle";
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
@@ -44,10 +45,10 @@ export default function LoginPage() {
     <main className="min-h-screen">
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12 text-center">
-          <h1 className="text-5xl font-bold tracking-tight text-slate-200 sm:text-6xl">
-            Sign <span className="heading-accent">In</span>
-          </h1>
-          <p className="coin-description mt-4 text-xl">
+          <PageTitle authPage className="mb-6">
+            Sign In
+          </PageTitle>
+          <p className="coin-description text-xl">
             Sign in to manage your collection
           </p>
         </div>

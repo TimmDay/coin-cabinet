@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useAuth } from "~/components/providers/auth-provider";
+import { PageTitle } from "~/components/ui/PageTitle";
 import { useAddFruit, useDeleteFruit, useFruits } from "~/lib/api/fruits";
 
 type Fruit = {
@@ -41,12 +42,8 @@ export default function AdminPage() {
     <main className="min-h-screen">
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12 text-center">
-          <h1 className="text-5xl font-bold tracking-tight text-slate-200 sm:text-6xl">
-            Admin <span className="heading-accent">Panel</span>
-          </h1>
-          <p className="coin-description mt-4 text-xl">
-            Manage fruits collection
-          </p>
+          <PageTitle className="mb-6">Admin Panel</PageTitle>
+          <p className="coin-description text-xl">Manage fruits collection</p>
           {!user && (
             <p className="coin-description mt-2">
               Sign in to add or delete fruits

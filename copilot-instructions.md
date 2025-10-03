@@ -26,7 +26,8 @@ TypeScript: strict mode; prefer explicit types on public functions.
 When defining a type, use the type syntax and not the interface syntax.
 
 **CRITICAL**: Always use nullish coalescing (`??`) over logical OR (`||`) for null/undefined handling:
-- ✅ `value ?? fallback`  
+
+- ✅ `value ?? fallback`
 - ❌ `value || fallback`
 - Prevents false-y values (0, "", false) from triggering fallbacks
 - Essential for TypeScript compilation and runtime safety
