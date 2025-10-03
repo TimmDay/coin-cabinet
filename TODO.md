@@ -2,16 +2,10 @@
 
 ## Next Thing
 
-- [x] update db schema: image_link_sketch_o, image_link_sketch_r
 - [ ] name all the images that I have
 - [ ] upload all the coins to db
 
 - [ ] re-style the page titles. thinner, classier text. smaller. underline of small width at center of heading
-
-- [ ] tweak styles for CoinCardDetail.
-  - [ ] flip btn under image. chevrons either side of that, rather that either side of image.
-  - [x] info area includes the civ_detail field (if present) directly after the civ field display.
-- [ ] mobile styles for the CoinCardDetail
 
 - [ ] include photo credits in UI (if present in the image id -src). on hover for grid items and explicitly in CoinCardDetail info area.
 
@@ -28,6 +22,8 @@
 - [ ] can/should we use the semantic html5 elements like <article>, <section>, <nav> etc?
 
 - [ ] Explore UI component libraries. Pick one as a reference and put it in copilot-instructions. (shadcn or daisy)
+
+- [ ] icon alignm,ent. chevrons don't look centered in their circles. maybe pull it out to a common component too./
 
 ### database
 
@@ -190,3 +186,8 @@ articles, guides
 - [x] measure the diameters of the items that are missing diameters
 - [x] pre-fetch when the next chevron is hovered.
 - [x] Coin Card detail MVP. coin images o + r, summary info, flavour text
+- [x] info area includes the civ_detail field (if present) directly after the civ field display.
+- [x] update db schema: image_link_sketch_o, image_link_sketch_r
+- [x] tweak styles for CoinCardDetail.
+- [x] flip btn reposition on mobile.
+- [x] mobile styles for the CoinCardDetail

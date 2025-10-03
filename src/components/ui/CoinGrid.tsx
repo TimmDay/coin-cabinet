@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem";
 import { CoinCardDetail } from "~/components/ui/CoinCardDetail";
+import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem";
 import { useSomnusCoins } from "~/lib/api/somnus-collection";
 
 export function CoinGrid() {
@@ -27,8 +27,6 @@ export function CoinGrid() {
   const closeModal = () => {
     setModalState({ isOpen: false, currentIndex: 0, focusTarget: null });
   };
-
-
 
   const handlePreviousWithFocus = () => {
     setModalState((prev) => ({
@@ -147,6 +145,7 @@ export function CoinGrid() {
             diameter={coin.diameter}
             view={viewMode}
             onClick={() => openModal(index)}
+            index={index + 1}
           />
         ))}
       </div>
@@ -158,23 +157,27 @@ export function CoinGrid() {
         reverseImageSrc={currentCoin?.image_link_r ?? undefined}
         nextImageSrc={
           modalState.currentIndex < coinsList.length - 1
-            ? coinsList[modalState.currentIndex + 1]?.image_link_o ?? undefined
-            : coinsList[0]?.image_link_o ?? undefined
+            ? (coinsList[modalState.currentIndex + 1]?.image_link_o ??
+              undefined)
+            : (coinsList[0]?.image_link_o ?? undefined)
         }
         nextReverseImageSrc={
           modalState.currentIndex < coinsList.length - 1
-            ? coinsList[modalState.currentIndex + 1]?.image_link_r ?? undefined
-            : coinsList[0]?.image_link_r ?? undefined
+            ? (coinsList[modalState.currentIndex + 1]?.image_link_r ??
+              undefined)
+            : (coinsList[0]?.image_link_r ?? undefined)
         }
         previousImageSrc={
           modalState.currentIndex > 0
-            ? coinsList[modalState.currentIndex - 1]?.image_link_o ?? undefined
-            : coinsList[coinsList.length - 1]?.image_link_o ?? undefined
+            ? (coinsList[modalState.currentIndex - 1]?.image_link_o ??
+              undefined)
+            : (coinsList[coinsList.length - 1]?.image_link_o ?? undefined)
         }
         previousReverseImageSrc={
           modalState.currentIndex > 0
-            ? coinsList[modalState.currentIndex - 1]?.image_link_r ?? undefined
-            : coinsList[coinsList.length - 1]?.image_link_r ?? undefined
+            ? (coinsList[modalState.currentIndex - 1]?.image_link_r ??
+              undefined)
+            : (coinsList[coinsList.length - 1]?.image_link_r ?? undefined)
         }
         civ={currentCoin?.civ ?? undefined}
         civ_specific={currentCoin?.civ_specific ?? undefined}

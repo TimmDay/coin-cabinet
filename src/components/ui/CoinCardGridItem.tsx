@@ -1,4 +1,5 @@
 import CloudinaryImage from "~/components/CloudinaryImage";
+import { useViewport } from "~/hooks/useViewport";
 import { formatYearRange } from "~/lib/utils/date-formatting";
 
 type CoinCardGridItemProps = {
@@ -22,6 +23,8 @@ type CoinCardGridItemProps = {
   view?: "obverse" | "reverse" | "both";
   /** Click handler for opening modal */
   onClick?: () => void;
+  /** Grid item index (1-based) for zigzag effect */
+  index?: number;
 };
 
 export function CoinCardGridItem({
@@ -35,7 +38,10 @@ export function CoinCardGridItem({
   diameter,
   view = "both",
   onClick,
+  index = 1,
 }: CoinCardGridItemProps) {
+  const { isMobile } = useViewport();
+
   const handleClick = () => {
     onClick?.();
   };
@@ -59,11 +65,18 @@ export function CoinCardGridItem({
 
   const imageSize = calculateImageSize();
 
-  // Keep consistent container sizes but calculate dynamic text positioning
+  // Container sizing - dynamic on mobile, fixed on desktop for alignment
   function getContainerClasses() {
     if (view === "both") {
       return "h-[200px] w-[200px]";
     }
+
+    // On mobile, let container shrink to image size
+    if (isMobile) {
+      return "w-[270px] m-4"; // Fixed width, dynamic height, 8px margin
+    }
+
+    // On desktop, keep fixed size for consistent grid alignment
     return "h-[270px] w-[270px]";
   }
 
@@ -87,9 +100,18 @@ export function CoinCardGridItem({
   const containerClasses = getContainerClasses();
   const textMarginClass = getTextMarginClass();
 
+  // Calculate zigzag offset for mobile single-column layout
+  const getZigzagOffset = () => {
+    if (!isMobile || view === "both") return "";
+    const isOdd = index % 2 === 1;
+    return isOdd ? "-translate-x-6" : "translate-x-6"; // -4px for odd, +4px for even
+  };
+
+  const zigzagOffset = getZigzagOffset();
+
   return (
     <div
-      className="group w-fit cursor-pointer text-center transition-all duration-300 outline-none"
+      className={`group w-fit cursor-pointer text-center transition-all duration-300 outline-none ${zigzagOffset}`}
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={(e) => {
@@ -126,17 +148,20 @@ export function CoinCardGridItem({
           </div>
         )}
       </div>
-      <div
-        className={`${textMarginClass} flex w-0 min-w-full flex-col items-center opacity-0 transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100`}
-      >
-        <p className="text-sm whitespace-nowrap text-slate-300">
-          {civ.toUpperCase()}
-          {nickname && `. ${nickname}`}
-        </p>
-        <p className="text-sm whitespace-nowrap text-slate-300">
-          {denomination} {formatYearRange(mintYearEarliest, mintYearLatest)}
-        </p>
-      </div>
+      {/* Hover text - only render on non-mobile devices */}
+      {!isMobile && (
+        <div
+          className={`${textMarginClass} flex w-0 min-w-full flex-col items-center opacity-0 transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100`}
+        >
+          <p className="text-sm whitespace-nowrap text-slate-300">
+            {civ.toUpperCase()}
+            {nickname && `. ${nickname}`}
+          </p>
+          <p className="text-sm whitespace-nowrap text-slate-300">
+            {denomination} {formatYearRange(mintYearEarliest, mintYearLatest)}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

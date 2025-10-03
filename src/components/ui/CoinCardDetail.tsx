@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { prefetchCloudinaryImage } from "~/components/CloudinaryImage";
 import { useViewport } from "~/hooks/useViewport";
 import { formatYearRange } from "~/lib/utils/date-formatting";
+import { IconButton } from "./IconButton";
 import { InfoTooltip } from "./InfoTooltip";
 
 type CoinCardDetailProps = {
@@ -308,71 +309,72 @@ export function CoinCardDetail({
       {/* Modal Content */}
       <div className="relative z-10 flex min-h-full w-full max-w-7xl p-4 lg:max-h-[90vh] lg:min-h-0">
         {/* Close Button */}
-        <button
+        <IconButton
+          icon={X}
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 rounded-full bg-slate-800/50 p-2 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white lg:-top-12"
+          className="absolute top-4 right-4 z-20 lg:-top-12 lg:right-0"
           aria-label="Close modal"
-        >
-          <X className="h-6 w-6" />
-        </button>
+        />
 
         {/* Desktop Chevrons */}
         {!isMobile && (
           <>
-            <button
+            <IconButton
+              icon={ChevronLeft}
+              iconSize="lg"
+              variant="large"
               onClick={handlePrevious}
               onKeyDown={handlePreviousKeyDown}
               onMouseEnter={handlePreviousHover}
               disabled={isTransitioning}
-              className="absolute top-1/2 left-4 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
+              className="absolute top-1/2 left-4 z-20 -translate-x-0.5 -translate-y-1/2"
               aria-label="Previous coin"
-            >
-              <ChevronLeft className="h-8 w-8" />
-            </button>
+            />
 
-            <button
+            <IconButton
+              icon={ChevronRight}
+              iconSize="lg"
+              variant="large"
               onClick={handleNext}
               onKeyDown={handleNextKeyDown}
               onMouseEnter={handleNextHover}
               disabled={isTransitioning}
-              className="absolute top-1/2 left-1/2 z-20 translate-x-[calc(33.33%+5rem)] -translate-y-1/2 cursor-pointer rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
+              className="absolute top-1/2 left-1/2 z-20 translate-x-[calc(33.33%+5rem+4px)] -translate-y-1/2"
               aria-label="Next coin"
-            >
-              <ChevronRight className="h-8 w-8" />
-            </button>
+            />
           </>
         )}
 
         {/* Main Content Layout */}
-        <div className="flex w-full flex-col gap-6 lg:flex-row lg:gap-8">
+        <div className="flex w-full flex-col lg:flex-row lg:gap-8">
           {/* Top/Left Side - Image */}
           <div className="relative flex items-center justify-center lg:flex-[2]">
             {/* Mobile Chevrons */}
             {isMobile && (
               <>
-                <button
+                <IconButton
                   ref={previousButtonRef}
+                  icon={ChevronLeft}
+                  variant="large"
                   onClick={handlePrevious}
                   onKeyDown={handlePreviousKeyDown}
                   onMouseEnter={handlePreviousHover}
                   disabled={isTransitioning}
-                  className="absolute bottom-4 left-4 z-20 cursor-pointer rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
+                  className="absolute bottom-4 left-4 z-20 -translate-x-0.5"
                   aria-label="Previous coin"
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
+                />
 
-                <button
+                <IconButton
                   ref={nextButtonRef}
+                  icon={ChevronRight}
+                  variant="large"
                   onClick={handleNext}
                   onKeyDown={handleNextKeyDown}
                   onMouseEnter={handleNextHover}
                   disabled={isTransitioning}
-                  className="absolute right-4 bottom-4 z-20 cursor-pointer rounded-full bg-slate-800/50 p-3 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
+                  className="absolute right-4 bottom-4 z-20 translate-x-0.5"
                   aria-label="Next coin"
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </button>
+                />
               </>
             )}
 
@@ -381,7 +383,9 @@ export function CoinCardDetail({
               onClick={handleImageClick}
               ref={imageRef}
             >
-              {/* Current Image */}
+              {/* Current Image - wrapped in v-stacking container for btn beneath*/}
+
+              {/* <div className="flex flex-col items-center"> */}
               <div
                 key={displayKey}
                 className={`transition-all duration-200 ease-in-out ${isFlipFading ? "opacity-0" : "opacity-100"} ${
@@ -420,16 +424,31 @@ export function CoinCardDetail({
                   }
                 />
               </div>
+
+              {/* <button>banana</button>
+              </div> */}
             </div>
           </div>
 
           {/* Bottom/Right Side - Information Panel */}
-          <div className="mr-0 rounded-lg bg-black p-6 backdrop-blur-sm lg:-mr-8 lg:max-h-[80vh] lg:flex-1 lg:overflow-y-auto lg:p-8">
+          <div className="mr-0 bg-black p-6 backdrop-blur-sm lg:-mr-8 lg:max-h-[80vh] lg:flex-1 lg:overflow-y-auto lg:rounded-lg lg:p-8">
             <div
               className={`text-center transition-opacity duration-200 ${
                 isTransitioning ? "opacity-0" : "opacity-100"
               }`}
             >
+              {/* Mobile Flip Button - at top */}
+              {isMobile && (
+                <div className="mb-6 flex items-center justify-center">
+                  <button
+                    onClick={handleFlip}
+                    className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
+                  >
+                    FLIP
+                  </button>
+                </div>
+              )}
+
               <h2 className="text-l mb-3 text-slate-400">
                 {`${civ?.toUpperCase()}${civ_specific ? ` (${civ_specific})` : ""}. ${mint}. ${formatYearRange(mint_year_earliest, mint_year_latest)}`}
               </h2>
@@ -463,24 +482,36 @@ export function CoinCardDetail({
                 )}
               </div>
 
-              {/* Action Buttons */}
-              <div className="mt-6 flex items-center justify-center gap-3">
-                {/* Flip Button */}
-                <button
-                  onClick={handleFlip}
-                  className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
-                >
-                  FLIP
-                </button>
+              {/* Action Buttons - Desktop only */}
+              {!isMobile && (
+                <div className="mt-6 flex items-center justify-center gap-3">
+                  {/* Flip Button */}
+                  <button
+                    onClick={handleFlip}
+                    className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
+                  >
+                    FLIP
+                  </button>
 
-                {/* Info Tooltip - Only show if flavour_text is available */}
-                {flavour_text && (
+                  {/* Info Tooltip - Only show if flavour_text is available */}
+                  {flavour_text && (
+                    <InfoTooltip
+                      content={`${coinAge ? `~${coinAge} years old\n\n` : ""}${flavour_text}`}
+                      id="coin-tooltip"
+                    />
+                  )}
+                </div>
+              )}
+
+              {/* Mobile Info Tooltip - separate from flip button */}
+              {isMobile && flavour_text && (
+                <div className="mt-6 flex items-center justify-center">
                   <InfoTooltip
                     content={`${coinAge ? `~${coinAge} years old\n\n` : ""}${flavour_text}`}
                     id="coin-tooltip"
                   />
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
