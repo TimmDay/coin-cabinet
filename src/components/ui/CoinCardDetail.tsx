@@ -281,6 +281,8 @@ export function CoinCardDetail({
         handlePrevious();
       } else if (e.key === "ArrowRight") {
         handleNext();
+      } else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        handleFlip();
       }
     };
 
@@ -294,7 +296,7 @@ export function CoinCardDetail({
       document.removeEventListener("keydown", handleKeyPress);
       document.body.style.overflow = "unset";
     };
-  }, [isOpen, onClose, handlePrevious, handleNext]);
+  }, [isOpen, onClose, handlePrevious, handleNext, handleFlip]);
 
   if (!isOpen) return null;
 

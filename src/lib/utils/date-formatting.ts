@@ -10,6 +10,15 @@ export function formatYearRange(
 ): string {
   if (!earliest || !latest) return "";
 
+  // If start and end dates are the same, show single year
+  if (earliest === latest) {
+    if (earliest > 0) {
+      return `(${earliest} CE)`;
+    } else {
+      return `(${Math.abs(earliest)} BCE)`;
+    }
+  }
+
   if (earliest > 0 && latest > 0) {
     // Both positive - use CE
     return `(${earliest}—${latest} CE)`;

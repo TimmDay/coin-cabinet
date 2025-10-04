@@ -22,6 +22,7 @@ export const authorityOptions = [
   { value: "Caesar", label: "Caesar" },
   { value: "Augusta", label: "Augusta" },
   { value: "King", label: "King" },
+  { value: "Republican", label: "Republican" },
   { value: "Commemorative", label: "Commemorative" },
 ];
 

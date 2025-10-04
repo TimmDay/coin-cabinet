@@ -23,10 +23,18 @@
    shopt -s nullglob 2>/dev/null || setopt null_glob 2>/dev/null
 
    # Process each file type separately to avoid glob expansion issues
-   for ext in jpg jpeg png; do
-       for file in ~/Desktop/somnus_collection_images/named_for_upload/*.$ext; do
-           # Skip if no files of this extension exist
-           [ ! -f "$file" ] && continue
+   extensions=("jpg" "jpeg" "png" "JPG" "JPEG" "PNG")
+
+   for ext in "${extensions[@]}"; do
+       # Create array of files for this extension
+       files=(~/Desktop/somnus_collection_images/named_for_upload/*.$ext)
+
+       # Skip if no files of this extension exist (nullglob makes empty array)
+       if [[ ${#files[@]} -eq 0 ]]; then
+           continue
+       fi
+
+       for file in "${files[@]}"; do
 
            filename=$(basename "$file")
            echo "Uploading $filename..."
@@ -40,22 +48,19 @@
                -o unique_filename false \
                -o effect "background_removal" \
                -o format "png" \
-               -o quality "lossless" \
-               -o flags "preserve_transparency" 2>/dev/null; then
+               -o quality "auto" \
+               -o flags "preserve_transparency"; then
                echo "✅ Success: $filename"
            else
-               echo "⚠️  Background removal failed for $filename, trying alternative method..."
-               # Fallback: try with improved edge detection
+               echo "⚠️  Background removal failed for $filename, trying backup method..."
+               echo "📤 Uploading raw image without background removal: $filename"
+               # Fallback: upload raw image in original format without any processing
                if cld uploader upload "$file" \
                    -o public_id "$filename_no_ext" \
                    -o use_filename false \
                    -o unique_filename false \
-                   -o effect "improve" \
-                   -o effect "background_removal:fine_edges" \
-                   -o format "png" \
-                   -o quality "lossless" \
-                   -o flags "preserve_transparency"; then
-                   echo "✅ Success with alternative method: $filename"
+                   -o quality "auto"; then
+                   echo "✅ Success with backup method: $filename (no background removal applied)"
                else
                    echo "❌ Failed completely: $filename - may need manual processing"
                fi
