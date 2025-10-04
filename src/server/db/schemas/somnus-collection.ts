@@ -50,7 +50,7 @@ export const somnus_collection = pgTable(
     reference_link: d.text(),
 
     // Purchase information
-    purchase_type: d.text(), // 'auction', 'retail', 'private', 'gift', 'inheritance', 'other'
+    purchase_type: d.text(), // 'auction', 'auction aftermarket', 'retail', 'private', 'gift', 'inheritance', 'other'
     purchase_date: d.date(),
     price_aud: d.doublePrecision(),
     price_shipping_aud: d.doublePrecision(),

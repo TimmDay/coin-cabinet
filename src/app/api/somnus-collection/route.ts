@@ -21,10 +21,19 @@ export async function GET(request: Request) {
       query = query.not("image_link_o", "is", null).neq("image_link_o", "");
     }
 
-    const { data, error } = await query.order("mint_year_earliest", {
-      ascending: true,
-      nullsFirst: false,
-    });
+    const { data, error } = await query
+      .order("reign_start", {
+        ascending: true,
+        nullsFirst: false,
+      })
+      .order("mint_year_earliest", {
+        ascending: true,
+        nullsFirst: false,
+      })
+      .order("diameter", {
+        ascending: true,
+        nullsFirst: false,
+      });
 
     if (error) {
       console.error("Supabase error:", error);

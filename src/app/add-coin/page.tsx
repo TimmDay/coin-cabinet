@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CoinForm } from "~/components/forms/CoinForm";
 import { useAuth } from "~/components/providers/auth-provider";
 import { PageTitle } from "~/components/ui/PageTitle";
@@ -15,6 +15,17 @@ export default function AddCoinPage() {
   const { user, loading } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  // Auto-clear success message
+  useEffect(() => {
+    if (message && message.includes("🌙 Somnus accepts your offering")) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   const handleFormSubmit = async (data: CoinFormData) => {
     if (!user) {
@@ -37,13 +48,18 @@ export default function AddCoinPage() {
       const result = (await response.json()) as ApiResponse;
 
       if (result.success) {
-        setMessage("✅ Somnus accepts your offering");
+        setMessage("🌙 Somnus accepts your offering");
       } else {
         setMessage(`❌ Error: ${result.message}`);
+        throw new Error(result.message || "Submission failed");
       }
     } catch (error) {
-      setMessage("❌ Failed to add coin to collection");
+      // Set error message but rethrow so form knows it failed
+      if (!message?.includes("❌ Error:")) {
+        setMessage("❌ Failed to add coin to collection");
+      }
       console.error("Error:", error);
+      throw error; // Rethrow so form doesn't clear
     } finally {
       setIsLoading(false);
     }

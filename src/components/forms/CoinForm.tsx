@@ -40,12 +40,11 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
   const handleFormSubmit = async (data: CoinFormData) => {
     try {
       await onSubmit(data);
-
-      // Don't clear form on success for now to allow multiple similar entries.
-      // Clear form button is at base.
+      // Only clear form if onSubmit completes without throwing
       reset(); // Clear form on success
     } catch (error) {
       console.error("Form submission error:", error);
+      // Do NOT clear form on failure - preserve user input
     }
   };
 
@@ -225,11 +224,6 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   step="0.1"
                   className={inputClass}
                   placeholder="e.g., 19.2"
-                  onFocus={(e) => {
-                    if (!e.target.value) {
-                      e.target.value = "18";
-                    }
-                  }}
                 />
                 {errors.diameter && (
                   <p className={errorClass}>{errors.diameter.message}</p>
@@ -247,11 +241,6 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   step="0.01"
                   className={inputClass}
                   placeholder="e.g., 3.45"
-                  onFocus={(e) => {
-                    if (!e.target.value) {
-                      e.target.value = "3";
-                    }
-                  }}
                 />
                 {errors.mass && (
                   <p className={errorClass}>{errors.mass.message}</p>
@@ -612,6 +601,10 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   id="purchase_type"
                   options={[
                     { value: "auction", label: "Auction" },
+                    {
+                      value: "auction aftermarket",
+                      label: "Auction Aftermarket",
+                    },
                     { value: "retail", label: "Retail" },
                     { value: "private", label: "Private Sale" },
                     { value: "gift", label: "Gift" },
@@ -686,28 +679,36 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               </div>
 
               <div>
-                <label className={labelClass} htmlFor="auction_name">
+                <label
+                  className={`${labelClass} ${watch("purchase_type") === "retail" ? "opacity-50" : ""}`}
+                  htmlFor="auction_name"
+                >
                   Auction Name
                 </label>
                 <input
                   {...register("auction_name")}
                   id="auction_name"
                   type="text"
-                  className={inputClass}
+                  className={`${inputClass} ${watch("purchase_type") === "retail" ? "cursor-not-allowed opacity-50" : ""}`}
                   placeholder="e.g., January Ancient Coins Sale"
+                  disabled={watch("purchase_type") === "retail"}
                 />
               </div>
 
               <div>
-                <label className={labelClass} htmlFor="auction_lot">
+                <label
+                  className={`${labelClass} ${watch("purchase_type") === "retail" ? "opacity-50" : ""}`}
+                  htmlFor="auction_lot"
+                >
                   Lot Number (required with auction name)
                 </label>
                 <input
                   {...register("auction_lot", { valueAsNumber: true })}
                   id="auction_lot"
                   type="number"
-                  className={inputClass}
+                  className={`${inputClass} ${watch("purchase_type") === "retail" ? "cursor-not-allowed opacity-50" : ""}`}
                   placeholder="e.g., 156"
+                  disabled={watch("purchase_type") === "retail"}
                 />
                 {errors.auction_lot && (
                   <p className="mt-1 text-sm text-red-500">
@@ -789,7 +790,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-center pt-6">
+          <div className="flex flex-col items-center space-y-3 pt-6">
             <RoundButton
               type="submit"
               disabled={isLoading}
@@ -799,6 +800,16 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
             >
               {isLoading ? "Adding Coin..." : "Add Coin"}
             </RoundButton>
+
+            {/* Clear Form Button */}
+            <button
+              type="button"
+              onClick={() => reset()}
+              disabled={isLoading}
+              className="text-xs text-slate-500 transition-colors hover:text-slate-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Clear Form
+            </button>
           </div>
         </form>
       </div>

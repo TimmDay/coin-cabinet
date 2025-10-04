@@ -53,7 +53,7 @@ export function CoinCardGridItem({
     }
 
     const baseSize = 250; // pixels.
-    const baseDiameter = 28; // mm. Largest is actually 32mm but tweaking the limit for space.
+    const baseDiameter = 30; // mm. Largest is actually 32mm but tweaking the limit for space.
 
     if (!diameter || diameter <= 0 || diameter > baseDiameter) {
       return baseSize;
