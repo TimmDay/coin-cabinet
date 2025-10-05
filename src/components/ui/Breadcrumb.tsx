@@ -15,7 +15,7 @@ type BreadcrumbProps = {
 };
 
 // Function to generate breadcrumb items from pathname
-const generateBreadcrumbs = (pathname: string): BreadcrumbItem[] => {
+function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
   const segments = pathname.split("/").filter(Boolean);
   const breadcrumbs: BreadcrumbItem[] = [];
 
@@ -37,7 +37,7 @@ const generateBreadcrumbs = (pathname: string): BreadcrumbItem[] => {
   });
 
   return breadcrumbs;
-};
+}
 
 export function Breadcrumb({ className }: BreadcrumbProps) {
   const pathname = usePathname();

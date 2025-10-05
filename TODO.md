@@ -2,20 +2,22 @@
 
 ## Next Thing
 
-- [ ] name all the images that I have
-- [ ] upload all the coins to db
-
-- [ ] db schema updates. legend_o_expanded, legend_r_expanded, (latin_translation_o, latin_translation_r)
-- [ ] db schema updates. ex_somnus (bool), is_somnus (bool), is_stock (bool)
+- [ ] rejig the navigation. Stuff on Main -> CoinGrid, Main -> About, delete the fruits stuff, make the admin page on the end. Hide the login UI stuff (user needs to know the route to login page)
 
 ### UI
+
+- [ ] style up the CoinGrid controls (radio group)
+- [ ] CoinGrid - work out what filters I want, and how to display them
+- [ ] do the filters for mobile as well
 
 - [ ] Coin Card detail ENHANCED
   - comparison coin sketches
   - expanded map showing the Mint and nearest cities
   - historical notes?
 
-- [ ] style up the CoinGrid controls (radio group)
+- [ ] db schema updates. legend_o_expanded, legend_r_expanded, (latin_translation_o, latin_translation_r)
+- [ ] db schema updates. ex_somnus (bool), is_somnus (bool), is_stock (bool).
+      OR: set_status (an array) ('severan', 'first_tetrachy', 'second_tetrachy', 'constantinian', 'byzantine', 'ancient_greek', ')
 
 - [ ] pre-fetch the coin card detail when the grid item is hovered for X ms (so it opens instantly when clicked)
 
@@ -198,3 +200,5 @@ articles, guides
 - [x] flip btn reposition on mobile.
 - [x] mobile styles for the CoinCardDetail
 - [x] re-style the page titles. thinner, classier text. smaller. underline of small width at center of heading
+- [x] name all the images that I have
+- [x] upload all the coins to db

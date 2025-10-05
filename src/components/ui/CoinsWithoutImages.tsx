@@ -13,7 +13,7 @@ type CoinData = {
   image_link_r: string | null;
 };
 
-const generateObverseImageId = (coin: CoinData): string => {
+function generateObverseImageId(coin: CoinData): string {
   const generatedId = generateImageId(
     coin.nickname ?? "",
     coin.denomination ?? "",
@@ -23,7 +23,7 @@ const generateObverseImageId = (coin: CoinData): string => {
   );
 
   return generatedId ?? "Missing data for generation";
-};
+}
 
 export function CoinsWithoutImages() {
   const { data: coins, isLoading, error } = useAllSomnusCoins();
