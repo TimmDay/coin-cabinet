@@ -18,7 +18,7 @@ export default function AddCoinPage() {
 
   // Auto-clear success message
   useEffect(() => {
-    if (message && message.includes("🌙 Somnus accepts your offering")) {
+    if (message?.includes("🌙 Somnus accepts your offering")) {
       const timer = setTimeout(() => {
         setMessage(null);
       }, 3000);
@@ -51,7 +51,7 @@ export default function AddCoinPage() {
         setMessage("🌙 Somnus accepts your offering");
       } else {
         setMessage(`❌ Error: ${result.message}`);
-        throw new Error(result.message || "Submission failed");
+        throw new Error(result.message ?? "Submission failed");
       }
     } catch (error) {
       // Set error message but rethrow so form knows it failed

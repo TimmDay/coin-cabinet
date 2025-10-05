@@ -3,16 +3,26 @@
 import { useAllSomnusCoins } from "~/lib/api/somnus-collection";
 import { generateImageId } from "~/lib/utils/image-id-generation";
 
-const generateObverseImageId = (coin: any): string => {
+type CoinData = {
+  id: number;
+  nickname: string;
+  denomination: string;
+  purchase_date: string | null;
+  purchase_vendor: string | null;
+  image_link_o: string | null;
+  image_link_r: string | null;
+};
+
+const generateObverseImageId = (coin: CoinData): string => {
   const generatedId = generateImageId(
-    coin.nickname || "",
-    coin.denomination || "",
-    coin.purchase_date || "",
-    coin.purchase_vendor || "",
+    coin.nickname ?? "",
+    coin.denomination ?? "",
+    coin.purchase_date ?? "",
+    coin.purchase_vendor ?? "",
     "o",
   );
 
-  return generatedId || "Missing data for generation";
+  return generatedId ?? "Missing data for generation";
 };
 
 export function CoinsWithoutImages() {

@@ -89,7 +89,7 @@ export const coinFormSchema = z
             (val) => {
               if (val === undefined) return true;
               // Check if the number has at most 1 decimal place
-              const decimalPlaces = (val.toString().split(".")[1] || "").length;
+              const decimalPlaces = (val.toString().split(".")[1] ?? "").length;
               return decimalPlaces <= 1;
             },
             {

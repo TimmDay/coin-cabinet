@@ -56,7 +56,7 @@ export const generateImageId = (
   purchaseDate: string,
   vendor: string,
   view: string,
-  timTookPhotos: boolean = false,
+  timTookPhotos = false,
 ): string => {
   const coinId = formatCoinIdDate(purchaseDate);
   const rootSlug = generateRootSlug(nickname, denomination);
@@ -74,7 +74,7 @@ export const generateImageId = (
  */
 export const hasValidSource = (
   vendor: string,
-  timTookPhotos: boolean = false,
+  timTookPhotos = false,
 ): boolean => {
   return timTookPhotos || Boolean(vendor && vendor.trim().length > 0);
 };
