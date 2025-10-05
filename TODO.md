@@ -3,6 +3,9 @@
 ## Next Thing
 
 - [x] style up the CoinGrid controls (radio group)
+- [ ] add db columns for each set. They will be booleans. Start with: 'is-severan', 'is-first-tetrarchy', 'is-imperial-women', 'is-constantine-family', 'is-constantine-bracket', 'is-byzantine', 'is-ancient-greek'.
+      The CoinForm will have a multi select dropdown for these.
+- [ ] Sets pages 'Severan' filters the coins by the rows that have true in the col is-severan
 
 ### UI
 

@@ -110,7 +110,7 @@ export function CoinGrid() {
       >
         {coinsList.map((coin, index) => (
           <CoinCardGridItem
-            key={coin.id || index}
+            key={coin.id}
             civ={coin.civ}
             nickname={coin.nickname}
             denomination={coin.denomination}
@@ -174,6 +174,8 @@ export function CoinGrid() {
         onPrevious={handlePreviousWithFocus}
         onNext={handleNextWithFocus}
         focusTarget={modalState.focusTarget}
+        coinId={currentCoin?.id}
+        nickname={currentCoin?.nickname}
       />
     </>
   )

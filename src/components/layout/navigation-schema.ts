@@ -1,7 +1,7 @@
 export const navigationItems = [
   { name: "Sets", href: "/sets", hasSubmenu: true },
   { name: "Articles", href: "/articles" },
-  { name: "About", href: "/" },
+  { name: "About", href: "/about" },
   { name: "Admin", href: "/admin" },
 ]
 

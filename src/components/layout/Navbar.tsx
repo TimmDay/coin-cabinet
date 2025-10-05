@@ -212,9 +212,11 @@ export default function Navbar() {
 
       {/* Site Logo placeholder */}
       <div className="mt-6 mb-6 flex justify-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-400">
-          <span className="text-xs font-medium text-slate-600">LOGO</span>
-        </div>
+        <NextLink href="/" className="transition-opacity hover:opacity-80">
+          <div className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-slate-400">
+            <span className="text-xs font-medium text-slate-600">LOGO</span>
+          </div>
+        </NextLink>
       </div>
 
       {/* Main navigation centered at bottom */}

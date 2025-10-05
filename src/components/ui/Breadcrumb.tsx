@@ -4,6 +4,10 @@ import { ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "~/lib/utils"
+import {
+  extractNicknameFromSlug,
+  isValidCoinSlug,
+} from "~/lib/utils/url-helpers"
 
 type BreadcrumbItem = {
   label: string
@@ -12,6 +16,7 @@ type BreadcrumbItem = {
 
 type BreadcrumbProps = {
   className?: string
+  items?: BreadcrumbItem[]
 }
 
 // Function to generate breadcrumb items from pathname
@@ -27,6 +32,26 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
   segments.forEach((segment) => {
     currentPath += `/${segment}`
 
+    // Special handling for coin routes
+    if (segment === "coin") {
+      breadcrumbs.push({
+        label: "Coin Cabinet",
+        href: "/coin-cabinet",
+      })
+      return
+    }
+
+    // Special handling for coin slugs (format: "123-nickname-here")
+    if (isValidCoinSlug(segment)) {
+      const nickname = extractNicknameFromSlug(segment)
+      const cleanLabel = nickname
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+      breadcrumbs.push({ label: cleanLabel, href: currentPath })
+      return
+    }
+
     // Convert segment to readable label
     const label = segment
       .split("-")
@@ -39,13 +64,13 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
   return breadcrumbs
 }
 
-export function Breadcrumb({ className }: BreadcrumbProps) {
+export function Breadcrumb({ className, items }: BreadcrumbProps) {
   const pathname = usePathname()
 
   // Don't show breadcrumbs on home page
   if (pathname === "/") return null
 
-  const breadcrumbs = generateBreadcrumbs(pathname)
+  const breadcrumbs = items ?? generateBreadcrumbs(pathname)
 
   return (
     <nav

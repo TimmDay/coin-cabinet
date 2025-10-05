@@ -2,10 +2,12 @@
 
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { CldImage } from "next-cloudinary"
+import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { prefetchCloudinaryImage } from "~/components/CloudinaryImage"
 import { useViewport } from "~/hooks/useViewport"
 import { formatYearRange } from "~/lib/utils/date-formatting"
+import { generateCoinUrl } from "~/lib/utils/url-helpers"
 import { IconButton } from "./IconButton"
 import { InfoTooltip } from "./InfoTooltip"
 
@@ -37,6 +39,8 @@ type CoinCardDetailProps = {
   onPrevious?: () => void
   onNext?: () => void
   focusTarget?: "previous" | "next" | null
+  coinId?: number
+  nickname?: string
 }
 
 export function CoinCardDetail({
@@ -67,7 +71,10 @@ export function CoinCardDetail({
   onPrevious,
   onNext,
   focusTarget,
+  coinId,
+  nickname,
 }: CoinCardDetailProps) {
+  const router = useRouter()
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
     null,
@@ -486,7 +493,7 @@ export function CoinCardDetail({
 
               {/* Action Buttons - Desktop only */}
               {!isMobile && (
-                <div className="relative mt-6 flex items-center justify-center">
+                <div className="relative mt-6 flex items-center justify-center gap-4">
                   {/* Flip Button - centered */}
                   <button
                     onClick={handleFlip}
@@ -494,6 +501,21 @@ export function CoinCardDetail({
                   >
                     FLIP
                   </button>
+
+                  {/* More Info Button */}
+                  {coinId && nickname && (
+                    <button
+                      onClick={() => {
+                        const url = generateCoinUrl(coinId, nickname)
+                        router.push(url)
+                        // Delay modal close to prevent flash
+                        setTimeout(() => onClose(), 400)
+                      }}
+                      className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
+                    >
+                      MORE INFO
+                    </button>
+                  )}
 
                   {/* Info Tooltip - Only show if flavour_text is available, positioned absolutely to the right */}
                   {flavour_text && (
@@ -507,13 +529,31 @@ export function CoinCardDetail({
                 </div>
               )}
 
-              {/* Mobile Info Tooltip - separate from flip button */}
-              {isMobile && flavour_text && (
-                <div className="mt-6 flex items-center justify-center">
-                  <InfoTooltip
-                    content={`${coinAge ? `~${coinAge} years old\n\n` : ""}${flavour_text}`}
-                    id="coin-tooltip"
-                  />
+              {/* Mobile Action Buttons */}
+              {isMobile && (
+                <div className="mt-6 flex flex-col items-center gap-4">
+                  {/* More Info Button - Mobile */}
+                  {coinId && nickname && (
+                    <button
+                      onClick={() => {
+                        const url = generateCoinUrl(coinId, nickname)
+                        router.push(url)
+                        // Delay modal close to prevent flash
+                        setTimeout(() => onClose(), 400)
+                      }}
+                      className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
+                    >
+                      MORE INFO
+                    </button>
+                  )}
+
+                  {/* Mobile Info Tooltip */}
+                  {flavour_text && (
+                    <InfoTooltip
+                      content={`${coinAge ? `~${coinAge} years old\n\n` : ""}${flavour_text}`}
+                      id="coin-tooltip"
+                    />
+                  )}
                 </div>
               )}
             </div>
