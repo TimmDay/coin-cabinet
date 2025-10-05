@@ -1,4 +1,4 @@
-import { PageTitle } from "~/components/ui/PageTitle";
+import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function SetsPage() {
   return (
@@ -37,5 +37,5 @@ export default function SetsPage() {
         </div>
       </div>
     </main>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-import { PageTitle } from "~/components/ui/PageTitle";
+import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function ArticlesPage() {
   return (
@@ -50,5 +50,5 @@ export default function ArticlesPage() {
         </div>
       </div>
     </main>
-  );
+  )
 }

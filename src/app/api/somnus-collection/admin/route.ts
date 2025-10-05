@@ -1,68 +1,68 @@
-import type { PostgrestSingleResponse } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
-import { ZodError } from "zod";
-import { createClient } from "~/lib/supabase-server";
-import { coinFormSchema } from "~/lib/validations/coin-form";
+import type { PostgrestSingleResponse } from "@supabase/supabase-js"
+import { NextResponse } from "next/server"
+import { ZodError } from "zod"
+import { createClient } from "~/lib/supabase-server"
+import { coinFormSchema } from "~/lib/validations/coin-form"
 
 export async function POST(request: Request) {
   try {
     console.log(
       "🚀 POST /api/somnus-collection/admin - Adding coin to collection",
-    );
+    )
 
     // Use server client for authenticated requests
-    const supabase = await createClient();
+    const supabase = await createClient()
 
     // Check authentication
     const {
       data: { session },
       error: authError,
-    } = await supabase.auth.getSession();
+    } = await supabase.auth.getSession()
 
     console.log("🔐 Auth check:", {
       hasSession: !!session,
       userId: session?.user?.id,
       userEmail: session?.user?.email,
       authError: authError?.message,
-    });
+    })
 
     if (!session) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },
         { status: 401 },
-      );
+      )
     }
 
     // Parse and validate the request body
-    const body: unknown = await request.json();
+    const body: unknown = await request.json()
     console.log(
       "Received request body for somnus collection:",
       JSON.stringify(body, null, 2),
-    );
+    )
 
-    const validatedData = coinFormSchema.parse(body);
+    const validatedData = coinFormSchema.parse(body)
     console.log(
       "Validated data for somnus collection:",
       JSON.stringify(validatedData, null, 2),
-    );
+    )
 
     // Insert the data into somnus_collection table with user_id
-    const tableName = "somnus_collection";
-    console.log("Using table:", tableName);
+    const tableName = "somnus_collection"
+    console.log("Using table:", tableName)
 
     // Add user_id to the validated data
     const dataWithUserId = {
       ...validatedData,
       user_id: session.user.id,
-    };
+    }
 
     const result: PostgrestSingleResponse<Record<string, unknown>> =
-      await supabase.from(tableName).insert(dataWithUserId).select().single();
+      await supabase.from(tableName).insert(dataWithUserId).select().single()
 
-    const { data, error } = result;
+    const { data, error } = result
 
     if (error) {
-      console.error("Supabase error:", error);
+      console.error("Supabase error:", error)
       return NextResponse.json(
         {
           success: false,
@@ -70,20 +70,20 @@ export async function POST(request: Request) {
           error: error.message,
         },
         { status: 500 },
-      );
+      )
     }
 
     return NextResponse.json({
       success: true,
       message: "Coin added to somnus collection successfully!",
       coin: data as { id: number; nickname: string; created_at: string },
-    });
+    })
   } catch (error: unknown) {
-    console.error("Error adding coin to somnus collection:", error);
+    console.error("Error adding coin to somnus collection:", error)
 
     // Handle validation errors
     if (error instanceof ZodError) {
-      console.error("Validation error details:", error);
+      console.error("Validation error details:", error)
       return NextResponse.json(
         {
           success: false,
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
           error: error.message,
         },
         { status: 400 },
-      );
+      )
     }
 
     return NextResponse.json(
@@ -101,6 +101,6 @@ export async function POST(request: Request) {
         error: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 },
-    );
+    )
   }
 }

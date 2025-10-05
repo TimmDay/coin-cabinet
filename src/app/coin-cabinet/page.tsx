@@ -1,5 +1,5 @@
-import { CoinGrid } from "~/components/ui/CoinGrid";
-import { PageTitle } from "~/components/ui/PageTitle";
+import { CoinGrid } from "~/components/ui/CoinGrid"
+import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function CoinCabinetPage() {
   return (
@@ -20,5 +20,5 @@ export default function CoinCabinetPage() {
         </div>
       </div>
     </main>
-  );
+  )
 }

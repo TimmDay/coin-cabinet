@@ -1,11 +1,11 @@
-"use client";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import NextLink from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { UserMenu } from "~/components/auth/UserMenu";
-import { useAuth } from "~/components/providers/auth-provider";
-import { cn } from "~/lib/utils";
+"use client"
+import { ChevronDown, ChevronRight } from "lucide-react"
+import NextLink from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
+import { UserMenu } from "~/components/auth/UserMenu"
+import { useAuth } from "~/components/providers/auth-provider"
+import { cn } from "~/lib/utils"
 import {
   coinCabinetItems,
   mainSetsSubmenu,
@@ -13,72 +13,72 @@ import {
   romanSubmenu,
   setsSubmenu,
   type SubmenuTypes,
-} from "./navigation-schema";
+} from "./navigation-schema"
 
-const HOVER_DELAY = 200; // milliseconds
+const HOVER_DELAY = 200 // milliseconds
 export default function Navbar() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { user } = useAuth();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null);
-  const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pathname = usePathname()
+  const router = useRouter()
+  const { user } = useAuth()
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null)
+  const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const handleCoinCabinetClick = () => {
-    router.push("/coin-cabinet");
-    setIsDropdownOpen(false);
-  };
+    router.push("/coin-cabinet")
+    setIsDropdownOpen(false)
+  }
 
   const handleDropdownEnter = () => {
     if (dropdownTimeoutRef.current) {
-      clearTimeout(dropdownTimeoutRef.current);
+      clearTimeout(dropdownTimeoutRef.current)
     }
-    setIsDropdownOpen(true);
-  };
+    setIsDropdownOpen(true)
+  }
 
   const handleDropdownLeave = () => {
     dropdownTimeoutRef.current = setTimeout(() => {
-      setIsDropdownOpen(false);
-      setOpenSubmenu(null); // Also close submenu when main dropdown closes
-    }, HOVER_DELAY);
-  };
+      setIsDropdownOpen(false)
+      setOpenSubmenu(null) // Also close submenu when main dropdown closes
+    }, HOVER_DELAY)
+  }
 
   const handleSubmenuEnter = (itemName: SubmenuTypes) => {
     if (submenuTimeoutRef.current) {
-      clearTimeout(submenuTimeoutRef.current);
+      clearTimeout(submenuTimeoutRef.current)
     }
-    setOpenSubmenu(itemName);
-  };
+    setOpenSubmenu(itemName)
+  }
 
   const handleSubmenuLeave = () => {
     submenuTimeoutRef.current = setTimeout(() => {
-      setOpenSubmenu(null);
-    }, HOVER_DELAY);
-  };
+      setOpenSubmenu(null)
+    }, HOVER_DELAY)
+  }
 
   // Keyboard navigation handlers
   const handleKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
       case "Escape":
-        setIsDropdownOpen(false);
-        setOpenSubmenu(null);
-        break;
+        setIsDropdownOpen(false)
+        setOpenSubmenu(null)
+        break
       case "ArrowDown":
         if (!isDropdownOpen) {
-          event.preventDefault();
-          setIsDropdownOpen(true);
+          event.preventDefault()
+          setIsDropdownOpen(true)
         }
-        break;
+        break
       case "ArrowUp":
         if (isDropdownOpen) {
-          event.preventDefault();
-          setIsDropdownOpen(false);
-          setOpenSubmenu(null);
+          event.preventDefault()
+          setIsDropdownOpen(false)
+          setOpenSubmenu(null)
         }
-        break;
+        break
     }
-  };
+  }
 
   const handleSubmenuKeyDown = (
     event: React.KeyboardEvent,
@@ -87,25 +87,25 @@ export default function Navbar() {
     switch (event.key) {
       case "Enter":
       case " ":
-        event.preventDefault();
-        setOpenSubmenu(itemName);
-        break;
+        event.preventDefault()
+        setOpenSubmenu(itemName)
+        break
       case "ArrowRight":
-        event.preventDefault();
-        setOpenSubmenu(itemName);
-        break;
+        event.preventDefault()
+        setOpenSubmenu(itemName)
+        break
       case "ArrowLeft":
         if (openSubmenu === itemName) {
-          event.preventDefault();
-          setOpenSubmenu(null);
+          event.preventDefault()
+          setOpenSubmenu(null)
         }
-        break;
+        break
       case "Escape":
-        setIsDropdownOpen(false);
-        setOpenSubmenu(null);
-        break;
+        setIsDropdownOpen(false)
+        setOpenSubmenu(null)
+        break
     }
-  };
+  }
 
   const handleSubmenuItemKeyDown = (
     event: React.KeyboardEvent,
@@ -114,90 +114,90 @@ export default function Navbar() {
     switch (event.key) {
       case "Enter":
       case " ":
-        event.preventDefault();
-        router.push(href);
-        setIsDropdownOpen(false);
-        setOpenSubmenu(null);
-        break;
+        event.preventDefault()
+        router.push(href)
+        setIsDropdownOpen(false)
+        setOpenSubmenu(null)
+        break
       case "Escape":
-        setIsDropdownOpen(false);
-        setOpenSubmenu(null);
-        break;
+        setIsDropdownOpen(false)
+        setOpenSubmenu(null)
+        break
     }
-  };
+  }
 
   // Helper function to get the appropriate submenu items
   const getSubmenuItems = (itemName: string) => {
     switch (itemName) {
       case "Sets":
-        return setsSubmenu;
+        return setsSubmenu
       case "Roman":
-        return romanSubmenu;
+        return romanSubmenu
       default:
-        return [];
+        return []
     }
-  };
+  }
 
   // Helper function to get main navigation submenu items
   const getMainSubmenuItems = (itemName: string) => {
     switch (itemName) {
       case "Sets":
-        return mainSetsSubmenu;
+        return mainSetsSubmenu
       default:
-        return [];
+        return []
     }
-  };
+  }
 
   // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
       if (submenuTimeoutRef.current) {
-        clearTimeout(submenuTimeoutRef.current);
+        clearTimeout(submenuTimeoutRef.current)
       }
       if (dropdownTimeoutRef.current) {
-        clearTimeout(dropdownTimeoutRef.current);
+        clearTimeout(dropdownTimeoutRef.current)
       }
-    };
-  }, []);
+    }
+  }, [])
 
   // Close dropdown on outside click or escape key
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
+      const target = event.target as HTMLElement
       if (!target.closest('[data-dropdown="coin-cabinet"]')) {
-        setIsDropdownOpen(false);
-        setOpenSubmenu(null);
+        setIsDropdownOpen(false)
+        setOpenSubmenu(null)
       }
-    };
+    }
 
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setIsDropdownOpen(false);
-        setOpenSubmenu(null);
+        setIsDropdownOpen(false)
+        setOpenSubmenu(null)
       }
-    };
+    }
 
     if (isDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", handleEscapeKey);
+      document.addEventListener("mousedown", handleClickOutside)
+      document.addEventListener("keydown", handleEscapeKey)
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscapeKey);
-    };
-  }, [isDropdownOpen]);
+      document.removeEventListener("mousedown", handleClickOutside)
+      document.removeEventListener("keydown", handleEscapeKey)
+    }
+  }, [isDropdownOpen])
 
-  const isActive = pathname.startsWith("/coin-cabinet");
+  const isActive = pathname.startsWith("/coin-cabinet")
 
   // Filter navigation items based on authentication status
   const visibleNavItems = navigationItems.filter((item) => {
     // Only show "Admin" for authenticated users
     if (item.name === "Admin") {
-      return !!user;
+      return !!user
     }
-    return true;
-  });
+    return true
+  })
 
   return (
     <nav
@@ -270,8 +270,8 @@ export default function Navbar() {
                             handleSubmenuKeyDown(e, item.name as SubmenuTypes)
                           }
                           onClick={() => {
-                            router.push(item.href);
-                            setIsDropdownOpen(false);
+                            router.push(item.href)
+                            setIsDropdownOpen(false)
                           }}
                           role="menuitem"
                           tabIndex={0}
@@ -313,9 +313,9 @@ export default function Navbar() {
                                 key={submenuItem.name}
                                 className="block cursor-pointer rounded-md px-3 py-2 text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
                                 onClick={() => {
-                                  router.push(submenuItem.href);
-                                  setIsDropdownOpen(false);
-                                  setOpenSubmenu(null);
+                                  router.push(submenuItem.href)
+                                  setIsDropdownOpen(false)
+                                  setOpenSubmenu(null)
                                 }}
                                 onKeyDown={(e) =>
                                   handleSubmenuItemKeyDown(e, submenuItem.href)
@@ -337,7 +337,7 @@ export default function Navbar() {
           </div>
 
           {visibleNavItems.map((item) => {
-            const itemIsActive = pathname === item.href;
+            const itemIsActive = pathname === item.href
 
             if (item.hasSubmenu) {
               return (
@@ -381,8 +381,8 @@ export default function Navbar() {
                             key={submenuItem.name}
                             className="block cursor-pointer rounded-md px-3 py-2 text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
                             onClick={() => {
-                              router.push(submenuItem.href);
-                              setOpenSubmenu(null);
+                              router.push(submenuItem.href)
+                              setOpenSubmenu(null)
                             }}
                             role="menuitem"
                             tabIndex={0}
@@ -394,7 +394,7 @@ export default function Navbar() {
                     </div>
                   )}
                 </div>
-              );
+              )
             }
 
             return (
@@ -410,10 +410,10 @@ export default function Navbar() {
               >
                 {item.name}
               </NextLink>
-            );
+            )
           })}
         </div>
       </div>
     </nav>
-  );
+  )
 }

@@ -1,10 +1,10 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { CoinForm } from "~/components/forms/CoinForm";
-import { useAuth } from "~/components/providers/auth-provider";
-import { PageTitle } from "~/components/ui/PageTitle";
-import type { CoinFormData } from "~/lib/validations/coin-form";
+import { useEffect, useState } from "react"
+import { CoinForm } from "~/components/forms/CoinForm"
+import { useAuth } from "~/components/providers/auth-provider"
+import { PageTitle } from "~/components/ui/PageTitle"
+import type { CoinFormData } from "~/lib/validations/coin-form"
 
 type ApiResponse = {
   success: boolean;
@@ -12,28 +12,28 @@ type ApiResponse = {
 };
 
 export default function AddCoinPage() {
-  const { user, loading } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const { user, loading } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
+  const [message, setMessage] = useState<string | null>(null)
 
   // Auto-clear success message
   useEffect(() => {
     if (message?.includes("🌙 Somnus accepts your offering")) {
       const timer = setTimeout(() => {
-        setMessage(null);
-      }, 3000);
+        setMessage(null)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [message]);
+  }, [message])
 
   const handleFormSubmit = async (data: CoinFormData) => {
     if (!user) {
-      setMessage("❌ Please log in to add coins to your collection");
-      return;
+      setMessage("❌ Please log in to add coins to your collection")
+      return
     }
-    setIsLoading(true);
-    setMessage(null);
+    setIsLoading(true)
+    setMessage(null)
 
     try {
       const response = await fetch("/api/somnus-collection/add-coin", {
@@ -43,27 +43,27 @@ export default function AddCoinPage() {
         },
         credentials: "include",
         body: JSON.stringify(data),
-      });
+      })
 
-      const result = (await response.json()) as ApiResponse;
+      const result = (await response.json()) as ApiResponse
 
       if (result.success) {
-        setMessage("🌙 Somnus accepts your offering");
+        setMessage("🌙 Somnus accepts your offering")
       } else {
-        setMessage(`❌ Error: ${result.message}`);
-        throw new Error(result.message ?? "Submission failed");
+        setMessage(`❌ Error: ${result.message}`)
+        throw new Error(result.message ?? "Submission failed")
       }
     } catch (error) {
       // Set error message but rethrow so form knows it failed
       if (!message?.includes("❌ Error:")) {
-        setMessage("❌ Failed to add coin to collection");
+        setMessage("❌ Failed to add coin to collection")
       }
-      console.error("Error:", error);
-      throw error; // Rethrow so form doesn't clear
+      console.error("Error:", error)
+      throw error // Rethrow so form doesn't clear
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   if (loading) {
     return (
@@ -74,7 +74,7 @@ export default function AddCoinPage() {
           </div>
         </div>
       </main>
-    );
+    )
   }
 
   return (
@@ -119,5 +119,5 @@ export default function AddCoinPage() {
         </div>
       </div>
     </main>
-  );
+  )
 }

@@ -1,32 +1,32 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { CoinCardDetail } from "~/components/ui/CoinCardDetail";
-import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem";
-import { useSomnusCoins } from "~/lib/api/somnus-collection";
+import { useState } from "react"
+import { CoinCardDetail } from "~/components/ui/CoinCardDetail"
+import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
+import { useSomnusCoins } from "~/lib/api/somnus-collection"
 
 export function CoinGrid() {
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     currentIndex: number;
     focusTarget: "previous" | "next" | null;
-  }>({ isOpen: false, currentIndex: 0, focusTarget: null });
+  }>({ isOpen: false, currentIndex: 0, focusTarget: null })
 
   const [viewMode, setViewMode] = useState<"obverse" | "reverse" | "both">(
     "obverse",
-  );
+  )
 
   // Fetch coins from database (already filtered for obverse images at DB level)
-  const { data: coins, isLoading, error } = useSomnusCoins();
-  const coinsList = coins ?? [];
+  const { data: coins, isLoading, error } = useSomnusCoins()
+  const coinsList = coins ?? []
 
   const openModal = (index: number) => {
-    setModalState({ isOpen: true, currentIndex: index, focusTarget: null });
-  };
+    setModalState({ isOpen: true, currentIndex: index, focusTarget: null })
+  }
 
   const closeModal = () => {
-    setModalState({ isOpen: false, currentIndex: 0, focusTarget: null });
-  };
+    setModalState({ isOpen: false, currentIndex: 0, focusTarget: null })
+  }
 
   const handlePreviousWithFocus = () => {
     setModalState((prev) => ({
@@ -34,8 +34,8 @@ export function CoinGrid() {
       currentIndex:
         prev.currentIndex === 0 ? coinsList.length - 1 : prev.currentIndex - 1,
       focusTarget: "previous",
-    }));
-  };
+    }))
+  }
 
   const handleNextWithFocus = () => {
     setModalState((prev) => ({
@@ -43,10 +43,10 @@ export function CoinGrid() {
       currentIndex:
         prev.currentIndex === coinsList.length - 1 ? 0 : prev.currentIndex + 1,
       focusTarget: "next",
-    }));
-  };
+    }))
+  }
 
-  const currentCoin = coinsList[modalState.currentIndex];
+  const currentCoin = coinsList[modalState.currentIndex]
 
   // Handle loading state
   if (isLoading) {
@@ -74,7 +74,7 @@ export function CoinGrid() {
           ))}
         </div>
       </>
-    );
+    )
   }
 
   // Handle error state
@@ -86,7 +86,7 @@ export function CoinGrid() {
           {error instanceof Error ? error.message : "Unknown error"}
         </div>
       </div>
-    );
+    )
   }
 
   // Handle empty state
@@ -97,7 +97,7 @@ export function CoinGrid() {
           No coins with obverse images found in the collection.
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -220,5 +220,5 @@ export function CoinGrid() {
         focusTarget={modalState.focusTarget}
       />
     </>
-  );
+  )
 }

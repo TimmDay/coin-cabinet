@@ -1,5 +1,5 @@
-"use client";
-import { CldImage, getCldImageUrl } from "next-cloudinary";
+"use client"
+import { CldImage, getCldImageUrl } from "next-cloudinary"
 
 type Props = {
   src?: string;
@@ -14,8 +14,8 @@ export function prefetchCloudinaryImage(
   width = 200,
   height = 200,
 ) {
-  if (!src) return;
-  const img = new Image();
+  if (!src) return
+  const img = new Image()
   // Use the same URL generation logic as CldImage to ensure cache hits.
   img.src = getCldImageUrl({
     src,
@@ -26,7 +26,7 @@ export function prefetchCloudinaryImage(
       source: true,
     },
     background: "transparent",
-  });
+  })
 }
 
 // By default, the CldImage component applies auto-format and auto-quality to all delivery URLs for optimized delivery.
@@ -44,7 +44,7 @@ export default function CloudinaryImage({
       >
         <div className="text-xs text-slate-500">No Image</div>
       </div>
-    );
+    )
   }
 
   return (
@@ -61,5 +61,5 @@ export default function CloudinaryImage({
       sizes={`${width}px`}
       style={{ width, height }}
     />
-  );
+  )
 }
