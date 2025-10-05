@@ -289,4 +289,4 @@ export const coinFormSchema = z
     },
   )
 
-export type CoinFormData = z.infer<typeof coinFormSchema>;
+export type CoinFormData = z.infer<typeof coinFormSchema>

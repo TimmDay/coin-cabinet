@@ -10,34 +10,34 @@ import { IconButton } from "./IconButton"
 import { InfoTooltip } from "./InfoTooltip"
 
 type CoinCardDetailProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  imageSrc?: string;
-  reverseImageSrc?: string;
-  nextImageSrc?: string;
-  nextReverseImageSrc?: string;
-  previousImageSrc?: string;
-  previousReverseImageSrc?: string;
-  civ?: string;
-  civ_specific?: string;
-  denomination?: string;
-  mint?: string;
-  mint_year_earliest?: number;
-  mint_year_latest?: number;
-  diameter?: number;
-  mass?: number;
-  die_axis?: string;
-  legend_o?: string;
-  desc_o?: string;
-  legend_r?: string;
-  desc_r?: string;
-  reference?: string;
-  provenance?: string;
-  flavour_text?: string;
-  onPrevious?: () => void;
-  onNext?: () => void;
-  focusTarget?: "previous" | "next" | null;
-};
+  isOpen: boolean
+  onClose: () => void
+  imageSrc?: string
+  reverseImageSrc?: string
+  nextImageSrc?: string
+  nextReverseImageSrc?: string
+  previousImageSrc?: string
+  previousReverseImageSrc?: string
+  civ?: string
+  civ_specific?: string
+  denomination?: string
+  mint?: string
+  mint_year_earliest?: number
+  mint_year_latest?: number
+  diameter?: number
+  mass?: number
+  die_axis?: string
+  legend_o?: string
+  desc_o?: string
+  legend_r?: string
+  desc_r?: string
+  reference?: string
+  provenance?: string
+  flavour_text?: string
+  onPrevious?: () => void
+  onNext?: () => void
+  focusTarget?: "previous" | "next" | null
+}
 
 export function CoinCardDetail({
   isOpen,

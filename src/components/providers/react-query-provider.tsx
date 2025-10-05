@@ -7,7 +7,7 @@ import { useState } from "react"
 export function ReactQueryProvider({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   const [queryClient] = useState(
     () =>

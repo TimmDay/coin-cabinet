@@ -3,11 +3,11 @@ import { forwardRef } from "react"
 import { cn } from "~/lib/utils"
 
 type IconButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  icon: LucideIcon;
-  iconSize?: "sm" | "md" | "lg";
-  variant?: "default" | "large";
-  "aria-label": string; // Make aria-label required for accessibility
-};
+  icon: LucideIcon
+  iconSize?: "sm" | "md" | "lg"
+  variant?: "default" | "large"
+  "aria-label": string // Make aria-label required for accessibility
+}
 
 const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   (

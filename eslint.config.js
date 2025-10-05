@@ -1,12 +1,12 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from "eslint-plugin-storybook";
+import storybook from "eslint-plugin-storybook"
 
-import { FlatCompat } from "@eslint/eslintrc";
-import tseslint from "typescript-eslint";
+import { FlatCompat } from "@eslint/eslintrc"
+import tseslint from "typescript-eslint"
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
-});
+})
 
 export default tseslint.config(
   {
@@ -75,4 +75,4 @@ export default tseslint.config(
     },
   },
   storybook.configs["flat/recommended"],
-);
+)

@@ -1,11 +1,11 @@
 type PageTitleProps = {
   /** The main text of the title */
-  children: string;
+  children: string
   /** Additional CSS classes */
-  className?: string;
+  className?: string
   /** Use purple accent instead of gold for auth pages */
-  authPage?: boolean;
-};
+  authPage?: boolean
+}
 
 export function PageTitle({
   children,

@@ -6,12 +6,12 @@ import { generateImageId } from "~/lib/utils/image-id-generation"
 
 type GeneratedImageIdHelperProps = {
   /** Watch function from react-hook-form to get current form values */
-  watch: (fieldName: string) => string | undefined;
+  watch: (fieldName: string) => string | undefined
   /** View type - "o", "r", "sketch-o", "sketch-r", "zoom-o", "zoom-r" */
-  view: "o" | "r" | "sketch-o" | "sketch-r" | "zoom-o" | "zoom-r";
+  view: "o" | "r" | "sketch-o" | "sketch-r" | "zoom-o" | "zoom-r"
   /** Whether Tim took the photos (defaults to false) */
-  timTookPhotos?: boolean;
-};
+  timTookPhotos?: boolean
+}
 
 export function GeneratedImageIdHelper({
   watch,

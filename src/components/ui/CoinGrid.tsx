@@ -8,9 +8,9 @@ import { useSomnusCoins } from "~/lib/api/somnus-collection"
 
 export function CoinGrid() {
   const [modalState, setModalState] = useState<{
-    isOpen: boolean;
-    currentIndex: number;
-    focusTarget: "previous" | "next" | null;
+    isOpen: boolean
+    currentIndex: number
+    focusTarget: "previous" | "next" | null
   }>({ isOpen: false, currentIndex: 0, focusTarget: null })
 
   const [viewMode, setViewMode] = useState<"obverse" | "reverse" | "both">(

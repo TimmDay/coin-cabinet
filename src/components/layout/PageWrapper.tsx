@@ -5,8 +5,8 @@ import { Footer } from "~/components/layout/Footer"
 import { Breadcrumb } from "~/components/ui/Breadcrumb"
 
 type PageWrapperProps = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 
 export function PageWrapper({ children }: PageWrapperProps) {
   const pathname = usePathname()

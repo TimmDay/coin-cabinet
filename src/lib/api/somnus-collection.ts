@@ -50,9 +50,9 @@ export function useDeleteSomnusCoin() {
 async function fetchSomnusCoins(): Promise<SomnusCollection[]> {
   const response = await fetch("/api/somnus-collection")
   const result = (await response.json()) as {
-    success: boolean;
-    message?: string;
-    data?: SomnusCollection[];
+    success: boolean
+    message?: string
+    data?: SomnusCollection[]
   }
 
   if (!response.ok || !result.success) {
@@ -65,9 +65,9 @@ async function fetchSomnusCoins(): Promise<SomnusCollection[]> {
 async function fetchAllSomnusCoins(): Promise<SomnusCollection[]> {
   const response = await fetch("/api/somnus-collection?includeAll=true")
   const result = (await response.json()) as {
-    success: boolean;
-    message?: string;
-    data?: SomnusCollection[];
+    success: boolean
+    message?: string
+    data?: SomnusCollection[]
   }
 
   if (!response.ok || !result.success) {
@@ -89,15 +89,13 @@ async function insertSomnusCoin(
   })
 
   const result = (await response.json()) as {
-    success: boolean;
-    message?: string;
-    coin?: SomnusCollection;
+    success: boolean
+    message?: string
+    coin?: SomnusCollection
   }
 
   if (!response.ok || !result.success) {
-    throw new Error(
-      result.message ?? "Failed to add coin to somnus collection",
-    )
+    throw new Error(result.message ?? "Failed to add coin to somnus collection")
   }
 
   return result.coin!
@@ -113,8 +111,8 @@ async function deleteSomnusCoin(id: number): Promise<void> {
   })
 
   const result = (await response.json()) as {
-    success: boolean;
-    message?: string;
+    success: boolean
+    message?: string
   }
 
   if (!response.ok || !result.success) {

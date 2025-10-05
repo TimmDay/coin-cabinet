@@ -13,7 +13,7 @@ export const coinCabinetItems = [
   { name: "Ex Collection", href: "/coin-cabinet/ex-collection" },
 ]
 
-export type SubmenuTypes = "roman" | "sets" | "mainSets";
+export type SubmenuTypes = "roman" | "sets" | "mainSets"
 
 export const mainSetsSubmenu = [
   { name: "Severan Dynasty", href: "/sets/severan-dynasty" },

@@ -1,10 +1,10 @@
 import Link from "next/link"
 
 type Props = {
-  href: string;
-  isActive: boolean;
-  children?: React.ReactNode;
-};
+  href: string
+  isActive: boolean
+  children?: React.ReactNode
+}
 
 export function NextLink({ href, isActive, children }: Props) {
   return (

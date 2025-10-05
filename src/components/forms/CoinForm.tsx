@@ -20,9 +20,9 @@ import {
 } from "./constants"
 
 type CoinFormProps = {
-  onSubmit: (data: CoinFormData) => Promise<void>;
-  isLoading: boolean;
-};
+  onSubmit: (data: CoinFormData) => Promise<void>
+  isLoading: boolean
+}
 
 export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
   const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false)

@@ -6,13 +6,13 @@ import { usePathname } from "next/navigation"
 import { cn } from "~/lib/utils"
 
 type BreadcrumbItem = {
-  label: string;
-  href: string;
-};
+  label: string
+  href: string
+}
 
 type BreadcrumbProps = {
-  className?: string;
-};
+  className?: string
+}
 
 // Function to generate breadcrumb items from pathname
 function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
@@ -85,8 +85,8 @@ export const BreadcrumbList = ({
   children,
   className,
 }: {
-  children: React.ReactNode;
-  className?: string;
+  children: React.ReactNode
+  className?: string
 }) => (
   <ol className={cn("flex items-center space-x-1", className)}>{children}</ol>
 )
@@ -95,8 +95,8 @@ export const BreadcrumbItem = ({
   children,
   className,
 }: {
-  children: React.ReactNode;
-  className?: string;
+  children: React.ReactNode
+  className?: string
 }) => <li className={cn("flex items-center", className)}>{children}</li>
 
 export const BreadcrumbLink = ({
@@ -104,9 +104,9 @@ export const BreadcrumbLink = ({
   children,
   className,
 }: {
-  href: string;
-  children: React.ReactNode;
-  className?: string;
+  href: string
+  children: React.ReactNode
+  className?: string
 }) => (
   <Link
     href={href}
@@ -124,8 +124,8 @@ export const BreadcrumbPage = ({
   children,
   className,
 }: {
-  children: React.ReactNode;
-  className?: string;
+  children: React.ReactNode
+  className?: string
 }) => (
   <span
     className={cn("text-auth-accent font-medium", className)}
@@ -139,8 +139,8 @@ export const BreadcrumbSeparator = ({
   children,
   className,
 }: {
-  children?: React.ReactNode;
-  className?: string;
+  children?: React.ReactNode
+  className?: string
 }) => (
   <span className={cn("mx-2 text-slate-500", className)}>
     {children ?? <ChevronRight className="h-4 w-4" />}

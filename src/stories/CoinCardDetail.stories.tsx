@@ -29,7 +29,7 @@ const meta: Meta<typeof CoinCardDetail> = {
 }
 
 export default meta
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 // Interactive story with carousel functionality
 export const Interactive: Story = {

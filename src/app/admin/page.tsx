@@ -7,9 +7,9 @@ import { PageTitle } from "~/components/ui/PageTitle"
 import type { CoinFormData } from "~/lib/validations/coin-form"
 
 type ApiResponse = {
-  success: boolean;
-  message?: string;
-};
+  success: boolean
+  message?: string
+}
 
 export default function AddCoinPage() {
   const { user, loading } = useAuth()

@@ -4,14 +4,14 @@ import { useAllSomnusCoins } from "~/lib/api/somnus-collection"
 import { generateImageId } from "~/lib/utils/image-id-generation"
 
 type CoinData = {
-  id: number;
-  nickname: string;
-  denomination: string;
-  purchase_date: string | null;
-  purchase_vendor: string | null;
-  image_link_o: string | null;
-  image_link_r: string | null;
-};
+  id: number
+  nickname: string
+  denomination: string
+  purchase_date: string | null
+  purchase_vendor: string | null
+  image_link_o: string | null
+  image_link_r: string | null
+}
 
 function generateObverseImageId(coin: CoinData): string {
   const generatedId = generateImageId(

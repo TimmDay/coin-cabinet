@@ -4,9 +4,9 @@ import { Info } from "lucide-react"
 import { useCallback, useRef, useState } from "react"
 
 type InfoTooltipProps = {
-  content: string;
-  id?: string;
-};
+  content: string
+  id?: string
+}
 
 export function InfoTooltip({
   content,

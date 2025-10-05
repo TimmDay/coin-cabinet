@@ -1,9 +1,9 @@
-type ViewMode = "obverse" | "reverse" | "both";
+type ViewMode = "obverse" | "reverse" | "both"
 
 type ViewModeControlsProps = {
-  viewMode: ViewMode;
-  onViewModeChange: (mode: ViewMode) => void;
-};
+  viewMode: ViewMode
+  onViewModeChange: (mode: ViewMode) => void
+}
 
 export function ViewModeControls({
   viewMode,

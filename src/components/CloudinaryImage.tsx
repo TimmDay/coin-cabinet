@@ -2,11 +2,11 @@
 import { CldImage, getCldImageUrl } from "next-cloudinary"
 
 type Props = {
-  src?: string;
-  width?: number;
-  height?: number;
-  alt?: string;
-};
+  src?: string
+  width?: number
+  height?: number
+  alt?: string
+}
 
 // Utility function to prefetch Cloudinary images
 export function prefetchCloudinaryImage(

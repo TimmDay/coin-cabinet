@@ -5,32 +5,32 @@ export type RoundButtonProps = {
   /**
    * The content to display inside the button
    */
-  children: React.ReactNode;
+  children: React.ReactNode
   /**
    * Click handler
    */
-  onClick?: () => void;
+  onClick?: () => void
   /**
    * Button size variant
    */
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg"
   /**
    * Button color variant
    */
-  variant?: "primary" | "secondary" | "danger" | "auth";
+  variant?: "primary" | "secondary" | "danger" | "auth"
   /**
    * Whether the button is disabled
    */
-  disabled?: boolean;
+  disabled?: boolean
   /**
    * Additional CSS classes
    */
-  className?: string;
+  className?: string
   /**
    * Button type for forms
    */
-  type?: "button" | "submit" | "reset";
-};
+  type?: "button" | "submit" | "reset"
+}
 
 const sizeClasses = {
   sm: "px-3 py-1.5 text-sm",

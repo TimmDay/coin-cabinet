@@ -91,5 +91,5 @@ export const somnus_collection = pgTable(
 )
 
 // Type inference for TypeScript
-export type SomnusCollection = typeof somnus_collection.$inferSelect;
-export type NewSomnusCollection = typeof somnus_collection.$inferInsert;
+export type SomnusCollection = typeof somnus_collection.$inferSelect
+export type NewSomnusCollection = typeof somnus_collection.$inferInsert

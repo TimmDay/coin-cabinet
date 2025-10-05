@@ -4,28 +4,28 @@ import { formatYearRange } from "~/lib/utils/date-formatting"
 
 type CoinCardGridItemProps = {
   /** Civilization of the coin */
-  civ: string;
+  civ: string
   /** Nickname or ruler name */
-  nickname?: string;
+  nickname?: string
   /** Denomination type */
-  denomination: string;
+  denomination: string
   /** Earliest mint year */
-  mintYearEarliest?: number | null;
+  mintYearEarliest?: number | null
   /** Latest mint year */
-  mintYearLatest?: number | null;
+  mintYearLatest?: number | null
   /** Obverse image identifier */
-  obverseImageId?: string | null;
+  obverseImageId?: string | null
   /** Reverse image identifier */
-  reverseImageId?: string | null;
+  reverseImageId?: string | null
   /** Coin diameter in millimeters */
-  diameter?: number | null;
+  diameter?: number | null
   /** Which coin side(s) to display */
-  view?: "obverse" | "reverse" | "both";
+  view?: "obverse" | "reverse" | "both"
   /** Click handler for opening modal */
-  onClick?: () => void;
+  onClick?: () => void
   /** Grid item index (1-based) for zigzag effect */
-  index?: number;
-};
+  index?: number
+}
 
 export function CoinCardGridItem({
   civ,

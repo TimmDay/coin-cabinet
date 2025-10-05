@@ -33,7 +33,7 @@ const meta: Meta<typeof PageTitle> = {
 } satisfies Meta<typeof PageTitle>
 
 export default meta
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
