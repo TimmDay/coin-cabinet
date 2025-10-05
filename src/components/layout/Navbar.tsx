@@ -6,12 +6,12 @@ import { useEffect, useRef, useState } from "react";
 import { UserMenu } from "~/components/auth/UserMenu";
 import { useAuth } from "~/components/providers/auth-provider";
 import { cn } from "~/lib/utils";
-import { NextLink as Link } from "./Link";
 import {
   coinCabinetItems,
+  mainSetsSubmenu,
+  navigationItems,
   romanSubmenu,
   setsSubmenu,
-  simpleTopLevel,
   type SubmenuTypes,
 } from "./navigation-schema";
 
@@ -138,6 +138,16 @@ export default function Navbar() {
     }
   };
 
+  // Helper function to get main navigation submenu items
+  const getMainSubmenuItems = (itemName: string) => {
+    switch (itemName) {
+      case "Sets":
+        return mainSetsSubmenu;
+      default:
+        return [];
+    }
+  };
+
   // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
@@ -181,9 +191,9 @@ export default function Navbar() {
   const isActive = pathname.startsWith("/coin-cabinet");
 
   // Filter navigation items based on authentication status
-  const visibleNavItems = simpleTopLevel.filter((item) => {
-    // Only show "Add Coin" for authenticated users
-    if (item.name === "Add Coin") {
+  const visibleNavItems = navigationItems.filter((item) => {
+    // Only show "Admin" for authenticated users
+    if (item.name === "Admin") {
       return !!user;
     }
     return true;
@@ -210,15 +220,6 @@ export default function Navbar() {
       {/* Main navigation centered at bottom */}
       <div className="flex items-center justify-center space-x-8 pb-4">
         <div className="flex items-center space-x-8">
-          {visibleNavItems.map((item) => {
-            const itemIsActive = pathname === item.href;
-            return (
-              <Link key={item.name} href={item.href} isActive={itemIsActive}>
-                {item.name}
-              </Link>
-            );
-          })}
-
           <div
             className="relative"
             onMouseEnter={handleDropdownEnter}
@@ -334,6 +335,83 @@ export default function Navbar() {
               </div>
             )}
           </div>
+
+          {visibleNavItems.map((item) => {
+            const itemIsActive = pathname === item.href;
+
+            if (item.hasSubmenu) {
+              return (
+                <div
+                  key={item.name}
+                  className="relative"
+                  onMouseEnter={() =>
+                    handleSubmenuEnter(item.name as SubmenuTypes)
+                  }
+                  onMouseLeave={handleSubmenuLeave}
+                >
+                  <button
+                    onClick={() => router.push(item.href)}
+                    className={cn(
+                      "inline-flex items-center border-b-2 px-1 pt-1 text-base font-normal transition-colors duration-200",
+                      itemIsActive
+                        ? "border-transparent text-slate-500"
+                        : "hover:border-primary/50 border-transparent text-slate-300 hover:text-slate-500",
+                    )}
+                    aria-expanded={openSubmenu === item.name}
+                    aria-haspopup="menu"
+                  >
+                    {item.name}
+                    <ChevronDown
+                      className={cn(
+                        "ml-1 h-3 w-3 transition-transform duration-200",
+                        openSubmenu === item.name && "rotate-180",
+                      )}
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  {openSubmenu === item.name && (
+                    <div
+                      className="somnus-card absolute top-full left-0 z-50 -mt-0.5 min-w-max pt-0.5 shadow-lg"
+                      role="menu"
+                    >
+                      <div className="flex flex-col gap-1 p-4">
+                        {getMainSubmenuItems(item.name).map((submenuItem) => (
+                          <div
+                            key={submenuItem.name}
+                            className="block cursor-pointer rounded-md px-3 py-2 text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                            onClick={() => {
+                              router.push(submenuItem.href);
+                              setOpenSubmenu(null);
+                            }}
+                            role="menuitem"
+                            tabIndex={0}
+                          >
+                            {submenuItem.name}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <NextLink
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "border-b-2 px-1 pt-1 text-base font-normal transition-colors duration-200",
+                  itemIsActive
+                    ? "border-transparent text-slate-500"
+                    : "hover:border-primary/50 border-transparent text-slate-300 hover:text-slate-500",
+                )}
+              >
+                {item.name}
+              </NextLink>
+            );
+          })}
         </div>
       </div>
     </nav>

@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { CldImage } from "next-cloudinary";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { prefetchCloudinaryImage } from "~/components/CloudinaryImage";
-import { useViewport } from "~/hooks/useViewport";
-import { formatYearRange } from "~/lib/utils/date-formatting";
-import { IconButton } from "./IconButton";
-import { InfoTooltip } from "./InfoTooltip";
+import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import { CldImage } from "next-cloudinary"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { prefetchCloudinaryImage } from "~/components/CloudinaryImage"
+import { useViewport } from "~/hooks/useViewport"
+import { formatYearRange } from "~/lib/utils/date-formatting"
+import { IconButton } from "./IconButton"
+import { InfoTooltip } from "./InfoTooltip"
 
 type CoinCardDetailProps = {
   isOpen: boolean;
@@ -68,194 +68,194 @@ export function CoinCardDetail({
   onNext,
   focusTarget,
 }: CoinCardDetailProps) {
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false)
   const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
     null,
-  );
-  const [displayKey, setDisplayKey] = useState(0);
-  const [isSlideIn, setIsSlideIn] = useState(false);
-  const [isReverse, setIsReverse] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 }); // percentage values
-  const [isFlipFading, setIsFlipFading] = useState(false);
-  const imageRef = useRef<HTMLDivElement>(null);
-  const { isMobile } = useViewport();
+  )
+  const [displayKey, setDisplayKey] = useState(0)
+  const [isSlideIn, setIsSlideIn] = useState(false)
+  const [isReverse, setIsReverse] = useState(false)
+  const [isZoomed, setIsZoomed] = useState(false)
+  const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 }) // percentage values
+  const [isFlipFading, setIsFlipFading] = useState(false)
+  const imageRef = useRef<HTMLDivElement>(null)
+  const { isMobile } = useViewport()
 
   // Refs for chevron buttons
-  const previousButtonRef = useRef<HTMLButtonElement>(null);
-  const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const previousButtonRef = useRef<HTMLButtonElement>(null)
+  const nextButtonRef = useRef<HTMLButtonElement>(null)
 
   // Rapid interaction detection
-  const lastInteractionTime = useRef<number>(0);
-  const TRANSITION_DURATION = 410; // Total time for both transitions (200ms + 200ms + buffer)
+  const lastInteractionTime = useRef<number>(0)
+  const TRANSITION_DURATION = 410 // Total time for both transitions (200ms + 200ms + buffer)
 
   // Handle flip between obverse and reverse
   const handleFlip = useCallback(() => {
-    setIsFlipFading(true);
+    setIsFlipFading(true)
     // Reset zoom when flipping
-    setIsZoomed(false);
+    setIsZoomed(false)
 
     setTimeout(() => {
-      setIsReverse((prev) => !prev);
-      setDisplayKey((prev) => prev + 1); // Force re-render with new key
+      setIsReverse((prev) => !prev)
+      setDisplayKey((prev) => prev + 1) // Force re-render with new key
 
       setTimeout(() => {
-        setIsFlipFading(false);
-      }, 10); // Small delay to ensure state change is processed
-    }, 150); // Fade out duration
-  }, []);
+        setIsFlipFading(false)
+      }, 10) // Small delay to ensure state change is processed
+    }, 150) // Fade out duration
+  }, [])
 
   // Calculate coin age (rounded to nearest 50)
   const coinAge = mint_year_latest
     ? Math.round((new Date().getFullYear() - mint_year_latest) / 50) * 50
-    : null;
+    : null
 
   // Prefetch handlers for chevron hover - only prefetch the current view (obverse or reverse)
   const handlePreviousHover = useCallback(() => {
     const imageToPrefetch = isReverse
       ? previousReverseImageSrc
-      : previousImageSrc;
-    prefetchCloudinaryImage(imageToPrefetch, 600, 600);
-  }, [previousImageSrc, previousReverseImageSrc, isReverse]);
+      : previousImageSrc
+    prefetchCloudinaryImage(imageToPrefetch, 600, 600)
+  }, [previousImageSrc, previousReverseImageSrc, isReverse])
 
   const handleNextHover = useCallback(() => {
-    const imageToPrefetch = isReverse ? nextReverseImageSrc : nextImageSrc;
-    prefetchCloudinaryImage(imageToPrefetch, 600, 600);
-  }, [nextImageSrc, nextReverseImageSrc, isReverse]);
+    const imageToPrefetch = isReverse ? nextReverseImageSrc : nextImageSrc
+    prefetchCloudinaryImage(imageToPrefetch, 600, 600)
+  }, [nextImageSrc, nextReverseImageSrc, isReverse])
 
   // Handle image zoom
   const handleImageClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!imageRef.current) return;
+      if (!imageRef.current) return
 
       if (isZoomed) {
         // If already zoomed, reset to normal
-        setIsZoomed(false);
+        setIsZoomed(false)
       } else {
         // Calculate click position as percentage of image dimensions
-        const rect = imageRef.current.getBoundingClientRect();
-        const clickX = ((e.clientX - rect.left) / rect.width) * 100;
-        const clickY = ((e.clientY - rect.top) / rect.height) * 100;
+        const rect = imageRef.current.getBoundingClientRect()
+        const clickX = ((e.clientX - rect.left) / rect.width) * 100
+        const clickY = ((e.clientY - rect.top) / rect.height) * 100
 
-        const zoomScale = 2.4;
+        const zoomScale = 2.4
 
         // Calculate what percentage of the original image is visible after zoom
-        const visiblePercent = 100 / zoomScale; // ~41.67% at 2.4x zoom
+        const visiblePercent = 100 / zoomScale // ~41.67% at 2.4x zoom
 
         // The transform-origin can be positioned so that half the visible area extends on each side
-        const halfVisible = visiblePercent / 2; // ~20.83%
+        const halfVisible = visiblePercent / 2 // ~20.83%
 
         // Safe bounds: add a small buffer to account for any container effects
-        const buffer = 2; // 2% buffer
-        const minSafe = halfVisible + buffer;
-        const maxSafe = 100 - halfVisible - buffer;
+        const buffer = 2 // 2% buffer
+        const minSafe = halfVisible + buffer
+        const maxSafe = 100 - halfVisible - buffer
 
         // Clamp the click position to safe bounds
-        const safeX = Math.max(minSafe, Math.min(maxSafe, clickX));
-        const safeY = Math.max(minSafe, Math.min(maxSafe, clickY));
+        const safeX = Math.max(minSafe, Math.min(maxSafe, clickX))
+        const safeY = Math.max(minSafe, Math.min(maxSafe, clickY))
 
-        setZoomOrigin({ x: safeX, y: safeY });
-        setIsZoomed(true);
+        setZoomOrigin({ x: safeX, y: safeY })
+        setIsZoomed(true)
       }
     },
     [isZoomed],
-  );
+  )
 
   // Handle navigation with slide out then slide in
   const handlePrevious = useCallback(() => {
     if (!isTransitioning && onPrevious) {
-      const now = Date.now();
-      const timeSinceLastInteraction = now - lastInteractionTime.current;
-      const isRapidInteraction = timeSinceLastInteraction < TRANSITION_DURATION;
+      const now = Date.now()
+      const timeSinceLastInteraction = now - lastInteractionTime.current
+      const isRapidInteraction = timeSinceLastInteraction < TRANSITION_DURATION
 
-      lastInteractionTime.current = now;
+      lastInteractionTime.current = now
 
       if (isRapidInteraction) {
         // Skip transition for rapid interactions
-        onPrevious();
-        setDisplayKey((prev) => prev + 1); // Force re-render with new key
-        setIsZoomed(false); // Reset zoom on navigation
+        onPrevious()
+        setDisplayKey((prev) => prev + 1) // Force re-render with new key
+        setIsZoomed(false) // Reset zoom on navigation
       } else {
         // Normal transition
-        setIsTransitioning(true);
-        setSlideDirection("right"); // Slide right when going to previous
+        setIsTransitioning(true)
+        setSlideDirection("right") // Slide right when going to previous
         setTimeout(() => {
-          onPrevious();
-          setIsZoomed(false); // Reset zoom on navigation
+          onPrevious()
+          setIsZoomed(false) // Reset zoom on navigation
           // Reset slide out, then trigger slide in
           setTimeout(() => {
-            setIsTransitioning(false);
-            setSlideDirection("left"); // New image will slide in from left
-            setIsSlideIn(true);
-            setDisplayKey((prev) => prev + 1); // Force re-render with new key
+            setIsTransitioning(false)
+            setSlideDirection("left") // New image will slide in from left
+            setIsSlideIn(true)
+            setDisplayKey((prev) => prev + 1) // Force re-render with new key
             // Clear slide in after animation
             setTimeout(() => {
-              setIsSlideIn(false);
-              setSlideDirection(null);
-            }, 150);
-          }, 10);
-        }, 200);
+              setIsSlideIn(false)
+              setSlideDirection(null)
+            }, 150)
+          }, 10)
+        }, 200)
       }
     }
-  }, [isTransitioning, onPrevious]);
+  }, [isTransitioning, onPrevious])
 
   const handleNext = useCallback(() => {
     if (!isTransitioning && onNext) {
-      const now = Date.now();
-      const timeSinceLastInteraction = now - lastInteractionTime.current;
-      const isRapidInteraction = timeSinceLastInteraction < TRANSITION_DURATION;
+      const now = Date.now()
+      const timeSinceLastInteraction = now - lastInteractionTime.current
+      const isRapidInteraction = timeSinceLastInteraction < TRANSITION_DURATION
 
-      lastInteractionTime.current = now;
+      lastInteractionTime.current = now
 
       if (isRapidInteraction) {
         // Skip transition for rapid interactions
-        onNext();
-        setDisplayKey((prev) => prev + 1); // Force re-render with new key
-        setIsZoomed(false); // Reset zoom on navigation
+        onNext()
+        setDisplayKey((prev) => prev + 1) // Force re-render with new key
+        setIsZoomed(false) // Reset zoom on navigation
       } else {
         // Normal transition
-        setIsTransitioning(true);
-        setSlideDirection("left"); // Slide left when going to next
+        setIsTransitioning(true)
+        setSlideDirection("left") // Slide left when going to next
         setTimeout(() => {
-          onNext();
-          setIsZoomed(false); // Reset zoom on navigation
+          onNext()
+          setIsZoomed(false) // Reset zoom on navigation
           // Reset slide out, then trigger slide in
           setTimeout(() => {
-            setIsTransitioning(false);
-            setSlideDirection("right"); // New image will slide in from right
-            setIsSlideIn(true);
-            setDisplayKey((prev) => prev + 1); // Force re-render with new key
+            setIsTransitioning(false)
+            setSlideDirection("right") // New image will slide in from right
+            setIsSlideIn(true)
+            setDisplayKey((prev) => prev + 1) // Force re-render with new key
             // Clear slide in after animation
             setTimeout(() => {
-              setIsSlideIn(false);
-              setSlideDirection(null);
-            }, 150);
-          }, 10);
-        }, 200);
+              setIsSlideIn(false)
+              setSlideDirection(null)
+            }, 150)
+          }, 10)
+        }, 200)
       }
     }
-  }, [isTransitioning, onNext]);
+  }, [isTransitioning, onNext])
 
   // Handle keyboard events on buttons
   const handlePreviousKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "Enter" && onPrevious) {
-        e.preventDefault();
-        handlePrevious();
+        e.preventDefault()
+        handlePrevious()
       }
     },
     [handlePrevious, onPrevious],
-  );
+  )
 
   const handleNextKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "Enter" && onNext) {
-        e.preventDefault();
-        handleNext();
+        e.preventDefault()
+        handleNext()
       }
     },
     [handleNext, onNext],
-  );
+  )
 
   // Handle focus restoration after navigation
   useEffect(() => {
@@ -263,42 +263,42 @@ export function CoinCardDetail({
       const targetButton =
         focusTarget === "previous"
           ? previousButtonRef.current
-          : nextButtonRef.current;
+          : nextButtonRef.current
       if (targetButton) {
         // Small delay to ensure the transition has completed
         setTimeout(() => {
-          targetButton.focus();
-        }, 100);
+          targetButton.focus()
+        }, 100)
       }
     }
-  }, [isOpen, focusTarget, isTransitioning]);
+  }, [isOpen, focusTarget, isTransitioning])
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        onClose()
       } else if (e.key === "ArrowLeft") {
-        handlePrevious();
+        handlePrevious()
       } else if (e.key === "ArrowRight") {
-        handleNext();
+        handleNext()
       } else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-        handleFlip();
+        handleFlip()
       }
-    };
+    }
 
     if (isOpen) {
-      document.addEventListener("keydown", handleKeyPress);
+      document.addEventListener("keydown", handleKeyPress)
       // Prevent body scroll when modal is open
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = "hidden"
     }
 
     return () => {
-      document.removeEventListener("keydown", handleKeyPress);
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen, onClose, handlePrevious, handleNext, handleFlip]);
+      document.removeEventListener("keydown", handleKeyPress)
+      document.body.style.overflow = "unset"
+    }
+  }, [isOpen, onClose, handlePrevious, handleNext, handleFlip])
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto py-4 lg:items-center lg:py-0">
@@ -521,5 +521,5 @@ export function CoinCardDetail({
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import { Copy } from "lucide-react";
-import { useState } from "react";
-import { generateImageId } from "~/lib/utils/image-id-generation";
+import { Copy } from "lucide-react"
+import { useState } from "react"
+import { generateImageId } from "~/lib/utils/image-id-generation"
 
 type GeneratedImageIdHelperProps = {
   /** Watch function from react-hook-form to get current form values */
@@ -18,13 +18,13 @@ export function GeneratedImageIdHelper({
   view,
   timTookPhotos = false,
 }: GeneratedImageIdHelperProps) {
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(false)
 
   // Watch relevant form fields
-  const nickname = watch("nickname") ?? "";
-  const denomination = watch("denomination") ?? "";
-  const purchaseDate = watch("purchase_date") ?? "";
-  const vendor = watch("purchase_vendor") ?? "";
+  const nickname = watch("nickname") ?? ""
+  const denomination = watch("denomination") ?? ""
+  const purchaseDate = watch("purchase_date") ?? ""
+  const vendor = watch("purchase_vendor") ?? ""
 
   const generatedId = generateImageId(
     nickname,
@@ -33,20 +33,20 @@ export function GeneratedImageIdHelper({
     vendor,
     view,
     timTookPhotos,
-  );
+  )
 
   // Don't show anything if we can't generate an ID
-  if (!generatedId) return null;
+  if (!generatedId) return null
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(generatedId);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(generatedId)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      console.error("Failed to copy:", error);
+      console.error("Failed to copy:", error)
     }
-  };
+  }
 
   return (
     <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
@@ -64,5 +64,5 @@ export function GeneratedImageIdHelper({
         )}
       </button>
     </div>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/nextjs";
-import { CoinCardGridItem } from "../components/ui/CoinCardGridItem";
+import type { Meta, StoryObj } from "@storybook/nextjs"
+import { CoinCardGridItem } from "../components/ui/CoinCardGridItem"
 
 const meta: Meta<typeof CoinCardGridItem> = {
   title: "Components/CoinCardGridItem",
@@ -50,9 +50,9 @@ const meta: Meta<typeof CoinCardGridItem> = {
       description: "Reverse image identifier",
     },
   },
-};
+}
 
-export default meta;
+export default meta
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
@@ -67,7 +67,7 @@ export const Default: Story = {
     reverseImageId:
       "20250820__faustina-ii-sestertius__r__src-imperial-numismatics",
   },
-};
+}
 
 // View variants
 export const ObverseOnly: Story = {
@@ -83,7 +83,7 @@ export const ObverseOnly: Story = {
       "20250820__faustina-ii-sestertius__r__src-imperial-numismatics",
     view: "obverse",
   },
-};
+}
 
 export const ReverseOnly: Story = {
   args: {
@@ -98,7 +98,7 @@ export const ReverseOnly: Story = {
       "20250820__faustina-ii-sestertius__r__src-imperial-numismatics",
     view: "reverse",
   },
-};
+}
 
 export const CrossingEras: Story = {
   args: {
@@ -111,7 +111,7 @@ export const CrossingEras: Story = {
     reverseImageId:
       "20250820__faustina-ii-sestertius__r__src-imperial-numismatics",
   },
-};
+}
 
 export const BothErasBCE: Story = {
   args: {
@@ -124,4 +124,4 @@ export const BothErasBCE: Story = {
     reverseImageId: "1_faustina_II_sestertius_r_hy1nu3",
     view: "both",
   },
-};
+}

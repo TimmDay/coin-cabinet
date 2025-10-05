@@ -1,21 +1,21 @@
-import { type Metadata } from "next";
-import { Geist } from "next/font/google";
-import Navbar from "~/components/layout/Navbar";
-import { PageWrapper } from "~/components/layout/PageWrapper";
-import { AuthProvider } from "~/components/providers/auth-provider";
-import { ReactQueryProvider } from "~/components/providers/react-query-provider";
-import "~/styles/globals.css";
+import { type Metadata } from "next"
+import { Geist } from "next/font/google"
+import Navbar from "~/components/layout/Navbar"
+import { PageWrapper } from "~/components/layout/PageWrapper"
+import { AuthProvider } from "~/components/providers/auth-provider"
+import { ReactQueryProvider } from "~/components/providers/react-query-provider"
+import "~/styles/globals.css"
 
 export const metadata: Metadata = {
   title: "Somnus Collection",
   description: "The Somnus Coin Collection",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
-};
+}
 
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist-sans",
-});
+})
 
 export default function RootLayout({
   children,
@@ -31,5 +31,5 @@ export default function RootLayout({
         </AuthProvider>
       </body>
     </html>
-  );
+  )
 }

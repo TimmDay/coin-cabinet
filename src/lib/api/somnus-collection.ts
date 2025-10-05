@@ -80,7 +80,7 @@ async function fetchAllSomnusCoins(): Promise<SomnusCollection[]> {
 async function insertSomnusCoin(
   coinData: NewSomnusCollection,
 ): Promise<SomnusCollection> {
-  const response = await fetch("/api/somnus-collection/add-coin", {
+  const response = await fetch("/api/somnus-collection/admin", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

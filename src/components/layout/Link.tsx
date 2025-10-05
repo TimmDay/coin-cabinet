@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "next/link"
 
 type Props = {
   href: string;
@@ -18,5 +18,5 @@ export function NextLink({ href, isActive, children }: Props) {
     >
       {children}
     </Link>
-  );
+  )
 }

@@ -1,38 +1,77 @@
 "use client";
 
-import React from "react";
+import { useEffect, useState } from "react";
+import { CoinForm } from "~/components/forms/CoinForm";
 import { useAuth } from "~/components/providers/auth-provider";
 import { PageTitle } from "~/components/ui/PageTitle";
-import { useAddFruit, useDeleteFruit, useFruits } from "~/lib/api/fruits";
+import type { CoinFormData } from "~/lib/validations/coin-form";
 
-type Fruit = {
-  id?: number;
-  fruitName: string;
-  created_at?: string;
+type ApiResponse = {
+  success: boolean;
+  message?: string;
 };
 
-export default function AdminPage() {
-  const [fruitName, setFruitName] = React.useState("");
-
-  // Use auth and custom hooks
+export default function AddCoinPage() {
   const { user, loading } = useAuth();
-  const { data: fruitData = [], isLoading, error } = useFruits();
-  const addFruitMutation = useAddFruit();
-  const deleteFruitMutation = useDeleteFruit();
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (fruitName.trim()) {
-      addFruitMutation.mutate(fruitName);
-      setFruitName(""); // Clear input after submission
+  // Auto-clear success message
+  useEffect(() => {
+    if (message?.includes("🌙 Somnus accepts your offering")) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+
+      return () => clearTimeout(timer);
     }
-  }
+  }, [message]);
+
+  const handleFormSubmit = async (data: CoinFormData) => {
+    if (!user) {
+      setMessage("❌ Please log in to add coins to your collection");
+      return;
+    }
+    setIsLoading(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch("/api/somnus-collection/add-coin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+
+      const result = (await response.json()) as ApiResponse;
+
+      if (result.success) {
+        setMessage("🌙 Somnus accepts your offering");
+      } else {
+        setMessage(`❌ Error: ${result.message}`);
+        throw new Error(result.message ?? "Submission failed");
+      }
+    } catch (error) {
+      // Set error message but rethrow so form knows it failed
+      if (!message?.includes("❌ Error:")) {
+        setMessage("❌ Failed to add coin to collection");
+      }
+      console.error("Error:", error);
+      throw error; // Rethrow so form doesn't clear
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (loading) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center">
-        <div className="text-center">
-          <p className="coin-description text-xl">Loading...</p>
+      <main className="min-h-screen">
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center">
+            <p className="coin-description text-xl">Loading...</p>
+          </div>
         </div>
       </main>
     );
@@ -42,86 +81,39 @@ export default function AdminPage() {
     <main className="min-h-screen">
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12 text-center">
-          <PageTitle className="mb-6">Admin Panel</PageTitle>
-          <p className="coin-description text-xl">Manage fruits collection</p>
-          {!user && (
-            <p className="coin-description mt-2">
-              Sign in to add or delete fruits
-            </p>
-          )}
+          <PageTitle authPage className="mb-6">
+            Add Coin
+          </PageTitle>
+          <p className="coin-description text-xl">
+            {user
+              ? "Add a new coin to your collection"
+              : "Sign in to add coins to your collection"}
+          </p>
         </div>
 
-        <div className="flex flex-col items-center gap-8">
-          {/* Add Fruit Form - Only show for authenticated users */}
-          {user && (
-            <div className="somnus-card p-6">
-              <h2 className="coin-title mb-4 text-xl">Add New Fruit</h2>
-              <form onSubmit={handleSubmit} className="flex gap-2">
-                <input
-                  type="text"
-                  value={fruitName}
-                  onChange={(e) => setFruitName(e.target.value)}
-                  placeholder="Enter a fruit name"
-                  disabled={addFruitMutation.isPending}
-                  className="flex-1 rounded border border-slate-600 bg-slate-800/50 px-3 py-2 text-slate-200 placeholder-slate-400 transition-colors focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  disabled={addFruitMutation.isPending}
-                  className="somnus-button px-4 py-2 disabled:opacity-50"
-                >
-                  {addFruitMutation.isPending ? "Adding..." : "Add Fruit"}
-                </button>
-              </form>
-            </div>
-          )}
-
-          {/* Loading and Error States */}
-          {isLoading && <p className="coin-description">Loading fruits...</p>}
-          {error && (
-            <p className="text-red-400">
-              Error loading fruits: {error.message}
-            </p>
-          )}
-
-          {/* Fruits List - Show to everyone, but only show delete buttons to authenticated users */}
-          {fruitData.length > 0 && (
-            <div className="artemis-card w-full max-w-md p-6">
-              <h2 className="coin-title mb-4 text-xl">Fruits Collection</h2>
-              <ul className="space-y-2">
-                {fruitData.map((fruit: Fruit, idx: number) => (
-                  <li
-                    key={fruit.id ?? idx}
-                    className="flex items-center justify-between rounded border border-slate-600/50 bg-slate-800/30 p-3"
-                  >
-                    <span className="text-slate-200">{fruit.fruitName}</span>
-                    {/* Delete button - Only show for authenticated users */}
-                    {user && fruit.id && (
-                      <button
-                        onClick={() => deleteFruitMutation.mutate(fruit.id!)}
-                        disabled={deleteFruitMutation.isPending}
-                        className="rounded border border-rose-700/50 bg-rose-800/60 px-3 py-1 text-sm text-rose-100 transition-colors hover:bg-rose-700/60 disabled:opacity-50"
-                      >
-                        {deleteFruitMutation.isPending
-                          ? "Deleting..."
-                          : "Delete"}
-                      </button>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Sign in prompt for non-authenticated users */}
-          {!user && fruitData.length > 0 && (
-            <div className="text-center">
+        <div className="mx-auto max-w-2xl">
+          {user ? (
+            <CoinForm onSubmit={handleFormSubmit} isLoading={isLoading} />
+          ) : (
+            <div className="artemis-card p-8 text-center">
+              <h2 className="coin-title mb-4 text-2xl font-semibold">
+                Authentication Required
+              </h2>
+              <p className="coin-description mb-6 text-lg">
+                Please sign in to add coins to your collection.
+              </p>
               <a
-                href="/login"
+                href="/somnus-login"
                 className="artemis-button inline-block px-6 py-3 transition-colors"
               >
-                Sign In to Manage Fruits
+                Sign In
               </a>
+            </div>
+          )}
+
+          {message && (
+            <div className="artemis-card mt-8 p-4 text-center">
+              <p className="text-lg font-medium">{message}</p>
             </div>
           )}
         </div>

@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "~/lib/utils";
+import { ChevronRight } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { cn } from "~/lib/utils"
 
 type BreadcrumbItem = {
   label: string;
@@ -16,36 +16,36 @@ type BreadcrumbProps = {
 
 // Function to generate breadcrumb items from pathname
 function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
-  const segments = pathname.split("/").filter(Boolean);
-  const breadcrumbs: BreadcrumbItem[] = [];
+  const segments = pathname.split("/").filter(Boolean)
+  const breadcrumbs: BreadcrumbItem[] = []
 
   // Add home
-  breadcrumbs.push({ label: "Home", href: "/" });
+  breadcrumbs.push({ label: "Home", href: "/" })
 
   // Build breadcrumbs from segments
-  let currentPath = "";
+  let currentPath = ""
   segments.forEach((segment) => {
-    currentPath += `/${segment}`;
+    currentPath += `/${segment}`
 
     // Convert segment to readable label
     const label = segment
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+      .join(" ")
 
-    breadcrumbs.push({ label, href: currentPath });
-  });
+    breadcrumbs.push({ label, href: currentPath })
+  })
 
-  return breadcrumbs;
+  return breadcrumbs
 }
 
 export function Breadcrumb({ className }: BreadcrumbProps) {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   // Don't show breadcrumbs on home page
-  if (pathname === "/") return null;
+  if (pathname === "/") return null
 
-  const breadcrumbs = generateBreadcrumbs(pathname);
+  const breadcrumbs = generateBreadcrumbs(pathname)
 
   return (
     <nav
@@ -54,7 +54,7 @@ export function Breadcrumb({ className }: BreadcrumbProps) {
     >
       <div className="flex items-center">
         {breadcrumbs.map((item, index) => {
-          const isLast = index === breadcrumbs.length - 1;
+          const isLast = index === breadcrumbs.length - 1
 
           return (
             <span key={item.href} className="flex items-center">
@@ -73,11 +73,11 @@ export function Breadcrumb({ className }: BreadcrumbProps) {
                 </Link>
               )}
             </span>
-          );
+          )
         })}
       </div>
     </nav>
-  );
+  )
 }
 
 // Individual components for more granular control (shadcn style)
@@ -89,7 +89,7 @@ export const BreadcrumbList = ({
   className?: string;
 }) => (
   <ol className={cn("flex items-center space-x-1", className)}>{children}</ol>
-);
+)
 
 export const BreadcrumbItem = ({
   children,
@@ -97,7 +97,7 @@ export const BreadcrumbItem = ({
 }: {
   children: React.ReactNode;
   className?: string;
-}) => <li className={cn("flex items-center", className)}>{children}</li>;
+}) => <li className={cn("flex items-center", className)}>{children}</li>
 
 export const BreadcrumbLink = ({
   href,
@@ -118,7 +118,7 @@ export const BreadcrumbLink = ({
   >
     {children}
   </Link>
-);
+)
 
 export const BreadcrumbPage = ({
   children,
@@ -133,7 +133,7 @@ export const BreadcrumbPage = ({
   >
     {children}
   </span>
-);
+)
 
 export const BreadcrumbSeparator = ({
   children,
@@ -145,4 +145,4 @@ export const BreadcrumbSeparator = ({
   <span className={cn("mx-2 text-slate-500", className)}>
     {children ?? <ChevronRight className="h-4 w-4" />}
   </span>
-);
+)

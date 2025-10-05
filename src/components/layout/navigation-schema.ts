@@ -1,7 +1,8 @@
-export const simpleTopLevel = [
-  { name: "Main", href: "/" },
+export const navigationItems = [
+  { name: "Sets", href: "/sets", hasSubmenu: true },
+  { name: "Articles", href: "/articles" },
+  { name: "About", href: "/" },
   { name: "Admin", href: "/admin" },
-  { name: "Add Coin", href: "/add-coin" },
 ];
 
 export const coinCabinetItems = [
@@ -12,7 +13,13 @@ export const coinCabinetItems = [
   { name: "Ex Collection", href: "/coin-cabinet/ex-collection" },
 ];
 
-export type SubmenuTypes = "roman" | "sets";
+export type SubmenuTypes = "roman" | "sets" | "mainSets";
+
+export const mainSetsSubmenu = [
+  { name: "Severan Dynasty", href: "/sets/severan-dynasty" },
+  { name: "Constantinian", href: "/sets/constantinian" },
+];
+
 export const setsSubmenu = [
   { name: "Severan Period", href: "/coin-cabinet/sets/severan-period" },
   { name: "Imperial Women", href: "/coin-cabinet/sets/imperial-women" },

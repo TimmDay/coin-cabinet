@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const coinFormSchema = z
   .object({
@@ -87,10 +87,10 @@ export const coinFormSchema = z
           .max(100, "Invalid silver content")
           .refine(
             (val) => {
-              if (val === undefined) return true;
+              if (val === undefined) return true
               // Check if the number has at most 1 decimal place
-              const decimalPlaces = (val.toString().split(".")[1] ?? "").length;
-              return decimalPlaces <= 1;
+              const decimalPlaces = (val.toString().split(".")[1] ?? "").length
+              return decimalPlaces <= 1
             },
             {
               message: "Silver content can have at most 1 decimal place",
@@ -253,9 +253,9 @@ export const coinFormSchema = z
     (data) => {
       // Custom validation: reign_end should be >= reign_start if both are provided
       if (data.reign_start && data.reign_end) {
-        return data.reign_end >= data.reign_start;
+        return data.reign_end >= data.reign_start
       }
-      return true;
+      return true
     },
     {
       message: "Reign end year must be after or equal to start year",
@@ -266,9 +266,9 @@ export const coinFormSchema = z
     (data) => {
       // Custom validation: mint_year_latest should be >= mint_year_earliest if both are provided
       if (data.mint_year_latest && data.mint_year_earliest) {
-        return data.mint_year_latest >= data.mint_year_earliest;
+        return data.mint_year_latest >= data.mint_year_earliest
       }
-      return true;
+      return true
     },
     {
       message: "Can't be before earliest mint year",
@@ -279,14 +279,14 @@ export const coinFormSchema = z
     (data) => {
       // Custom validation: auction_lot is required if auction_name is provided
       if (data.auction_name && data.auction_name.trim() !== "") {
-        return data.auction_lot !== undefined && data.auction_lot !== null;
+        return data.auction_lot !== undefined && data.auction_lot !== null
       }
-      return true;
+      return true
     },
     {
       message: "Lot number is required when auction name is provided",
       path: ["auction_lot"],
     },
-  );
+  )
 
 export type CoinFormData = z.infer<typeof coinFormSchema>;

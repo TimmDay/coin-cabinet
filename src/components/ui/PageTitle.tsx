@@ -13,8 +13,8 @@ export function PageTitle({
   authPage = false,
 }: PageTitleProps) {
   // Split the title into words and identify the last word for accent
-  const words = children.trim().split(" ");
-  const lastWordIndex = words.length - 1;
+  const words = children.trim().split(" ")
+  const lastWordIndex = words.length - 1
 
   return (
     <div className={`flex flex-col items-center text-center ${className}`}>
@@ -28,19 +28,19 @@ export function PageTitle({
               >
                 {word}
               </span>
-            );
+            )
           }
           return (
             <span key={index}>
               {word}
               {index < lastWordIndex ? " " : ""}
             </span>
-          );
+          )
         })}
       </h1>
 
       {/* Underline border - 300px wide */}
       <div className="mt-9 h-px w-[300px] bg-gradient-to-r from-transparent via-slate-600 to-transparent"></div>
     </div>
-  );
+  )
 }

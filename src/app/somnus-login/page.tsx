@@ -1,21 +1,21 @@
-"use client";
+"use client"
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { LoginForm } from "~/components/auth/LoginForm";
-import { useAuth } from "~/components/providers/auth-provider";
-import { PageTitle } from "~/components/ui/PageTitle";
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
+import { LoginForm } from "~/components/auth/LoginForm"
+import { useAuth } from "~/components/providers/auth-provider"
+import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function LoginPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const { user, loading } = useAuth()
+  const router = useRouter()
 
   useEffect(() => {
     if (user && !loading) {
       // Redirect to admin if already logged in
-      router.push("/admin");
+      router.push("/admin")
     }
-  }, [user, loading, router]);
+  }, [user, loading, router])
 
   if (loading) {
     return (
@@ -26,7 +26,7 @@ export default function LoginPage() {
           </div>
         </div>
       </main>
-    );
+    )
   }
 
   if (user) {
@@ -38,7 +38,7 @@ export default function LoginPage() {
           </div>
         </div>
       </main>
-    );
+    )
   }
 
   return (
@@ -57,5 +57,5 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
-  );
+  )
 }

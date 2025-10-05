@@ -1,23 +1,23 @@
 // TODO: look into these later
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { CoinsWithoutImages } from "~/components/ui/CoinsWithoutImages";
-import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper";
-import { RoundButton } from "~/components/ui/RoundButton";
-import { Select } from "~/components/ui/Select";
-import { coinFormSchema, type CoinFormData } from "~/lib/validations/coin-form";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { CoinsWithoutImages } from "~/components/ui/CoinsWithoutImages"
+import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper"
+import { RoundButton } from "~/components/ui/RoundButton"
+import { Select } from "~/components/ui/Select"
+import { coinFormSchema, type CoinFormData } from "~/lib/validations/coin-form"
 import {
   authorityOptions,
   civilizationOptions,
   civSpecificOptions,
   denominationOptions,
   dieAxisOptions,
-} from "./constants";
+} from "./constants"
 
 type CoinFormProps = {
   onSubmit: (data: CoinFormData) => Promise<void>;
@@ -25,7 +25,7 @@ type CoinFormProps = {
 };
 
 export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
-  const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false);
+  const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false)
 
   const {
     register,
@@ -38,23 +38,23 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
     defaultValues: {
       purchase_date: new Date().toISOString().split("T")[0],
     },
-  });
+  })
 
   const handleFormSubmit = async (data: CoinFormData) => {
     try {
-      await onSubmit(data);
+      await onSubmit(data)
       // Only clear form if onSubmit completes without throwing
-      reset(); // Clear form on success
+      reset() // Clear form on success
     } catch (error) {
-      console.error("Form submission error:", error);
+      console.error("Form submission error:", error)
       // Do NOT clear form on failure - preserve user input
     }
-  };
+  }
 
   const inputClass =
-    "w-full px-3 py-2 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none transition-colors";
-  const labelClass = "block text-sm font-medium text-slate-300 mb-1";
-  const errorClass = "text-red-400 text-sm mt-1";
+    "w-full px-3 py-2 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none transition-colors"
+  const labelClass = "block text-sm font-medium text-slate-300 mb-1"
+  const errorClass = "text-red-400 text-sm mt-1"
 
   return (
     <div className="relative">
@@ -892,5 +892,5 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
         <CoinsWithoutImages />
       </div>
     </div>
-  );
+  )
 }

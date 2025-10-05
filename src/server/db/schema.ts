@@ -6,5 +6,4 @@
  */
 
 // Import all table schemas
-export * from "./schemas/somnus-collection";
-export * from "./schemas/test";
+export * from "./schemas/somnus-collection"

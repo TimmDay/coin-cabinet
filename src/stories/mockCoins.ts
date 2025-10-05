@@ -153,4 +153,4 @@ export const mockCoins = [
     image_rotation: null,
     antiquities_register: "",
   },
-];
+]

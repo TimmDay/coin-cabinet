@@ -1,51 +1,22 @@
+import { CoinGrid } from "~/components/ui/CoinGrid";
 import { PageTitle } from "~/components/ui/PageTitle";
 
 export default function CoinCabinetPage() {
   return (
-    <main className="min-h-screen">
-      <div className="container mx-auto px-4 py-16">
-        <div className="mb-12 text-center">
-          <PageTitle className="mb-6">Coin Cabinet</PageTitle>
-          <p className="coin-description text-xl">The collection awaits...</p>
-        </div>
+    <main className="flex min-h-screen flex-col items-center justify-center">
+      <div className="container flex flex-col items-center justify-center gap-4 px-4 py-16">
+        <PageTitle>The Coin Cabinet</PageTitle>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <div className="artemis-card p-6 text-center">
-            <h3 className="coin-title mb-2 text-lg">Roman Imperial</h3>
-            <p className="coin-description text-sm">
-              Emperors and their legacies in bronze, silver, and gold
-            </p>
-          </div>
-          <div className="artemis-card p-6 text-center">
-            <h3 className="coin-title mb-2 text-lg">Roman Republic</h3>
-            <p className="coin-description text-sm">
-              The foundations of numismatic artistry
-            </p>
-          </div>
-          <div className="artemis-card p-6 text-center">
-            <h3 className="coin-title mb-2 text-lg">Greek & Hellenistic</h3>
-            <p className="coin-description text-sm">
-              Classical beauty in ancient coinage
-            </p>
-          </div>
-          <div className="artemis-card p-6 text-center">
-            <h3 className="coin-title mb-2 text-lg">Byzantine</h3>
-            <p className="coin-description text-sm">
-              Medieval continuity of Roman tradition
-            </p>
-          </div>
-          <div className="artemis-card p-6 text-center">
-            <h3 className="coin-title mb-2 text-lg">Themed Collections</h3>
-            <p className="coin-description text-sm">
-              Curated sets from specific periods and regions
-            </p>
-          </div>
-          <div className="artemis-card p-6 text-center">
-            <h3 className="coin-title mb-2 text-lg">Recent Acquisitions</h3>
-            <p className="coin-description text-sm">
-              Latest additions to the collection
-            </p>
-          </div>
+        <CoinGrid />
+
+        <div className="mt-12 text-center">
+          <p className="coin-description mb-6">
+            Discover the fascinating world of ancient numismatics through our
+            carefully documented collection.
+          </p>
+          <button className="somnus-button px-8 py-3 text-lg font-medium">
+            Explore the Collection
+          </button>
         </div>
       </div>
     </main>

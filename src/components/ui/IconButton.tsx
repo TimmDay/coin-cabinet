@@ -1,6 +1,6 @@
-import type { LucideIcon } from "lucide-react";
-import { forwardRef } from "react";
-import { cn } from "~/lib/utils";
+import type { LucideIcon } from "lucide-react"
+import { forwardRef } from "react"
+import { cn } from "~/lib/utils"
 
 type IconButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   icon: LucideIcon;
@@ -15,18 +15,18 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
     ref,
   ) => {
     const baseClasses =
-      "flex items-center justify-center cursor-pointer rounded-full bg-slate-800/50 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50";
+      "flex items-center justify-center cursor-pointer rounded-full bg-slate-800/50 text-slate-300 transition-colors hover:bg-slate-700/50 hover:text-white disabled:opacity-50"
 
     const variantClasses = {
       default: "p-2",
       large: "p-3",
-    };
+    }
 
     const iconSizeClasses = {
       sm: "h-4 w-4",
       md: "h-6 w-6",
       lg: "h-8 w-8",
-    };
+    }
 
     return (
       <button
@@ -36,10 +36,10 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       >
         <Icon className={iconSizeClasses[iconSize]} />
       </button>
-    );
+    )
   },
-);
+)
 
-IconButton.displayName = "IconButton";
+IconButton.displayName = "IconButton"
 
-export { IconButton };
+export { IconButton }

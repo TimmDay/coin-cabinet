@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import { useAllSomnusCoins } from "~/lib/api/somnus-collection";
-import { generateImageId } from "~/lib/utils/image-id-generation";
+import { useAllSomnusCoins } from "~/lib/api/somnus-collection"
+import { generateImageId } from "~/lib/utils/image-id-generation"
 
 type CoinData = {
   id: number;
@@ -20,13 +20,13 @@ function generateObverseImageId(coin: CoinData): string {
     coin.purchase_date ?? "",
     coin.purchase_vendor ?? "",
     "o",
-  );
+  )
 
-  return generatedId ?? "Missing data for generation";
+  return generatedId ?? "Missing data for generation"
 }
 
 export function CoinsWithoutImages() {
-  const { data: coins, isLoading, error } = useAllSomnusCoins();
+  const { data: coins, isLoading, error } = useAllSomnusCoins()
 
   if (isLoading) {
     return (
@@ -36,7 +36,7 @@ export function CoinsWithoutImages() {
         </h3>
         <p className="text-sm text-slate-400">Loading...</p>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -47,22 +47,22 @@ export function CoinsWithoutImages() {
         </h3>
         <p className="text-sm text-red-400">Error loading coins</p>
       </div>
-    );
+    )
   }
 
   // Filter coins that have DB entries but no images for both obverse and reverse
   const coinsWithoutImages =
     coins?.filter((coin) => {
       const missingObverse =
-        !coin.image_link_o || coin.image_link_o.trim() === "";
+        !coin.image_link_o || coin.image_link_o.trim() === ""
       const missingReverse =
-        !coin.image_link_r || coin.image_link_r.trim() === "";
-      return missingObverse || missingReverse;
-    }) ?? [];
+        !coin.image_link_r || coin.image_link_r.trim() === ""
+      return missingObverse || missingReverse
+    }) ?? []
 
   // Debug: log the filtering results
-  console.log("All coins:", coins?.length);
-  console.log("Coins without images:", coinsWithoutImages.length);
+  console.log("All coins:", coins?.length)
+  console.log("Coins without images:", coinsWithoutImages.length)
   console.log(
     "Coins missing images:",
     coinsWithoutImages.map((coin) => ({
@@ -70,7 +70,7 @@ export function CoinsWithoutImages() {
       obverse: coin.image_link_o,
       reverse: coin.image_link_r,
     })),
-  );
+  )
 
   if (coinsWithoutImages.length === 0) {
     return (
@@ -80,7 +80,7 @@ export function CoinsWithoutImages() {
         </h3>
         <p className="text-sm text-slate-400">All coins have images! 🎉</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -109,5 +109,5 @@ export function CoinsWithoutImages() {
         {coinsWithoutImages.length !== 1 ? "s" : ""}
       </p>
     </div>
-  );
+  )
 }

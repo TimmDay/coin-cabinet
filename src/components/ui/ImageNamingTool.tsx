@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import { Copy } from "lucide-react";
-import { useState } from "react";
-import { RoundButton } from "~/components/ui/RoundButton";
+import { Copy } from "lucide-react"
+import { useState } from "react"
+import { RoundButton } from "~/components/ui/RoundButton"
 import {
   generateImageId,
   hasValidSource,
-} from "~/lib/utils/image-id-generation";
+} from "~/lib/utils/image-id-generation"
 
 type ImageNamingToolProps = {
   /** Watch function from react-hook-form to get current form values */
@@ -14,17 +14,17 @@ type ImageNamingToolProps = {
 };
 
 export function ImageNamingTool({ watch }: ImageNamingToolProps) {
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
+  const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false)
 
   // Watch relevant form fields
-  const nickname = watch("nickname") ?? "";
-  const denomination = watch("denomination") ?? "";
-  const purchaseDate = watch("purchase_date") ?? "";
-  const vendor = watch("purchase_vendor") ?? "";
+  const nickname = watch("nickname") ?? ""
+  const denomination = watch("denomination") ?? ""
+  const purchaseDate = watch("purchase_date") ?? ""
+  const vendor = watch("purchase_vendor") ?? ""
 
   // Check if source is valid (either checkbox checked OR vendor has content)
-  const isValidSource = hasValidSource(vendor, timTookPhotos);
+  const isValidSource = hasValidSource(vendor, timTookPhotos)
 
   // Define the seven views as per the schema
   const views = [
@@ -35,7 +35,7 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
     { view: "sketch-o", label: "Sketch Obverse" },
     { view: "sketch-r", label: "Sketch Reverse" },
     { view: "rotation-45", label: "Rotation 45°" },
-  ];
+  ]
 
   // Generate filename for a specific view using utility function
   const generateViewFilename = (view: string): string => {
@@ -46,19 +46,19 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
       vendor,
       view,
       timTookPhotos,
-    );
-  };
+    )
+  }
 
   // Copy to clipboard function
   const copyToClipboard = async (text: string, index: number) => {
     try {
-      await navigator.clipboard.writeText(text);
-      setCopiedIndex(index);
-      setTimeout(() => setCopiedIndex(null), 2000); // Reset after 2 seconds
+      await navigator.clipboard.writeText(text)
+      setCopiedIndex(index)
+      setTimeout(() => setCopiedIndex(null), 2000) // Reset after 2 seconds
     } catch (error) {
-      console.error("Failed to copy:", error);
+      console.error("Failed to copy:", error)
     }
-  };
+  }
 
   // Always show the tool for better user feedback
 
@@ -87,7 +87,7 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
 
       <div className="space-y-3">
         {views.map((item, index) => {
-          const filename = generateViewFilename(item.view);
+          const filename = generateViewFilename(item.view)
 
           return (
             <div key={item.view} className="space-y-1">
@@ -120,7 +120,7 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
                 </RoundButton>
               </div>
             </div>
-          );
+          )
         })}
       </div>
 
@@ -140,5 +140,5 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
         </div>
       )}
     </div>
-  );
+  )
 }

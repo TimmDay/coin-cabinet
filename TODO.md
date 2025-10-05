@@ -9,11 +9,12 @@
 - [ ] style up the CoinGrid controls (radio group)
 - [ ] CoinGrid - work out what filters I want, and how to display them
 - [ ] do the filters for mobile as well
-
+- [ ] re-style the header to be skinnier
 - [ ] Coin Card detail ENHANCED
   - comparison coin sketches
   - expanded map showing the Mint and nearest cities
   - historical notes?
+  - latin translation of legends. where/how to display? tooltip?
 
 - [ ] db schema updates. legend_o_expanded, legend_r_expanded, (latin_translation_o, latin_translation_r)
 - [ ] db schema updates. ex_somnus (bool), is_somnus (bool), is_stock (bool).
@@ -33,7 +34,7 @@
 
 - [ ] setup dev and prod DBs. default it points to dev. I have to manually put in the prod details to use that one.
 - [ ] Mint name dropdown in form.
-- [ ] Another table. Mint names with the associated lat/lng of each mint
+- [ ] Another table. Mint names with the associated lat/lng of each mint.
 
 ### images
 

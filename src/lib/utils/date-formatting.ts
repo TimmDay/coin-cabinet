@@ -8,27 +8,27 @@ export function formatYearRange(
   earliest?: number | null,
   latest?: number | null,
 ): string {
-  if (!earliest || !latest) return "";
+  if (!earliest || !latest) return ""
 
   // If start and end dates are the same, show single year
   if (earliest === latest) {
     if (earliest > 0) {
-      return `(${earliest} CE)`;
+      return `(${earliest} CE)`
     } else {
-      return `(${Math.abs(earliest)} BCE)`;
+      return `(${Math.abs(earliest)} BCE)`
     }
   }
 
   if (earliest > 0 && latest > 0) {
     // Both positive - use CE
-    return `(${earliest}—${latest} CE)`;
+    return `(${earliest}—${latest} CE)`
   } else if (earliest < 0 && latest < 0) {
     // Both negative - use BCE, strip negative signs, keep chronological order
-    return `(${Math.abs(earliest)}—${Math.abs(latest)} BCE)`;
+    return `(${Math.abs(earliest)}—${Math.abs(latest)} BCE)`
   } else if (earliest < 0 && latest > 0) {
     // Crosses BCE/CE boundary
-    return `(${Math.abs(earliest)} BCE—${latest} CE)`;
+    return `(${Math.abs(earliest)} BCE—${latest} CE)`
   }
 
-  return "";
+  return ""
 }

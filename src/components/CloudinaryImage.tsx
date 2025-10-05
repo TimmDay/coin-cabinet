@@ -36,9 +36,15 @@ export default function CloudinaryImage({
   height = 200,
   alt = "",
 }: Props) {
-  // TODO: loading shimmer?
   if (!src) {
-    return null;
+    return (
+      <div
+        className="flex items-center justify-center rounded bg-slate-800/20"
+        style={{ width, height }}
+      >
+        <div className="text-xs text-slate-500">No Image</div>
+      </div>
+    );
   }
 
   return (
@@ -52,6 +58,8 @@ export default function CloudinaryImage({
       }}
       background="transparent"
       alt={alt}
+      sizes={`${width}px`}
+      style={{ width, height }}
     />
   );
 }

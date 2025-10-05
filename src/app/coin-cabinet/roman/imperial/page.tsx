@@ -1,4 +1,4 @@
-import { PageTitle } from "~/components/ui/PageTitle";
+import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function ImperialPage() {
   return (
@@ -18,5 +18,5 @@ export default function ImperialPage() {
         </div>
       </div>
     </main>
-  );
+  )
 }

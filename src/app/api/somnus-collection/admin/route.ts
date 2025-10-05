@@ -6,8 +6,10 @@ import { coinFormSchema } from "~/lib/validations/coin-form";
 
 export async function POST(request: Request) {
   try {
-    console.log("🚀 POST /api/somnus-collection/add-coin - Adding coin to collection");
-    
+    console.log(
+      "🚀 POST /api/somnus-collection/admin - Adding coin to collection",
+    );
+
     // Use server client for authenticated requests
     const supabase = await createClient();
 

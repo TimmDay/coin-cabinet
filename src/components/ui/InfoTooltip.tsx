@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import { Info } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { Info } from "lucide-react"
+import { useCallback, useRef, useState } from "react"
 
 type InfoTooltipProps = {
   content: string;
@@ -12,12 +12,12 @@ export function InfoTooltip({
   content,
   id = "info-tooltip",
 }: InfoTooltipProps) {
-  const [showTooltip, setShowTooltip] = useState(false);
-  const tooltipRef = useRef<HTMLDivElement>(null);
+  const [showTooltip, setShowTooltip] = useState(false)
+  const tooltipRef = useRef<HTMLDivElement>(null)
 
   const handleTooltipToggle = useCallback(() => {
-    setShowTooltip((prev) => !prev);
-  }, []);
+    setShowTooltip((prev) => !prev)
+  }, [])
 
   return (
     <div className="relative mx-auto lg:mr-0 lg:ml-auto">
@@ -28,7 +28,7 @@ export function InfoTooltip({
         onBlur={(e) => {
           // Only hide tooltip if focus is not moving to the tooltip content
           if (!tooltipRef.current?.contains(e.relatedTarget as Node)) {
-            setShowTooltip(false);
+            setShowTooltip(false)
           }
         }}
         className="cursor-pointer rounded-full border border-slate-600/50 bg-slate-700/50 p-2 text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
@@ -54,5 +54,5 @@ export function InfoTooltip({
         </div>
       )}
     </div>
-  );
+  )
 }

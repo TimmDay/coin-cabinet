@@ -16,7 +16,7 @@ export const denominationOptions = [
   { value: "Decanummium", label: "Decanummium" },
   { value: "Æ", label: "Æ" },
   { value: "Other", label: "Other" },
-];
+]
 
 export const authorityOptions = [
   { value: "Augustus", label: "Augustus" },
@@ -26,7 +26,7 @@ export const authorityOptions = [
   { value: "Republican", label: "Republican" },
   { value: "Commemorative", label: "Commemorative" },
   { value: "Other", label: "Other" },
-];
+]
 
 export const civilizationOptions = [
   { value: "Roman Imperial", label: "Roman Imperial" },
@@ -38,7 +38,7 @@ export const civilizationOptions = [
   { value: "Parthian", label: "Parthian" },
   { value: "Sassanian", label: "Sassanian" },
   { value: "Troas, Kebren", label: "Troas, Kebren" },
-];
+]
 
 export const dieAxisOptions = [
   { value: "12h", label: "12h (↑↑)" },
@@ -53,7 +53,7 @@ export const dieAxisOptions = [
   { value: "3h", label: "3h (→↑)" },
   { value: "2h", label: "2h" },
   { value: "1h", label: "1h" },
-];
+]
 
 // Civilization-specific options
 export const civSpecificOptions = {
@@ -67,4 +67,4 @@ export const civSpecificOptions = {
     { value: "Moesia Superior", label: "Moesia Superior" },
     { value: "Moesia Inferior", label: "Moesia Inferior" },
   ],
-};
+}

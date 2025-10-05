@@ -1,5 +1,5 @@
-import { sql } from "drizzle-orm";
-import { index, pgTable } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm"
+import { index, pgTable } from "drizzle-orm/pg-core"
 
 // Somnus collection table
 export const somnus_collection = pgTable(
@@ -88,7 +88,7 @@ export const somnus_collection = pgTable(
     index("somnus_collection_purchase_date_idx").on(t.purchase_date),
     index("somnus_collection_created_at_idx").on(t.created_at),
   ],
-);
+)
 
 // Type inference for TypeScript
 export type SomnusCollection = typeof somnus_collection.$inferSelect;

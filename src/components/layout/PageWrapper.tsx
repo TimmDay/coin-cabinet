@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import { usePathname } from "next/navigation";
-import { Footer } from "~/components/layout/Footer";
-import { Breadcrumb } from "~/components/ui/Breadcrumb";
+import { usePathname } from "next/navigation"
+import { Footer } from "~/components/layout/Footer"
+import { Breadcrumb } from "~/components/ui/Breadcrumb"
 
 type PageWrapperProps = {
   children: React.ReactNode;
 };
 
 export function PageWrapper({ children }: PageWrapperProps) {
-  const pathname = usePathname();
-  const isHomePage = pathname === "/";
+  const pathname = usePathname()
+  const isHomePage = pathname === "/"
 
   return (
     <div className="bg-background flex min-h-screen flex-col">
@@ -30,5 +30,5 @@ export function PageWrapper({ children }: PageWrapperProps) {
 
       <Footer />
     </div>
-  );
+  )
 }

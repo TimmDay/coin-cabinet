@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/nextjs";
-import { useState } from "react";
-import { CoinCardDetail } from "~/components/ui/CoinCardDetail";
-import { mockCoins } from "./mockCoins";
+import type { Meta, StoryObj } from "@storybook/nextjs"
+import { useState } from "react"
+import { CoinCardDetail } from "~/components/ui/CoinCardDetail"
+import { mockCoins } from "./mockCoins"
 
 const meta: Meta<typeof CoinCardDetail> = {
   title: "Components/CoinCardDetail",
@@ -26,43 +26,43 @@ const meta: Meta<typeof CoinCardDetail> = {
     },
   },
   tags: ["autodocs"],
-};
+}
 
-export default meta;
+export default meta
 type Story = StoryObj<typeof meta>;
 
 // Interactive story with carousel functionality
 export const Interactive: Story = {
   render: () => {
-    const [isOpen, setIsOpen] = useState(true);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isOpen, setIsOpen] = useState(true)
+    const [currentIndex, setCurrentIndex] = useState(0)
     const [focusTarget, setFocusTarget] = useState<"previous" | "next" | null>(
       null,
-    );
+    )
 
-    const currentCoin = mockCoins[currentIndex] ?? mockCoins[0]!;
+    const currentCoin = mockCoins[currentIndex] ?? mockCoins[0]!
     const nextIndex =
-      currentIndex === mockCoins.length - 1 ? 0 : currentIndex + 1;
+      currentIndex === mockCoins.length - 1 ? 0 : currentIndex + 1
     const previousIndex =
-      currentIndex === 0 ? mockCoins.length - 1 : currentIndex - 1;
-    const nextCoin = mockCoins[nextIndex]!;
-    const previousCoin = mockCoins[previousIndex]!;
+      currentIndex === 0 ? mockCoins.length - 1 : currentIndex - 1
+    const nextCoin = mockCoins[nextIndex]!
+    const previousCoin = mockCoins[previousIndex]!
 
     const handlePrevious = () => {
-      setCurrentIndex((prev) => (prev === 0 ? mockCoins.length - 1 : prev - 1));
-      setFocusTarget("previous");
-    };
+      setCurrentIndex((prev) => (prev === 0 ? mockCoins.length - 1 : prev - 1))
+      setFocusTarget("previous")
+    }
 
     const handleNext = () => {
-      setCurrentIndex((prev) => (prev === mockCoins.length - 1 ? 0 : prev + 1));
-      setFocusTarget("next");
-    };
+      setCurrentIndex((prev) => (prev === mockCoins.length - 1 ? 0 : prev + 1))
+      setFocusTarget("next")
+    }
 
     const handleClose = () => {
-      setIsOpen(false);
+      setIsOpen(false)
       // Reopen after a short delay for demo purposes
-      setTimeout(() => setIsOpen(true), 1000);
-    };
+      setTimeout(() => setIsOpen(true), 1000)
+    }
 
     return (
       <div className="min-h-screen bg-slate-900 p-8">
@@ -114,9 +114,9 @@ export const Interactive: Story = {
           focusTarget={focusTarget}
         />
       </div>
-    );
+    )
   },
-};
+}
 
 // Single coin view (no navigation)
 export const SingleCoin: Story = {
@@ -141,4 +141,4 @@ export const SingleCoin: Story = {
     flavour_text: mockCoins[0]!.flavour_text || undefined,
     onClose: () => console.log("Close clicked"),
   },
-};
+}

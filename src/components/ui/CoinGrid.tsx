@@ -51,9 +51,29 @@ export function CoinGrid() {
   // Handle loading state
   if (isLoading) {
     return (
-      <div className="mt-12 flex justify-center">
-        <div className="text-slate-400">Loading coins...</div>
-      </div>
+      <>
+        {/* View Mode Controls - Skeleton */}
+        <div className="mt-6 flex justify-center">
+          <div className="flex items-center gap-6 rounded-lg bg-slate-800/30 px-4 py-2 backdrop-blur-sm">
+            <div className="h-4 w-20 animate-pulse rounded bg-slate-600"></div>
+            <div className="h-4 w-20 animate-pulse rounded bg-slate-600"></div>
+            <div className="h-4 w-16 animate-pulse rounded bg-slate-600"></div>
+          </div>
+        </div>
+
+        {/* Grid Skeleton */}
+        <div className="mt-8 flex flex-wrap justify-center gap-x-12">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <div key={index} className="group w-fit cursor-pointer text-center">
+              <div className="flex justify-center gap-2">
+                <div className="flex h-[200px] w-[200px] flex-shrink-0 items-center justify-center">
+                  <div className="h-[200px] w-[200px] animate-pulse rounded bg-slate-800/20"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </>
     );
   }
 
