@@ -1,6 +1,6 @@
-import CloudinaryImage from "~/components/CloudinaryImage"
-import { useViewport } from "~/hooks/useViewport"
-import { formatYearRange } from "~/lib/utils/date-formatting"
+import CloudinaryImage from "~/components/CloudinaryImage";
+import { useViewport } from "~/hooks/useViewport";
+import { formatYearRange } from "~/lib/utils/date-formatting";
 
 type CoinCardGridItemProps = {
   /** Civilization of the coin */
@@ -40,74 +40,76 @@ export function CoinCardGridItem({
   onClick,
   index = 1,
 }: CoinCardGridItemProps) {
-  const { isMobile } = useViewport()
+  const { isMobile } = useViewport();
 
   const handleClick = () => {
-    onClick?.()
-  }
+    onClick?.();
+  };
 
   // Calculate proportional image size based on diameter for single-side views
   function calculateImageSize() {
     if (view === "both") {
-      return 200 // Fixed size for dual-image view
+      // Scale down for mobile to prevent viewport overflow
+      return isMobile ? 140 : 200; // Smaller on mobile for dual-image view
     }
 
-    const baseSize = 250 // pixels.
-    const baseDiameter = 30 // mm. Largest is actually 32mm but tweaking the limit for space.
+    const baseSize = 250; // pixels.
+    const baseDiameter = 30; // mm. Largest is actually 32mm but tweaking the limit for space.
 
     if (!diameter || diameter <= 0 || diameter > baseDiameter) {
-      return baseSize
+      return baseSize;
     }
 
     // Proportional scaling: (actual diameter / base diameter) * base size
-    return Math.round((diameter / baseDiameter) * baseSize)
+    return Math.round((diameter / baseDiameter) * baseSize);
   }
 
-  const imageSize = calculateImageSize()
+  const imageSize = calculateImageSize();
 
   // Container sizing - dynamic on mobile, fixed on desktop for alignment
   function getContainerClasses() {
     if (view === "both") {
-      return "h-[200px] w-[200px]"
+      // Adjust container size for mobile
+      return isMobile ? "h-[140px] w-[140px]" : "h-[200px] w-[200px]";
     }
 
     // On mobile, let container shrink to image size
     if (isMobile) {
-      return "w-[270px] m-4" // Fixed width, dynamic height, 8px margin
+      return "w-[270px] m-4"; // Fixed width, dynamic height, 8px margin
     }
 
     // On desktop, keep fixed size for consistent grid alignment
-    return "h-[270px] w-[270px]"
+    return "h-[270px] w-[270px]";
   }
 
   // Calculate negative margin to pull text closer for smaller images
   function getTextMarginClass() {
     if (view === "both") {
-      return "mt-4"
+      return "mt-4";
     }
 
-    const maxImageSize = 250
-    const sizeDifference = maxImageSize - imageSize
-    const marginReduction = Math.floor(sizeDifference / 2)
+    const maxImageSize = 250;
+    const sizeDifference = maxImageSize - imageSize;
+    const marginReduction = Math.floor(sizeDifference / 2);
 
-    if (marginReduction >= 40) return "-mt-10" // Very small coins - pull up more
-    if (marginReduction >= 30) return "-mt-6" // Small coins - pull up significantly
-    if (marginReduction >= 20) return "-mt-4" // Medium-small coins - pull up moderately
-    if (marginReduction >= 10) return "-mt-2" // Medium coins - pull up slightly
-    return "mt-2" // Large coins - reduce from mt-4 to mt-2
+    if (marginReduction >= 40) return "-mt-10"; // Very small coins - pull up more
+    if (marginReduction >= 30) return "-mt-6"; // Small coins - pull up significantly
+    if (marginReduction >= 20) return "-mt-4"; // Medium-small coins - pull up moderately
+    if (marginReduction >= 10) return "-mt-2"; // Medium coins - pull up slightly
+    return "mt-2"; // Large coins - reduce from mt-4 to mt-2
   }
 
-  const containerClasses = getContainerClasses()
-  const textMarginClass = getTextMarginClass()
+  const containerClasses = getContainerClasses();
+  const textMarginClass = getTextMarginClass();
 
   // Calculate zigzag offset for mobile single-column layout
   const getZigzagOffset = () => {
-    if (!isMobile || view === "both") return ""
-    const isOdd = index % 2 === 1
-    return isOdd ? "-translate-x-6" : "translate-x-6" // -4px for odd, +4px for even
-  }
+    if (!isMobile || view === "both") return "";
+    const isOdd = index % 2 === 1;
+    return isOdd ? "-translate-x-6" : "translate-x-6"; // -4px for odd, +4px for even
+  };
 
-  const zigzagOffset = getZigzagOffset()
+  const zigzagOffset = getZigzagOffset();
 
   return (
     <div
@@ -116,8 +118,8 @@ export function CoinCardGridItem({
       onClick={handleClick}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault()
-          handleClick()
+          e.preventDefault();
+          handleClick();
         }
       }}
     >
@@ -163,5 +165,5 @@ export function CoinCardGridItem({
         </div>
       )}
     </div>
-  )
+  );
 }

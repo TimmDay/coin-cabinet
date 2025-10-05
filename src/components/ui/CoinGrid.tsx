@@ -1,32 +1,33 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { CoinCardDetail } from "~/components/ui/CoinCardDetail"
-import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
-import { useSomnusCoins } from "~/lib/api/somnus-collection"
+import { useState } from "react";
+import { CoinCardDetail } from "~/components/ui/CoinCardDetail";
+import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem";
+import { ViewModeControls } from "~/components/ui/ViewModeControls";
+import { useSomnusCoins } from "~/lib/api/somnus-collection";
 
 export function CoinGrid() {
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     currentIndex: number;
     focusTarget: "previous" | "next" | null;
-  }>({ isOpen: false, currentIndex: 0, focusTarget: null })
+  }>({ isOpen: false, currentIndex: 0, focusTarget: null });
 
   const [viewMode, setViewMode] = useState<"obverse" | "reverse" | "both">(
     "obverse",
-  )
+  );
 
   // Fetch coins from database (already filtered for obverse images at DB level)
-  const { data: coins, isLoading, error } = useSomnusCoins()
-  const coinsList = coins ?? []
+  const { data: coins, isLoading, error } = useSomnusCoins();
+  const coinsList = coins ?? [];
 
   const openModal = (index: number) => {
-    setModalState({ isOpen: true, currentIndex: index, focusTarget: null })
-  }
+    setModalState({ isOpen: true, currentIndex: index, focusTarget: null });
+  };
 
   const closeModal = () => {
-    setModalState({ isOpen: false, currentIndex: 0, focusTarget: null })
-  }
+    setModalState({ isOpen: false, currentIndex: 0, focusTarget: null });
+  };
 
   const handlePreviousWithFocus = () => {
     setModalState((prev) => ({
@@ -34,8 +35,8 @@ export function CoinGrid() {
       currentIndex:
         prev.currentIndex === 0 ? coinsList.length - 1 : prev.currentIndex - 1,
       focusTarget: "previous",
-    }))
-  }
+    }));
+  };
 
   const handleNextWithFocus = () => {
     setModalState((prev) => ({
@@ -43,10 +44,10 @@ export function CoinGrid() {
       currentIndex:
         prev.currentIndex === coinsList.length - 1 ? 0 : prev.currentIndex + 1,
       focusTarget: "next",
-    }))
-  }
+    }));
+  };
 
-  const currentCoin = coinsList[modalState.currentIndex]
+  const currentCoin = coinsList[modalState.currentIndex];
 
   // Handle loading state
   if (isLoading) {
@@ -74,7 +75,7 @@ export function CoinGrid() {
           ))}
         </div>
       </>
-    )
+    );
   }
 
   // Handle error state
@@ -86,7 +87,7 @@ export function CoinGrid() {
           {error instanceof Error ? error.message : "Unknown error"}
         </div>
       </div>
-    )
+    );
   }
 
   // Handle empty state
@@ -97,60 +98,15 @@ export function CoinGrid() {
           No coins with obverse images found in the collection.
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <>
-      {/* View Mode Controls */}
-      <div className="mt-6 flex justify-center">
-        <div className="flex items-center gap-6 rounded-lg bg-slate-800/30 px-4 py-2 backdrop-blur-sm">
-          <label className="flex cursor-pointer items-center gap-2">
-            <input
-              type="radio"
-              name="viewMode"
-              value="obverse"
-              checked={viewMode === "obverse"}
-              onChange={(e) =>
-                setViewMode(e.target.value as "obverse" | "reverse" | "both")
-              }
-              className="h-4 w-4 border-slate-600 bg-slate-700 text-amber-400 focus:ring-amber-400 focus:ring-offset-slate-800"
-            />
-            <span className="text-sm text-slate-300">Obverse</span>
-          </label>
-
-          <label className="flex cursor-pointer items-center gap-2">
-            <input
-              type="radio"
-              name="viewMode"
-              value="reverse"
-              checked={viewMode === "reverse"}
-              onChange={(e) =>
-                setViewMode(e.target.value as "obverse" | "reverse" | "both")
-              }
-              className="h-4 w-4 border-slate-600 bg-slate-700 text-amber-400 focus:ring-amber-400 focus:ring-offset-slate-800"
-            />
-            <span className="text-sm text-slate-300">Reverse</span>
-          </label>
-
-          <label className="flex cursor-pointer items-center gap-2">
-            <input
-              type="radio"
-              name="viewMode"
-              value="both"
-              checked={viewMode === "both"}
-              onChange={(e) =>
-                setViewMode(e.target.value as "obverse" | "reverse" | "both")
-              }
-              className="h-4 w-4 border-slate-600 bg-slate-700 text-amber-400 focus:ring-amber-400 focus:ring-offset-slate-800"
-            />
-            <span className="text-sm text-slate-300">Both</span>
-          </label>
-        </div>
-      </div>
+      <ViewModeControls viewMode={viewMode} onViewModeChange={setViewMode} />
 
       <div
-        className={`mt-8 flex flex-wrap justify-center ${viewMode === "both" ? "gap-x-12" : ""}`}
+        className={`flex flex-wrap justify-center ${viewMode === "both" ? "gap-x-12" : ""}`}
       >
         {coinsList.map((coin, index) => (
           <CoinCardGridItem
@@ -220,5 +176,5 @@ export function CoinGrid() {
         focusTarget={modalState.focusTarget}
       />
     </>
-  )
+  );
 }

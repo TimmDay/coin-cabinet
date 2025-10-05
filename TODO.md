@@ -2,11 +2,11 @@
 
 ## Next Thing
 
-- [ ] rejig the navigation. Stuff on Main -> CoinGrid, Main -> About, delete the fruits stuff, make the admin page on the end. Hide the login UI stuff (user needs to know the route to login page)
+- [x] style up the CoinGrid controls (radio group)
 
 ### UI
 
-- [ ] style up the CoinGrid controls (radio group)
+- [ ] Do a slide in nav menu for mobile.
 - [ ] CoinGrid - work out what filters I want, and how to display them
 - [ ] do the filters for mobile as well
 - [ ] re-style the header to be skinnier
@@ -40,8 +40,7 @@
 
 - [ ] collect all the raw coin images I have into a folder. Back it up in gdrive.
 - [ ] also make sure images are trimmed right to the edge (so the edge of coin is edge of image). Will help with aligning web content
-- [ ] Upload any decent coin photos (suffixed with -o, -r, -zoom_o, -zoom_r and with appropriate quality).
-- [ ] then download all transparent images and backup to gdrive
+- [ ] download all transparent images and backup to gdrive
 - [ ] optimise cloudinary for perf on the site (ie work out caching)
 - [ ] apply prefetch/lazy loading strategies (tactfully, don't overdo it)
   - [ ] on screens with lots of images, think about lazy loading images when they are X% out of the viewport
@@ -203,3 +202,4 @@ articles, guides
 - [x] re-style the page titles. thinner, classier text. smaller. underline of small width at center of heading
 - [x] name all the images that I have
 - [x] upload all the coins to db
+- [x] rejig the navigation. Stuff on Main -> CoinGrid, Main -> About, delete the fruits stuff, make the admin page on the end. Hide the login UI stuff (user needs to know the route to login page)
