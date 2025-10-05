@@ -3,6 +3,10 @@
 import { Copy } from "lucide-react";
 import { useState } from "react";
 import { RoundButton } from "~/components/ui/RoundButton";
+import {
+  generateImageId,
+  hasValidSource,
+} from "~/lib/utils/image-id-generation";
 
 type ImageNamingToolProps = {
   /** Watch function from react-hook-form to get current form values */
@@ -19,51 +23,8 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
   const purchaseDate = watch("purchase_date") ?? "";
   const vendor = watch("purchase_vendor") ?? "";
 
-  // Generate coinId from purchase date
-  const generateCoinId = (date: string): string => {
-    if (!date) return "";
-    const dateObj = new Date(date);
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const day = String(dateObj.getDate()).padStart(2, "0");
-    return `${year}${month}${day}`;
-  };
-
-  // Generate rootSlug from nickname and denomination
-  const generateRootSlug = (nick: string, denom: string): string => {
-    if (!nick && !denom) return "";
-
-    // Combine nickname and denomination, convert to kebab-case
-    const combined = `${nick} ${denom}`.trim();
-    return combined
-      .toLowerCase()
-      .replace(/\s+/g, "-") // Replace spaces with hyphens
-      .replace(/[^a-z0-9\-]/g, "") // Remove special characters except hyphens
-      .replace(/-+/g, "-") // Replace multiple hyphens with single
-      .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
-  };
-
-  // Generate source slug from vendor field
-  const generateSourceSlug = (vendorName: string): string => {
-    if (!vendorName) return "src";
-
-    // Convert vendor name to kebab-case and prefix with 'src-'
-    const kebabVendor = vendorName
-      .toLowerCase()
-      .replace(/\s+/g, "-") // Replace spaces with hyphens
-      .replace(/[^a-z0-9\-]/g, "") // Remove special characters except hyphens
-      .replace(/-+/g, "-") // Replace multiple hyphens with single
-      .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
-
-    return `src-${kebabVendor}`;
-  };
-
-  const coinId = generateCoinId(purchaseDate);
-  const rootSlug = generateRootSlug(nickname, denomination);
-  const sourceSlug = timTookPhotos ? "src-timmday" : generateSourceSlug(vendor);
-
   // Check if source is valid (either checkbox checked OR vendor has content)
-  const hasValidSource = timTookPhotos || (vendor && vendor.trim().length > 0);
+  const isValidSource = hasValidSource(vendor, timTookPhotos);
 
   // Define the seven views as per the schema
   const views = [
@@ -76,10 +37,16 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
     { view: "rotation-45", label: "Rotation 45°" },
   ];
 
-  // Generate filename for a specific view
-  const generateFilename = (view: string): string => {
-    if (!coinId || !rootSlug || !hasValidSource) return "";
-    return `${coinId}__${rootSlug}__${view}__${sourceSlug}`;
+  // Generate filename for a specific view using utility function
+  const generateViewFilename = (view: string): string => {
+    return generateImageId(
+      nickname,
+      denomination,
+      purchaseDate,
+      vendor,
+      view,
+      timTookPhotos,
+    );
   };
 
   // Copy to clipboard function
@@ -120,7 +87,7 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
 
       <div className="space-y-3">
         {views.map((item, index) => {
-          const filename = generateFilename(item.view);
+          const filename = generateViewFilename(item.view);
 
           return (
             <div key={item.view} className="space-y-1">
@@ -157,15 +124,17 @@ export function ImageNamingTool({ watch }: ImageNamingToolProps) {
         })}
       </div>
 
-      {(!coinId || !rootSlug || !hasValidSource) && (
+      {!isValidSource && (
         <div className="mt-4 rounded border border-slate-600 bg-slate-800/50 p-3">
           <p className="text-sm text-slate-400">
             <strong>Missing data:</strong>
-            {!coinId && " Purchase Date"}
-            {!coinId && !rootSlug && ","}
-            {!rootSlug && " Nickname/Denomination"}
-            {(!coinId || !rootSlug) && !hasValidSource && ","}
-            {!hasValidSource &&
+            {!purchaseDate && " Purchase Date"}
+            {!purchaseDate && !nickname && !denomination && ","}
+            {!nickname && !denomination && " Nickname/Denomination"}
+            {(purchaseDate || nickname || denomination) &&
+              !isValidSource &&
+              ","}
+            {!isValidSource &&
               " Source (either fill Vendor field or check 'Tim took these photos')"}
           </p>
         </div>

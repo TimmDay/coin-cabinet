@@ -1,8 +1,8 @@
 export const denominationOptions = [
   { value: "Denarius", label: "Denarius" },
   { value: "Antoninianus", label: "Antoninianus" },
-  { value: "Follis", label: "Follis" },
   { value: "Sestertius", label: "Sestertius" },
+  { value: "Follis", label: "Follis" },
   { value: "Dupondius / As", label: "Dupondius / As" },
   { value: "Aureus", label: "Aureus" },
   { value: "Solidus", label: "Solidus" },
@@ -13,6 +13,7 @@ export const denominationOptions = [
   { value: "Æ2", label: "Æ2" },
   { value: "Æ3", label: "Æ3" },
   { value: "Æ4", label: "Æ4" },
+  { value: "Decanummium", label: "Decanummium" },
   { value: "Æ", label: "Æ" },
   { value: "Other", label: "Other" },
 ];
@@ -24,6 +25,7 @@ export const authorityOptions = [
   { value: "King", label: "King" },
   { value: "Republican", label: "Republican" },
   { value: "Commemorative", label: "Commemorative" },
+  { value: "Other", label: "Other" },
 ];
 
 export const civilizationOptions = [
@@ -35,6 +37,7 @@ export const civilizationOptions = [
   { value: "Persian", label: "Persian" },
   { value: "Parthian", label: "Parthian" },
   { value: "Sassanian", label: "Sassanian" },
+  { value: "Troas, Kebren", label: "Troas, Kebren" },
 ];
 
 export const dieAxisOptions = [

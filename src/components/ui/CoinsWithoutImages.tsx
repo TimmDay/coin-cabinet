@@ -1,6 +1,19 @@
 "use client";
 
 import { useAllSomnusCoins } from "~/lib/api/somnus-collection";
+import { generateImageId } from "~/lib/utils/image-id-generation";
+
+const generateObverseImageId = (coin: any): string => {
+  const generatedId = generateImageId(
+    coin.nickname || "",
+    coin.denomination || "",
+    coin.purchase_date || "",
+    coin.purchase_vendor || "",
+    "o",
+  );
+
+  return generatedId || "Missing data for generation";
+};
 
 export function CoinsWithoutImages() {
   const { data: coins, isLoading, error } = useAllSomnusCoins();
@@ -69,10 +82,15 @@ export function CoinsWithoutImages() {
         These coins have database entries but are missing obverse or reverse
         images:
       </p>
-      <div className="space-y-2">
+      <div className="space-y-3">
         {coinsWithoutImages.map((coin) => (
-          <div key={coin.id} className="text-sm text-slate-300">
-            {coin.nickname} {coin.denomination} - {coin.purchase_date}
+          <div key={coin.id} className="space-y-1">
+            <div className="text-sm text-slate-300">
+              {coin.nickname} {coin.denomination} - {coin.purchase_date}
+            </div>
+            <div className="pl-2 font-mono text-xs text-slate-500">
+              {generateObverseImageId(coin)}
+            </div>
           </div>
         ))}
       </div>

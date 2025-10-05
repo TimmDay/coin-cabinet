@@ -486,8 +486,8 @@ export function CoinCardDetail({
 
               {/* Action Buttons - Desktop only */}
               {!isMobile && (
-                <div className="mt-6 flex items-center justify-center gap-3">
-                  {/* Flip Button */}
+                <div className="relative mt-6 flex items-center justify-center">
+                  {/* Flip Button - centered */}
                   <button
                     onClick={handleFlip}
                     className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
@@ -495,12 +495,14 @@ export function CoinCardDetail({
                     FLIP
                   </button>
 
-                  {/* Info Tooltip - Only show if flavour_text is available */}
+                  {/* Info Tooltip - Only show if flavour_text is available, positioned absolutely to the right */}
                   {flavour_text && (
-                    <InfoTooltip
-                      content={`${coinAge ? `~${coinAge} years old\n\n` : ""}${flavour_text}`}
-                      id="coin-tooltip"
-                    />
+                    <div className="absolute right-4">
+                      <InfoTooltip
+                        content={`${coinAge ? `~${coinAge} years old\n\n` : ""}${flavour_text}`}
+                        id="coin-tooltip"
+                      />
+                    </div>
                   )}
                 </div>
               )}

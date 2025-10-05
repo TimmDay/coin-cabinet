@@ -85,6 +85,17 @@ export const coinFormSchema = z
           .number()
           .min(0, "Silver content cannot be negative")
           .max(100, "Invalid silver content")
+          .refine(
+            (val) => {
+              if (val === undefined) return true;
+              // Check if the number has at most 1 decimal place
+              const decimalPlaces = (val.toString().split(".")[1] || "").length;
+              return decimalPlaces <= 1;
+            },
+            {
+              message: "Silver content can have at most 1 decimal place",
+            },
+          )
           .optional(),
       ),
 

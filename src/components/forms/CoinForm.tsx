@@ -4,9 +4,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { CoinsWithoutImages } from "~/components/ui/CoinsWithoutImages";
-import { ImageNamingTool } from "~/components/ui/ImageNamingTool";
+import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper";
 import { RoundButton } from "~/components/ui/RoundButton";
 import { Select } from "~/components/ui/Select";
 import { coinFormSchema, type CoinFormData } from "~/lib/validations/coin-form";
@@ -24,6 +25,8 @@ type CoinFormProps = {
 };
 
 export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
+  const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
@@ -409,60 +412,6 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                     placeholder="e.g., Laureate head of Marcus Aurelius right"
                   />
                 </div>
-
-                <div>
-                  <label className={labelClass} htmlFor="image_link_o">
-                    Obverse Image Id
-                  </label>
-                  <input
-                    {...register("image_link_o")}
-                    id="image_link_o"
-                    type="text"
-                    className={inputClass}
-                    placeholder="e.g., marcus_aurelius_sestertius_o"
-                  />
-                  {errors.image_link_o && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.image_link_o.message}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className={labelClass} htmlFor="image_link_sketch_o">
-                    Obverse Sketch Image Id
-                  </label>
-                  <input
-                    {...register("image_link_sketch_o")}
-                    id="image_link_sketch_o"
-                    type="text"
-                    className={inputClass}
-                    placeholder="e.g., marcus_aurelius_sestertius_sketch_o"
-                  />
-                  {errors.image_link_sketch_o && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.image_link_sketch_o.message}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className={labelClass} htmlFor="image_link_zoom_o">
-                    Obverse Zoom Image Id
-                  </label>
-                  <input
-                    {...register("image_link_zoom_o")}
-                    id="image_link_zoom_o"
-                    type="text"
-                    className={inputClass}
-                    placeholder="e.g., marcus_aurelius_sestertius_zoom_o"
-                  />
-                  {errors.image_link_zoom_o && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.image_link_zoom_o.message}
-                    </p>
-                  )}
-                </div>
               </div>
               {/* Reverse Column */}
               <div className="space-y-4">
@@ -494,60 +443,6 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                     className={inputClass}
                     placeholder="e.g., Salus standing left, feeding serpent"
                   />
-                </div>
-
-                <div>
-                  <label className={labelClass} htmlFor="image_link_r">
-                    Reverse Image Id
-                  </label>
-                  <input
-                    {...register("image_link_r")}
-                    id="image_link_r"
-                    type="text"
-                    className={inputClass}
-                    placeholder="e.g., marcus_aurelius_sestertius_r"
-                  />
-                  {errors.image_link_r && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.image_link_r.message}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className={labelClass} htmlFor="image_link_sketch_r">
-                    Reverse Sketch Image Id
-                  </label>
-                  <input
-                    {...register("image_link_sketch_r")}
-                    id="image_link_sketch_r"
-                    type="text"
-                    className={inputClass}
-                    placeholder="e.g., marcus_aurelius_sestertius_sketch_r"
-                  />
-                  {errors.image_link_sketch_r && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.image_link_sketch_r.message}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className={labelClass} htmlFor="image_link_zoom_r">
-                    Reverse Zoom Image Id
-                  </label>
-                  <input
-                    {...register("image_link_zoom_r")}
-                    id="image_link_zoom_r"
-                    type="text"
-                    className={inputClass}
-                    placeholder="e.g., marcus_aurelius_sestertius_zoom_r"
-                  />
-                  {errors.image_link_zoom_r && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.image_link_zoom_r.message}
-                    </p>
-                  )}
                 </div>
               </div>
             </div>
@@ -789,6 +684,179 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
             </div>
           </div>
 
+          {/* Image Details Section */}
+          <div className="space-y-4">
+            <h3 className="text-auth-accent mb-4 text-xl font-semibold">
+              Image Details
+            </h3>
+
+            {/* Tim took photos checkbox */}
+            <div className="mb-4">
+              <label className="flex items-center gap-2 text-sm text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={timTookPhotos}
+                  onChange={(e) => setTimTookPhotos(e.target.checked)}
+                  className="text-auth-accent focus:ring-auth-accent rounded border-slate-600 bg-slate-800/50 focus:ring-offset-slate-800"
+                />
+                Tim took these photos
+              </label>
+            </div>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {/* Obverse Images Column */}
+              <div className="space-y-4">
+                <h4 className="text-md font-medium text-purple-200">
+                  Obverse Images
+                </h4>
+
+                <div>
+                  <label className={labelClass} htmlFor="image_link_o">
+                    Obverse Image Id
+                  </label>
+                  <input
+                    {...register("image_link_o")}
+                    id="image_link_o"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., marcus_aurelius_sestertius_o"
+                  />
+                  <GeneratedImageIdHelper
+                    watch={watch}
+                    view="o"
+                    timTookPhotos={timTookPhotos}
+                  />
+                  {errors.image_link_o && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.image_link_o.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className={labelClass} htmlFor="image_link_sketch_o">
+                    Obverse Sketch Image Id
+                  </label>
+                  <input
+                    {...register("image_link_sketch_o")}
+                    id="image_link_sketch_o"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., marcus_aurelius_sestertius_sketch_o"
+                  />
+                  <GeneratedImageIdHelper
+                    watch={watch}
+                    view="sketch-o"
+                    timTookPhotos={timTookPhotos}
+                  />
+                  {errors.image_link_sketch_o && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.image_link_sketch_o.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className={labelClass} htmlFor="image_link_zoom_o">
+                    Obverse Zoom Image Id
+                  </label>
+                  <input
+                    {...register("image_link_zoom_o")}
+                    id="image_link_zoom_o"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., marcus_aurelius_sestertius_zoom_o"
+                  />
+                  <GeneratedImageIdHelper
+                    watch={watch}
+                    view="zoom-o"
+                    timTookPhotos={timTookPhotos}
+                  />
+                  {errors.image_link_zoom_o && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.image_link_zoom_o.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Reverse Images Column */}
+              <div className="space-y-4">
+                <h4 className="text-md font-medium text-purple-200">
+                  Reverse Images
+                </h4>
+
+                <div>
+                  <label className={labelClass} htmlFor="image_link_r">
+                    Reverse Image Id
+                  </label>
+                  <input
+                    {...register("image_link_r")}
+                    id="image_link_r"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., marcus_aurelius_sestertius_r"
+                  />
+                  <GeneratedImageIdHelper
+                    watch={watch}
+                    view="r"
+                    timTookPhotos={timTookPhotos}
+                  />
+                  {errors.image_link_r && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.image_link_r.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className={labelClass} htmlFor="image_link_sketch_r">
+                    Reverse Sketch Image Id
+                  </label>
+                  <input
+                    {...register("image_link_sketch_r")}
+                    id="image_link_sketch_r"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., marcus_aurelius_sestertius_sketch_r"
+                  />
+                  <GeneratedImageIdHelper
+                    watch={watch}
+                    view="sketch-r"
+                    timTookPhotos={timTookPhotos}
+                  />
+                  {errors.image_link_sketch_r && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.image_link_sketch_r.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className={labelClass} htmlFor="image_link_zoom_r">
+                    Reverse Zoom Image Id
+                  </label>
+                  <input
+                    {...register("image_link_zoom_r")}
+                    id="image_link_zoom_r"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., marcus_aurelius_sestertius_zoom_r"
+                  />
+                  <GeneratedImageIdHelper
+                    watch={watch}
+                    view="zoom-r"
+                    timTookPhotos={timTookPhotos}
+                  />
+                  {errors.image_link_zoom_r && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.image_link_zoom_r.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Submit Button */}
           <div className="flex flex-col items-center space-y-3 pt-6">
             <RoundButton
@@ -814,20 +882,14 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
         </form>
       </div>
 
-      {/* Image Naming Tool - Positioned to the right on wide screens */}
+      {/* Coins Without Images - Positioned to the right on wide screens */}
       <div className="absolute top-0 left-full ml-8 hidden w-80 xl:block">
-        <ImageNamingTool watch={watch} />
-        <div className="mt-6">
-          <CoinsWithoutImages />
-        </div>
+        <CoinsWithoutImages />
       </div>
 
-      {/* Image Naming Tool - Below form on smaller screens */}
+      {/* Coins Without Images - Below form on smaller screens */}
       <div className="mt-8 xl:hidden">
-        <ImageNamingTool watch={watch} />
-        <div className="mt-6">
-          <CoinsWithoutImages />
-        </div>
+        <CoinsWithoutImages />
       </div>
     </div>
   );
