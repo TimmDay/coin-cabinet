@@ -73,5 +73,5 @@ export function ViewModeControls({
         </label>
       </div>
     </div>
-  );
+  )
 }
