@@ -507,16 +507,19 @@ export function CoinCardDetail({
                     <button
                       onClick={() => {
                         const url = generateCoinUrl(coinId, nickname)
-                        
+
                         // Set up navigation completion detection
                         const handleNavigationComplete = () => {
                           // Use requestAnimationFrame to ensure DOM has updated
                           requestAnimationFrame(() => {
                             requestAnimationFrame(() => {
                               // Check if we're on the new page by looking for specific content
-                              const coinDetailElement = document.querySelector('[data-coin-detail-page]')
-                              const breadcrumbElement = document.querySelector('[data-breadcrumb]')
-                              
+                              const coinDetailElement = document.querySelector(
+                                "[data-coin-detail-page]",
+                              )
+                              const breadcrumbElement =
+                                document.querySelector("[data-breadcrumb]")
+
                               if (coinDetailElement || breadcrumbElement) {
                                 // Page has rendered, close modal
                                 onClose()
@@ -527,12 +530,12 @@ export function CoinCardDetail({
                             })
                           })
                         }
-                        
+
                         router.push(url)
-                        
+
                         // Start checking for navigation completion
                         setTimeout(handleNavigationComplete, 50)
-                        
+
                         // Fallback timeout in case detection fails
                         setTimeout(() => onClose(), 3000)
                       }}
@@ -562,16 +565,19 @@ export function CoinCardDetail({
                     <button
                       onClick={() => {
                         const url = generateCoinUrl(coinId, nickname)
-                        
+
                         // Set up navigation completion detection
                         const handleNavigationComplete = () => {
                           // Use requestAnimationFrame to ensure DOM has updated
                           requestAnimationFrame(() => {
                             requestAnimationFrame(() => {
                               // Check if we're on the new page by looking for specific content
-                              const coinDetailElement = document.querySelector('[data-coin-detail-page]')
-                              const breadcrumbElement = document.querySelector('[data-breadcrumb]')
-                              
+                              const coinDetailElement = document.querySelector(
+                                "[data-coin-detail-page]",
+                              )
+                              const breadcrumbElement =
+                                document.querySelector("[data-breadcrumb]")
+
                               if (coinDetailElement || breadcrumbElement) {
                                 // Page has rendered, close modal
                                 onClose()
@@ -582,12 +588,12 @@ export function CoinCardDetail({
                             })
                           })
                         }
-                        
+
                         router.push(url)
-                        
+
                         // Start checking for navigation completion
                         setTimeout(handleNavigationComplete, 50)
-                        
+
                         // Fallback timeout in case detection fails
                         setTimeout(() => onClose(), 3000)
                       }}

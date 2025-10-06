@@ -2,26 +2,28 @@
 
 ## Next Thing
 
-- [ ] add db columns for each set. They will be booleans. Start with: 'is-severan', 'is-first-tetrarchy', 'is-imperial-women', 'is-constantine-family', 'is-constantine-bracket', 'is-byzantine', 'is-ancient-greek'.
-      The CoinForm will have a multi select dropdown for these.
-- [ ] Sets pages 'Severan' filters the coins by the rows that have true in the col is-severan
+- [ ] make an alternative for dropdown menus for mobile
 
 ### UI
 
-- [ ] style up the individual CoinDetailPage
-  - space for side-by-side coin sketches
-  - space for a map with mint. zoom/pan
-  - space for expanded legends and latin translations
-  - flavor text is displayed
-  - all images can be blown up in a modal
-  - image bar? like an in-page nav? sketches | ultra zoom | 3D coin
-- [ ] Do a slide in nav menu for mobile.
+- [ ] Sets master page has link cards that show all the sets (with a title image) and link to the set page. Have a cover image
+- [ ] sets pages (focus on severan) have unique layouts and a set ordered list of coins in that set. (like a drawer with recesses for each coin)
+
+CoinDetailPage
+
+- [ ] design it on paper for mobile/desktop
+- [ ] title / legends / expanded legends / translation
+- [ ] images, with space for sketch side-by-sides
+- [ ] space for a map with mint. zoom/pan
+- flavor text is displayed
+- all images can be blown up in a modal
+- image bar? like an in-page nav? sketches | ultra zoom | 3D coin
+- [ ] somewhere for supporting or interesting imagery (ie Severan Tondo, Philip I banknote)
+
 - [ ] CoinGrid - work out what filters I want, and how to display them (dropdown)
 - [ ] do the filters for mobile as well
 - [ ] re-style the header to be skinnier
-
-- [ ] db schema updates. legend_o_expanded, legend_r_expanded, (latin_translation_o, latin_translation_r)
-- [ ] db schema updates. ex_somnus (bool), is_somnus (bool), is_stock (bool).
+- [ ] db schema updates. ex_somnus (bool), is_stock (bool).
       OR: set_status (an array) ('severan', 'first_tetrachy', 'second_tetrachy', 'constantinian', 'byzantine', 'ancient_greek', ')
 
 - [ ] pre-fetch the coin card detail when the grid item is hovered for X ms (so it opens instantly when clicked)
@@ -208,3 +210,6 @@ articles, guides
 - [x] upload all the coins to db
 - [x] rejig the navigation. Stuff on Main -> CoinGrid, Main -> About, delete the fruits stuff, make the admin page on the end. Hide the login UI stuff (user needs to know the route to login page)
 - [x] style up the CoinGrid controls (radio group)
+- [x] add db column array type for sets. Array strings. The CoinForm will have a multi select dropdown for these.
+- [x] Sets pages 'Severan' filters the coins by the rows that have sets arrays that include 'severan'
+- [x] db schema updates. legend_o_expanded, legend_r_expanded, latin_translation_o, latin_translation_r

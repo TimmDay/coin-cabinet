@@ -18,6 +18,9 @@ export type SubmenuTypes = "roman" | "sets" | "mainSets"
 export const mainSetsSubmenu = [
   { name: "Severan Dynasty", href: "/sets/severan-dynasty" },
   { name: "Constantinian", href: "/sets/constantinian" },
+  { name: "Crisis", href: "/sets/crisis" },
+  { name: "Imperial Women", href: "/sets/imperial-women" },
+  { name: "Gordy Boys", href: "/sets/gordy-boys" },
 ]
 
 export const setsSubmenu = [

@@ -8,6 +8,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { CoinsWithoutImages } from "~/components/ui/CoinsWithoutImages"
 import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper"
+import { MultiSelect } from "~/components/ui/MultiSelect"
 import { RoundButton } from "~/components/ui/RoundButton"
 import { Select } from "~/components/ui/Select"
 import { coinFormSchema, type CoinFormData } from "~/lib/validations/coin-form"
@@ -33,6 +34,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
     formState: { errors },
     reset,
     watch,
+    setValue,
   } = useForm<CoinFormData>({
     resolver: zodResolver(coinFormSchema) as any,
     defaultValues: {
@@ -55,6 +57,13 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
     "w-full px-3 py-2 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none transition-colors"
   const labelClass = "block text-sm font-medium text-slate-300 mb-1"
   const errorClass = "text-red-400 text-sm mt-1"
+
+  const setsOptions = [
+    { value: "severan", label: "Severan" },
+    { value: "imperial women", label: "Imperial Women" },
+    { value: "crisis", label: "Crisis" },
+    { value: "gordy boys", label: "Gordy Boys" },
+  ]
 
   return (
     <div className="relative">
@@ -286,14 +295,14 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
 
               <div>
                 <label className={labelClass} htmlFor="silver_content">
-                  Approx Silver Content
+                  Approx Silver Content (XX.X-XX.X)
                 </label>
                 <input
-                  {...register("silver_content", { valueAsNumber: true })}
+                  {...register("silver_content")}
                   id="silver_content"
-                  type="number"
+                  type="text"
                   className={inputClass}
-                  placeholder="e.g., 45"
+                  placeholder="e.g., 93.1-98"
                 />
                 {errors.silver_content && (
                   <p className="mt-1 text-sm text-red-500">
@@ -401,6 +410,32 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 </div>
 
                 <div>
+                  <label className={labelClass} htmlFor="legend_o_expanded">
+                    Obverse Legend (Expanded)
+                  </label>
+                  <input
+                    {...register("legend_o_expanded")}
+                    id="legend_o_expanded"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., Marcus Antoninus Augustus Germanicus Sarmaticus"
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass} htmlFor="legend_o_translation">
+                    Obverse Legend Translation
+                  </label>
+                  <input
+                    {...register("legend_o_translation")}
+                    id="legend_o_translation"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., Marcus Antoninus, Augustus, conqueror of Germans and Sarmatians"
+                  />
+                </div>
+
+                <div>
                   <label className={labelClass} htmlFor="desc_o">
                     Obverse Description
                   </label>
@@ -433,6 +468,32 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 </div>
 
                 <div>
+                  <label className={labelClass} htmlFor="legend_r_expanded">
+                    Reverse Legend (Expanded)
+                  </label>
+                  <input
+                    {...register("legend_r_expanded")}
+                    id="legend_r_expanded"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., Tribunicia Potestate XXX Imperator VIII Consul III Pater Patriae"
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass} htmlFor="legend_r_translation">
+                    Reverse Legend Translation
+                  </label>
+                  <input
+                    {...register("legend_r_translation")}
+                    id="legend_r_translation"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., Holder of Tribunician Power for the 30th time, Imperator for the 8th time, Consul for the 3rd time, Father of the Fatherland"
+                  />
+                </div>
+
+                <div>
                   <label className={labelClass} htmlFor="desc_r">
                     Reverse Description
                   </label>
@@ -458,6 +519,20 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 rows={3}
                 className={inputClass}
                 placeholder="Descriptive text about the coin's historical significance or unique characteristics..."
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="sets">
+                Sets/Collections
+              </label>
+              <MultiSelect
+                options={setsOptions}
+                setValue={setValue}
+                watch={watch}
+                className={inputClass}
+                placeholder="Select sets..."
+                error={errors.sets?.message}
               />
             </div>
           </div>

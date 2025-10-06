@@ -36,7 +36,7 @@ export default function AddCoinPage() {
     setMessage(null)
 
     try {
-      const response = await fetch("/api/somnus-collection/add-coin", {
+      const response = await fetch("/api/somnus-collection/admin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

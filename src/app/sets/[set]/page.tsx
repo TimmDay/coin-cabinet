@@ -1,112 +1,60 @@
-"use client"
-
-import { useParams, useRouter } from "next/navigation"
+import { arrayOverlaps, asc } from "drizzle-orm"
+import { notFound } from "next/navigation"
 import { Breadcrumb } from "~/components/ui/Breadcrumb"
-import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { PageTitle } from "~/components/ui/PageTitle"
-import { ViewModeControls } from "~/components/ui/ViewModeControls"
-import { generateSetCoinUrl } from "~/lib/utils/url-helpers"
+import { db } from "~/server/db"
+import { somnus_collection } from "~/server/db/schema"
+import { SetPageClient } from "./SetPageClient"
 
-// Mock data for sets - in real app this would come from database
-const setData = {
+// Set metadata configuration
+const setMetadata = {
   "severan-dynasty": {
     title: "Severan Dynasty",
     description: "Coins from the Severan Dynasty period (193-235 AD)",
-    coins: [
-      {
-        id: 1,
-        civ: "Roman",
-        nickname: "Septimius Severus",
-        denomination: "Denarius",
-        mint_year_earliest: 193,
-        mint_year_latest: 211,
-        image_link_o: "roman_severus_denarius_o",
-        image_link_r: "roman_severus_denarius_r",
-        diameter: 19,
-      },
-      {
-        id: 2,
-        civ: "Roman",
-        nickname: "Caracalla",
-        denomination: "Aureus",
-        mint_year_earliest: 198,
-        mint_year_latest: 217,
-        image_link_o: "roman_caracalla_aureus_o",
-        image_link_r: "roman_caracalla_aureus_r",
-        diameter: 20,
-      },
-      {
-        id: 3,
-        civ: "Roman",
-        nickname: "Julia Domna",
-        denomination: "Denarius",
-        mint_year_earliest: 193,
-        mint_year_latest: 217,
-        image_link_o: "roman_julia_domna_denarius_o",
-        image_link_r: "roman_julia_domna_denarius_r",
-        diameter: 18,
-      },
-    ],
+    setFilter: "severan",
   },
   constantinian: {
     title: "Constantinian",
     description: "Coins from the Constantinian period (306-337 AD)",
-    coins: [
-      {
-        id: 4,
-        civ: "Roman",
-        nickname: "Constantine I",
-        denomination: "Solidus",
-        mint_year_earliest: 306,
-        mint_year_latest: 337,
-        image_link_o: "roman_constantine_solidus_o",
-        image_link_r: "roman_constantine_solidus_r",
-        diameter: 21,
-      },
-      {
-        id: 5,
-        civ: "Roman",
-        nickname: "Crispus",
-        denomination: "Follis",
-        mint_year_earliest: 317,
-        mint_year_latest: 326,
-        image_link_o: "roman_crispus_follis_o",
-        image_link_r: "roman_crispus_follis_r",
-        diameter: 22,
-      },
-      {
-        id: 6,
-        civ: "Roman",
-        nickname: "Helena",
-        denomination: "Follis",
-        mint_year_earliest: 324,
-        mint_year_latest: 330,
-        image_link_o: "roman_helena_follis_o",
-        image_link_r: "roman_helena_follis_r",
-        diameter: 20,
-      },
-    ],
+    setFilter: "constantinian",
   },
-}
+  crisis: {
+    title: "Third Century Crisis",
+    description: "Coins from the Crisis period (235-284 AD)",
+    setFilter: "crisis",
+  },
+  "imperial-women": {
+    title: "Imperial Women",
+    description: "Coins featuring Roman imperial women and empresses",
+    setFilter: "imperial women",
+  },
+  "gordy-boys": {
+    title: "Gordy Boys",
+    description: "Special collection of the coins of Gordian III",
+    setFilter: "gordy boys",
+  },
+} as const
 
-export default function SetPage() {
-  const router = useRouter()
-  const params = useParams<{ set: string }>()
-  const set = params.set
-  const setInfo = setData[set as keyof typeof setData]
+type SetKey = keyof typeof setMetadata
+
+export default async function SetPage({
+  params,
+}: {
+  params: Promise<{ set: string }>
+}) {
+  const { set } = await params
+  const setInfo = setMetadata[set as SetKey]
 
   if (!setInfo) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-400">Set Not Found</h1>
-          <p className="mt-4 text-slate-400">
-            The set &quot;{set}&quot; could not be found.
-          </p>
-        </div>
-      </div>
-    )
+    notFound()
   }
+
+  // Query database for coins with the specified set, ordered by reign_start
+  const coins = await db
+    .select()
+    .from(somnus_collection)
+    .where(arrayOverlaps(somnus_collection.sets, [setInfo.setFilter]))
+    .orderBy(asc(somnus_collection.reign_start))
 
   const breadcrumbItems = [
     { label: "Sets", href: "/sets" },
@@ -121,29 +69,7 @@ export default function SetPage() {
 
       <p className="mb-8 text-center text-slate-300">{setInfo.description}</p>
 
-      <ViewModeControls viewMode="both" onViewModeChange={() => undefined} />
-
-      <div className="flex flex-wrap justify-center gap-x-12">
-        {setInfo.coins.map((coin, index) => (
-          <CoinCardGridItem
-            key={coin.id}
-            civ={coin.civ}
-            nickname={coin.nickname}
-            denomination={coin.denomination}
-            mintYearEarliest={coin.mint_year_earliest}
-            mintYearLatest={coin.mint_year_latest}
-            obverseImageId={coin.image_link_o}
-            reverseImageId={coin.image_link_r}
-            diameter={coin.diameter}
-            view="both"
-            onClick={() => {
-              const url = generateSetCoinUrl(set, coin.id, coin.nickname)
-              router.push(url)
-            }}
-            index={index + 1}
-          />
-        ))}
-      </div>
+      <SetPageClient coins={coins} setSlug={set} setTitle={setInfo.title} />
     </div>
   )
 }

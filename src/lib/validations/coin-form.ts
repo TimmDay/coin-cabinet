@@ -75,25 +75,57 @@ export const coinFormSchema = z
     die_axis: z.string().optional(),
     metal: z.string().min(1, "Metal is required").max(30, "Metal is too long"),
     silver_content: z
-      .number()
-      .or(z.nan())
+      .string()
       .optional()
-      .nullable()
-      .transform((val) => (Number.isNaN(val) ? undefined : val))
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val))
       .pipe(
         z
-          .number()
-          .min(0, "Silver content cannot be negative")
-          .max(100, "Invalid silver content")
+          .string()
           .refine(
             (val) => {
-              if (val === undefined) return true
-              // Check if the number has at most 1 decimal place
-              const decimalPlaces = (val.toString().split(".")[1] ?? "").length
-              return decimalPlaces <= 1
+              if (!val) return true
+
+              // Check if it's a range (contains a dash)
+              if (val.includes("-")) {
+                const parts = val.split("-")
+                if (parts.length !== 2) return false
+
+                const min = parts[0]?.trim()
+                const max = parts[1]?.trim()
+                if (!min || !max) return false
+
+                const minNum = parseFloat(min)
+                const maxNum = parseFloat(max)
+
+                // Validate both numbers
+                if (isNaN(minNum) || isNaN(maxNum)) return false
+                if (minNum < 0 || maxNum < 0) return false
+                if (minNum > 100 || maxNum > 100) return false
+                if (minNum > maxNum) return false
+
+                // Check decimal places (max 1)
+                const minDecimals = (min.split(".")[1] ?? "").length
+                const maxDecimals = (max.split(".")[1] ?? "").length
+                if (minDecimals > 1 || maxDecimals > 1) return false
+
+                return true
+              } else {
+                // Single number validation
+                const num = parseFloat(val)
+                if (isNaN(num)) return false
+                if (num < 0 || num > 100) return false
+
+                // Check decimal places (max 1)
+                const decimals = (val.split(".")[1] ?? "").length
+                if (decimals > 1) return false
+
+                return true
+              }
             },
             {
-              message: "Silver content can have at most 1 decimal place",
+              message:
+                "Silver content must be a number (0-100) or range (e.g., '45.0-55.0') with at most 1 decimal place",
             },
           )
           .optional(),
@@ -130,10 +162,14 @@ export const coinFormSchema = z
 
     // Obverse details
     legend_o: z.string().optional(),
+    legend_o_expanded: z.string().optional(),
+    legend_o_translation: z.string().optional(),
     desc_o: z.string().optional(),
 
     // Reverse details
     legend_r: z.string().optional(),
+    legend_r_expanded: z.string().optional(),
+    legend_r_translation: z.string().optional(),
     desc_r: z.string().optional(),
 
     // Reference
@@ -244,10 +280,27 @@ export const coinFormSchema = z
 
     // Additional information
     flavour_text: z.string().optional(),
+    sets: z.array(z.string()).optional(),
     antiquities_register: z.string().optional(),
     provenance: z.string().optional(),
     notes: z.string().optional(),
     notes_history: z.string().optional(),
+  })
+  .transform((data) => {
+    // Auto-populate end years with start years if not provided
+    const transformed = { ...data }
+
+    // If reign_start is provided but reign_end is not, use reign_start as reign_end
+    if (data.reign_start && !data.reign_end) {
+      transformed.reign_end = data.reign_start
+    }
+
+    // If mint_year_earliest is provided but mint_year_latest is not, use earliest as latest
+    if (data.mint_year_earliest && !data.mint_year_latest) {
+      transformed.mint_year_latest = data.mint_year_earliest
+    }
+
+    return transformed
   })
   .refine(
     (data) => {

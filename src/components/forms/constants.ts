@@ -37,7 +37,6 @@ export const civilizationOptions = [
   { value: "Persian", label: "Persian" },
   { value: "Parthian", label: "Parthian" },
   { value: "Sassanian", label: "Sassanian" },
-  { value: "Troas, Kebren", label: "Troas, Kebren" },
 ]
 
 export const dieAxisOptions = [
@@ -60,6 +59,7 @@ export const civSpecificOptions = {
   "Ancient Greece": [
     { value: "Kingdom of Macedon", label: "Kingdom of Macedon" },
     { value: "Kingdom of Cappadocia", label: "Kingdom of Cappadocia" },
+    { value: "Troas, Kebren", label: "Troas, Kebren" },
   ],
   "Roman Provincial": [
     { value: "Alexandria", label: "Alexandria" },
