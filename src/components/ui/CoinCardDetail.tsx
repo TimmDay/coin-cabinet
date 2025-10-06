@@ -507,9 +507,34 @@ export function CoinCardDetail({
                     <button
                       onClick={() => {
                         const url = generateCoinUrl(coinId, nickname)
+                        
+                        // Set up navigation completion detection
+                        const handleNavigationComplete = () => {
+                          // Use requestAnimationFrame to ensure DOM has updated
+                          requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                              // Check if we're on the new page by looking for specific content
+                              const coinDetailElement = document.querySelector('[data-coin-detail-page]')
+                              const breadcrumbElement = document.querySelector('[data-breadcrumb]')
+                              
+                              if (coinDetailElement || breadcrumbElement) {
+                                // Page has rendered, close modal
+                                onClose()
+                              } else {
+                                // Fallback: try again in a bit
+                                setTimeout(handleNavigationComplete, 100)
+                              }
+                            })
+                          })
+                        }
+                        
                         router.push(url)
-                        // Delay modal close to prevent flash
-                        setTimeout(() => onClose(), 400)
+                        
+                        // Start checking for navigation completion
+                        setTimeout(handleNavigationComplete, 50)
+                        
+                        // Fallback timeout in case detection fails
+                        setTimeout(() => onClose(), 3000)
                       }}
                       className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
                     >
@@ -537,9 +562,34 @@ export function CoinCardDetail({
                     <button
                       onClick={() => {
                         const url = generateCoinUrl(coinId, nickname)
+                        
+                        // Set up navigation completion detection
+                        const handleNavigationComplete = () => {
+                          // Use requestAnimationFrame to ensure DOM has updated
+                          requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                              // Check if we're on the new page by looking for specific content
+                              const coinDetailElement = document.querySelector('[data-coin-detail-page]')
+                              const breadcrumbElement = document.querySelector('[data-breadcrumb]')
+                              
+                              if (coinDetailElement || breadcrumbElement) {
+                                // Page has rendered, close modal
+                                onClose()
+                              } else {
+                                // Fallback: try again in a bit
+                                setTimeout(handleNavigationComplete, 100)
+                              }
+                            })
+                          })
+                        }
+                        
                         router.push(url)
-                        // Delay modal close to prevent flash
-                        setTimeout(() => onClose(), 400)
+                        
+                        // Start checking for navigation completion
+                        setTimeout(handleNavigationComplete, 50)
+                        
+                        // Fallback timeout in case detection fails
+                        setTimeout(() => onClose(), 3000)
                       }}
                       className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
                     >

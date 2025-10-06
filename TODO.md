@@ -2,22 +2,23 @@
 
 ## Next Thing
 
-- [x] style up the CoinGrid controls (radio group)
 - [ ] add db columns for each set. They will be booleans. Start with: 'is-severan', 'is-first-tetrarchy', 'is-imperial-women', 'is-constantine-family', 'is-constantine-bracket', 'is-byzantine', 'is-ancient-greek'.
       The CoinForm will have a multi select dropdown for these.
 - [ ] Sets pages 'Severan' filters the coins by the rows that have true in the col is-severan
 
 ### UI
 
+- [ ] style up the individual CoinDetailPage
+  - space for side-by-side coin sketches
+  - space for a map with mint. zoom/pan
+  - space for expanded legends and latin translations
+  - flavor text is displayed
+  - all images can be blown up in a modal
+  - image bar? like an in-page nav? sketches | ultra zoom | 3D coin
 - [ ] Do a slide in nav menu for mobile.
-- [ ] CoinGrid - work out what filters I want, and how to display them
+- [ ] CoinGrid - work out what filters I want, and how to display them (dropdown)
 - [ ] do the filters for mobile as well
 - [ ] re-style the header to be skinnier
-- [ ] Coin Card detail ENHANCED
-  - comparison coin sketches
-  - expanded map showing the Mint and nearest cities
-  - historical notes?
-  - latin translation of legends. where/how to display? tooltip?
 
 - [ ] db schema updates. legend_o_expanded, legend_r_expanded, (latin_translation_o, latin_translation_r)
 - [ ] db schema updates. ex_somnus (bool), is_somnus (bool), is_stock (bool).
@@ -206,3 +207,4 @@ articles, guides
 - [x] name all the images that I have
 - [x] upload all the coins to db
 - [x] rejig the navigation. Stuff on Main -> CoinGrid, Main -> About, delete the fruits stuff, make the admin page on the end. Hide the login UI stuff (user needs to know the route to login page)
+- [x] style up the CoinGrid controls (radio group)

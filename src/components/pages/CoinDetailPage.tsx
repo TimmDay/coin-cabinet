@@ -54,7 +54,7 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen" data-coin-detail-page>
       <div className="container mx-auto px-4 py-16">
         <div className="mt-8 text-center">
           <PageTitle className="mb-8">

@@ -76,6 +76,7 @@ export function Breadcrumb({ className, items }: BreadcrumbProps) {
     <nav
       aria-label="Breadcrumb"
       className={cn("text-base text-slate-400", className)}
+      data-breadcrumb
     >
       <div className="flex items-center">
         {breadcrumbs.map((item, index) => {
