@@ -49,17 +49,24 @@ export default async function SetPage({
     notFound()
   }
 
-  // Fetch all coins and let client filter - simpler and more reliable
-  let allCoins: (typeof somnus_collection.$inferSelect)[] = []
+  // Robust server-side data fetching with production compatibility
+  let coins: (typeof somnus_collection.$inferSelect)[] = []
+
   try {
-    allCoins = await db
+    // Fetch all coins first (simple, reliable query)
+    const allCoins = await db
       .select()
       .from(somnus_collection)
       .orderBy(asc(somnus_collection.reign_start))
+
+    // Filter in JavaScript (more compatible than PostgreSQL array operations)
+    coins = allCoins.filter(
+      (coin) => coin.sets?.includes(setInfo.setFilter) ?? false,
+    )
   } catch (error) {
-    console.error("Database query failed:", error)
-    // Fallback: return empty array if database query fails
-    allCoins = []
+    console.error(`Failed to fetch coins for set ${set}:`, error)
+    // Graceful degradation - empty array instead of crash
+    coins = []
   }
 
   const breadcrumbItems = [
@@ -75,12 +82,7 @@ export default async function SetPage({
 
       <p className="mb-8 text-center text-slate-300">{setInfo.description}</p>
 
-      <SetPageClient
-        allCoins={allCoins}
-        setFilter={setInfo.setFilter}
-        setSlug={set}
-        setTitle={setInfo.title}
-      />
+      <SetPageClient coins={coins} setSlug={set} setTitle={setInfo.title} />
     </div>
   )
 }
