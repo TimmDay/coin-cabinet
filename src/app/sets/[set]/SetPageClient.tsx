@@ -8,21 +8,27 @@ import { generateSetCoinUrl } from "~/lib/utils/url-helpers"
 import type { SomnusCollection } from "~/server/db/schema"
 
 type SetPageClientProps = {
-  coins: SomnusCollection[]
+  allCoins: SomnusCollection[]
+  setFilter: string
   setSlug: string
   setTitle: string
 }
 
 export function SetPageClient({
-  coins,
+  allCoins,
+  setFilter,
   setSlug,
   setTitle,
 }: SetPageClientProps) {
   const router = useRouter()
-  // TODO: no "both" for sets?
   const [viewMode, setViewMode] = useState<"obverse" | "reverse" | "both">(
     "obverse",
   )
+
+  // Filter coins client-side
+  const coins = allCoins.filter((coin) => {
+    return coin.sets?.includes(setFilter) ?? false
+  })
 
   return (
     <>

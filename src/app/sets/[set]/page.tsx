@@ -1,4 +1,4 @@
-import { arrayOverlaps, asc } from "drizzle-orm"
+import { asc } from "drizzle-orm"
 import { notFound } from "next/navigation"
 import { Breadcrumb } from "~/components/ui/Breadcrumb"
 import { PageTitle } from "~/components/ui/PageTitle"
@@ -49,12 +49,18 @@ export default async function SetPage({
     notFound()
   }
 
-  // Query database for coins with the specified set, ordered by reign_start
-  const coins = await db
-    .select()
-    .from(somnus_collection)
-    .where(arrayOverlaps(somnus_collection.sets, [setInfo.setFilter]))
-    .orderBy(asc(somnus_collection.reign_start))
+  // Fetch all coins and let client filter - simpler and more reliable
+  let allCoins: (typeof somnus_collection.$inferSelect)[] = []
+  try {
+    allCoins = await db
+      .select()
+      .from(somnus_collection)
+      .orderBy(asc(somnus_collection.reign_start))
+  } catch (error) {
+    console.error("Database query failed:", error)
+    // Fallback: return empty array if database query fails
+    allCoins = []
+  }
 
   const breadcrumbItems = [
     { label: "Sets", href: "/sets" },
@@ -69,7 +75,12 @@ export default async function SetPage({
 
       <p className="mb-8 text-center text-slate-300">{setInfo.description}</p>
 
-      <SetPageClient coins={coins} setSlug={set} setTitle={setInfo.title} />
+      <SetPageClient
+        allCoins={allCoins}
+        setFilter={setInfo.setFilter}
+        setSlug={set}
+        setTitle={setInfo.title}
+      />
     </div>
   )
 }
