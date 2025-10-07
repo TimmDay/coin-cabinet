@@ -1,9 +1,8 @@
-import { asc } from "drizzle-orm"
 import { notFound } from "next/navigation"
 import { Breadcrumb } from "~/components/ui/Breadcrumb"
 import { PageTitle } from "~/components/ui/PageTitle"
-import { db } from "~/server/db"
-import { somnus_collection } from "~/server/db/schema"
+import { createClient } from "~/lib/supabase-server"
+import type { SomnusCollection } from "~/server/db/schema"
 import { SetPageClient } from "./SetPageClient"
 
 // Set metadata configuration
@@ -49,23 +48,32 @@ export default async function SetPage({
     notFound()
   }
 
-  // Robust server-side data fetching with production compatibility
-  let coins: (typeof somnus_collection.$inferSelect)[] = []
+  // Use the same Supabase client approach as the working API route
+  let coins: SomnusCollection[] = []
 
   try {
-    // Fetch all coins first (simple, reliable query)
-    const allCoins = await db
-      .select()
-      .from(somnus_collection)
-      .orderBy(asc(somnus_collection.reign_start))
+    const supabase = await createClient()
 
-    // Filter in JavaScript (more compatible than PostgreSQL array operations)
-    coins = allCoins.filter(
-      (coin) => coin.sets?.includes(setInfo.setFilter) ?? false,
-    )
+    // Fetch all coins using Supabase client (same as API route)
+    const { data: allCoins, error } = await supabase
+      .from("somnus_collection")
+      .select("*")
+      .order("reign_start", { ascending: true, nullsFirst: false })
+      .order("mint_year_earliest", { ascending: true, nullsFirst: false })
+      .order("diameter", { ascending: true, nullsFirst: false })
+
+    if (error) {
+      console.error("Supabase error:", error)
+      coins = []
+    } else {
+      // Filter in JavaScript for the specific set
+      coins = ((allCoins || []) as SomnusCollection[]).filter(
+        (coin) => coin.sets?.includes(setInfo.setFilter) ?? false,
+      )
+      console.log(`Found ${coins.length} coins for set ${set}`)
+    }
   } catch (error) {
     console.error(`Failed to fetch coins for set ${set}:`, error)
-    // Graceful degradation - empty array instead of crash
     coins = []
   }
 
