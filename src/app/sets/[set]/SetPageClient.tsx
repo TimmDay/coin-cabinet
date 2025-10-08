@@ -1,27 +1,71 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { ViewModeControls } from "~/components/ui/ViewModeControls"
+import { useAllSomnusCoins } from "~/lib/api/somnus-collection"
 import { generateSetCoinUrl } from "~/lib/utils/url-helpers"
-import type { SomnusCollection } from "~/server/db/schema"
 
-type SetPageClientProps = {
-  coins: SomnusCollection[]
-  setSlug: string
-  setTitle: string
+type SetInfo = {
+  title: string
+  description: string
+  setFilter: string
 }
 
-export function SetPageClient({
-  coins,
-  setSlug,
-  setTitle,
-}: SetPageClientProps) {
+type SetPageClientProps = {
+  setInfo: SetInfo
+  setSlug: string
+}
+
+export function SetPageClient({ setInfo, setSlug }: SetPageClientProps) {
   const router = useRouter()
   const [viewMode, setViewMode] = useState<"obverse" | "reverse" | "both">(
     "obverse",
   )
+
+  // Fetch all coins using React Query (shared with coin-cabinet page)
+  const { data: allCoins, isLoading, error } = useAllSomnusCoins()
+
+  // Filter coins for this specific set
+  const coins = useMemo(() => {
+    if (!allCoins) return []
+    return allCoins.filter(
+      (coin) => coin.sets?.includes(setInfo.setFilter) ?? false,
+    )
+  }, [allCoins, setInfo.setFilter])
+
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <>
+        <ViewModeControls viewMode={viewMode} onViewModeChange={setViewMode} />
+        <div className="flex flex-wrap justify-center gap-x-12">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="group w-fit cursor-pointer text-center">
+              <div className="flex justify-center gap-2">
+                <div className="flex h-[200px] w-[200px] flex-shrink-0 items-center justify-center">
+                  <div className="h-[200px] w-[200px] animate-pulse rounded bg-slate-800/20"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </>
+    )
+  }
+
+  // Handle error state
+  if (error) {
+    return (
+      <div className="py-12 text-center">
+        <p className="text-lg text-red-400">
+          Error loading coins:{" "}
+          {error instanceof Error ? error.message : "Unknown error"}
+        </p>
+      </div>
+    )
+  }
 
   return (
     <>
@@ -30,7 +74,7 @@ export function SetPageClient({
       {coins.length === 0 ? (
         <div className="py-12 text-center">
           <p className="text-lg text-slate-400">
-            No coins found in the {setTitle} set.
+            No coins found in the {setInfo.title} set.
           </p>
         </div>
       ) : (

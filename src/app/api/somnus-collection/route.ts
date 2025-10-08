@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 
     if (error) {
       console.error("Supabase error:", error)
-      return NextResponse.json(
+      const errorResponse = NextResponse.json(
         {
           success: false,
           message: "Failed to fetch somnus coins",
@@ -45,18 +45,29 @@ export async function GET(request: Request) {
         },
         { status: 500 },
       )
+      
+      // Don't cache error responses
+      errorResponse.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+      return errorResponse
     }
 
     console.log(
       `📋 Found ${data.length} coins${includeAll ? " (including all)" : " with obverse images"}`,
     )
-    return NextResponse.json({
+    
+    const response = NextResponse.json({
       success: true,
       data,
     })
+
+    // Add HTTP caching headers for persistent cross-session caching
+    response.headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=86400')
+    response.headers.set('CDN-Cache-Control', 'public, max-age=86400')
+    
+    return response
   } catch (error: unknown) {
     console.error("Error fetching somnus coins:", error)
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       {
         success: false,
         message: "Failed to fetch somnus coins",
@@ -64,6 +75,10 @@ export async function GET(request: Request) {
       },
       { status: 500 },
     )
+    
+    // Don't cache error responses
+    errorResponse.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    return errorResponse
   }
 }
 

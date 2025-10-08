@@ -62,7 +62,9 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
     { value: "severan", label: "Severan" },
     { value: "imperial women", label: "Imperial Women" },
     { value: "crisis", label: "Crisis" },
+    { value: "tetrachy", label: "Tetrachy" },
     { value: "gordy boys", label: "Gordy Boys" },
+    { value: "hoards", label: "Hoards" },
   ]
 
   return (

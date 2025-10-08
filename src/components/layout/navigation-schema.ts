@@ -20,7 +20,9 @@ export const mainSetsSubmenu = [
   { name: "Constantinian", href: "/sets/constantinian" },
   { name: "Crisis", href: "/sets/crisis" },
   { name: "Imperial Women", href: "/sets/imperial-women" },
+  { name: "Tetrachy", href: "/sets/tetrachy" },
   { name: "Gordy Boys", href: "/sets/gordy-boys" },
+  { name: "Hoards", href: "/sets/hoards" },
 ]
 
 export const setsSubmenu = [

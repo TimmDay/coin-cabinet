@@ -1,8 +1,5 @@
 import { notFound } from "next/navigation"
-import { Breadcrumb } from "~/components/ui/Breadcrumb"
 import { PageTitle } from "~/components/ui/PageTitle"
-import { createClient } from "~/lib/supabase-server"
-import type { SomnusCollection } from "~/server/db/schema"
 import { SetPageClient } from "./SetPageClient"
 
 // Set metadata configuration
@@ -27,10 +24,20 @@ const setMetadata = {
     description: "Coins featuring Roman imperial women and empresses",
     setFilter: "imperial women",
   },
+  tetrachy: {
+    title: "Tetrachy",
+    description: "Coins from the Tetrarchy period (293-313 AD)",
+    setFilter: "tetrachy",
+  },
   "gordy-boys": {
     title: "Gordy Boys",
     description: "Special collection of the coins of Gordian III",
     setFilter: "gordy boys",
+  },
+  hoards: {
+    title: "Hoards",
+    description: "Coins discovered in archaeological hoards and treasure finds",
+    setFilter: "hoards",
   },
 } as const
 
@@ -48,49 +55,13 @@ export default async function SetPage({
     notFound()
   }
 
-  // Use the same Supabase client approach as the working API route
-  let coins: SomnusCollection[] = []
-
-  try {
-    const supabase = await createClient()
-
-    // Fetch all coins using Supabase client (same as API route)
-    const { data: allCoins, error } = await supabase
-      .from("somnus_collection")
-      .select("*")
-      .order("reign_start", { ascending: true, nullsFirst: false })
-      .order("mint_year_earliest", { ascending: true, nullsFirst: false })
-      .order("diameter", { ascending: true, nullsFirst: false })
-
-    if (error) {
-      console.error("Supabase error:", error)
-      coins = []
-    } else {
-      // Filter in JavaScript for the specific set
-      coins = ((allCoins || []) as SomnusCollection[]).filter(
-        (coin) => coin.sets?.includes(setInfo.setFilter) ?? false,
-      )
-      console.log(`Found ${coins.length} coins for set ${set}`)
-    }
-  } catch (error) {
-    console.error(`Failed to fetch coins for set ${set}:`, error)
-    coins = []
-  }
-
-  const breadcrumbItems = [
-    { label: "Sets", href: "/sets" },
-    { label: setInfo.title, href: `/sets/${set}` },
-  ]
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <Breadcrumb items={breadcrumbItems} />
-
       <PageTitle>{setInfo.title}</PageTitle>
 
       <p className="mb-8 text-center text-slate-300">{setInfo.description}</p>
 
-      <SetPageClient coins={coins} setSlug={set} setTitle={setInfo.title} />
+      <SetPageClient setInfo={setInfo} setSlug={set} />
     </div>
   )
 }

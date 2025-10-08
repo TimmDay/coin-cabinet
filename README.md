@@ -6,8 +6,8 @@ A place to display my ancient coin collection, explore macro photography and lea
 
 - [Next.js](https://nextjs.org)
 - [Tailwind CSS](https://tailwindcss.com)
-- [Supabase](https://supabase.com) for Postgres db AND auth
-- [Drizzle](https://orm.drizzle.team)
+- [Supabase](https://supabase.com) for Postgres db, runtime queries AND auth integration
+- [Drizzle](https://orm.drizzle.team) - schema for types, backup scripts
 - [Cloudinary](https://console.cloudinary.com/) for image storage, optimisation and CDN. (optional upgrade toCloudflare R2 and custom pipeline later).
   - https://supabase.com/dashboard
   - `pnpm install @supabase/supabase-js
@@ -15,6 +15,10 @@ A place to display my ancient coin collection, explore macro photography and lea
 - Storybook for component management
 - Vitest + Storybook for testing
 - Shadcn / radix UI for fast component prototyping.
+
+## Caching Strategy
+
+Electing to go with the SSR site from vercel, and then the additional time for a seperate db fetch to the client, where it will be cached. This is a tradeoff of a higher initial load time, but faster mmuch faster site navigation after than (from the cache). The alternative would be to do the db fetching on the server, and send the results with the page load - this would be a (significantly) faster page load due to being able to somewhat co-locate the server and db, but after that navigation will be slower. In addition, the db is somewhat stable so the cache will need to be invalidated infrequently.
 
 ## CI/CD + Deployment
 
