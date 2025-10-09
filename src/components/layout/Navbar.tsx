@@ -201,7 +201,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="somnus-nav relative flex h-48 flex-col justify-end px-4 sm:px-6 lg:px-8"
+      className="somnus-nav z-overlay relative flex h-48 flex-col justify-end px-4 sm:px-6 lg:px-8"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -254,7 +254,7 @@ export default function Navbar() {
 
             {isDropdownOpen && (
               <div
-                className="somnus-card absolute top-full left-0 z-50 -mt-0.5 min-w-max pt-0.5 shadow-lg"
+                className="somnus-card z-dropdown absolute top-full left-0 -mt-0.5 min-w-max pt-0.5 shadow-lg"
                 role="menu"
                 aria-labelledby="coin-cabinet-button"
               >
@@ -301,7 +301,7 @@ export default function Navbar() {
 
                       {item.hasSubmenu && openSubmenu === item.name && (
                         <div
-                          className="somnus-card absolute top-0 left-full z-60 ml-1 min-w-max shadow-lg"
+                          className="somnus-card z-dropdown absolute top-0 left-full ml-1 min-w-max shadow-lg"
                           onMouseEnter={() =>
                             handleSubmenuEnter(item.name as SubmenuTypes)
                           }
@@ -374,7 +374,7 @@ export default function Navbar() {
 
                   {openSubmenu === item.name && (
                     <div
-                      className="somnus-card absolute top-full left-0 z-50 -mt-0.5 min-w-max pt-0.5 shadow-lg"
+                      className="somnus-card z-dropdown absolute top-full left-0 -mt-0.5 min-w-max pt-0.5 shadow-lg"
                       role="menu"
                     >
                       <div className="flex flex-col gap-1 p-4">

@@ -45,7 +45,7 @@ export function InfoTooltip({
           ref={tooltipRef}
           id={id}
           role="tooltip"
-          className="absolute bottom-full left-1/2 z-[60] mb-3 w-80 -translate-x-1/2 rounded-lg border border-slate-600/50 bg-slate-800/95 p-4 text-sm text-slate-300 shadow-lg backdrop-blur-sm sm:w-96 lg:top-1/2 lg:right-full lg:bottom-auto lg:left-auto lg:mr-3 lg:mb-0 lg:w-80 lg:translate-x-0 lg:-translate-y-1/2"
+          className="z-tooltip absolute bottom-full left-1/2 mb-3 w-80 -translate-x-1/2 rounded-lg border border-slate-600/50 bg-slate-800/95 p-4 text-sm text-slate-300 shadow-lg backdrop-blur-sm sm:w-96 lg:top-1/2 lg:right-full lg:bottom-auto lg:left-auto lg:mr-3 lg:mb-0 lg:w-80 lg:translate-x-0 lg:-translate-y-1/2"
           tabIndex={-1}
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}

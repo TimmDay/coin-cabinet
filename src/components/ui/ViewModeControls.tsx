@@ -10,7 +10,7 @@ export function ViewModeControls({
   onViewModeChange,
 }: ViewModeControlsProps) {
   return (
-    <div className="mt-6 flex justify-center">
+    <div className="z-controls mt-6 flex justify-center">
       <div className="flex items-center rounded-full border border-slate-700/30 bg-slate-900/40 p-1 backdrop-blur-sm">
         <label className="group relative cursor-pointer">
           <input
