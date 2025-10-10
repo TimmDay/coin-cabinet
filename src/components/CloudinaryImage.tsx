@@ -59,7 +59,7 @@ export default function CloudinaryImage({
       background="transparent"
       alt={alt}
       sizes={`${width}px`}
-      style={{ width, height }}
+      className="max-h-full max-w-full object-contain"
     />
   )
 }
