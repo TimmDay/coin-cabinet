@@ -62,14 +62,14 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
           </header>
 
           {/* Split Layout: Images on Left, Details on Right (Desktop) */}
-          <div className="flex flex-col gap-8 xl:flex-row xl:gap-12">
-            {/* Left Panel: Coin Images */}
-            <div className="flex-1 xl:max-w-2xl">
+          <div className="flex flex-col gap-8 lg:flex-row lg:gap-8">
+            {/* Left Panel: Coin Images - Half Screen */}
+            <div className="w-full lg:w-1/2">
               <CoinImagePanel coin={coin} />
             </div>
 
-            {/* Right Panel: Coin Details */}
-            <aside className="flex-1 xl:max-w-lg">
+            {/* Right Panel: Coin Details - Half Screen */}
+            <aside className="w-full lg:w-1/2">
               <CoinDetails coin={coin} />
             </aside>
           </div>
