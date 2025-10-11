@@ -1,9 +1,8 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
-import { ViewModeControls } from "~/components/ui/ViewModeControls"
 import { useAllSomnusCoins } from "~/lib/api/somnus-collection"
 import { generateSetCoinUrl } from "~/lib/utils/url-helpers"
 
@@ -16,13 +15,11 @@ type SetInfo = {
 type SetPageClientProps = {
   setInfo: SetInfo
   setSlug: string
+  viewMode: "obverse" | "reverse" | "both"
 }
 
-export function SetPageClient({ setInfo, setSlug }: SetPageClientProps) {
+export function SetPageClient({ setInfo, setSlug, viewMode }: SetPageClientProps) {
   const router = useRouter()
-  const [viewMode, setViewMode] = useState<"obverse" | "reverse" | "both">(
-    "obverse",
-  )
 
   // Fetch all coins using React Query (shared with coin-cabinet page)
   const { data: allCoins, isLoading, error } = useAllSomnusCoins()
@@ -38,20 +35,17 @@ export function SetPageClient({ setInfo, setSlug }: SetPageClientProps) {
   // Handle loading state
   if (isLoading) {
     return (
-      <>
-        <ViewModeControls viewMode={viewMode} onViewModeChange={setViewMode} />
-        <div className="flex flex-wrap justify-center gap-x-12">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <div key={index} className="group w-fit cursor-pointer text-center">
-              <div className="flex justify-center gap-2">
-                <div className="flex h-[200px] w-[200px] flex-shrink-0 items-center justify-center">
-                  <div className="h-[200px] w-[200px] animate-pulse rounded bg-slate-800/20"></div>
-                </div>
+      <div className="flex flex-wrap justify-center gap-x-12">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <div key={index} className="group w-fit cursor-pointer text-center">
+            <div className="flex justify-center gap-2">
+              <div className="flex h-[200px] w-[200px] flex-shrink-0 items-center justify-center">
+                <div className="h-[200px] w-[200px] animate-pulse rounded bg-slate-800/20"></div>
               </div>
             </div>
-          ))}
-        </div>
-      </>
+          </div>
+        ))}
+      </div>
     )
   }
 
@@ -69,8 +63,6 @@ export function SetPageClient({ setInfo, setSlug }: SetPageClientProps) {
 
   return (
     <>
-      <ViewModeControls viewMode={viewMode} onViewModeChange={setViewMode} />
-
       {coins.length === 0 ? (
         <div className="py-12 text-center">
           <p className="text-lg text-slate-400">

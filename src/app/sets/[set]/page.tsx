@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import { PageTitle } from "~/components/ui/PageTitle"
-import { SetPageClient } from "./SetPageClient"
+import { SetPageWrapper } from "./SetPageWrapper"
 
 // Set metadata configuration
 const setMetadata = {
@@ -61,7 +61,7 @@ export default async function SetPage({
 
       <p className="mb-8 text-center text-slate-300">{setInfo.description}</p>
 
-      <SetPageClient setInfo={setInfo} setSlug={set} />
+      <SetPageWrapper setInfo={setInfo} setSlug={set} />
     </div>
   )
 }
