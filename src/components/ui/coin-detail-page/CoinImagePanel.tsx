@@ -17,6 +17,19 @@ type CoinImagePanelProps = {
     legend_r_expanded?: string | null
     legend_r_translation?: string | null
     desc_r?: string | null
+    civ: string
+    civ_specific?: string | null
+    denomination: string
+    mint?: string | null
+    mint_year_earliest?: number | null
+    mint_year_latest?: number | null
+    diameter?: number | null
+    mass?: number | null
+    die_axis?: string | null
+    reference?: string | null
+    provenance?: string | null
+    sets?: string[] | null
+    flavour_text?: string | null
   }
 }
 
@@ -86,6 +99,102 @@ function CoinImageButton({
   )
 }
 
+type DetailRowProps = {
+  label: string
+  value: string | number
+  fullWidth?: boolean
+}
+
+function DetailRow({ label, value, fullWidth = false }: DetailRowProps) {
+  return (
+    <div className={`break-words ${fullWidth ? "col-span-full" : ""}`}>
+      <span className="text-slate-400">{label}:</span>
+      <span className="ml-2 text-slate-300">{value}</span>
+    </div>
+  )
+}
+
+function CoinDetailsSection({ coin }: { coin: CoinImagePanelProps["coin"] }) {
+  const yearDisplay = coin.mint_year_earliest
+    ? `${coin.mint_year_earliest}${
+        coin.mint_year_latest &&
+        coin.mint_year_latest !== coin.mint_year_earliest
+          ? `-${coin.mint_year_latest}`
+          : ""
+      } CE`
+    : null
+
+  return (
+    <section className="artemis-card h-fit p-6">
+      <header className="mb-6">
+        <h2 className="coin-title text-center text-xl lg:text-left">
+          Coin Details
+        </h2>
+      </header>
+
+      <div className="grid grid-cols-1 gap-4 text-left lg:gap-3">
+        <DetailRow label="Civilization" value={coin.civ} />
+
+        {coin.civ_specific && (
+          <DetailRow label="Specific" value={coin.civ_specific} />
+        )}
+
+        <DetailRow label="Denomination" value={coin.denomination} />
+
+        {coin.mint && <DetailRow label="Mint" value={coin.mint} />}
+
+        {yearDisplay && <DetailRow label="Year" value={yearDisplay} />}
+
+        {coin.diameter && (
+          <DetailRow label="Diameter" value={`${coin.diameter}mm`} />
+        )}
+
+        {coin.mass && <DetailRow label="Mass" value={`${coin.mass}g`} />}
+
+        {coin.die_axis && <DetailRow label="Die Axis" value={coin.die_axis} />}
+
+        {coin.reference && (
+          <DetailRow label="Reference" value={coin.reference} />
+        )}
+
+        {coin.provenance && (
+          <DetailRow label="Provenance" value={coin.provenance} />
+        )}
+
+        {coin.sets && coin.sets.length > 0 && (
+          <DetailRow label="Sets" value={coin.sets.join(", ")} fullWidth />
+        )}
+      </div>
+
+      {coin.flavour_text && (
+        <footer className="mt-6 border-t border-slate-600 pt-6">
+          <h3 className="mb-3 text-lg font-semibold text-slate-300">
+            Additional Information
+          </h3>
+          <p className="leading-relaxed break-words text-slate-400 italic">
+            {coin.flavour_text}
+          </p>
+        </footer>
+      )}
+    </section>
+  )
+}
+
+function MapPlaceholder() {
+  return (
+    <div className="flex h-[300px] items-center justify-center rounded-lg border border-slate-600 bg-slate-700 p-6 lg:h-[300px]">
+      <div className="text-center">
+        <div className="mb-2 text-lg font-medium text-slate-300">
+          Future Map
+        </div>
+        <div className="text-sm text-slate-500">
+          Roman Empire & Mint Locations
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function CoinImagePanel({ coin }: CoinImagePanelProps) {
   const [modalState, setModalState] = useState<{
     isOpen: boolean
@@ -121,8 +230,8 @@ export function CoinImagePanel({ coin }: CoinImagePanelProps) {
 
   return (
     <section className="space-y-6">
-      {/* Mobile: Stacked Layout - Each image followed by its legend */}
-      <div className="block space-y-8 sm:hidden">
+      {/* Mobile: Stacked Layout */}
+      <div className="block space-y-8 lg:hidden">
         {/* Obverse Side */}
         <div className="flex flex-col items-center space-y-4">
           <CoinImageButton
@@ -176,11 +285,17 @@ export function CoinImagePanel({ coin }: CoinImagePanelProps) {
             )}
           </div>
         </div>
+
+        {/* Mobile: Map Placeholder */}
+        <MapPlaceholder />
+
+        {/* Mobile: Coin Details */}
+        <CoinDetailsSection coin={coin} />
       </div>
 
-      {/* Desktop: Aligned Grid Layout - Images in one row, legends align in their rows */}
-      <div className="hidden grid-cols-2 gap-4 sm:grid">
-        {/* Row 1: Images */}
+      {/* Desktop: Single Unified Grid Layout */}
+      <div className="hidden lg:grid lg:grid-cols-4 lg:gap-6">
+        {/* Row 1: Coin Images + Map */}
         <div className="flex justify-center">
           <CoinImageButton
             side="obverse"
@@ -199,42 +314,22 @@ export function CoinImagePanel({ coin }: CoinImagePanelProps) {
           />
         </div>
 
-        {/* Row 2: Legend Expanded - both take same height */}
-        <div className="mx-auto w-full max-w-[300px] text-center">
+        <div className="col-span-2">
+          <MapPlaceholder />
+        </div>
+
+        {/* Row 2: Legends + Details */}
+        <div className="mx-auto w-full max-w-[300px] space-y-2 text-center">
           {obverseData.legendExpanded && (
-            <p className="text-base tracking-wide break-words text-slate-400 sm:text-lg">
+            <p className="text-base tracking-wide break-words text-slate-400 lg:text-lg">
               <FormattedLegendExpanded text={obverseData.legendExpanded} />
             </p>
           )}
-        </div>
-
-        <div className="mx-auto w-full max-w-[300px] text-center">
-          {reverseData.legendExpanded && (
-            <p className="text-base tracking-wide break-words text-slate-400 sm:text-lg">
-              <FormattedLegendExpanded text={reverseData.legendExpanded} />
-            </p>
-          )}
-        </div>
-
-        {/* Row 3: Translation - both take same height */}
-        <div className="mx-auto w-full max-w-[300px] text-center">
           {obverseData.legendTranslation && (
-            <p className="text-xs break-words text-slate-400 sm:text-sm">
+            <p className="text-xs break-words text-slate-400 lg:text-sm">
               {obverseData.legendTranslation}
             </p>
           )}
-        </div>
-
-        <div className="mx-auto w-full max-w-[300px] text-center">
-          {reverseData.legendTranslation && (
-            <p className="text-xs break-words text-slate-400 sm:text-sm">
-              {reverseData.legendTranslation}
-            </p>
-          )}
-        </div>
-
-        {/* Row 4: Description - both take same height */}
-        <div className="mx-auto w-full max-w-[300px] text-center">
           {obverseData.description && (
             <p className="text-xs break-words text-slate-500">
               {obverseData.description}
@@ -242,12 +337,26 @@ export function CoinImagePanel({ coin }: CoinImagePanelProps) {
           )}
         </div>
 
-        <div className="mx-auto w-full max-w-[300px] text-center">
+        <div className="mx-auto w-full max-w-[300px] space-y-2 text-center">
+          {reverseData.legendExpanded && (
+            <p className="text-base tracking-wide break-words text-slate-400 lg:text-lg">
+              <FormattedLegendExpanded text={reverseData.legendExpanded} />
+            </p>
+          )}
+          {reverseData.legendTranslation && (
+            <p className="text-xs break-words text-slate-400 lg:text-sm">
+              {reverseData.legendTranslation}
+            </p>
+          )}
           {reverseData.description && (
             <p className="text-xs break-words text-slate-500">
               {reverseData.description}
             </p>
           )}
+        </div>
+
+        <div className="col-span-2">
+          <CoinDetailsSection coin={coin} />
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { PageTitle } from "~/components/ui/PageTitle"
-import { CoinDetails, CoinImagePanel } from "~/components/ui/coin-detail-page"
+import { CoinImagePanel } from "~/components/ui/coin-detail-page"
 import { useSomnusCoins } from "~/lib/api/somnus-collection"
 
 type CoinDetailPageProps = {
@@ -61,18 +61,8 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
             <PageTitle>{coin.nickname ?? "Ancient Coin"}</PageTitle>
           </header>
 
-          {/* Split Layout: Images on Left, Details on Right (Desktop) */}
-          <div className="flex flex-col gap-8 lg:flex-row lg:gap-8">
-            {/* Left Panel: Coin Images - Half Screen */}
-            <div className="w-full lg:w-1/2">
-              <CoinImagePanel coin={coin} />
-            </div>
-
-            {/* Right Panel: Coin Details - Half Screen */}
-            <aside className="w-full lg:w-1/2">
-              <CoinDetails coin={coin} />
-            </aside>
-          </div>
+          {/* Unified Layout: Everything in CoinImagePanel */}
+          <CoinImagePanel coin={coin} />
         </div>
       </div>
     </main>
