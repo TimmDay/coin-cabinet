@@ -1,5 +1,61 @@
 export const mockCoins = [
   {
+    id: 61,
+    created_at: "2025-10-06T04:17:05.712435+00:00",
+    nickname: "Q. Fabius Labeo",
+    authority: "Republican",
+    denomination: "Denarius",
+    civ: "Roman Republic",
+    civ_specific: "",
+    reign_start: -124,
+    reign_end: -124,
+    diameter: 18.5,
+    mass: 3.77,
+    die_axis: "3h",
+    metal: "Silver",
+    silver_content: "96-98",
+    mint: "Rome",
+    mint_year_earliest: -124,
+    mint_year_latest: -124,
+    legend_o: "X ROMA LABEO",
+    legend_o_expanded: " X ROMA LABEO (M. Atilius)",
+    legend_o_translation: "issued by Labeo (moneyer) on behalf of Rome",
+    desc_o:
+      "Helmeted head of Roma to right; X (mark of value) below chin, ROMA downwards behind, LABEO upwards before.",
+    legend_r: "Q•FABI",
+    legend_r_expanded: "Q(uintus) Fabi(us)",
+    legend_r_translation: "",
+    desc_r:
+      "Jupiter driving galloping quadriga right, holding reins and sceptre and throwing thunderbolt; prow of galley below, Q•FABI in exergue.",
+    reference: "Crawford-273/1; RSC Fabia-1",
+    reference_link: null,
+    purchase_type: "auction",
+    purchase_date: "2025-09-11",
+    price_aud: 138.29,
+    price_shipping_aud: 4,
+    purchase_vendor: "The Coin Cabinet",
+    purchase_link: "https://www.numisbids.com/sale/9672/lot/145",
+    auction_name: "Ancients 26",
+    auction_lot: 145,
+    provenance: "",
+    notes: "",
+    notes_history: "",
+    user_id: "9f3e0c96-82f5-403b-a279-190e7f61d27d",
+    vendor_grading_notes: "About Good Very Fine.",
+    image_link_o: "20250911__q-fabius-labeo-denarius__o__src-the-coin-cabinet",
+    image_link_r: "20250911__q-fabius-labeo-denarius__r__src-the-coin-cabinet",
+    image_link_sketch_o: null,
+    image_link_sketch_r: null,
+    image_link_zoom_o: null,
+    image_link_zoom_r: null,
+    flavour_text:
+      "X is the denomination - worth 10 bronze Asses. Marcus Atilius Labeo was a moneyer at the mint - outside this role we don't know much about him. He wa of the gens Atilia. This was a plebeian family (perhaps more like a 'clan') that tracked it's ancestry and had sacra gentilicia (it's own gods, rites and rituals).",
+    image_rotation: null,
+    antiquities_register: "",
+    ex_collection: false,
+    sets: null,
+  },
+  {
     id: 5,
     created_at: "2025-09-29T12:02:17.797917+00:00",
     nickname: "Faustina II",
@@ -154,3 +210,30 @@ export const mockCoins = [
     antiquities_register: "",
   },
 ]
+
+// Mock coin specifically for CoinSketchCompare component
+export const mockCoinWithSketches = {
+  imageLinkO: "20250911__q-fabius-labeo-denarius__o__src-the-coin-cabinet",
+  imageLinkSketchO:
+    "20250911__q-fabius-labeo-denarius__o__src-the-coin-cabinet",
+  imageLinkR: "20250911__q-fabius-labeo-denarius__r__src-the-coin-cabinet",
+  imageLinkSketchR:
+    "20250911__q-fabius-labeo-denarius__o__src-the-coin-cabinet",
+  legendExpandedO: " X ROMA LABEO (M. Atilius)",
+  legendTranslationO: "issued by Labeo (moneyer) on behalf of Rome",
+  legendExpandedR:
+    "Q(uintus) Fabi(us) Q(uintus) Fabi(us) Q(uintus) Fabi(us) Q(uintus) Fabi(us) Q(uintus) Fabi(us)",
+  legendTranslationR:
+    "a mock translation of considerable length to test wrapping and overflow behavior etc etc etc. a mock translation of considerable length to test wrapping and overflow behavior etc etc etc.",
+}
+
+export const mockCoinWithoutSketches = {
+  imageLinkO: "20250911__q-fabius-labeo-denarius__o__src-the-coin-cabinet",
+  imageLinkSketchO: null,
+  imageLinkR: "20250911__q-fabius-labeo-denarius__r__src-the-coin-cabinet",
+  imageLinkSketchR: null,
+  legendExpandedO: " X ROMA LABEO (M. Atilius)",
+  legendTranslationO: "issued by Labeo (moneyer) on behalf of Rome",
+  legendExpandedR: "Q(uintus) Fabi(us)",
+  legendTranslationR: "",
+}
