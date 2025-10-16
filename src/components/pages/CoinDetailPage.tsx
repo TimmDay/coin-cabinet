@@ -1,7 +1,7 @@
 "use client"
 
 import { PageTitle } from "~/components/ui/PageTitle"
-import { CoinImagePanel } from "~/components/ui/coin-detail-page"
+import { CoinDeepDive } from "~/components/ui/coin-detail-page"
 import { useSomnusCoins } from "~/lib/api/somnus-collection"
 
 type CoinDetailPageProps = {
@@ -61,8 +61,8 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
             <PageTitle>{coin.nickname ?? "Ancient Coin"}</PageTitle>
           </header>
 
-          {/* Unified Layout: Everything in CoinImagePanel */}
-          <CoinImagePanel coin={coin} />
+          {/* Unified Layout: Everything in CoinDeepDive */}
+          <CoinDeepDive coin={coin} />
         </div>
       </div>
     </main>

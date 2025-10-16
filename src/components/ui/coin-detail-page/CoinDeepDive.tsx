@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import CloudinaryImage from "~/components/CloudinaryImage"
+import { formatYearRange } from "~/lib/utils/date-formatting"
 import { ImageModal } from "./ImageModal"
 
-type CoinImagePanelProps = {
+type CoinDeepDiveProps = {
   coin: {
     nickname?: string | null
     image_link_o?: string | null
@@ -99,79 +100,60 @@ function CoinImageButton({
   )
 }
 
-type DetailRowProps = {
-  label: string
-  value: string | number
-  fullWidth?: boolean
-}
+function CoinDetailsSection({ coin }: { coin: CoinDeepDiveProps["coin"] }) {
+  // Build civilization text
+  const civText = coin.civ_specific
+    ? `${coin.civ.toUpperCase()}-${coin.civ_specific}`
+    : coin.civ.toUpperCase()
 
-function DetailRow({ label, value, fullWidth = false }: DetailRowProps) {
-  return (
-    <div className={`break-words ${fullWidth ? "col-span-full" : ""}`}>
-      <span className="text-slate-400">{label}:</span>
-      <span className="ml-2 text-slate-300">{value}</span>
-    </div>
+  // Build mint and year text using the utility function
+  const mintText = coin.mint
+  const yearDisplay = formatYearRange(
+    coin.mint_year_earliest,
+    coin.mint_year_latest,
   )
-}
+  const yearText = yearDisplay || null
 
-function CoinDetailsSection({ coin }: { coin: CoinImagePanelProps["coin"] }) {
-  const yearDisplay = coin.mint_year_earliest
-    ? `${coin.mint_year_earliest}${
-        coin.mint_year_latest &&
-        coin.mint_year_latest !== coin.mint_year_earliest
-          ? `-${coin.mint_year_latest}`
-          : ""
-      } CE`
-    : null
+  // Build specs line (diameter | mass | die axis) - excluding reference
+  const specs = [
+    coin.diameter ? `${coin.diameter}mm` : null,
+    coin.mass ? `${coin.mass}g` : null,
+    coin.die_axis,
+  ].filter(Boolean)
 
   return (
-    <section className="artemis-card h-fit p-6">
-      <header className="mb-6">
-        <h2 className="coin-title text-center text-xl lg:text-left">
-          Coin Details
-        </h2>
-      </header>
+    <section className="artemis-card h-fit p-4">
+      <div className="space-y-1 text-center">
+        {/* Line 1: [Mint] ([mint year]) [denomination] | [diameter] | [mass] | [die axis] */}
+        <div className="tracking-wide">
+          {mintText && (
+            <span className="mr-1 text-sm text-slate-400">{mintText}</span>
+          )}
+          {yearText && (
+            <span className="mr-2 text-sm text-slate-400">{yearText}</span>
+          )}
+          <span className="text-lg font-medium text-slate-200">
+            {coin.denomination.toUpperCase()}
+          </span>
+          {specs.length > 0 && (
+            <span className="ml-2 text-sm text-slate-500">
+              {specs.join(" | ")}
+            </span>
+          )}
+        </div>
 
-      <div className="grid grid-cols-1 gap-4 text-left lg:gap-3">
-        <DetailRow label="Civilization" value={coin.civ} />
-
-        {coin.civ_specific && (
-          <DetailRow label="Specific" value={coin.civ_specific} />
-        )}
-
-        <DetailRow label="Denomination" value={coin.denomination} />
-
-        {coin.mint && <DetailRow label="Mint" value={coin.mint} />}
-
-        {yearDisplay && <DetailRow label="Year" value={yearDisplay} />}
-
-        {coin.diameter && (
-          <DetailRow label="Diameter" value={`${coin.diameter}mm`} />
-        )}
-
-        {coin.mass && <DetailRow label="Mass" value={`${coin.mass}g`} />}
-
-        {coin.die_axis && <DetailRow label="Die Axis" value={coin.die_axis} />}
-
-        {coin.reference && (
-          <DetailRow label="Reference" value={coin.reference} />
-        )}
-
-        {coin.provenance && (
-          <DetailRow label="Provenance" value={coin.provenance} />
-        )}
-
-        {coin.sets && coin.sets.length > 0 && (
-          <DetailRow label="Sets" value={coin.sets.join(", ")} fullWidth />
-        )}
+        {/* Line 2: [civ][-civ_specific] [reference] */}
+        <div className="text-sm text-slate-400">
+          {civText}
+          {coin.reference && (
+            <span className="ml-2 text-slate-500">{coin.reference}</span>
+          )}
+        </div>
       </div>
 
       {coin.flavour_text && (
-        <footer className="mt-6 border-t border-slate-600 pt-6">
-          <h3 className="mb-3 text-lg font-semibold text-slate-300">
-            Additional Information
-          </h3>
-          <p className="leading-relaxed break-words text-slate-400 italic">
+        <footer className="mt-4 border-t border-slate-600 pt-4">
+          <p className="text-xs leading-relaxed break-words text-slate-400 italic">
             {coin.flavour_text}
           </p>
         </footer>
@@ -195,7 +177,7 @@ function MapPlaceholder() {
   )
 }
 
-export function CoinImagePanel({ coin }: CoinImagePanelProps) {
+export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const [modalState, setModalState] = useState<{
     isOpen: boolean
     side: "obverse" | "reverse" | null

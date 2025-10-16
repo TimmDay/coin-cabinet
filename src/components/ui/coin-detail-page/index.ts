@@ -1,3 +1,2 @@
-export { CoinDetails } from "./CoinDetails"
-export { CoinImagePanel } from "./CoinImagePanel"
+export { CoinDeepDive } from "./CoinDeepDive"
 export { ImageModal } from "./ImageModal"

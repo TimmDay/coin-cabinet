@@ -18,7 +18,11 @@ type SetPageClientProps = {
   viewMode: "obverse" | "reverse" | "both"
 }
 
-export function SetPageClient({ setInfo, setSlug, viewMode }: SetPageClientProps) {
+export function SetPageClient({
+  setInfo,
+  setSlug,
+  viewMode,
+}: SetPageClientProps) {
   const router = useRouter()
 
   // Fetch all coins using React Query (shared with coin-cabinet page)
