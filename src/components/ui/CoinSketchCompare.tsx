@@ -16,8 +16,6 @@ type CoinSketchCompareProps = {
   legendTranslationR?: string | null
 }
 
-
-
 function CoinImagePair({
   mainImage,
   sketchImage,
@@ -91,150 +89,156 @@ export function CoinSketchCompare({
   legendTranslationR,
 }: CoinSketchCompareProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalSide, setModalSide] = useState<'obverse' | 'reverse'>('obverse')
-  
-  const handleImageClick = (side: 'obverse' | 'reverse') => {
+  const [modalSide, setModalSide] = useState<"obverse" | "reverse">("obverse")
+
+  const handleImageClick = (side: "obverse" | "reverse") => {
     setModalSide(side)
     setIsModalOpen(true)
   }
   return (
     <>
       <section className="space-y-8">
-      {/* Mobile: Stacked Layout */}
-      <div className="block space-y-8 lg:hidden">
-        {/* Obverse Side */}
-        <div>
-          <CoinImagePair
-            mainImage={imageLinkO}
-            sketchImage={imageLinkSketchO}
-            side="obverse"
-            legendExpanded={legendExpandedO}
-            legendTranslation={legendTranslationO}
-          />
-        </div>
+        {/* Mobile: Stacked Layout */}
+        <div className="block space-y-8 lg:hidden">
+          {/* Obverse Side */}
+          <div>
+            <CoinImagePair
+              mainImage={imageLinkO}
+              sketchImage={imageLinkSketchO}
+              side="obverse"
+              legendExpanded={legendExpandedO}
+              legendTranslation={legendTranslationO}
+            />
+          </div>
 
-        {/* Reverse Side */}
-        <div>
-          <CoinImagePair
-            mainImage={imageLinkR}
-            sketchImage={imageLinkSketchR}
-            side="reverse"
-            legendExpanded={legendExpandedR}
-            legendTranslation={legendTranslationR}
-          />
-        </div>
-      </div>
-
-      {/* Desktop: Side-by-Side Layout with Grid */}
-      <div className="hidden lg:grid lg:grid-cols-2 lg:grid-rows-[auto_auto_auto_auto] lg:items-center lg:gap-x-6 lg:gap-y-4">
-        {/* Row 1: Obverse Images */}
-        <div className="flex justify-center">
-          <div className="group flex gap-4 cursor-pointer" onClick={() => handleImageClick('obverse')}>
-            <div className="artemis-card flex h-[240px] w-[240px] items-center justify-center transition-transform duration-200 group-hover:scale-105">
-              <div className="max-h-full max-w-full">
-                <CloudinaryImage
-                  src={imageLinkO}
-                  width={240}
-                  height={240}
-                  alt="Coin obverse"
-                />
-              </div>
-            </div>
-            {imageLinkSketchO && (
-              <div className="artemis-card flex h-[240px] w-[240px] items-center justify-center transition-transform duration-200 group-hover:scale-105">
-                <div className="max-h-full max-w-full">
-                  <CloudinaryImage
-                    src={imageLinkSketchO}
-                    width={240}
-                    height={240}
-                    alt="Coin obverse sketch"
-                  />
-                </div>
-              </div>
-            )}
+          {/* Reverse Side */}
+          <div>
+            <CoinImagePair
+              mainImage={imageLinkR}
+              sketchImage={imageLinkSketchR}
+              side="reverse"
+              legendExpanded={legendExpandedR}
+              legendTranslation={legendTranslationR}
+            />
           </div>
         </div>
 
-        {/* Row 1: Reverse Images */}
-        <div className="flex justify-center">
-          <div className="group flex gap-4 cursor-pointer" onClick={() => handleImageClick('reverse')}>
-            <div className="artemis-card flex h-[240px] w-[240px] items-center justify-center transition-transform duration-200 group-hover:scale-105">
-              <div className="max-h-full max-w-full">
-                <CloudinaryImage
-                  src={imageLinkR}
-                  width={240}
-                  height={240}
-                  alt="Coin reverse"
-                />
-              </div>
-            </div>
-            {imageLinkSketchR && (
+        {/* Desktop: Side-by-Side Layout with Grid */}
+        <div className="hidden lg:grid lg:grid-cols-2 lg:grid-rows-[auto_auto_auto_auto] lg:items-center lg:gap-x-6 lg:gap-y-4">
+          {/* Row 1: Obverse Images */}
+          <div className="flex justify-center">
+            <div
+              className="group flex cursor-pointer gap-4"
+              onClick={() => handleImageClick("obverse")}
+            >
               <div className="artemis-card flex h-[240px] w-[240px] items-center justify-center transition-transform duration-200 group-hover:scale-105">
                 <div className="max-h-full max-w-full">
                   <CloudinaryImage
-                    src={imageLinkSketchR}
+                    src={imageLinkO}
                     width={240}
                     height={240}
-                    alt="Coin reverse sketch"
+                    alt="Coin obverse"
                   />
                 </div>
               </div>
+              {imageLinkSketchO && (
+                <div className="artemis-card flex h-[240px] w-[240px] items-center justify-center transition-transform duration-200 group-hover:scale-105">
+                  <div className="max-h-full max-w-full">
+                    <CloudinaryImage
+                      src={imageLinkSketchO}
+                      width={240}
+                      height={240}
+                      alt="Coin obverse sketch"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Row 1: Reverse Images */}
+          <div className="flex justify-center">
+            <div
+              className="group flex cursor-pointer gap-4"
+              onClick={() => handleImageClick("reverse")}
+            >
+              <div className="artemis-card flex h-[240px] w-[240px] items-center justify-center transition-transform duration-200 group-hover:scale-105">
+                <div className="max-h-full max-w-full">
+                  <CloudinaryImage
+                    src={imageLinkR}
+                    width={240}
+                    height={240}
+                    alt="Coin reverse"
+                  />
+                </div>
+              </div>
+              {imageLinkSketchR && (
+                <div className="artemis-card flex h-[240px] w-[240px] items-center justify-center transition-transform duration-200 group-hover:scale-105">
+                  <div className="max-h-full max-w-full">
+                    <CloudinaryImage
+                      src={imageLinkSketchR}
+                      width={240}
+                      height={240}
+                      alt="Coin reverse sketch"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Row 2: Obverse Legend Expanded */}
+          <div className="mx-auto w-full max-w-[480px] self-center text-center">
+            {legendExpandedO && (
+              <p className="text-lg tracking-wide break-words text-slate-400 lg:text-xl">
+                <FormattedLegendExpanded text={legendExpandedO} />
+              </p>
+            )}
+          </div>
+
+          {/* Row 2: Reverse Legend Expanded */}
+          <div className="mx-auto w-full max-w-[480px] self-center text-center">
+            {legendExpandedR && (
+              <p className="text-lg tracking-wide break-words text-slate-400 lg:text-xl">
+                <FormattedLegendExpanded text={legendExpandedR} />
+              </p>
+            )}
+          </div>
+
+          {/* Row 3: Obverse Legend Translation */}
+          <div className="mx-auto w-full max-w-[480px] self-center text-center">
+            {legendTranslationO && (
+              <p className="text-xs break-words text-slate-400 lg:text-sm">
+                {legendTranslationO}
+              </p>
+            )}
+          </div>
+
+          {/* Row 3: Reverse Legend Translation */}
+          <div className="mx-auto w-full max-w-[480px] self-center text-center">
+            {legendTranslationR && (
+              <p className="text-xs break-words text-slate-400 lg:text-sm">
+                {legendTranslationR}
+              </p>
             )}
           </div>
         </div>
+      </section>
 
-        {/* Row 2: Obverse Legend Expanded */}
-        <div className="mx-auto w-full max-w-[480px] self-center text-center">
-          {legendExpandedO && (
-            <p className="text-lg tracking-wide break-words text-slate-400 lg:text-xl">
-              <FormattedLegendExpanded text={legendExpandedO} />
-            </p>
-          )}
-        </div>
-
-        {/* Row 2: Reverse Legend Expanded */}
-        <div className="mx-auto w-full max-w-[480px] self-center text-center">
-          {legendExpandedR && (
-            <p className="text-lg tracking-wide break-words text-slate-400 lg:text-xl">
-              <FormattedLegendExpanded text={legendExpandedR} />
-            </p>
-          )}
-        </div>
-
-        {/* Row 3: Obverse Legend Translation */}
-        <div className="mx-auto w-full max-w-[480px] self-center text-center">
-          {legendTranslationO && (
-            <p className="text-xs break-words text-slate-400 lg:text-sm">
-              {legendTranslationO}
-            </p>
-          )}
-        </div>
-
-        {/* Row 3: Reverse Legend Translation */}
-        <div className="mx-auto w-full max-w-[480px] self-center text-center">
-          {legendTranslationR && (
-            <p className="text-xs break-words text-slate-400 lg:text-sm">
-              {legendTranslationR}
-            </p>
-          )}
-        </div>
-      </div>
-    </section>
-    
-    {/* Image Modal */}
-    <ImageModal
-      isOpen={isModalOpen}
-      variant="pair"
-      imageUrl1={modalSide === 'obverse' ? imageLinkO : imageLinkR}
-      imageUrl2={
-        modalSide === 'obverse'
-          ? imageLinkSketchO ?? undefined
-          : imageLinkSketchR ?? undefined
-      }
-      alt1={`Coin ${modalSide}`}
-      alt2={`Coin ${modalSide} sketch`}
-      onClose={() => setIsModalOpen(false)}
-    />
+      {/* Image Modal */}
+      <ImageModal
+        isOpen={isModalOpen}
+        variant="pair"
+        imageUrl1={modalSide === "obverse" ? imageLinkO : imageLinkR}
+        imageUrl2={
+          modalSide === "obverse"
+            ? (imageLinkSketchO ?? undefined)
+            : (imageLinkSketchR ?? undefined)
+        }
+        alt1={`Coin ${modalSide}`}
+        alt2={`Coin ${modalSide} sketch`}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   )
 }

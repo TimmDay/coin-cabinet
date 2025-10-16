@@ -1,24 +1,19 @@
 "use client"
 
-import { useState } from "react"
-import CloudinaryImage from "~/components/CloudinaryImage"
-import { FormattedLegendExpanded } from "~/lib/components"
 import { formatYearRange } from "~/lib/utils/date-formatting"
-import { ImageModal } from "./ImageModal"
+import { CoinSketchCompare } from "../CoinSketchCompare"
 
 type CoinDeepDiveProps = {
   coin: {
     nickname?: string | null
     image_link_o?: string | null
     image_link_r?: string | null
-    legend_o?: string | null
+    image_link_sketch_o?: string | null
+    image_link_sketch_r?: string | null
     legend_o_expanded?: string | null
     legend_o_translation?: string | null
-    desc_o?: string | null
-    legend_r?: string | null
     legend_r_expanded?: string | null
     legend_r_translation?: string | null
-    desc_r?: string | null
     civ: string
     civ_specific?: string | null
     denomination: string
@@ -33,43 +28,6 @@ type CoinDeepDiveProps = {
     sets?: string[] | null
     flavour_text?: string | null
   }
-}
-
-type CoinSideData = {
-  imageUrl?: string | null
-  legendExpanded?: string | null
-  legendTranslation?: string | null
-  description?: string | null
-}
-
-function CoinImageButton({
-  side,
-  imageUrl,
-  coinName,
-  onImageClick,
-}: {
-  side: "obverse" | "reverse"
-  imageUrl?: string | null
-  coinName: string
-  onImageClick: () => void
-}) {
-  return (
-    <button
-      onClick={onImageClick}
-      className="artemis-card flex h-[280px] w-[280px] cursor-pointer items-center justify-center p-4 transition-transform hover:scale-105 focus:ring-2 focus:ring-slate-400 focus:outline-none active:scale-95 sm:h-[300px] sm:w-[300px]"
-      aria-label={`View larger image of ${coinName} ${side}`}
-      disabled={!imageUrl}
-    >
-      <div className="max-h-full max-w-full">
-        <CloudinaryImage
-          src={imageUrl ?? undefined}
-          width={280}
-          height={280}
-          alt={`${coinName} ${side}`}
-        />
-      </div>
-    </button>
-  )
 }
 
 function CoinDetailsSection({ coin }: { coin: CoinDeepDiveProps["coin"] }) {
@@ -150,176 +108,25 @@ function MapPlaceholder() {
 }
 
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
-  const [modalState, setModalState] = useState<{
-    isOpen: boolean
-    side: "obverse" | "reverse" | null
-  }>({ isOpen: false, side: null })
-
-  const coinName = coin.nickname ?? "Ancient Coin"
-
-  const handleImageClick = (side: "obverse" | "reverse") => {
-    setModalState({ isOpen: true, side })
-  }
-
-  const closeModal = () => {
-    setModalState({ isOpen: false, side: null })
-  }
-
-  const obverseData: CoinSideData = {
-    imageUrl: coin.image_link_o,
-    legendExpanded: coin.legend_o_expanded,
-    legendTranslation: coin.legend_o_translation,
-    description: coin.desc_o,
-  }
-
-  const reverseData: CoinSideData = {
-    imageUrl: coin.image_link_r,
-    legendExpanded: coin.legend_r_expanded,
-    legendTranslation: coin.legend_r_translation,
-    description: coin.desc_r,
-  }
-
-  const currentModalImageUrl =
-    modalState.side === "obverse" ? coin.image_link_o : coin.image_link_r
-
   return (
     <section className="space-y-6">
-      {/* Mobile: Stacked Layout */}
-      <div className="block space-y-8 lg:hidden">
-        {/* Obverse Side */}
-        <div className="flex flex-col items-center space-y-4">
-          <CoinImageButton
-            side="obverse"
-            imageUrl={obverseData.imageUrl}
-            coinName={coinName}
-            onImageClick={() => handleImageClick("obverse")}
-          />
-          <div className="mx-auto w-full max-w-[280px] space-y-2 text-center">
-            {obverseData.legendExpanded && (
-              <p className="text-base tracking-wide break-words text-slate-400 sm:text-lg">
-                <FormattedLegendExpanded text={obverseData.legendExpanded} />
-              </p>
-            )}
-            {obverseData.legendTranslation && (
-              <p className="text-xs break-words text-slate-400 sm:text-sm">
-                {obverseData.legendTranslation}
-              </p>
-            )}
-            {obverseData.description && (
-              <p className="text-xs break-words text-slate-500">
-                {obverseData.description}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Reverse Side */}
-        <div className="flex flex-col items-center space-y-4">
-          <CoinImageButton
-            side="reverse"
-            imageUrl={reverseData.imageUrl}
-            coinName={coinName}
-            onImageClick={() => handleImageClick("reverse")}
-          />
-          <div className="mx-auto w-full max-w-[280px] space-y-2 text-center">
-            {reverseData.legendExpanded && (
-              <p className="text-base tracking-wide break-words text-slate-400 sm:text-lg">
-                <FormattedLegendExpanded text={reverseData.legendExpanded} />
-              </p>
-            )}
-            {reverseData.legendTranslation && (
-              <p className="text-xs break-words text-slate-400 sm:text-sm">
-                {reverseData.legendTranslation}
-              </p>
-            )}
-            {reverseData.description && (
-              <p className="text-xs break-words text-slate-500">
-                {reverseData.description}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Mobile: Map Placeholder */}
-        <MapPlaceholder />
-
-        {/* Mobile: Coin Details */}
-        <CoinDetailsSection coin={coin} />
-      </div>
-
-      {/* Desktop: Single Unified Grid Layout */}
-      <div className="hidden lg:grid lg:grid-cols-4 lg:gap-6">
-        {/* Row 1: Coin Images + Map */}
-        <div className="flex justify-center">
-          <CoinImageButton
-            side="obverse"
-            imageUrl={obverseData.imageUrl}
-            coinName={coinName}
-            onImageClick={() => handleImageClick("obverse")}
-          />
-        </div>
-
-        <div className="flex justify-center">
-          <CoinImageButton
-            side="reverse"
-            imageUrl={reverseData.imageUrl}
-            coinName={coinName}
-            onImageClick={() => handleImageClick("reverse")}
-          />
-        </div>
-
-        <div className="col-span-2">
-          <MapPlaceholder />
-        </div>
-
-        {/* Row 2: Legends + Details */}
-        <div className="mx-auto w-full max-w-[300px] space-y-2 text-center">
-          {obverseData.legendExpanded && (
-            <p className="text-base tracking-wide break-words text-slate-400 lg:text-lg">
-              <FormattedLegendExpanded text={obverseData.legendExpanded} />
-            </p>
-          )}
-          {obverseData.legendTranslation && (
-            <p className="text-xs break-words text-slate-400 lg:text-sm">
-              {obverseData.legendTranslation}
-            </p>
-          )}
-          {obverseData.description && (
-            <p className="text-xs break-words text-slate-500">
-              {obverseData.description}
-            </p>
-          )}
-        </div>
-
-        <div className="mx-auto w-full max-w-[300px] space-y-2 text-center">
-          {reverseData.legendExpanded && (
-            <p className="text-base tracking-wide break-words text-slate-400 lg:text-lg">
-              <FormattedLegendExpanded text={reverseData.legendExpanded} />
-            </p>
-          )}
-          {reverseData.legendTranslation && (
-            <p className="text-xs break-words text-slate-400 lg:text-sm">
-              {reverseData.legendTranslation}
-            </p>
-          )}
-          {reverseData.description && (
-            <p className="text-xs break-words text-slate-500">
-              {reverseData.description}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <CoinDetailsSection coin={coin} />
-        </div>
-      </div>
-
-      <ImageModal
-        isOpen={modalState.isOpen}
-        onClose={closeModal}
-        imageUrl={currentModalImageUrl ?? undefined}
-        alt={`${coinName} ${modalState.side} - Large View`}
+      {/* Coin Sketch Compare Component */}
+      <CoinSketchCompare
+        imageLinkO={coin.image_link_o ?? ""}
+        imageLinkSketchO={coin.image_link_sketch_o}
+        imageLinkR={coin.image_link_r ?? ""}
+        imageLinkSketchR={coin.image_link_sketch_r}
+        legendExpandedO={coin.legend_o_expanded}
+        legendTranslationO={coin.legend_o_translation}
+        legendExpandedR={coin.legend_r_expanded}
+        legendTranslationR={coin.legend_r_translation}
       />
+
+      {/* Map Placeholder */}
+      <MapPlaceholder />
+
+      {/* Coin Details */}
+      <CoinDetailsSection coin={coin} />
     </section>
   )
 }

@@ -3,74 +3,81 @@
 import { getCldImageUrl } from "next-cloudinary"
 import { useEffect, useRef, useState } from "react"
 
-type ImageModalProps = {
-  isOpen: boolean
-  onClose: () => void
-  imageUrl?: string
-  alt: string
-} | {
-  isOpen: boolean
-  onClose: () => void
-  variant: 'pair'
-  imageUrl1: string
-  imageUrl2?: string | null
-  alt1: string
-  alt2?: string | null
-}
+type ImageModalProps =
+  | {
+      isOpen: boolean
+      onClose: () => void
+      imageUrl?: string
+      alt: string
+    }
+  | {
+      isOpen: boolean
+      onClose: () => void
+      variant: "pair"
+      imageUrl1: string
+      imageUrl2?: string | null
+      alt1: string
+      alt2?: string | null
+    }
 
 export function ImageModal(props: ImageModalProps) {
   const { isOpen, onClose } = props
   const [isLoading, setIsLoading] = useState(true)
-  const [zoomedImage, setZoomedImage] = useState<'none' | 'first' | 'second'>('none')
+  const [zoomedImage, setZoomedImage] = useState<"none" | "first" | "second">(
+    "none",
+  )
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 })
   const modalRef = useRef<HTMLDivElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
   const imageContainerRef = useRef<HTMLDivElement>(null)
 
-  const isPairVariant = 'variant' in props && props.variant === 'pair'
+  const isPairVariant = "variant" in props && props.variant === "pair"
 
   // Generate the optimized Cloudinary URLs
-  const largeImageUrl = !isPairVariant && 'imageUrl' in props && props.imageUrl
-    ? getCldImageUrl({
-        src: props.imageUrl,
-        width: 800,
-        height: 800,
-        crop: {
-          type: "pad",
-          source: true,
-        },
-        background: "transparent",
-      })
-    : undefined
+  const largeImageUrl =
+    !isPairVariant && "imageUrl" in props && props.imageUrl
+      ? getCldImageUrl({
+          src: props.imageUrl,
+          width: 800,
+          height: 800,
+          crop: {
+            type: "pad",
+            source: true,
+          },
+          background: "transparent",
+        })
+      : undefined
 
-  const largeImageUrl1 = isPairVariant && 'imageUrl1' in props
-    ? getCldImageUrl({
-        src: props.imageUrl1,
-        width: 600,
-        height: 600,
-        crop: {
-          type: "pad",
-          source: true,
-        },
-        background: "transparent",
-      })
-    : undefined
+  const largeImageUrl1 =
+    isPairVariant && "imageUrl1" in props
+      ? getCldImageUrl({
+          src: props.imageUrl1,
+          width: 600,
+          height: 600,
+          crop: {
+            type: "pad",
+            source: true,
+          },
+          background: "transparent",
+        })
+      : undefined
 
-  const largeImageUrl2 = isPairVariant && 'imageUrl2' in props && props.imageUrl2
-    ? getCldImageUrl({
-        src: props.imageUrl2,
-        width: 600,
-        height: 600,
-        crop: {
-          type: "pad",
-          source: true,
-        },
-        background: "transparent",
-      })
-    : undefined
+  const largeImageUrl2 =
+    isPairVariant && "imageUrl2" in props && props.imageUrl2
+      ? getCldImageUrl({
+          src: props.imageUrl2,
+          width: 600,
+          height: 600,
+          crop: {
+            type: "pad",
+            source: true,
+          },
+          background: "transparent",
+        })
+      : undefined
 
-  const alt = !isPairVariant && 'alt' in props ? props.alt : ''
+  const alt = !isPairVariant && "alt" in props ? props.alt : ""
 
   // Handle focus trapping and keyboard events
   useEffect(() => {
@@ -126,7 +133,7 @@ export function ImageModal(props: ImageModalProps) {
     document.body.style.overflow = "hidden"
     setIsLoading(true)
     // Reset zoom when modal opens
-    setZoomedImage('none')
+    setZoomedImage("none")
     setZoomOrigin({ x: 50, y: 50 })
 
     return () => {
@@ -137,12 +144,15 @@ export function ImageModal(props: ImageModalProps) {
   }, [isOpen, onClose])
 
   // Handle image click for zoom functionality
-  const handleImageClick = (event: React.MouseEvent<HTMLImageElement>, imageIndex: 'first' | 'second' = 'first') => {
+  const handleImageClick = (
+    event: React.MouseEvent<HTMLImageElement>,
+    imageIndex: "first" | "second" = "first",
+  ) => {
     event.stopPropagation() // Prevent closing modal
 
     if (zoomedImage === imageIndex) {
       // If this image is already zoomed, zoom out
-      setZoomedImage('none')
+      setZoomedImage("none")
     } else {
       // Calculate click position relative to image
       const rect = event.currentTarget.getBoundingClientRect()
@@ -158,14 +168,14 @@ export function ImageModal(props: ImageModalProps) {
   const handleContainerClick = (event: React.MouseEvent<HTMLDivElement>) => {
     // Close modal if clicking anywhere that's not an image
     const target = event.target as HTMLElement
-    if (target.tagName !== 'IMG') {
+    if (target.tagName !== "IMG") {
       onClose()
     }
   }
 
   if (!isOpen) return null
-  if (!isPairVariant && (!largeImageUrl)) return null
-  if (isPairVariant && (!largeImageUrl1)) return null
+  if (!isPairVariant && !largeImageUrl) return null
+  if (isPairVariant && !largeImageUrl1) return null
 
   return (
     <div className="z-modal fixed top-0 right-0 bottom-0 left-0 flex h-screen w-screen items-center justify-center">
@@ -236,19 +246,19 @@ export function ImageModal(props: ImageModalProps) {
           >
             {isPairVariant ? (
               // Pair variant - show two images side by side
-              <div className="flex gap-4 items-center justify-center max-h-full max-w-full">
+              <div className="flex max-h-full max-w-full items-center justify-center gap-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   ref={imageRef}
                   src={largeImageUrl1}
-                  alt={'alt1' in props ? props.alt1 : ''}
+                  alt={"alt1" in props ? props.alt1 : ""}
                   className={`relative max-h-full max-w-[45%] cursor-pointer object-contain transition-transform duration-300 ease-out ${
-                    zoomedImage === 'first' ? "scale-300 z-10" : "scale-100 z-0"
+                    zoomedImage === "first" ? "z-10 scale-300" : "z-0 scale-100"
                   }`}
                   style={{
                     transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
                   }}
-                  onClick={(e) => handleImageClick(e, 'first')}
+                  onClick={(e) => handleImageClick(e, "first")}
                   onLoad={() => setIsLoading(false)}
                   onError={() => setIsLoading(false)}
                 />
@@ -256,14 +266,16 @@ export function ImageModal(props: ImageModalProps) {
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={largeImageUrl2}
-                    alt={'alt2' in props && props.alt2 ? props.alt2 : ''}
+                    alt={"alt2" in props && props.alt2 ? props.alt2 : ""}
                     className={`relative max-h-full max-w-[45%] cursor-pointer object-contain transition-transform duration-300 ease-out ${
-                      zoomedImage === 'second' ? "scale-300 z-10" : "scale-100 z-0"
+                      zoomedImage === "second"
+                        ? "z-10 scale-300"
+                        : "z-0 scale-100"
                     }`}
                     style={{
                       transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
                     }}
-                    onClick={(e) => handleImageClick(e, 'second')}
+                    onClick={(e) => handleImageClick(e, "second")}
                     onLoad={() => setIsLoading(false)}
                     onError={() => setIsLoading(false)}
                   />
@@ -277,12 +289,12 @@ export function ImageModal(props: ImageModalProps) {
                 src={largeImageUrl}
                 alt={alt}
                 className={`max-h-full max-w-full cursor-pointer object-contain transition-transform duration-300 ease-out ${
-                  zoomedImage === 'first' ? "scale-300" : "scale-100"
+                  zoomedImage === "first" ? "scale-300" : "scale-100"
                 }`}
                 style={{
                   transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
                 }}
-                onClick={(e) => handleImageClick(e, 'first')}
+                onClick={(e) => handleImageClick(e, "first")}
                 onLoad={() => setIsLoading(false)}
                 onError={() => setIsLoading(false)}
               />
