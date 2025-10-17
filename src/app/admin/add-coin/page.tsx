@@ -1,8 +1,8 @@
 "use client"
 
+import { AddCoinView } from "~/components/admin/AddCoinView"
 import { useAuth } from "~/components/providers/auth-provider"
 import { PageTitle } from "~/components/ui/PageTitle"
-import { AddCoinView } from "~/components/admin/AddCoinView"
 
 export default function AddCoinPage() {
   const { user, loading } = useAuth()

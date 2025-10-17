@@ -63,7 +63,9 @@ export default function EditMapPage() {
         <div className="mx-auto max-w-4xl">
           <div className="artemis-card p-8 text-center">
             <h3 className="coin-title mb-4 text-xl">Edit Map</h3>
-            <p className="coin-description">Map editing functionality coming soon...</p>
+            <p className="coin-description">
+              Map editing functionality coming soon...
+            </p>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
+import { eq } from "drizzle-orm"
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
-import { eq } from "drizzle-orm"
 import { db } from "~/server/db"
 import { somnus_collection } from "~/server/db/schemas/somnus-collection"
 
@@ -15,30 +15,32 @@ type UpdateData = {
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Await params in Next.js 15
     const { id } = await params
-    
+
     // Parse the request body
-    const body = await request.json() as UpdateData
-    const { 
-      nickname, 
-      legend_o, 
-      legend_o_expanded, 
-      legend_r, 
-      legend_r_expanded, 
-      flavour_text 
+    const body = (await request.json()) as UpdateData
+    const {
+      nickname,
+      legend_o,
+      legend_o_expanded,
+      legend_r,
+      legend_r_expanded,
+      flavour_text,
     } = body
 
     // Build update object
     const updateData: Record<string, string | null> = {}
     if (nickname !== undefined) updateData.nickname = nickname
     if (legend_o !== undefined) updateData.legend_o = legend_o
-    if (legend_o_expanded !== undefined) updateData.legend_o_expanded = legend_o_expanded
+    if (legend_o_expanded !== undefined)
+      updateData.legend_o_expanded = legend_o_expanded
     if (legend_r !== undefined) updateData.legend_r = legend_r
-    if (legend_r_expanded !== undefined) updateData.legend_r_expanded = legend_r_expanded
+    if (legend_r_expanded !== undefined)
+      updateData.legend_r_expanded = legend_r_expanded
     if (flavour_text !== undefined) updateData.flavour_text = flavour_text
 
     // Update the item in the database
@@ -51,21 +53,20 @@ export async function PUT(
     if (updatedItems.length === 0) {
       return NextResponse.json(
         { success: false, message: "Item not found" },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
     return NextResponse.json({
       success: true,
       message: "Item updated successfully",
-      data: updatedItems[0]
+      data: updatedItems[0],
     })
-
   } catch (error) {
     console.error("Error updating somnus collection item:", error)
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

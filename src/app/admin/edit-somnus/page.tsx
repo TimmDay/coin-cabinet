@@ -1,8 +1,8 @@
 "use client"
 
+import { EditSomnusView } from "~/components/admin/EditSomnusView"
 import { useAuth } from "~/components/providers/auth-provider"
 import { PageTitle } from "~/components/ui/PageTitle"
-import { EditSomnusView } from "~/components/admin/EditSomnusView"
 
 export default function EditSomnusPage() {
   const { user, loading } = useAuth()

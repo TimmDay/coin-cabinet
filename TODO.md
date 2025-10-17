@@ -2,18 +2,23 @@
 
 ## Next Thing
 
-- [ ] make a mint spreadsheet. It will become a postgres table later. It will need mint_name, lat, lng, country (modern), notes (historical info), year_open, year_close, second_year_open, second_year_close, secondary_name.
+- [ ] research expanded latin and translation text for legends.
 
-- [ ] make the admin route have a dropdown. we will now have multiple admin pages (all auth blocked)
-  - admin/add-coin (existing stuff)
-  - admin/mint-list (view/edit mints)
-  - admin/edit-somnus (view/edit somnus entries)
-    - this will name just a few col for now. Nickname, legend, legend_expanded, legend translation and flavour_text
+### Mints Table
 
-### MAP Component
+- [ ] make a mint db table. It will need mint_name, lat, lng, roman territory, country (modern), notes (historical info), year_open, year_close, second_year_open, second_year_close, secondary_name, list of known operators {name, year range}, founding emperor, reason close, notes. Make a form for adding to it and have this in the admin menu
+
+### Roman Territories Table
 
 - [ ] collect GeoJSON data for every roman province that ever existed, along with dates of existence, fact_check_sources, list of governors with dates (as available)
 - [ ] find sources for the above
+
+### MAP Component
+
+- [ ] make a map component using leaflet that can show the roman provinces as layers (with date filtering to show the provinces as they were for the selected year)
+- [ ] pins for mints in my collection, sized by number of coins from that mint
+- [ ] special pin for the selected coin mint, map centers on it.
+- [ ] special pin for find location, for the few coins that have provenance into the ground (ie hoards, metal detector finds).
 
 ### UI
 
@@ -40,7 +45,7 @@ CoinDetailPage
 
 - [ ] pre-fetch the coin card detail when the grid item is hovered for X ms (so it opens instantly when clicked)
 
-- [ ] can/should we use the semantic html5 elements like <article>, <section>, <nav> etc?
+- [ ] where can/should we use the semantic html5 elements like <article>, <section>, <nav> etc?
 
 - [ ] Explore UI component libraries. Pick one as a reference and put it in copilot-instructions. (shadcn or daisy)
 
@@ -66,16 +71,15 @@ CoinDetailPage
 
 ### photography
 
-- [ ] Learn about how to take good quality macro coin photos.
+- [ ] research/plan beginner macro photography setup (getting most out of phone that I can).
 - [ ] set up something basic for my phone. including lighting.
+- [ ] Learn what would be required to take 'ultra zoom' macro photos.
 
 ### real world
 
 - [ ] find scale and weigh coins to confirm current data.
 - [ ] order coin capsules to bulk up supply.
-- [ ] research/plan beginner macro photography setup (getting most out of phone that I can).
 - [ ] research how I will make coin sketches from plates (ipad?)
-- [ ] research expanded latin and translation text for legends.
 
 ### auth
 
@@ -96,7 +100,7 @@ CoinDetailPage
 - [ ] site logo - create a beautiful one. Somnus or something related.
 - [ ] site favicon
 - [ ] expanded legends - research them and save to the db.
-- [ ] expanded info. Flavour text, but also expanded legends and latin translation. Is icons with popovers the best way to do it?
+- [ ] expanded info. Flavour text, but also expanded legends and latin translation.
 
 - [ ] a (free to use) map of the roman empire area. Zoomable, pannable.
   - [ ] needs it's own page/route
@@ -115,8 +119,6 @@ Set list, but main feature is a 'wooden' drawer with the coin images laid out as
 ### features inf
 
 - [ ] consider react context. Maybe need it for view (obv,rev,both), drawer preference (wood,red felt, blue felt), maybe some filters make sense (denomination)?
-
-- [ ] hook up specific menus to filtered db requests. Does each thing get it's own page? If not how to manage the breadcrumb?
 
 - [ ] i18n. Make a system for translating everything to German to start (French/Spanish/Portuguese).
 - [ ] Analytics.
@@ -168,6 +170,8 @@ articles, guides
 - [ ] before/after image slider component (for showing coins pre and post cleaning) [example](https://artemis-collection.com/showcase/cleaning-coins/)
 
 - [ ] interactive map component (for showing mint location and significant places)
+
+- [ ] JC 'aside'
 
 ### About page
 
@@ -226,3 +230,9 @@ articles, guides
 - [x] add db column array type for sets. Array strings. The CoinForm will have a multi select dropdown for these.
 - [x] Sets pages 'Severan' filters the coins by the rows that have sets arrays that include 'severan'
 - [x] db schema updates. legend_o_expanded, legend_r_expanded, latin_translation_o, latin_translation_r
+- [x] make the admin route have a dropdown. we will now have multiple admin pages (all auth blocked)
+  - admin/add-coin (existing stuff)
+  - admin/mint-list (view/edit mints)
+  - admin/edit-somnus (view/edit somnus entries)
+    - this will name just a few col for now. Nickname, legend, legend_expanded, legend translation and flavour_text
+- [x] hook up specific menus to filtered db requests.

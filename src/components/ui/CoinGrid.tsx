@@ -6,7 +6,12 @@ import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { ViewModeControls } from "~/components/ui/ViewModeControls"
 import { useSomnusCoins } from "~/lib/api/somnus-collection"
 
-export function CoinGrid() {
+type CoinGridProps = {
+  filterSet?: string
+  filterCiv?: string
+}
+
+export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
   const [modalState, setModalState] = useState<{
     isOpen: boolean
     currentIndex: number
@@ -19,7 +24,24 @@ export function CoinGrid() {
 
   // Fetch coins from database (already filtered for obverse images at DB level)
   const { data: coins, isLoading, error } = useSomnusCoins()
-  const coinsList = coins ?? []
+
+  // Filter coins by set and/or civilization
+  const filteredCoins = (coins ?? []).filter((coin) => {
+    let matchesSet = true
+    let matchesCiv = true
+
+    if (filterSet) {
+      matchesSet = coin.sets?.includes(filterSet) ?? false
+    }
+
+    if (filterCiv) {
+      matchesCiv = coin.civ === filterCiv
+    }
+
+    return matchesSet && matchesCiv
+  })
+
+  const coinsList = filteredCoins
 
   const openModal = (index: number) => {
     setModalState({ isOpen: true, currentIndex: index, focusTarget: null })

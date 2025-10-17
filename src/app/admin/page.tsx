@@ -61,37 +61,45 @@ export default function AdminPage() {
         </div>
 
         <div className="mx-auto max-w-4xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <a
               href="/admin/add-coin"
-              className="artemis-card p-6 text-center hover:bg-amber-500/5 transition-colors"
+              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
             >
               <h3 className="coin-title mb-4 text-xl">Add Coin</h3>
-              <p className="coin-description">Add a new coin to your collection</p>
+              <p className="coin-description">
+                Add a new coin to your collection
+              </p>
             </a>
-            
+
             <a
               href="/admin/edit-somnus"
-              className="artemis-card p-6 text-center hover:bg-amber-500/5 transition-colors"
+              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
             >
               <h3 className="coin-title mb-4 text-xl">Edit Somnus</h3>
-              <p className="coin-description">Edit existing coins in your Somnus collection</p>
+              <p className="coin-description">
+                Edit existing coins in your Somnus collection
+              </p>
             </a>
-            
+
             <a
               href="/admin/edit-map"
-              className="artemis-card p-6 text-center hover:bg-amber-500/5 transition-colors"
+              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
             >
               <h3 className="coin-title mb-4 text-xl">Edit Map</h3>
-              <p className="coin-description">Manage map locations and mint data</p>
+              <p className="coin-description">
+                Manage map locations and mint data
+              </p>
             </a>
-            
+
             <a
               href="/admin/edit-mints"
-              className="artemis-card p-6 text-center hover:bg-amber-500/5 transition-colors"
+              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
             >
               <h3 className="coin-title mb-4 text-xl">Edit Mints</h3>
-              <p className="coin-description">Edit mint information and locations</p>
+              <p className="coin-description">
+                Edit mint information and locations
+              </p>
             </a>
           </div>
         </div>
