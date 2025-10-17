@@ -2,6 +2,7 @@
 
 import { formatYearRange } from "~/lib/utils/date-formatting"
 import { CoinSketchCompare } from "../CoinSketchCompare"
+import { CoinSnapshot } from "../CoinSnapshot"
 
 type CoinDeepDiveProps = {
   coin: {
@@ -122,8 +123,47 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         legendTranslationR={coin.legend_r_translation}
       />
 
-      {/* Map Placeholder */}
-      <MapPlaceholder />
+      {/* Mobile: Stacked Layout */}
+      <div className="block space-y-6 lg:hidden">
+        {/* Map Placeholder */}
+        <MapPlaceholder />
+
+        {/* Coin Snapshot */}
+        <CoinSnapshot
+          civ={coin.civ}
+          civSpecific={coin.civ_specific}
+          mint={coin.mint}
+          mintYearEarliest={coin.mint_year_earliest}
+          mintYearLatest={coin.mint_year_latest}
+          diameter={coin.diameter}
+          mass={coin.mass}
+          dieAxis={coin.die_axis}
+          reference={coin.reference}
+          provenance={coin.provenance}
+        />
+      </div>
+
+      {/* Desktop: Map and Snapshot Side by Side */}
+      <div className="hidden lg:grid lg:grid-cols-[1fr_auto] lg:gap-6">
+        {/* Map Placeholder - Takes remaining space */}
+        <MapPlaceholder />
+
+        {/* CoinSnapshot - Takes minimal space needed */}
+        <div className="flex items-center">
+          <CoinSnapshot
+            civ={coin.civ}
+            civSpecific={coin.civ_specific}
+            mint={coin.mint}
+            mintYearEarliest={coin.mint_year_earliest}
+            mintYearLatest={coin.mint_year_latest}
+            diameter={coin.diameter}
+            mass={coin.mass}
+            dieAxis={coin.die_axis}
+            reference={coin.reference}
+            provenance={coin.provenance}
+          />
+        </div>
+      </div>
 
       {/* Coin Details */}
       <CoinDetailsSection coin={coin} />

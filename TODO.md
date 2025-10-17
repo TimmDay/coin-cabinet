@@ -2,10 +2,22 @@
 
 ## Next Thing
 
-- [ ] make an alternative for dropdown menus for mobile
+- [ ] make a mint spreadsheet. It will become a postgres table later. It will need mint_name, lat, lng, country (modern), notes (historical info), year_open, year_close, second_year_open, second_year_close, secondary_name.
+
+- [ ] make the admin route have a dropdown. we will now have mu,tiple admin pages (all auth blocked)
+  - admin/add-coin (existing stuff)
+  - admin/mint-list (view/edit mints)
+  - admin/edit-somnus (view/edit somnus entries)
+    - this will name just a few col for now. Nickname, legend, legend_expanded, legend translation and flavour_text
+
+### MAP Component
+
+- [ ] collect GeoJSON data for every roman province that ever existed, along with dates of existence, fact_check_sources, list of governors with dates (as available)
+- [ ] find sources for the above
 
 ### UI
 
+- [ ] make an alternative for dropdown menus for mobile
 - [ ] Sets master page has link cards that show all the sets (with a title image) and link to the set page. Have a cover image
 - [ ] sets pages (focus on severan) have unique layouts and a set ordered list of coins in that set. (like a drawer with recesses for each coin)
 
@@ -38,6 +50,7 @@ CoinDetailPage
 
 ### database
 
+- [ ] make sure every somnus entry has legend expanded filled in. make it compulsary on the form.
 - [ ] setup dev and prod DBs. default it points to dev. I have to manually put in the prod details to use that one.
 - [ ] Mint name dropdown in form.
 - [ ] Another table. Mint names with the associated lat/lng of each mint.
