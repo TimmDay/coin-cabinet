@@ -2,7 +2,7 @@ export const navigationItems = [
   { name: "Sets", href: "/sets", hasSubmenu: true },
   { name: "Articles", href: "/articles" },
   { name: "About", href: "/about" },
-  { name: "Admin", href: "/admin" },
+  { name: "Admin", href: "/admin", hasSubmenu: true },
 ]
 
 export const coinCabinetItems = [
@@ -13,7 +13,7 @@ export const coinCabinetItems = [
   { name: "Ex Collection", href: "/coin-cabinet/ex-collection" },
 ]
 
-export type SubmenuTypes = "roman" | "sets" | "mainSets"
+export type SubmenuTypes = "roman" | "sets" | "mainSets" | "Admin"
 
 export const mainSetsSubmenu = [
   { name: "Severan Dynasty", href: "/sets/severan-dynasty" },
@@ -40,4 +40,11 @@ export const romanSubmenu = [
   { name: "Republic", href: "/coin-cabinet/roman/republic" },
   { name: "Imperatorial", href: "/coin-cabinet/roman/imperatorial" },
   { name: "Imperial", href: "/coin-cabinet/roman/imperial" },
+]
+
+export const adminSubmenu = [
+  { name: "Add Coin", href: "/admin/add-coin" },
+  { name: "Edit Somnus", href: "/admin/edit-somnus" },
+  { name: "Edit Map", href: "/admin/edit-map" },
+  { name: "Edit Mints", href: "/admin/edit-mints" },
 ]

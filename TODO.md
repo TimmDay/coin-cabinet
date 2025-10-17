@@ -4,7 +4,7 @@
 
 - [ ] make a mint spreadsheet. It will become a postgres table later. It will need mint_name, lat, lng, country (modern), notes (historical info), year_open, year_close, second_year_open, second_year_close, secondary_name.
 
-- [ ] make the admin route have a dropdown. we will now have mu,tiple admin pages (all auth blocked)
+- [ ] make the admin route have a dropdown. we will now have multiple admin pages (all auth blocked)
   - admin/add-coin (existing stuff)
   - admin/mint-list (view/edit mints)
   - admin/edit-somnus (view/edit somnus entries)

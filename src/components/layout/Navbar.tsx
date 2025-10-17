@@ -12,6 +12,7 @@ import {
   navigationItems,
   romanSubmenu,
   setsSubmenu,
+  adminSubmenu,
   type SubmenuTypes,
 } from "./navigation-schema"
 
@@ -143,6 +144,8 @@ export default function Navbar() {
     switch (itemName) {
       case "Sets":
         return mainSetsSubmenu
+      case "Admin":
+        return adminSubmenu
       default:
         return []
     }

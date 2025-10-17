@@ -3,7 +3,7 @@
 import { useAuth } from "~/components/providers/auth-provider"
 import { PageTitle } from "~/components/ui/PageTitle"
 
-export default function AdminPage() {
+export default function EditMintsPage() {
   const { user, loading } = useAuth()
 
   if (loading) {
@@ -24,7 +24,7 @@ export default function AdminPage() {
         <div className="container mx-auto px-4 py-16">
           <div className="mb-12 text-center">
             <PageTitle authPage className="mb-6">
-              Admin Panel
+              Edit Mints
             </PageTitle>
           </div>
           <div className="mx-auto max-w-2xl">
@@ -33,7 +33,7 @@ export default function AdminPage() {
                 Authentication Required
               </h2>
               <p className="coin-description mb-6 text-lg">
-                Please sign in to access the admin panel.
+                Please sign in to edit mint information.
               </p>
               <a
                 href="/somnus-login"
@@ -53,46 +53,17 @@ export default function AdminPage() {
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12 text-center">
           <PageTitle authPage className="mb-6">
-            Admin Panel
+            Edit Mints
           </PageTitle>
           <p className="coin-description text-xl">
-            Choose an admin function from the navigation menu above
+            Edit mint information and locations
           </p>
         </div>
 
         <div className="mx-auto max-w-4xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <a
-              href="/admin/add-coin"
-              className="artemis-card p-6 text-center hover:bg-amber-500/5 transition-colors"
-            >
-              <h3 className="coin-title mb-4 text-xl">Add Coin</h3>
-              <p className="coin-description">Add a new coin to your collection</p>
-            </a>
-            
-            <a
-              href="/admin/edit-somnus"
-              className="artemis-card p-6 text-center hover:bg-amber-500/5 transition-colors"
-            >
-              <h3 className="coin-title mb-4 text-xl">Edit Somnus</h3>
-              <p className="coin-description">Edit existing coins in your Somnus collection</p>
-            </a>
-            
-            <a
-              href="/admin/edit-map"
-              className="artemis-card p-6 text-center hover:bg-amber-500/5 transition-colors"
-            >
-              <h3 className="coin-title mb-4 text-xl">Edit Map</h3>
-              <p className="coin-description">Manage map locations and mint data</p>
-            </a>
-            
-            <a
-              href="/admin/edit-mints"
-              className="artemis-card p-6 text-center hover:bg-amber-500/5 transition-colors"
-            >
-              <h3 className="coin-title mb-4 text-xl">Edit Mints</h3>
-              <p className="coin-description">Edit mint information and locations</p>
-            </a>
+          <div className="artemis-card p-8 text-center">
+            <h3 className="coin-title mb-4 text-xl">Edit Mints</h3>
+            <p className="coin-description">Mint editing functionality coming soon...</p>
           </div>
         </div>
       </div>
