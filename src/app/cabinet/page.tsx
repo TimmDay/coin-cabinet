@@ -1,28 +1,8 @@
 import { PageTitle } from "~/components/ui/PageTitle"
 import { SetPreviewCard } from "~/components/ui/SetPreviewCard"
+import { featuredSets } from "~/lib/constants/sets"
 
 export default function CabinetPage() {
-  const featuredSets = [
-    {
-      name: "Severan Dynasty",
-      href: "/cabinet/severan-dynasty",
-      description:
-        "Coins from the Severan period (193-235 AD), featuring the imperial family that ruled during a time of military expansion and architectural achievement.",
-    },
-    {
-      name: "Gordy Boys",
-      href: "/cabinet/gordy-boys",
-      description:
-        "A curated collection highlighting the artistic and historical significance of coins from this distinctive period.",
-    },
-    {
-      name: "Imperial Women",
-      href: "/cabinet/imperial-women",
-      description:
-        "Celebrating the powerful women of the Roman Empire through their numismatic representations and imperial portraiture.",
-    },
-  ]
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center">
       <div className="container flex flex-col items-center justify-center gap-4 px-4 py-16">
@@ -36,6 +16,7 @@ export default function CabinetPage() {
               name={set.name}
               href={set.href}
               description={set.description}
+              image={set.image}
             />
           ))}
         </div>

@@ -75,3 +75,5 @@
 4. You can now use the image ids in the CloudinaryImage component and they will pull from the image store, auto optimise, etc.
 
 5. If this ever costs significant money, we will code up something of our own and host images from Cloudflare or something. But this is great for low/no users.
+
+6. If the Cloudinary background removal fails this is a great tool to try manually foing it: https://numis.pics/app/?lang=en
