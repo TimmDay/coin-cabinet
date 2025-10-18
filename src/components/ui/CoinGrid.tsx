@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { CoinCardDetail } from "~/components/ui/CoinCardDetail"
 import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
+import { CoinInfoModal } from "~/components/ui/CoinInfoModal"
 import { ViewModeControls } from "~/components/ui/ViewModeControls"
 import { useSomnusCoins } from "~/lib/api/somnus-collection"
 
@@ -148,7 +148,7 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
         ))}
       </div>
 
-      <CoinCardDetail
+      <CoinInfoModal
         isOpen={modalState.isOpen}
         onClose={closeModal}
         imageSrc={currentCoin?.image_link_o ?? undefined}

@@ -316,7 +316,7 @@ export function CoinInfoModal({
       />
 
       {/* Modal Content */}
-      <div className="relative z-10 flex min-h-full w-full max-w-7xl p-4 lg:max-h-[90vh] lg:min-h-0">
+      <div className="relative z-10 flex min-h-full w-full max-w-7xl p-4 lg:max-h-[90vh] lg:min-h-0 lg:p-4">
         {/* Close Button */}
         <IconButton
           icon={X}
@@ -440,7 +440,7 @@ export function CoinInfoModal({
           </div>
 
           {/* Bottom/Right Side - Information Panel */}
-          <div className="mr-0 bg-black p-6 backdrop-blur-sm lg:-mr-8 lg:max-h-[80vh] lg:flex-1 lg:overflow-y-auto lg:rounded-lg lg:p-8">
+          <div className="-mx-4 -mb-4 bg-black p-6 backdrop-blur-sm lg:mx-0 lg:-mr-8 lg:mb-0 lg:max-h-[80vh] lg:flex-1 lg:overflow-y-auto lg:rounded-lg lg:p-8">
             <div
               className={`text-center transition-opacity duration-200 ${
                 isTransitioning ? "opacity-0" : "opacity-100"

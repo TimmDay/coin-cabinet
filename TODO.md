@@ -56,7 +56,7 @@ CoinDetailPage
 
 - [ ] AI STUCK icon alignment. chevrons don't look centered in their circles. maybe pull it out to a common component too. manual attention required.
 
-- [ ] include photo credits in UI (if present in the image id -src). on hover for grid items and explicitly in CoinCardDetail info area.
+- [ ] include photo credits in UI (if present in the image id -src). on hover for grid items and explicitly in CoinInfoModal info area.
 
 ### database
 
@@ -224,9 +224,9 @@ articles, guides
 - [x] Coin Card detail MVP. coin images o + r, summary info, flavour text
 - [x] info area includes the civ_detail field (if present) directly after the civ field display.
 - [x] update db schema: image_link_sketch_o, image_link_sketch_r
-- [x] tweak styles for CoinCardDetail.
+- [x] tweak styles for CoinInfoModal.
 - [x] flip btn reposition on mobile.
-- [x] mobile styles for the CoinCardDetail
+- [x] mobile styles for the CoinInfoModal
 - [x] re-style the page titles. thinner, classier text. smaller. underline of small width at center of heading
 - [x] name all the images that I have
 - [x] upload all the coins to db
