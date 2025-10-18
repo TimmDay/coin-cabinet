@@ -4,10 +4,6 @@ import { ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "~/lib/utils"
-import {
-  extractNicknameFromSlug,
-  isValidCoinSlug,
-} from "~/lib/utils/url-helpers"
 
 type BreadcrumbItem = {
   label: string
@@ -27,38 +23,36 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
   // Add home
   breadcrumbs.push({ label: "Home", href: "/" })
 
+  // Don't add breadcrumbs for home page
+  if (pathname === "/") {
+    return breadcrumbs
+  }
+
   // Build breadcrumbs from segments
   let currentPath = ""
   segments.forEach((segment) => {
     currentPath += `/${segment}`
 
-    // Special handling for coin routes
-    if (segment === "coin") {
-      breadcrumbs.push({
-        label: "Coin Cabinet",
-        href: "/coin-cabinet",
-      })
-      return
-    }
-
-    // Special handling for coin slugs (format: "123-nickname-here")
-    if (isValidCoinSlug(segment)) {
-      const nickname = extractNicknameFromSlug(segment)
+    // Check if this segment is a coin slug (format: "123-coin-name")
+    const coinSlugPattern = /^\d+-/
+    if (coinSlugPattern.exec(segment)) {
+      // This is a coin slug, extract the nickname part
+      const nickname = segment.replace(/^\d+-/, "")
       const cleanLabel = nickname
         .split("-")
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ")
+
       breadcrumbs.push({ label: cleanLabel, href: currentPath })
-      return
+    } else {
+      // Convert segment to readable label
+      const label = segment
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+
+      breadcrumbs.push({ label, href: currentPath })
     }
-
-    // Convert segment to readable label
-    const label = segment
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")
-
-    breadcrumbs.push({ label, href: currentPath })
   })
 
   return breadcrumbs
@@ -70,6 +64,7 @@ export function Breadcrumb({ className, items }: BreadcrumbProps) {
   // Don't show breadcrumbs on home page
   if (pathname === "/") return null
 
+  // Use provided items or generate from URL
   const breadcrumbs = items ?? generateBreadcrumbs(pathname)
 
   return (
@@ -117,7 +112,7 @@ export const BreadcrumbList = ({
   <ol className={cn("flex items-center space-x-1", className)}>{children}</ol>
 )
 
-export const BreadcrumbItem = ({
+export const BreadcrumbListItem = ({
   children,
   className,
 }: {

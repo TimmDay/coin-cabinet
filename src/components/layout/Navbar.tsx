@@ -81,7 +81,7 @@ export default function Navbar() {
         break
       case "ArrowUp":
         event.preventDefault()
-        // Open dropdown if closed  
+        // Open dropdown if closed
         if (openMainDropdown !== itemName) {
           setOpenMainDropdown(itemName)
         }
@@ -172,7 +172,7 @@ export default function Navbar() {
     }
   }
 
-    // Cleanup timeouts on unmount
+  // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
       if (submenuTimeoutRef.current) {
@@ -188,7 +188,7 @@ export default function Navbar() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
-      if (!target.closest('[data-dropdown]')) {
+      if (!target.closest("[data-dropdown]")) {
         setOpenMainDropdown(null)
         setOpenSubmenu(null)
       }

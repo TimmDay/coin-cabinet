@@ -3,6 +3,11 @@
 ## Next Thing
 
 - [ ] research expanded latin and translation text for legends.
+- [ ] tidy up all the random ai generated fluff text
+- [ ] go through 10 flavour texts and really write them nice
+- [ ] another 1o flavour texts
+- [ ] do up the home/welcome page
+- [ ] find good public images to be the face of each 'set' (as I have defined them).
 
 ### Mints Table
 

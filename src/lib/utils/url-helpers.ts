@@ -17,12 +17,12 @@ export function sanitizeNickname(nickname: string): string {
 
 /**
  * Generates a human-readable URL for a coin
- * Format: /coin/123-marcus-aurelius-denarius
+ * Format: /cabinet/123-marcus-aurelius-denarius
  */
 export function generateCoinUrl(
   id: number,
   nickname: string,
-  basePath = "/coin",
+  basePath = "/cabinet",
 ): string {
   const sanitized = sanitizeNickname(nickname)
   return `${basePath}/${id}-${sanitized}`
