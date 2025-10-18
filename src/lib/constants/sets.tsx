@@ -38,24 +38,28 @@ const crisisSet = {
   href: "/cabinet/crisis",
   description:
     "Numismatic evidence from the Crisis of the Third Century, reflecting the political and economic turmoil of the Roman Empire.",
+  image: pickRandomImage(crisisImages),
 }
 const tetrachySet = {
   name: "Tetrachy",
   href: "/cabinet/tetrachy",
   description:
     "Coins from Diocletian's revolutionary four-ruler system that stabilized the empire and reformed its administration.",
+  image: pickRandomImage(tetrachyImages),
 }
 const constantinianSet = {
   name: "Constantinian",
   href: "/cabinet/constantinian",
   description:
     "The transformative period of Constantine the Great, including the first Christian symbols on Roman coinage.",
+  image: pickRandomImage(constantinianImages),
 }
 const hoardsSet = {
   name: "Hoards",
   href: "/cabinet/hoards",
   description:
     "Archaeological treasure finds that provide insight into ancient economic conditions and coin circulation patterns.",
+  image: pickRandomImage(hoardsImages),
 }
 
 export const featuredSets = [severanSet, gordySet, imperialWomenSet]

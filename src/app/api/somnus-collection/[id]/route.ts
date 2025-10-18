@@ -8,8 +8,10 @@ type UpdateData = {
   nickname?: string
   legend_o?: string | null
   legend_o_expanded?: string | null
+  legend_o_translation?: string | null
   legend_r?: string | null
   legend_r_expanded?: string | null
+  legend_r_translation?: string | null
   flavour_text?: string | null
 }
 
@@ -27,8 +29,10 @@ export async function PUT(
       nickname,
       legend_o,
       legend_o_expanded,
+      legend_o_translation,
       legend_r,
       legend_r_expanded,
+      legend_r_translation,
       flavour_text,
     } = body
 
@@ -38,9 +42,13 @@ export async function PUT(
     if (legend_o !== undefined) updateData.legend_o = legend_o
     if (legend_o_expanded !== undefined)
       updateData.legend_o_expanded = legend_o_expanded
+    if (legend_o_translation !== undefined)
+      updateData.legend_o_translation = legend_o_translation
     if (legend_r !== undefined) updateData.legend_r = legend_r
     if (legend_r_expanded !== undefined)
       updateData.legend_r_expanded = legend_r_expanded
+    if (legend_r_translation !== undefined)
+      updateData.legend_r_translation = legend_r_translation
     if (flavour_text !== undefined) updateData.flavour_text = flavour_text
 
     // Update the item in the database

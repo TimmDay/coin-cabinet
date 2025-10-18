@@ -7,8 +7,10 @@ type SomnusItem = {
   nickname: string | null
   legend_o: string | null
   legend_o_expanded: string | null
+  legend_o_translation: string | null
   legend_r: string | null
   legend_r_expanded: string | null
+  legend_r_translation: string | null
   flavour_text: string | null
   created_at: string
   updated_at: string
@@ -106,8 +108,10 @@ export function EditSomnusView() {
         nickname: item.nickname,
         legend_o: item.legend_o,
         legend_o_expanded: item.legend_o_expanded,
+        legend_o_translation: item.legend_o_translation,
         legend_r: item.legend_r,
         legend_r_expanded: item.legend_r_expanded,
+        legend_r_translation: item.legend_r_translation,
         flavour_text: item.flavour_text,
       }
 
@@ -208,20 +212,36 @@ export function EditSomnusView() {
       ) : (
         <div className="artemis-card p-6">
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
+            <table className="w-full min-w-[1600px] border-collapse">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="p-3 text-left font-semibold">Nickname</th>
-                  <th className="p-3 text-left font-semibold">Legend O</th>
-                  <th className="p-3 text-left font-semibold">
+                  <th className="sticky left-0 z-10 min-w-[120px] border-r border-gray-200 bg-slate-800 p-3 text-left font-semibold">
+                    Nickname
+                  </th>
+                  <th className="min-w-[120px] p-3 text-left font-semibold">
+                    Legend O
+                  </th>
+                  <th className="min-w-[180px] p-3 text-left font-semibold">
                     Legend O Expanded
                   </th>
-                  <th className="p-3 text-left font-semibold">Legend R</th>
-                  <th className="p-3 text-left font-semibold">
+                  <th className="min-w-[160px] p-3 text-left font-semibold">
+                    Legend O Translation
+                  </th>
+                  <th className="min-w-[120px] p-3 text-left font-semibold">
+                    Legend R
+                  </th>
+                  <th className="min-w-[180px] p-3 text-left font-semibold">
                     Legend R Expanded
                   </th>
-                  <th className="p-3 text-left font-semibold">Flavour Text</th>
-                  <th className="p-3 text-left font-semibold">Actions</th>
+                  <th className="min-w-[160px] p-3 text-left font-semibold">
+                    Legend R Translation
+                  </th>
+                  <th className="min-w-[150px] p-3 text-left font-semibold">
+                    Flavour Text
+                  </th>
+                  <th className="sticky right-0 z-10 min-w-[120px] border-l border-gray-200 bg-slate-800 p-3 text-center font-semibold">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -235,7 +255,13 @@ export function EditSomnusView() {
                         : "hover:bg-gray-600 hover:text-white") // dark grey for hover
                     }
                   >
-                    <td className="p-3">
+                    <td
+                      className={`sticky left-0 z-10 border-r border-gray-200 p-3 ${
+                        item.isEditing
+                          ? "bg-gray-700 text-white" // match editing row color and text
+                          : "bg-slate-800 hover:bg-gray-600 hover:text-white"
+                      }`}
+                    >
                       {item.isEditing ? (
                         <input
                           type="text"
@@ -296,6 +322,27 @@ export function EditSomnusView() {
                     </td>
                     <td className="p-3">
                       {item.isEditing ? (
+                        <textarea
+                          value={item.legend_o_translation ?? ""}
+                          onChange={(e) =>
+                            handleFieldChange(
+                              item.id,
+                              "legend_o_translation",
+                              e.target.value,
+                            )
+                          }
+                          className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                          placeholder="Legend O Translation"
+                          rows={2}
+                        />
+                      ) : (
+                        <span className="text-sm">
+                          {item.legend_o_translation ?? "—"}
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-3">
+                      {item.isEditing ? (
                         <input
                           type="text"
                           value={item.legend_r ?? ""}
@@ -337,6 +384,27 @@ export function EditSomnusView() {
                     <td className="p-3">
                       {item.isEditing ? (
                         <textarea
+                          value={item.legend_r_translation ?? ""}
+                          onChange={(e) =>
+                            handleFieldChange(
+                              item.id,
+                              "legend_r_translation",
+                              e.target.value,
+                            )
+                          }
+                          className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                          placeholder="Legend R Translation"
+                          rows={2}
+                        />
+                      ) : (
+                        <span className="text-sm">
+                          {item.legend_r_translation ?? "—"}
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-3">
+                      {item.isEditing ? (
+                        <textarea
                           value={item.flavour_text ?? ""}
                           onChange={(e) =>
                             handleFieldChange(
@@ -355,8 +423,14 @@ export function EditSomnusView() {
                         </span>
                       )}
                     </td>
-                    <td className="p-3">
-                      <div className="flex gap-2">
+                    <td
+                      className={`sticky right-0 z-10 border-l border-gray-200 p-3 ${
+                        item.isEditing
+                          ? "bg-gray-700 text-white" // match editing row color and text
+                          : "bg-slate-800 hover:bg-gray-600 hover:text-white"
+                      }`}
+                    >
+                      <div className="flex justify-center gap-2">
                         {item.isEditing ? (
                           <>
                             <button
