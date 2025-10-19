@@ -87,6 +87,7 @@ export function CoinInfoModal({
   const [isFlipFading, setIsFlipFading] = useState(false)
   const imageRef = useRef<HTMLDivElement>(null)
   const { isMobile } = useViewport()
+  const deepDiveMessage = "DEEP DIVE"
 
   // Refs for chevron buttons
   const previousButtonRef = useRef<HTMLButtonElement>(null)
@@ -541,7 +542,7 @@ export function CoinInfoModal({
                       }}
                       className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
                     >
-                      MORE INFO
+                      {deepDiveMessage}
                     </button>
                   )}
 
@@ -599,7 +600,7 @@ export function CoinInfoModal({
                       }}
                       className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
                     >
-                      MORE INFO
+                      {deepDiveMessage}
                     </button>
                   )}
 

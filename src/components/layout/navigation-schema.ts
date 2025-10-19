@@ -22,12 +22,12 @@ export const adminSubmenu = [
 export const cabinetSubmenu = [
   { name: "Roman", href: "/cabinet/roman", hasSubmenu: true },
   { name: "Greek", href: "/cabinet/greek" },
-  { name: "All Coins", href: "/cabinet" },
+  { name: "All Coins", href: "/cabinet/all-coins" },
 ]
 
 export const cabinetRomanSubmenu = [
   { name: "Severan Dynasty", href: "/cabinet/severan-dynasty" },
-  { name: "Gordy Boy", href: "/cabinet/gordy-boys" },
+  { name: "Gordy Boys", href: "/cabinet/gordy-boys" },
   { name: "Crisis", href: "/cabinet/crisis" },
   { name: "Imperial Women", href: "/cabinet/imperial-women" },
   { name: "Tetrachy", href: "/cabinet/tetrachy" },

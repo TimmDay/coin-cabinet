@@ -280,7 +280,7 @@ export default function Navbar() {
 
                   {openMainDropdown === item.name && (
                     <div
-                      className="somnus-card z-dropdown absolute top-full left-0 -mt-0.5 min-w-max pt-0.5 shadow-lg"
+                      className="somnus-card z-dropdown absolute top-full left-0 min-w-max shadow-lg"
                       role="menu"
                       onMouseEnter={() => handleMainDropdownEnter(item.name)}
                       onMouseLeave={handleMainDropdownLeave}

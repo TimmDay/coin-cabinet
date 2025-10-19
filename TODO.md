@@ -3,20 +3,23 @@
 ## Next Thing
 
 - [ ] research expanded latin and translation text for legends.
-- [ ] tidy up all the random ai generated fluff text
-- [ ] go through 10 flavour texts and really write them nice
-- [ ] another 1o flavour texts
-- [ ] do up the home/welcome page
-- [ ] find good public images to be the face of each 'set' (as I have defined them).
 
 ### Mints Table
 
-- [ ] make a mint db table. It will need mint_name, lat, lng, roman territory, country (modern), notes (historical info), year_open, year_close, second_year_open, second_year_close, secondary_name, list of known operators {name, year range}, founding emperor, reason close, notes. Make a form for adding to it and have this in the admin menu
+- [ ] make a mint db table. It will need mint_name, lat, lng, roman territory, country (modern), notes (historical info), year_open, year_close, second_year_open, second_year_close, secondary_name, list of known operators/procurators {name, year range, note}, founding emperor, reason close, notes. Make a form for adding to it and have this in the admin menu
 
 ### Roman Territories Table
 
+- [ ] collect GeoJSON data for every roman province that existed during the time of LABEO (republican coin). make a toggle-able map layer for these boundaries
 - [ ] collect GeoJSON data for every roman province that ever existed, along with dates of existence, fact_check_sources, list of governors with dates (as available)
-- [ ] find sources for the above
+- [ ] note the sources for the above
+
+### Emperor Timelines Table
+
+The goal of this is provide 'pins on the map'. Important events during the emperors life (ie birthplace, death place, campaigns), important locations (archaeology finds, constructions), and somnus-collection coin locations (mints, discovery locations). Also modern tourism locations (museums with choice pieces, ruins, sites available to the public).
+
+- [ ] make an emperors table.
+      emperor_name, reign_start_year, reign_end_year, birth_year, death_year, dynasty, notes, important_events {event_name, event_year, event_location: [lat,lng] or geojson[], event_description, event_reference, event_image_link?}
 
 ### MAP Component
 
@@ -25,10 +28,23 @@
 - [ ] special pin for the selected coin mint, map centers on it.
 - [ ] special pin for find location, for the few coins that have provenance into the ground (ie hoards, metal detector finds).
 
+### Map page
+
+- leaflet. coins in collection displayed at mint. circle over mint in size proportional to number of coins in collection are from there.
+- [ ] full set of filters
+
+### About page
+
+- [ ] welcome to site
+- [ ] link to Services page.
+- [ ] state stance on ads
+- [ ] state stance on AI
+- [ ] why i love collecting ancients
+
 ### UI
 
 - [ ] make an alternative for dropdown menus for mobile
-- [ ] Sets master page has link cards that show all the sets (with a title image) and link to the set page. Have a cover image
+
 - [ ] sets pages (focus on severan) have unique layouts and a set ordered list of coins in that set. (like a drawer with recesses for each coin)
 
 CoinDetailPage
@@ -145,11 +161,15 @@ Set list, but main feature is a 'wooden' drawer with the coin images laid out as
 - [ ] remove references to t3 app (icons links to docs, stuff that could confuse AIs)
 - [ ] unneeded console logs
 - [ ] unneeded comments
+- [ ] tidy up all the random ai generated fluff text
+- [ ] go through 10 flavour texts and really write them nice
+- [ ] another 1o flavour texts
+- [ ] do up the home/welcome page
+- [ ] find good public images to be the face of each 'set' (as I have defined them).
+- [ ] work out a data format and way to store non-coin image links along with alt text, photo credit, item name, item desc, vintage year, moreInfoLink, location of item, caption
 
 - [ ] Admin page
-  - upload locked behind auth
   - I can upload a photo
-  - fill in a form of info for that coin
   - drag and drop customisable drawer builder
 
 ### blog page
@@ -177,19 +197,6 @@ articles, guides
 - [ ] interactive map component (for showing mint location and significant places)
 
 - [ ] JC 'aside'
-
-### About page
-
-- [ ] welcome to site
-- [ ] link to Services page.
-- [ ] state stance on ads
-- [ ] state stance on AI
-- [ ] why i love collecting ancients
-
-### Map page
-
-- mapbox. coins in collection displayed at mint. circle over mint in size proportional to number of coins in collection are from there.
-- [ ] full set of filters
 
 - [ ] future: users can signup/signin in order to create their own coin collection (table) and upload exclusively to that one (and view it)?
 
@@ -241,3 +248,6 @@ articles, guides
   - admin/edit-somnus (view/edit somnus entries)
     - this will name just a few col for now. Nickname, legend, legend_expanded, legend translation and flavour_text
 - [x] hook up specific menus to filtered db requests.
+- [x] upload locked behind auth
+- [x] fill in a form of info for that coin
+- [x] Sets master page has link cards that show all the sets (with a title image) and link to the set page. Have a cover image

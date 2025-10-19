@@ -4,9 +4,11 @@ const severanImages = [
 ]
 const gordyImages = ["z_bust-gordianus-iii-louvre-ma1063-ba2c6c-1024_2"]
 const imperialWomenImages = ["z_Julia_Domna_marble_bust_Yale_1920x1080"]
-const crisisImages = [""]
-const tetrachyImages = [""]
-const constantinianImages = [""]
+const crisisImages = ["z_PhilipItheArabjpg"]
+const tetrachyImages = [
+  "z_7952_-_Venezia_-_Tetrarchi_in_Piazza_San_Marco_-_Foto_Giovanni_Dall_Orto_8-Aug-2007",
+]
+const constantinianImages = ["z_helena_pubdom"]
 const hoardsImages = [""]
 
 const severanSet = {
@@ -21,7 +23,7 @@ const gordySet = {
   name: "Gordy Boys",
   href: "/cabinet/gordy-boys",
   description:
-    "A curated collection highlighting the artistic and historical significance of coins from this distinctive period.",
+    "From the ashes of the Thrax panic rose Gordian III. Many coins were minted. The Crisis was underway.",
   image: pickRandomImage(gordyImages),
 }
 
@@ -37,7 +39,7 @@ const crisisSet = {
   name: "Crisis",
   href: "/cabinet/crisis",
   description:
-    "Numismatic evidence from the Crisis of the Third Century, reflecting the political and economic turmoil of the Roman Empire.",
+    "Turmoil in the Crisis of the Third Century. A rapid succession of emperors and usurpers and their coins reflect the political instability and economic decline.",
   image: pickRandomImage(crisisImages),
 }
 const tetrachySet = {
