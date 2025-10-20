@@ -75,7 +75,7 @@ export function CoinCardGridItem({
 
     // On mobile, let container shrink to image size
     if (isMobile) {
-      return "w-[270px] m-4" // Fixed width, dynamic height, 8px margin
+      return "w-[270px] mt-4" // Fixed width, dynamic height
     }
 
     // On desktop, keep fixed size for consistent grid alignment

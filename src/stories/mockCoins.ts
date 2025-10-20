@@ -237,3 +237,43 @@ export const mockCoinWithoutSketches = {
   legendExpandedR: "Q(uintus) Fabi(us)",
   legendTranslationR: "",
 }
+
+export const threeMockCoins = [
+  {
+    id: 66,
+    nickname: "Faustina II",
+    civ: "Roman Imperial",
+    denomination: "Sestertius",
+    mintYearEarliest: 161,
+    mintYearLatest: 176,
+    obverseImageId:
+      "20250820__faustina-ii-sestertius__o__src-imperial-numismatics",
+    reverseImageId:
+      "20250820__faustina-ii-sestertius__r__src-imperial-numismatics",
+    diameter: 32.8,
+  },
+  {
+    id: 74,
+    nickname: "Marcus Aurelius",
+    civ: "Roman Imperial",
+    denomination: "Denarius",
+    mintYearEarliest: 220,
+    mintYearLatest: 222,
+    obverseImageId: "20251002__elagabalus-denarius__o__src-the-coin-cabinet",
+    reverseImageId: "20251002__elagabalus-denarius__r__src-the-coin-cabinet",
+    diameter: 19,
+  },
+  {
+    id: 95,
+    nickname: "Constantius I Chlorus (Rauceby Hoard)",
+    civ: "Roman Imperial",
+    denomination: "Follis",
+    mintYearEarliest: 295,
+    mintYearLatest: 295,
+    obverseImageId:
+      "20250904__constantius-i-chlorus-rauceby-hoard-follis__o__src-noonans-mayfair",
+    reverseImageId:
+      "20250904__constantius-i-chlorus-rauceby-hoard-follis__r__src-noonans-mayfair",
+    diameter: 29.2,
+  },
+]

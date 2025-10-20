@@ -1,6 +1,8 @@
 type PageTitleProps = {
   /** The main text of the title */
   children: string
+  /** Optional subtitle text */
+  subtitle?: string
   /** Additional CSS classes */
   className?: string
   /** Use purple accent instead of gold for auth pages */
@@ -9,6 +11,7 @@ type PageTitleProps = {
 
 export function PageTitle({
   children,
+  subtitle,
   className = "",
   authPage = false,
 }: PageTitleProps) {
@@ -38,6 +41,11 @@ export function PageTitle({
           )
         })}
       </h1>
+
+      {/* Subtitle */}
+      {subtitle && (
+        <p className="mt-4 text-center text-lg text-slate-400">{subtitle}</p>
+      )}
 
       {/* Underline border - 300px wide */}
       <div className="mt-9 h-px w-[300px] bg-gradient-to-r from-transparent via-slate-600 to-transparent"></div>

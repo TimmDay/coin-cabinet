@@ -23,13 +23,13 @@
 :root {
   /* Primary - Deep slate blue/navy inspired by Somnus */
   --background: 218 23% 11%; /* Deep dark blue-gray */
-  --foreground: 210 15% 92%; /* Warm off-white */
+  --foreground: 210 15% 96%; /* Brighter warm off-white */
 
   /* Cards and surfaces */
   --card: 217 25% 14%; /* Slightly lighter than background */
-  --card-foreground: 210 15% 92%;
+  --card-foreground: 210 15% 96%;
   --popover: 217 25% 14%;
-  --popover-foreground: 210 15% 92%;
+  --popover-foreground: 210 15% 96%;
 
   /* Primary accent - Warm bronze/gold inspired by ancient coins */
   --primary: 36 45% 50%; /* Rich bronze/gold */
@@ -45,15 +45,15 @@
 
   /* Accent - Warm copper/amber tones */
   --accent: 25 55% 45%; /* Warm copper accent */
-  --accent-foreground: 210 15% 92%;
+  --accent-foreground: 210 15% 96%;
 
   /* Auth accent - Purple accent for auth-related elements */
   --auth-accent: 273 76% 76%; /* Purple-300 equivalent */
-  --auth-accent-foreground: 210 15% 92%;
+  --auth-accent-foreground: 210 15% 96%;
 
   /* Destructive - Warm red that fits the palette */
   --destructive: 0 65% 55%;
-  --destructive-foreground: 210 15% 92%;
+  --destructive-foreground: 210 15% 96%;
 
   /* Borders and inputs */
   --border: 216 15% 25%; /* Subtle border color */
@@ -129,6 +129,12 @@ main {
 .coin-description {
   line-height: 1.7;
   color: hsl(var(--muted-foreground));
+}
+
+.body-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: hsl(var(--foreground));
 }
 
 /* Elegant card styling */
