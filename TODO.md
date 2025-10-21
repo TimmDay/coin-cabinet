@@ -43,8 +43,13 @@ The goal of this is provide 'pins on the map'. Important events during the emper
 
 ### UI
 
-- [ ] make an alternative for dropdown menus for mobile
+- [ ] EmbeddedLink component (used within blog text etc)
+- [ ] Aside component. variants: alert, info (used within blog text etc)
+- [ ] Blog post layout. Table of content to the right (desktop only)
+- [ ] Last updated date component for blog posts
+- [ ] HitCounter component for blog posts (shows views)
 
+- [ ] make an alternative for dropdown menus for mobile
 - [ ] sets pages (focus on severan) have unique layouts and a set ordered list of coins in that set. (like a drawer with recesses for each coin)
 
 CoinDetailPage
@@ -57,6 +62,8 @@ CoinDetailPage
 - all images can be blown up in a modal
 - image bar? like an in-page nav? sketches | ultra zoom | 3D coin
 - [ ] somewhere for supporting or interesting imagery (ie Severan Tondo, Philip I banknote)
+
+CoinGrid
 
 - [ ] CoinGrid - work out what filters I want, and how to display them (dropdown)
 - [ ] do the filters for mobile as well
@@ -139,8 +146,8 @@ Set list, but main feature is a 'wooden' drawer with the coin images laid out as
 
 ### features inf
 
+- [ ] robots.txt
 - [ ] consider react context. Maybe need it for view (obv,rev,both), drawer preference (wood,red felt, blue felt), maybe some filters make sense (denomination)?
-
 - [ ] i18n. Make a system for translating everything to German to start (French/Spanish/Portuguese).
 - [ ] Analytics.
 - [ ] Ratelimiting.
