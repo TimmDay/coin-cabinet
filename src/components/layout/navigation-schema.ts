@@ -17,6 +17,7 @@ export const adminSubmenu = [
   { name: "Edit Somnus", href: "/admin/edit-somnus" },
   { name: "Edit Map", href: "/admin/edit-map" },
   { name: "Edit Mints", href: "/admin/edit-mints" },
+  { name: "Feature Flags", href: "/admin/feature-flags" },
 ]
 
 export const cabinetSubmenu = [
@@ -37,6 +38,11 @@ export const cabinetRomanSubmenu = [
 
 export const articlesSubmenu = [
   { name: "Year in coins", href: "/articles/year-in-coins", hasSubmenu: true },
+]
+
+// Feature-flagged articles that require dev mode
+export const devArticlesSubmenu = [
+  { name: "Caracalla and Geta", href: "/articles/caracalla-and-geta" },
 ]
 
 export const yearInCoinsSubmenu = [

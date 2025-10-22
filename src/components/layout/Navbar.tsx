@@ -5,12 +5,14 @@ import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { UserMenu } from "~/components/auth/UserMenu"
 import { useAuth } from "~/components/providers/auth-provider"
+import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { cn } from "~/lib/utils"
 import {
   adminSubmenu,
   articlesSubmenu,
   cabinetRomanSubmenu,
   cabinetSubmenu,
+  devArticlesSubmenu,
   navigationItems,
   yearInCoinsSubmenu,
   type SubmenuTypes,
@@ -21,6 +23,7 @@ export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const { user } = useAuth()
+  const isDevMode = useTypedFeatureFlag("dev")
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null)
   const [openMainDropdown, setOpenMainDropdown] = useState<string | null>(null)
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -164,7 +167,10 @@ export default function Navbar() {
       case "Cabinet":
         return cabinetSubmenu
       case "Articles":
-        return articlesSubmenu
+        // Combine regular articles with dev articles if feature flag is enabled
+        return isDevMode
+          ? [...articlesSubmenu, ...devArticlesSubmenu]
+          : articlesSubmenu
       case "Admin":
         return adminSubmenu
       default:

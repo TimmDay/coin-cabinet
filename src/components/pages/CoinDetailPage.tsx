@@ -1,5 +1,6 @@
 "use client"
 
+import { EmbeddedCaracallaGettaBlog } from "~/components/EmbeddedCaracallaGettaBlog"
 import { PageTitle } from "~/components/ui/PageTitle"
 import { CoinDeepDive } from "~/components/ui/coin-detail-page"
 import { useSomnusCoins } from "~/lib/api/somnus-collection"
@@ -53,6 +54,11 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
     )
   }
 
+  // Check if this coin is related to Caracalla
+  const isCaracallaCoin =
+    coin.nickname?.toLowerCase().includes("caracalla") ||
+    coin.authority?.toLowerCase().includes("caracalla")
+
   return (
     <main className="min-h-screen" data-coin-detail-page>
       <div className="container mx-auto px-4 py-16">
@@ -63,6 +69,9 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
 
           {/* Unified Layout: Everything in CoinDeepDive */}
           <CoinDeepDive coin={coin} />
+
+          {/* Show Caracalla and Geta blog post for Caracalla coins */}
+          {isCaracallaCoin && <EmbeddedCaracallaGettaBlog />}
         </div>
       </div>
     </main>
