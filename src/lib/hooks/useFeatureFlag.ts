@@ -15,10 +15,10 @@ export function useFeatureFlag(flagName: FeatureFlagName) {
   useEffect(() => {
     // Safely check URL params without causing SSR issues
     const checkUrlParams = () => {
-      if (typeof window === 'undefined') return null
+      if (typeof window === "undefined") return null
       try {
         const params = new URLSearchParams(window.location.search)
-        return params.get('feat')
+        return params.get("feat")
       } catch {
         return null
       }

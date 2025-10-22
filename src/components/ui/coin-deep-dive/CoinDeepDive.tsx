@@ -1,6 +1,5 @@
 "use client"
 
-import { formatYearRange } from "~/lib/utils/date-formatting"
 import { CoinSketchCompare } from "../CoinSketchCompare"
 
 type CoinDeepDiveProps = {
@@ -32,65 +31,13 @@ type CoinDeepDiveProps = {
   }
 }
 
-function CoinDetailsSection({ coin }: { coin: CoinDeepDiveProps["coin"] }) {
-  // Build civilization text
-  const civText = coin.civ_specific
-    ? `${coin.civ.toUpperCase()}-${coin.civ_specific}`
-    : coin.civ.toUpperCase()
-
-  // Build mint and year text using the utility function
-  const mintText = coin.mint
-  const yearDisplay = formatYearRange(
-    coin.mint_year_earliest,
-    coin.mint_year_latest,
-  )
-  const yearText = yearDisplay || null
-
-  // Build specs line (diameter | mass | die axis) - excluding reference
-  const specs = [
-    coin.diameter ? `${coin.diameter}mm` : null,
-    coin.mass ? `${coin.mass}g` : null,
-    coin.die_axis,
-  ].filter(Boolean)
-
+function FlavorFooter({ coin }: { coin: CoinDeepDiveProps["coin"] }) {
   return (
-    <section className="artemis-card h-fit p-4">
-      <div className="space-y-1 text-center">
-        {/* Line 1: [Mint] ([mint year]) [denomination] | [diameter] | [mass] | [die axis] */}
-        <div className="tracking-wide">
-          {mintText && (
-            <span className="mr-1 text-sm text-slate-400">{mintText}</span>
-          )}
-          {yearText && (
-            <span className="mr-2 text-sm text-slate-400">{yearText}</span>
-          )}
-          <span className="text-lg font-medium text-slate-200">
-            {coin.denomination.toUpperCase()}
-          </span>
-          {specs.length > 0 && (
-            <span className="ml-2 text-sm text-slate-500">
-              {specs.join(" | ")}
-            </span>
-          )}
-        </div>
-
-        {/* Line 2: [civ][-civ_specific] [reference] */}
-        <div className="text-sm text-slate-400">
-          {civText}
-          {coin.reference && (
-            <span className="ml-2 text-slate-500">{coin.reference}</span>
-          )}
-        </div>
-      </div>
-
-      {coin.flavour_text && (
-        <footer className="mt-4 border-t border-slate-600 pt-4">
-          <p className="text-xs leading-relaxed break-words text-slate-400 italic">
-            {coin.flavour_text}
-          </p>
-        </footer>
-      )}
-    </section>
+    <footer className="mt-4 border-t border-slate-600 pt-4">
+      <p className="text-xs leading-relaxed break-words text-slate-400 italic">
+        {coin.flavour_text}
+      </p>
+    </footer>
   )
 }
 
@@ -130,7 +77,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       <MapPlaceholder />
 
       {/* Coin Details */}
-      <CoinDetailsSection coin={coin} />
+      {coin.flavour_text && <FlavorFooter coin={coin} />}
     </section>
   )
 }

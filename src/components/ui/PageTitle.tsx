@@ -48,7 +48,7 @@ export function PageTitle({
       )}
 
       {/* Underline border - 300px wide */}
-      <div className="mt-9 h-px w-[300px] bg-gradient-to-r from-transparent via-slate-600 to-transparent"></div>
+      <div className="mt-6 h-px w-[300px] bg-gradient-to-r from-transparent via-slate-600 to-transparent"></div>
     </div>
   )
 }

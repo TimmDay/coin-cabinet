@@ -4,6 +4,18 @@
 
 - [ ] research expanded latin and translation text for legends.
 
+### Quick Notes
+
+- [ ] decide whether to have a 'modern' set. Where to put the philip note.
+- [ ] deep dive page, on large monitors the coins are too spread out
+- [ ] deep dive page. font sizes and colors are all over the place
+- [ ] hide year in coins 2026 and 2027 behind flag
+- [ ] more time on home page
+- [ ] take photos / blog post about my camera set up
+- [ ] cloudinary. Worth compressing everything in there before it gets too big? Work out any cost benefit.
+- [ ] blog post titles (on page) take the post title, not 'articles'
+- [ ] embedded BP components
+
 ### Mints Table
 
 - [ ] make a mint db table. It will need mint_name, lat, lng, roman territory, country (modern), notes (historical info), year_open, year_close, second_year_open, second_year_close, secondary_name, list of known operators/procurators {name, year range, note}, founding emperor, reason close, notes. Make a form for adding to it and have this in the admin menu

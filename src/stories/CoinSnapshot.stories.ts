@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs"
-import { CoinSnapshot } from "../components/ui/CoinSnapshot"
+import { CoinSnapshot } from "../components/ui/coin-deep-dive/CoinSnapshot"
 
 const meta = {
   title: "Components/CoinSnapshot",

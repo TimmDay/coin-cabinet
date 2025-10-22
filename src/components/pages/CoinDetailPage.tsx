@@ -1,8 +1,9 @@
 "use client"
 
 import { EmbeddedCaracallaGettaBlog } from "~/components/EmbeddedCaracallaGettaBlog"
-import { PageTitle } from "~/components/ui/PageTitle"
-import { CoinDeepDive } from "~/components/ui/coin-detail-page"
+import { PageTitleWithSnapshot } from "~/components/ui/PageTitleWithSnapshot"
+import { CoinDeepDive } from "~/components/ui/coin-deep-dive"
+import { CoinSnapshot } from "~/components/ui/coin-deep-dive/CoinSnapshot"
 import { useSomnusCoins } from "~/lib/api/somnus-collection"
 
 type CoinDetailPageProps = {
@@ -63,8 +64,26 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
     <main className="min-h-screen" data-coin-detail-page>
       <div className="container mx-auto px-4 py-16">
         <div className="mt-8">
-          <header className="mb-8 text-center">
-            <PageTitle>{coin.nickname ?? "Ancient Coin"}</PageTitle>
+          <header className="mb-8">
+            <PageTitleWithSnapshot
+              coinSnapshot={
+                <CoinSnapshot
+                  civ={coin.civ}
+                  civSpecific={coin.civ_specific}
+                  mint={coin.mint}
+                  mintYearEarliest={coin.mint_year_earliest}
+                  mintYearLatest={coin.mint_year_latest}
+                  diameter={coin.diameter}
+                  mass={coin.mass}
+                  dieAxis={coin.die_axis}
+                  reference={coin.reference}
+                  provenance={coin.provenance}
+                />
+              }
+              subtitle={coin.denomination}
+            >
+              {coin.nickname ?? "Ancient Coin"}
+            </PageTitleWithSnapshot>
           </header>
 
           {/* Unified Layout: Everything in CoinDeepDive */}

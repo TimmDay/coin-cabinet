@@ -3,7 +3,7 @@
 import { useState } from "react"
 import CloudinaryImage from "~/components/CloudinaryImage"
 import { FormattedLegendExpanded } from "~/lib/components"
-import { ImageModal } from "./coin-detail-page/ImageModal"
+import { ImageModal } from "./coin-deep-dive/ImageModal"
 
 type CoinSketchCompareProps = {
   imageLinkO: string
@@ -14,6 +14,8 @@ type CoinSketchCompareProps = {
   legendTranslationO?: string | null
   legendExpandedR?: string | null
   legendTranslationR?: string | null
+  descO?: string | null
+  descR?: string | null
 }
 
 function CoinImagePair({
@@ -22,12 +24,14 @@ function CoinImagePair({
   side,
   legendExpanded,
   legendTranslation,
+  description,
 }: {
   mainImage: string
   sketchImage?: string | null
   side: "obverse" | "reverse"
   legendExpanded?: string | null
   legendTranslation?: string | null
+  description?: string | null
 }) {
   const hasSketch = sketchImage != null
 
@@ -73,6 +77,11 @@ function CoinImagePair({
             {legendTranslation}
           </p>
         )}
+        {description && (
+          <p className="mt-2 text-sm leading-relaxed break-words text-slate-300 italic">
+            {description}
+          </p>
+        )}
       </div>
     </div>
   )
@@ -87,6 +96,8 @@ export function CoinSketchCompare({
   legendTranslationO,
   legendExpandedR,
   legendTranslationR,
+  descO,
+  descR,
 }: CoinSketchCompareProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalSide, setModalSide] = useState<"obverse" | "reverse">("obverse")
@@ -108,6 +119,7 @@ export function CoinSketchCompare({
               side="obverse"
               legendExpanded={legendExpandedO}
               legendTranslation={legendTranslationO}
+              description={descO}
             />
           </div>
 
@@ -119,12 +131,13 @@ export function CoinSketchCompare({
               side="reverse"
               legendExpanded={legendExpandedR}
               legendTranslation={legendTranslationR}
+              description={descR}
             />
           </div>
         </div>
 
         {/* Desktop: Side-by-Side Layout with Grid */}
-        <div className="hidden lg:grid lg:grid-cols-2 lg:grid-rows-[auto_auto_auto_auto] lg:items-center lg:gap-x-6 lg:gap-y-4">
+        <div className="hidden lg:grid lg:grid-cols-2 lg:grid-rows-[auto_auto_auto_auto_auto] lg:items-center lg:gap-x-6 lg:gap-y-4">
           {/* Row 1: Obverse Images */}
           <div className="flex justify-center">
             <div
@@ -219,6 +232,24 @@ export function CoinSketchCompare({
             {legendTranslationR && (
               <p className="text-xs break-words text-slate-400 lg:text-sm">
                 {legendTranslationR}
+              </p>
+            )}
+          </div>
+
+          {/* Row 4: Obverse Description */}
+          <div className="mx-auto w-full max-w-[480px] self-center text-center">
+            {descO && (
+              <p className="mt-2 text-sm leading-relaxed break-words text-slate-300 italic">
+                {descO}
+              </p>
+            )}
+          </div>
+
+          {/* Row 4: Reverse Description */}
+          <div className="mx-auto w-full max-w-[480px] self-center text-center">
+            {descR && (
+              <p className="mt-2 text-sm leading-relaxed break-words text-slate-300 italic">
+                {descR}
               </p>
             )}
           </div>

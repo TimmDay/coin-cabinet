@@ -25,21 +25,28 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
   // Fetch coins from database (already filtered for obverse images at DB level)
   const { data: coins, isLoading, error } = useSomnusCoins()
 
-  // Filter coins by set and/or civilization
-  const filteredCoins = (coins ?? []).filter((coin) => {
-    let matchesSet = true
-    let matchesCiv = true
+  // Filter coins by set and/or civilization, then sort by mint_year_earliest
+  const filteredCoins = (coins ?? [])
+    .filter((coin) => {
+      let matchesSet = true
+      let matchesCiv = true
 
-    if (filterSet) {
-      matchesSet = coin.sets?.includes(filterSet) ?? false
-    }
+      if (filterSet) {
+        matchesSet = coin.sets?.includes(filterSet) ?? false
+      }
 
-    if (filterCiv) {
-      matchesCiv = coin.civ === filterCiv
-    }
+      if (filterCiv) {
+        matchesCiv = coin.civ === filterCiv
+      }
 
-    return matchesSet && matchesCiv
-  })
+      return matchesSet && matchesCiv
+    })
+    .sort((a, b) => {
+      // Sort by mint_year_earliest (ascending order - oldest first)
+      const yearA = a.mint_year_earliest ?? 0
+      const yearB = b.mint_year_earliest ?? 0
+      return yearA - yearB
+    })
 
   const coinsList = filteredCoins
 

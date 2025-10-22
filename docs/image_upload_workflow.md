@@ -23,7 +23,7 @@
    shopt -s nullglob 2>/dev/null || setopt null_glob 2>/dev/null
 
    # Process each file type separately to avoid glob expansion issues
-   extensions=("jpg" "jpeg" "png" "JPG" "JPEG" "PNG")
+   extensions=("HEIC", "jpg", "jpeg", "png", "JPG", "JPEG", "PNG")
 
    for ext in "${extensions[@]}"; do
        # Create array of files for this extension

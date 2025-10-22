@@ -308,6 +308,15 @@ export function CoinInfoModal({
 
   if (!isOpen) return null
 
+  // Build specs line (diameter | mass | die axis)
+  const specs = [
+    diameter ? `${diameter}mm` : null,
+    mass ? `${mass}g` : null,
+    die_axis,
+  ]
+    .filter(Boolean)
+    .join(" | ")
+
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto py-4 lg:items-center lg:py-0">
       {/* Backdrop */}
@@ -464,9 +473,8 @@ export function CoinInfoModal({
               </h2>
 
               {/* Physical Properties Line */}
-              <p className="mb-4 text-base text-slate-400">
-                {`${denomination} | ${diameter} mm  |  ${mass} g ${die_axis ? `| ${die_axis}` : ""}`}
-              </p>
+              {/* TODO: import from a utility */}
+              <p className="mb-4 text-base text-slate-400">{specs}</p>
 
               {/* Legend */}
               <p
