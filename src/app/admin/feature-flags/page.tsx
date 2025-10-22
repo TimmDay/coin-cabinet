@@ -71,7 +71,8 @@ export default function FeatureFlagsPage() {
         <div className="mt-8">
           <div className="mb-6 flex items-center justify-between">
             <p className="text-muted-foreground">
-              Enable or disable experimental features and development tools.
+              Enable or disable experimental flags. Hit refresh for it to take
+              effect.
             </p>
             <button
               onClick={handleClearAllFlags}

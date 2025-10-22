@@ -1,4 +1,3 @@
-import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { type FeatureFlagName } from "../feature-flags"
 
@@ -11,11 +10,21 @@ const FEATURE_FLAG_STORAGE_KEY = "feat-flags"
  * @returns boolean indicating if the feature flag is enabled
  */
 export function useFeatureFlag(flagName: FeatureFlagName) {
-  const searchParams = useSearchParams()
   const [isEnabled, setIsEnabled] = useState(false)
 
   useEffect(() => {
-    const urlFeatParam = searchParams.get("feat")
+    // Safely check URL params without causing SSR issues
+    const checkUrlParams = () => {
+      if (typeof window === 'undefined') return null
+      try {
+        const params = new URLSearchParams(window.location.search)
+        return params.get('feat')
+      } catch {
+        return null
+      }
+    }
+
+    const urlFeatParam = checkUrlParams()
 
     // Check URL first - if found, enable and persist to localStorage
     if (urlFeatParam === flagName) {
@@ -33,7 +42,7 @@ export function useFeatureFlag(flagName: FeatureFlagName) {
     // Check localStorage for previously enabled flags
     const storedFlags = getStoredFeatureFlags()
     setIsEnabled(storedFlags[flagName] === true)
-  }, [searchParams, flagName])
+  }, [flagName])
 
   return isEnabled
 }
