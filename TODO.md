@@ -15,6 +15,8 @@
 - [ ] cloudinary. Worth compressing everything in there before it gets too big? Work out any cost benefit.
 - [ ] blog post titles (on page) take the post title, not 'articles'
 - [ ] embedded BP components
+- [ ] get a proper domain name
+
 
 ### Mints Table
 
