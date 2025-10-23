@@ -22,6 +22,7 @@ type CoinInfoModalProps = {
   previousReverseImageSrc?: string
   civ?: string
   civ_specific?: string
+  denomination?: string
   mint?: string
   mint_year_earliest?: number
   mint_year_latest?: number
@@ -53,6 +54,7 @@ export function CoinInfoModal({
   previousReverseImageSrc,
   civ,
   civ_specific,
+  denomination,
   mint,
   mint_year_earliest,
   mint_year_latest,
@@ -467,7 +469,7 @@ export function CoinInfoModal({
               )}
 
               <h2 className="text-l mb-3 text-slate-400">
-                {`${civ?.toUpperCase()}${civ_specific ? ` (${civ_specific})` : ""}. ${mint}. ${formatYearRange(mint_year_earliest, mint_year_latest)}`}
+                {`${civ?.toUpperCase()}${civ_specific ? ` (${civ_specific})` : ""}${denomination ? ` ${denomination}` : ""}. ${mint}. ${formatYearRange(mint_year_earliest, mint_year_latest)}`}
               </h2>
 
               {/* Physical Properties Line */}

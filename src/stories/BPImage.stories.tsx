@@ -138,8 +138,7 @@ export const CustomHeight: Story = {
   args: {
     src: "z_pompeii_bikinis",
     alt: "Ancient Roman fresco from Pompeii showing women in bikini-like garments",
-    caption:
-      "Same image with custom 200px maximum height constraint",
+    caption: "Same image with custom 200px maximum height constraint",
     layout: "center",
     maxHeight: 200,
   },
