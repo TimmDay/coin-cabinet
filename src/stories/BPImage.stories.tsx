@@ -21,10 +21,14 @@ const meta = {
       control: "text",
       description: "Caption text to display below the image",
     },
-    variant: {
+    layout: {
       control: "select",
-      options: ["fullwidth", "left", "right"],
+      options: ["center", "left", "right"],
       description: "Layout variant for the image",
+    },
+    maxHeight: {
+      control: "number",
+      description: "Maximum height constraint in pixels, defaults to 400px",
     },
     className: {
       control: "text",
@@ -43,29 +47,29 @@ export const Demo: Story = {
     alt: "Ancient Roman fresco from Pompeii showing women in bikini-like garments",
     caption:
       "a fresco recovered from Pompeii showing some summer Roman fashion",
-    variant: "fullwidth",
+    layout: "center",
   },
 }
 
-// Full width variant (default)
-export const FullWidth: Story = {
+// Center layout (default)
+export const Center: Story = {
   args: {
     src: "z_pompeii_bikinis",
     alt: "Ancient Roman fresco from Pompeii showing women in bikini-like garments",
     caption:
       "a fresco recovered from Pompeii showing some summer Roman fashion",
-    variant: "fullwidth",
+    layout: "center",
   },
 }
 
-// Left floating variant with sample text
+// Left floating layout with sample text
 export const LeftFloating: Story = {
   args: {
     src: "z_pompeii_bikinis",
     alt: "Ancient Roman fresco from Pompeii showing women in bikini-like garments",
     caption:
       "a fresco recovered from Pompeii showing some summer Roman fashion",
-    variant: "left",
+    layout: "left",
   },
   decorators: [
     (Story) => (
@@ -88,14 +92,14 @@ export const LeftFloating: Story = {
   ],
 }
 
-// Right floating variant with sample text
+// Right floating layout with sample text
 export const RightFloating: Story = {
   args: {
     src: "z_pompeii_bikinis",
     alt: "Ancient Roman fresco from Pompeii showing women in bikini-like garments",
     caption:
       "a fresco recovered from Pompeii showing some summer Roman fashion",
-    variant: "right",
+    layout: "right",
   },
   decorators: [
     (Story) => (
@@ -125,6 +129,18 @@ export const AlternativeExample: Story = {
     alt: "Roman coin showing emperor portrait",
     caption:
       "A denarius from the reign of Augustus showing the emperor's portrait in profile",
-    variant: "fullwidth",
+    layout: "center",
+  },
+}
+
+// Custom height example
+export const CustomHeight: Story = {
+  args: {
+    src: "z_pompeii_bikinis",
+    alt: "Ancient Roman fresco from Pompeii showing women in bikini-like garments",
+    caption:
+      "Same image with custom 200px maximum height constraint",
+    layout: "center",
+    maxHeight: 200,
   },
 }

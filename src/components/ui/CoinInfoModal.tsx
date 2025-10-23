@@ -22,7 +22,6 @@ type CoinInfoModalProps = {
   previousReverseImageSrc?: string
   civ?: string
   civ_specific?: string
-  denomination?: string
   mint?: string
   mint_year_earliest?: number
   mint_year_latest?: number
@@ -54,7 +53,6 @@ export function CoinInfoModal({
   previousReverseImageSrc,
   civ,
   civ_specific,
-  denomination,
   mint,
   mint_year_earliest,
   mint_year_latest,
