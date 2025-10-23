@@ -1,6 +1,8 @@
 "use client"
 
+import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { CoinSketchCompare } from "../CoinSketchCompare"
+import { MintMap } from "../MintMap"
 
 type CoinDeepDiveProps = {
   coin: {
@@ -41,22 +43,8 @@ function FlavorFooter({ coin }: { coin: CoinDeepDiveProps["coin"] }) {
   )
 }
 
-function MapPlaceholder() {
-  return (
-    <div className="flex h-[300px] items-center justify-center rounded-lg border border-slate-600 bg-slate-700 p-6 lg:h-[300px]">
-      <div className="text-center">
-        <div className="mb-2 text-lg font-medium text-slate-300">
-          Future Map
-        </div>
-        <div className="text-sm text-slate-500">
-          Roman Empire & Mint Locations
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
+  const isMapFeatureEnabled = useTypedFeatureFlag("map-feature")
   return (
     <section className="space-y-6">
       {/* Coin Sketch Compare Component */}
@@ -73,8 +61,9 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         descR={coin.desc_r}
       />
 
-      {/* Map Placeholder */}
-      <MapPlaceholder />
+      {/* Map Section */}
+
+      {isMapFeatureEnabled && <MintMap />}
 
       {/* Coin Details */}
       {coin.flavour_text && <FlavorFooter coin={coin} />}
