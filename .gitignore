@@ -48,3 +48,6 @@ yarn-error.log*
 .idea
 *storybook.log
 storybook-static
+
+# data reference local
+pleiades-places-latest.json
