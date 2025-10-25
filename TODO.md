@@ -10,13 +10,23 @@
 - [ ] deep dive page, on large monitors the coins are too spread out
 - [ ] deep dive page. font sizes and colors are all over the place
 - [ ] hide year in coins 2026 and 2027 behind flag
-- [ ] more time on home page
+- [ ] more time working on home page
 - [ ] take photos / blog post about my camera set up
 - [ ] cloudinary. Worth compressing everything in there before it gets too big? Work out any cost benefit.
 - [ ] blog post titles (on page) take the post title, not 'articles'
 - [ ] embedded BP components
+  - [ ] Aside component
+  - [ ] LinkTextEmbedded component
+  - [ ] BeforeAfterImageSlider component (for cleaning coins)
+  - [ ] unordered list component
+  - [ ] bordered quote component variant
 - [ ] get a proper domain name
-
+- [ ] somnus table - new columns - "god", "bpLink"
+- [ ] if somnus table row has a bpLink, show a link to that blog post (labelled "learn more") at the base of the CoinDetail page... Is it possible to just embed the actual post there?
+- [x] download local versions of the Ancient sources so I can quickly reference them for quotes (Project Gutenberg)
+  - [x] Cassius Dio
+  - [x] Herodotus
+  - [x] Historia Augusta
 
 ### Mints Table
 

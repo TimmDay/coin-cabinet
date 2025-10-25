@@ -12,6 +12,7 @@ type SomnusItem = {
   legend_r_expanded: string | null
   legend_r_translation: string | null
   flavour_text: string | null
+  godName: string | null
   created_at: string
   updated_at: string
 }
@@ -113,6 +114,7 @@ export function EditSomnusView() {
         legend_r_expanded: item.legend_r_expanded,
         legend_r_translation: item.legend_r_translation,
         flavour_text: item.flavour_text,
+        godName: item.godName,
       }
 
       const response = await fetch(`/api/somnus-collection/${id}`, {
@@ -212,7 +214,7 @@ export function EditSomnusView() {
       ) : (
         <div className="artemis-card p-6">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1600px] border-collapse">
+            <table className="w-full min-w-[1720px] border-collapse">
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="sticky left-0 z-10 min-w-[120px] border-r border-gray-200 bg-slate-800 p-3 text-left font-semibold">
@@ -238,6 +240,9 @@ export function EditSomnusView() {
                   </th>
                   <th className="min-w-[150px] p-3 text-left font-semibold">
                     Flavour Text
+                  </th>
+                  <th className="min-w-[120px] p-3 text-left font-semibold">
+                    God
                   </th>
                   <th className="sticky right-0 z-10 min-w-[120px] border-l border-gray-200 bg-slate-800 p-3 text-center font-semibold">
                     Actions
@@ -421,6 +426,25 @@ export function EditSomnusView() {
                         <span className="text-sm">
                           {item.flavour_text ?? "—"}
                         </span>
+                      )}
+                    </td>
+                    <td className="p-3">
+                      {item.isEditing ? (
+                        <input
+                          type="text"
+                          value={item.godName ?? ""}
+                          onChange={(e) =>
+                            handleFieldChange(
+                              item.id,
+                              "godName",
+                              e.target.value,
+                            )
+                          }
+                          className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                          placeholder="e.g., Jupiter, Mars, Diana"
+                        />
+                      ) : (
+                        <span className="text-sm">{item.godName ?? "—"}</span>
                       )}
                     </td>
                     <td

@@ -280,6 +280,20 @@ export const coinFormSchema = z
 
     // Additional information
     flavour_text: z.string().optional(),
+    godName: z.string().optional(),
+    bpRoute: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => {
+        if (!val || val === "") return undefined
+        // Split by comma and clean up whitespace
+        return val
+          .split(",")
+          .map((route) => route.trim())
+          .filter(Boolean)
+      })
+      .pipe(z.array(z.string()).optional()),
     sets: z.array(z.string()).optional(),
     antiquities_register: z.string().optional(),
     provenance: z.string().optional(),

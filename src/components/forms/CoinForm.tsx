@@ -524,6 +524,41 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               />
             </div>
 
+            {/* God Name and Blog Post Routes */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label className={labelClass} htmlFor="godName">
+                  God/Deity Name
+                </label>
+                <input
+                  {...register("godName")}
+                  id="godName"
+                  type="text"
+                  className={inputClass}
+                  placeholder="e.g., Jupiter, Mars, Salus"
+                />
+                {errors.godName && (
+                  <p className={errorClass}>{errors.godName?.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className={labelClass} htmlFor="bpRoute">
+                  Blog Post Routes (comma separated)
+                </label>
+                <input
+                  {...register("bpRoute")}
+                  id="bpRoute"
+                  type="text"
+                  className={inputClass}
+                  placeholder="e.g., /articles/caracalla-and-geta, /articles/severan-coins"
+                />
+                {errors.bpRoute && (
+                  <p className={errorClass}>{errors.bpRoute?.message}</p>
+                )}
+              </div>
+            </div>
+
             <div>
               <label className={labelClass} htmlFor="sets">
                 Sets/Collections

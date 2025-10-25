@@ -74,6 +74,8 @@ export const somnus_collection = pgTable(
 
     // Additional information
     flavour_text: d.text("flavour_text"),
+    godName: d.text("godName"),
+    bpRoute: d.text("bpRoute").array(),
     antiquities_register: d.text("antiquities_register"),
     provenance: d.text(),
     notes: d.text(),

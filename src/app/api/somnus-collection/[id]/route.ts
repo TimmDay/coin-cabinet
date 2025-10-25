@@ -13,6 +13,7 @@ type UpdateData = {
   legend_r_expanded?: string | null
   legend_r_translation?: string | null
   flavour_text?: string | null
+  godName?: string | null
 }
 
 export async function PUT(
@@ -34,6 +35,7 @@ export async function PUT(
       legend_r_expanded,
       legend_r_translation,
       flavour_text,
+      godName,
     } = body
 
     // Build update object
@@ -50,6 +52,7 @@ export async function PUT(
     if (legend_r_translation !== undefined)
       updateData.legend_r_translation = legend_r_translation
     if (flavour_text !== undefined) updateData.flavour_text = flavour_text
+    if (godName !== undefined) updateData.godName = godName
 
     // Update the item in the database
     const updatedItems = await db
