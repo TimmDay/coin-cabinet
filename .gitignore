@@ -51,3 +51,6 @@ storybook-static
 
 # data reference local
 pleiades-places-latest.json
+
+# data files - exclude large GeoJSON and other data files
+/src/data/

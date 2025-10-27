@@ -3,6 +3,7 @@
 ## Next Thing
 
 - [ ] research expanded latin and translation text for legends.
+- [ ] generate geojson data for the SSeverus province splits.
 
 ### Quick Notes
 
@@ -14,16 +15,15 @@
 - [ ] take photos / blog post about my camera set up
 - [ ] cloudinary. Worth compressing everything in there before it gets too big? Work out any cost benefit.
 - [ ] embedded BP components
-  - [x] Aside component
   - [ ] LinkTextEmbedded component
   - [ ] BeforeAfterImageSlider component (for cleaning coins)
   - [ ] unordered list component
   - [ ] bordered quote component variant
   - [ ] sources list (on Deep Dive page)
 - [ ] get a proper domain name
-- [x] blog post titles (on page) take the post title, not 'articles'
 - [x] somnus table - new columns - "god", "bpLink"
 - [ ] if somnus table row has a bpLink, show a link to that blog post (labelled "learn more") at the base of the CoinDetail page... Is it possible to just embed the actual post there?
+- [ ] write an actual post / coin deep dive text.
 
 ### Mints Table
 
@@ -42,12 +42,25 @@ The goal of this is provide 'pins on the map'. Important events during the emper
 - [ ] make an emperors table.
       emperor_name, reign_start_year, reign_end_year, birth_year, death_year, dynasty, notes, important_events {event_name, event_year, event_location: [lat,lng] or geojson[], event_description, event_reference, event_image_link?}
 
-### MAP Component
+## MAP
 
-- [ ] make a map component using leaflet that can show the roman provinces as layers (with date filtering to show the provinces as they were for the selected year)
+- [ ] perf improvements. Compress geojson?
+  - [ ] Simplify polygons using mapshaper (reduce complexity by 90%)
+  - [ ] Use TopoJSON for Roman Empire extents (they share borders)
+  - [ ] Keep province labels as-is (they're small points)
+  - [ ]Add compression headers in Next.js config
+
+- [x] make a map component using leaflet that can show the roman provinces as layers (with date filtering to show the provinces as they were for the selected year)
 - [ ] pins for mints in my collection, sized by number of coins from that mint
 - [ ] special pin for the selected coin mint, map centers on it.
 - [ ] special pin for find location, for the few coins that have provenance into the ground (ie hoards, metal detector finds).
+- [ ]get data for all province boundaries. Research which ones are needed for each emperor at start and end of reign. List them so they can be shown on the map.
+- [ ] drop down of emperors. selecting one shows the province boundaries at the end of their reign
+- [ ] boundaries for Republican Rome. Surrounding neighbours.
+- [ ] boundaries for Parthia/Sassanids
+- [ ] Roman road network
+- [ ] ocean names in latin
+- [ ] Hadrian and Antonine walls
 
 ### Map page
 
@@ -66,17 +79,16 @@ The goal of this is provide 'pins on the map'. Important events during the emper
 
 - [ ] EmbeddedLink component (used within blog text etc)
 - [ ] Aside component. variants: alert, info (used within blog text etc)
-- [ ] Blog post layout. Table of content to the right (desktop only)
+
 - [ ] Last updated date component for blog posts
 - [ ] HitCounter component for blog posts (shows views)
-
 - [ ] make an alternative for dropdown menus for mobile
 - [ ] sets pages (focus on severan) have unique layouts and a set ordered list of coins in that set. (like a drawer with recesses for each coin)
 
 CoinDetailPage
 
 - [ ] design it on paper for mobile/desktop
-- [ ] title / legends / expanded legends / translation
+
 - [ ] images, with space for sketch side-by-sides
 - [ ] space for a map with mint. zoom/pan
 - flavor text is displayed
@@ -123,6 +135,7 @@ CoinGrid
 - [ ] research/plan beginner macro photography setup (getting most out of phone that I can).
 - [ ] set up something basic for my phone. including lighting.
 - [ ] Learn what would be required to take 'ultra zoom' macro photos.
+- [ ] cool light variant shots, with the phone attachment from alibaba.
 
 ### real world
 
@@ -191,7 +204,7 @@ Set list, but main feature is a 'wooden' drawer with the coin images laid out as
 - [ ] unneeded comments
 - [ ] tidy up all the random ai generated fluff text
 - [ ] go through 10 flavour texts and really write them nice
-- [ ] another 1o flavour texts
+- [ ] another 10 flavour texts
 - [ ] do up the home/welcome page
 - [ ] find good public images to be the face of each 'set' (as I have defined them).
 - [ ] work out a data format and way to store non-coin image links along with alt text, photo credit, item name, item desc, vintage year, moreInfoLink, location of item, caption
@@ -221,12 +234,12 @@ articles, guides
 #### components for embedding in blog posts
 
 - [ ] before/after image slider component (for showing coins pre and post cleaning) [example](https://artemis-collection.com/showcase/cleaning-coins/)
-
 - [ ] interactive map component (for showing mint location and significant places)
-
-- [ ] JC 'aside'
-
 - [ ] future: users can signup/signin in order to create their own coin collection (table) and upload exclusively to that one (and view it)?
+
+## Post Ideas
+
+- how I take photos of coins - my budget setup for 2026
 
 ## DONE
 
@@ -283,3 +296,7 @@ articles, guides
   - [x] Cassius Dio
   - [x] Herodotus
   - [x] Historia Augusta
+- [x] Blog post layout. Table of content to the right (desktop only)
+- [x] title / legends / expanded legends / translation
+  - [x] Aside component
+  - [x] blog post titles (on page) take the post title, not 'articles'

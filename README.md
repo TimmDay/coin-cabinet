@@ -2,6 +2,16 @@
 
 A place to display my ancient coin collection, explore macro photography and learn about interesting things.
 
+## Map Data
+
+Thanks to [@johaahlf](https://github.com/johaahlf/dare/blob/master/provinces.geojson?short_path=68e5b67) for the bulk of the province geojson that I have used. He is/was associated with the [Digital Atlas of the Roman Empire](https://imperium.ahlfeldt.se/) (DARE) which was also very useful for point locations.
+
+I have made my own refinements to the map data to include additional provinces (approximate) and border adjustments made by various emperors at different time periods. All of this should be treated as very approximate, and all errors are my own.
+
+My predominant refinement technique was to find a textbook with a picture of the borders I am interested, and then eyeball it, tracing it onto a map and using a tool to generate geojson from that.
+
+Please be careful using this data for anything serious - on this site it is just for fun!
+
 ## Stack
 
 - [Next.js](https://nextjs.org)
