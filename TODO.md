@@ -13,20 +13,17 @@
 - [ ] more time working on home page
 - [ ] take photos / blog post about my camera set up
 - [ ] cloudinary. Worth compressing everything in there before it gets too big? Work out any cost benefit.
-- [ ] blog post titles (on page) take the post title, not 'articles'
 - [ ] embedded BP components
   - [ ] Aside component
   - [ ] LinkTextEmbedded component
   - [ ] BeforeAfterImageSlider component (for cleaning coins)
   - [ ] unordered list component
   - [ ] bordered quote component variant
+  - [ ] sources list (on Deep Dive page)
 - [ ] get a proper domain name
-- [ ] somnus table - new columns - "god", "bpLink"
+- [x] blog post titles (on page) take the post title, not 'articles'
+- [x] somnus table - new columns - "god", "bpLink"
 - [ ] if somnus table row has a bpLink, show a link to that blog post (labelled "learn more") at the base of the CoinDetail page... Is it possible to just embed the actual post there?
-- [x] download local versions of the Ancient sources so I can quickly reference them for quotes (Project Gutenberg)
-  - [x] Cassius Dio
-  - [x] Herodotus
-  - [x] Historia Augusta
 
 ### Mints Table
 
@@ -282,3 +279,7 @@ articles, guides
 - [x] upload locked behind auth
 - [x] fill in a form of info for that coin
 - [x] Sets master page has link cards that show all the sets (with a title image) and link to the set page. Have a cover image
+- [x] download local versions of the Ancient sources so I can quickly reference them for quotes (Project Gutenberg)
+  - [x] Cassius Dio
+  - [x] Herodotus
+  - [x] Historia Augusta

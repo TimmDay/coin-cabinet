@@ -1,3 +1,4 @@
+import { Aside } from "./src/components/Aside"
 import { MDXFeaturedCoins } from "./src/components/mdx/MDXFeaturedCoins"
 import { BPImage } from "./src/components/ui/BPImage"
 
@@ -18,6 +19,7 @@ export function useMDXComponents(
     // Custom components for MDX
     FeaturedCoins: MDXFeaturedCoins,
     BPImage: BPImage,
+    Aside: Aside,
     // Default components with styling and auto-generated IDs
     h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => {
       const id =

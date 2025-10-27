@@ -1,7 +1,7 @@
 import Link from "next/link"
 
 // Component to show a link to the Caracalla and Geta blog post
-export function EmbeddedCaracallaGettaBlog() {
+export function EmbeddedBlogLinkCaracallaGeta() {
   return (
     <div className="mt-16 border-t border-slate-700 pt-12">
       <div className="text-center">

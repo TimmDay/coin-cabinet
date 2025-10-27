@@ -232,3 +232,30 @@ main {
 .z-notification {
   z-index: var(--z-notification);
 }
+
+/* Aside component cut-out corner effect */
+.aside-cutout-box {
+  clip-path: polygon(25px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 25px);
+}
+
+/* Aside icon with primary color theme */
+.aside-icon-torch {
+  position: absolute;
+  top: 1px;
+  left: 12px;
+  filter: brightness(0) saturate(100%) invert(53%) sepia(96%) saturate(1480%)
+    hue-rotate(21deg) brightness(101%) contrast(91%);
+}
+
+.aside-icon-gladius {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  filter: brightness(0) saturate(100%) invert(53%) sepia(96%) saturate(1480%)
+    hue-rotate(21deg) brightness(101%) contrast(91%);
+}
+
+/* Aside icon background matching body */
+.aside-icon-bg {
+  background-color: hsl(var(--background));
+}
