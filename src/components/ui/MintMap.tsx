@@ -83,6 +83,7 @@ export const MintMap: React.FC<MintMapProps> = ({
     useState<GeoJSON.FeatureCollection | null>(null)
   const [selectedProvinces, setSelectedProvinces] = useState<string[]>([])
   const [provincesLoading, setProvincesLoading] = useState(false)
+  const [showProvinceLabels, setShowProvinceLabels] = useState(true)
 
   // Empire extent layer configuration
   const empireLayerConfig = useMemo(
@@ -612,6 +613,17 @@ export const MintMap: React.FC<MintMapProps> = ({
               >
                 Clear All
               </button>
+              <button
+                onClick={() => setShowProvinceLabels(!showProvinceLabels)}
+                className={`rounded-md border px-3 py-2 text-sm ${
+                  showProvinceLabels
+                    ? 'border-emerald-600 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+                title={showProvinceLabels ? "Hide province labels" : "Show province labels"}
+              >
+                {showProvinceLabels ? 'Hide Labels' : 'Show Labels'}
+              </button>
             </div>
           </div>
           {selectedProvinces.length > 0 && (
@@ -822,7 +834,7 @@ export const MintMap: React.FC<MintMapProps> = ({
             )}
 
             {/* Province Labels */}
-            {provinceLabels.map((label) => (
+            {showProvinceLabels && provinceLabels.map((label) => (
               <Marker
                 key={`label-${label.name}`}
                 position={label.position}

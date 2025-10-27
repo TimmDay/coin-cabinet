@@ -11,6 +11,9 @@ export function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
 
+  // Temporarily disable sign up
+  const isSignUpEnabled = false
+
   const { signIn, signUp } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,6 +22,12 @@ export function LoginForm() {
     setMessage("")
 
     try {
+      // Block sign up if not enabled
+      if (isSignUp && !isSignUpEnabled) {
+        setMessage("Sign up is currently disabled. Please contact an administrator.")
+        return
+      }
+
       const { error } = isSignUp
         ? await signUp(email, password)
         : await signIn(email, password)
@@ -44,7 +53,7 @@ export function LoginForm() {
   return (
     <div className="somnus-card mx-auto w-full max-w-md p-8">
       <h2 className="coin-title mb-6 text-center text-2xl font-bold">
-        {isSignUp ? "Sign Up" : "Sign In"}
+        {isSignUp && isSignUpEnabled ? "Sign Up" : "Sign In"}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -96,18 +105,20 @@ export function LoginForm() {
           variant="primary"
           className="w-full"
         >
-          {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+          {loading ? "Loading..." : (isSignUp && isSignUpEnabled) ? "Sign Up" : "Sign In"}
         </RoundButton>
 
-        <button
-          type="button"
-          onClick={() => setIsSignUp(!isSignUp)}
-          className="w-full text-sm text-amber-300 underline transition-colors hover:text-amber-200"
-        >
-          {isSignUp
-            ? "Already have an account? Sign in"
-            : "Don't have an account? Sign up"}
-        </button>
+        {isSignUpEnabled && (
+          <button
+            type="button"
+            onClick={() => setIsSignUp(!isSignUp)}
+            className="w-full text-sm text-amber-300 underline transition-colors hover:text-amber-200"
+          >
+            {isSignUp
+              ? "Already have an account? Sign in"
+              : "Don't have an account? Sign up"}
+          </button>
+        )}
       </form>
     </div>
   )
