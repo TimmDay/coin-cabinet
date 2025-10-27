@@ -1,4 +1,5 @@
 import { Aside } from "./src/components/Aside"
+import { BPBreak } from "./src/components/BPBreak"
 import { MDXFeaturedCoins } from "./src/components/mdx/MDXFeaturedCoins"
 import { BPImage } from "./src/components/ui/BPImage"
 
@@ -19,6 +20,7 @@ export function useMDXComponents(
     // Custom components for MDX
     FeaturedCoins: MDXFeaturedCoins,
     BPImage: BPImage,
+    BPBreak: BPBreak,
     Aside: Aside,
     // Default components with styling and auto-generated IDs
     h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => {
@@ -28,7 +30,7 @@ export function useMDXComponents(
         <h1
           {...props}
           id={id}
-          className="text-foreground mb-6 text-3xl font-bold"
+          className="text-foreground mt-6 mb-6 text-3xl font-bold"
         />
       )
     },
@@ -39,7 +41,7 @@ export function useMDXComponents(
         <h2
           {...props}
           id={id}
-          className="text-foreground mb-4 text-2xl font-semibold"
+          className="text-foreground mt-4 mb-4 text-2xl font-semibold"
         />
       )
     },
@@ -50,7 +52,7 @@ export function useMDXComponents(
         <h3
           {...props}
           id={id}
-          className="text-foreground mb-3 text-xl font-medium"
+          className="text-foreground mt-3 mb-3 text-xl font-medium"
         />
       )
     },

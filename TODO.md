@@ -14,7 +14,7 @@
 - [ ] take photos / blog post about my camera set up
 - [ ] cloudinary. Worth compressing everything in there before it gets too big? Work out any cost benefit.
 - [ ] embedded BP components
-  - [ ] Aside component
+  - [x] Aside component
   - [ ] LinkTextEmbedded component
   - [ ] BeforeAfterImageSlider component (for cleaning coins)
   - [ ] unordered list component
