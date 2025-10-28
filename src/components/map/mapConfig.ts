@@ -98,8 +98,7 @@ export const createEmpireLayerConfig = (
     name: "AD 117",
     title: "Roman Empire AD 117",
     filename: "roman_empire_ad_117_extent.geojson",
-    description:
-      "Roman Empire at its greatest extent under Trajan in AD 117",
+    description: "Roman Empire at its greatest extent under Trajan in AD 117",
     showProp: showAD117,
     onChange: onAD117Change,
     color: "#228B22",
@@ -144,7 +143,7 @@ export const MAP_STYLES = {
     fillColor: "#DEB887",
     fillOpacity: 0.1,
   },
-  
+
   // Province boundaries style
   provinces: {
     color: "#059669", // Emerald border
@@ -154,7 +153,7 @@ export const MAP_STYLES = {
     fillOpacity: 0.2,
     dashArray: "5, 5",
   },
-  
+
   // Mint marker style
   mintMarker: {
     css: `
@@ -176,7 +175,7 @@ export const MAP_BOUNDS = {
   // Extended from Atlantic to Mesopotamia, from Scotland to Sahara
   maxBounds: [
     [65.0, -15.0] as [number, number], // Northeast: Scotland + buffer, Atlantic + buffer
-    [20, 55.0] as [number, number],    // Southwest: North Africa + 200km extra south, Iraq + buffer
+    [20, 55.0] as [number, number], // Southwest: North Africa + 200km extra south, Iraq + buffer
   ] as [[number, number], [number, number]],
   maxBoundsViscosity: 1.0,
 }

@@ -11,8 +11,8 @@ import {
   TileLayer,
   useMapEvents,
 } from "react-leaflet"
-import { ROMAN_PROVINCES } from "../../constants/provinces"
 import { ROMAN_MINTS } from "../../constants/mints"
+import { ROMAN_PROVINCES } from "../../constants/provinces"
 import type { TimePeriod } from "../../data/romanBoundaries"
 import { ROMAN_TIME_PERIODS } from "../../data/romanBoundaries"
 import {
@@ -22,7 +22,6 @@ import {
   useProvinceSelection,
 } from "./hooks"
 import { createMapCardHTML } from "./MapCard"
-import { MapEmbeddedControls } from "./MapEmbeddedControls"
 import {
   createEmpireLayerConfig,
   LEAFLET_ICON_CONFIG,
@@ -32,6 +31,7 @@ import {
   TILE_LAYER_CONFIG,
   type EmpireLayerConfigMap,
 } from "./mapConfig"
+import { MapEmbeddedControls } from "./MapEmbeddedControls"
 
 // Component to handle zoom level changes
 function ZoomHandler({
@@ -240,7 +240,7 @@ export const Map: React.FC<MapProps> = ({
   const handleToggleLayer = (layerKey: string) => {
     const newValue = !isLayerVisible(layerKey)
     toggleLayer(layerKey)
-    
+
     // Call onChange callback if it exists
     if (layerKey in empireLayerConfig) {
       const config = empireLayerConfig[layerKey as keyof EmpireLayerConfigMap]

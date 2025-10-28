@@ -75,7 +75,9 @@ export const useMapData = (): UseMapDataResult => {
 /**
  * Custom hook for managing empire layer visibility and data loading state
  */
-export const useEmpireLayerState = (empireLayerConfig: EmpireLayerConfigMap) => {
+export const useEmpireLayerState = (
+  empireLayerConfig: EmpireLayerConfigMap,
+) => {
   const [layerStates, setLayerStates] = useState(() => {
     const initialStates: Record<
       string,

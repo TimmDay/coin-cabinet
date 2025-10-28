@@ -27,7 +27,7 @@ export const ROMAN_MINTS: Mint[] = [
   },
   {
     mintName: "Lugdunum",
-    lat: 45.7640,
+    lat: 45.764,
     lng: 4.8357,
   },
 ]
