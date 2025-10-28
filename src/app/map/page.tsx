@@ -22,7 +22,6 @@ export default function MapPage() {
   const isMapEnabled = useTypedFeatureFlag("map-feature")
 
   // Map state
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("")
   const [showBC60, setShowBC60] = useState(false)
   const [showAD14, setShowAD14] = useState(false)
   const [showAD69, setShowAD69] = useState(false)
@@ -58,7 +57,6 @@ export default function MapPage() {
               layout="fullscreen"
               height="100%"
               hideControls={true}
-              selectedPeriod={selectedPeriod}
               showBC60={showBC60}
               showAD14={showAD14}
               showAD69={showAD69}
@@ -74,8 +72,6 @@ export default function MapPage() {
       {/* Map Controls */}
       <div className="flex-shrink-0 border-t border-gray-200 bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
         <MapControls
-          selectedPeriod={selectedPeriod}
-          onPeriodChange={setSelectedPeriod}
           showBC60={showBC60}
           onBC60Change={setShowBC60}
           showAD14={showAD14}

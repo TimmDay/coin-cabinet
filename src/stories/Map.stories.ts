@@ -95,8 +95,6 @@ export const WithBoundaries: Story = {
     zoom: 4,
     height: "400px",
     width: "100%",
-    selectedPeriod: "trajan",
-    showBoundaries: true,
   },
 }
 
@@ -107,8 +105,6 @@ export const EarlyRepublic: Story = {
     zoom: 6,
     height: "400px",
     width: "100%",
-    selectedPeriod: "early-republic",
-    showBoundaries: true,
   },
 }
 
@@ -119,8 +115,6 @@ export const LateRepublic: Story = {
     zoom: 4,
     height: "400px",
     width: "100%",
-    selectedPeriod: "late-republic",
-    showBoundaries: true,
   },
 }
 
@@ -131,8 +125,6 @@ export const TrajanEmpire: Story = {
     zoom: 4,
     height: "400px",
     width: "100%",
-    selectedPeriod: "trajan",
-    showBoundaries: true,
   },
 }
 
@@ -143,8 +135,6 @@ export const SeverusEarlyReign: Story = {
     zoom: 4,
     height: "400px",
     width: "100%",
-    selectedPeriod: "severus-early",
-    showBoundaries: true,
   },
 }
 
@@ -155,8 +145,6 @@ export const SeverusLateReign: Story = {
     zoom: 4,
     height: "400px",
     width: "100%",
-    selectedPeriod: "severus-late",
-    showBoundaries: true,
   },
 }
 
@@ -269,7 +257,6 @@ export const NoBoundaries: Story = {
     zoom: 4,
     height: "400px",
     width: "100%",
-    showBoundaries: false,
   },
 }
 
@@ -280,7 +267,6 @@ export const AD200Extent: Story = {
     zoom: 4,
     height: "400px",
     width: "100%",
-    showBoundaries: false,
     showAD200: true,
   },
 }
@@ -292,8 +278,6 @@ export const AD200WithSeveranBoundaries: Story = {
     zoom: 4,
     height: "400px",
     width: "100%",
-    selectedPeriod: "severus-late",
-    showBoundaries: true,
     showAD200: true,
   },
 }
@@ -401,8 +385,6 @@ export const EmpireExtentWithBoundaries: Story = {
     zoom: 4,
     height: "400px",
     width: "100%",
-    selectedPeriod: "trajan",
-    showBoundaries: true,
     showAD117: true,
   },
 }

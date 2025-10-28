@@ -13,8 +13,6 @@ import {
 } from "react-leaflet"
 import { ROMAN_MINTS } from "../../constants/mints"
 import { ROMAN_PROVINCES } from "../../constants/provinces"
-import type { TimePeriod } from "../../data/romanBoundaries"
-import { ROMAN_TIME_PERIODS } from "../../data/romanBoundaries"
 import {
   useEmpireLayerState,
   useMapConfiguration,
@@ -61,12 +59,6 @@ type MapProps = {
   className?: string
   /** Layout mode - 'default' shows controls above map, 'fullscreen' shows controls below map */
   layout?: "default" | "fullscreen"
-  /** Available time periods for boundary display */
-  timePeriods?: TimePeriod[]
-  /** Currently selected time period */
-  selectedPeriod?: string
-  /** Show province boundaries */
-  showBoundaries?: boolean
   /** Show BC 60 empire extent layer */
   showBC60?: boolean
   /** Show AD 14 empire extent layer */
@@ -77,8 +69,6 @@ type MapProps = {
   showAD117?: boolean
   /** Show AD 200 empire extent layer */
   showAD200?: boolean
-  /** Callback when time period changes */
-  onPeriodChange?: (periodId: string) => void
   /** Callback when BC60 layer toggle changes */
   onBC60Change?: (show: boolean) => void
   /** Callback when AD14 layer toggle changes */
@@ -104,15 +94,11 @@ export const Map: React.FC<MapProps> = ({
   width = "100%",
   className = "",
   layout = "default",
-  timePeriods = ROMAN_TIME_PERIODS,
-  selectedPeriod,
-  showBoundaries = true,
   showBC60 = false,
   showAD14 = false,
   showAD69 = false,
   showAD117 = false,
   showAD200 = false,
-  onPeriodChange,
   onBC60Change,
   onAD14Change,
   onAD69Change,
@@ -131,11 +117,6 @@ export const Map: React.FC<MapProps> = ({
   } = useMapData()
 
   // Local state for map-specific functionality
-  const [currentPeriod, setCurrentPeriod] = useState<string | null>(
-    selectedPeriod ?? null,
-  )
-  const [boundaries, setBoundaries] =
-    useState<GeoJSON.FeatureCollection | null>(null)
   const [internalSelectedProvinces, setInternalSelectedProvinces] = useState<
     string[]
   >([...ROMAN_PROVINCES]) // Start with all provinces visible
@@ -294,22 +275,7 @@ export const Map: React.FC<MapProps> = ({
       )
   }, [provincesLabelsData, selectedProvinces])
 
-  // Load boundaries for selected period
-  useEffect(() => {
-    if (currentPeriod && timePeriods.length > 0) {
-      const period = timePeriods.find((p) => p.id === currentPeriod)
-      if (period) {
-        setBoundaries(period.boundaries)
-      }
-    } else {
-      setBoundaries(null)
-    }
-  }, [currentPeriod, timePeriods])
 
-  // Update internal state when selectedPeriod prop changes
-  useEffect(() => {
-    setCurrentPeriod(selectedPeriod ?? null)
-  }, [selectedPeriod])
 
   useEffect(() => {
     // Fix for Leaflet default markers not showing properly in Next.js
@@ -317,9 +283,6 @@ export const Map: React.FC<MapProps> = ({
     delete (L.Icon.Default.prototype as any)._getIconUrl
     L.Icon.Default.mergeOptions(LEAFLET_ICON_CONFIG)
   }, [])
-
-  // Styling for province boundaries
-  const boundaryStyle = MAP_STYLES.boundaries
 
   // Styling for AD 200 empire extent layer
 
@@ -358,22 +321,11 @@ export const Map: React.FC<MapProps> = ({
         {!hideControls && (
           <MapEmbeddedControls
             layout={layout}
-            timePeriods={timePeriods}
-            currentPeriod={currentPeriod}
-            onPeriodChange={(periodId: string) => {
-              const newPeriod = periodId === currentPeriod ? null : periodId
-              setCurrentPeriod(newPeriod)
-              onPeriodChange?.(periodId)
-            }}
             empireLayerConfig={empireLayerConfig}
             isLayerVisible={isLayerVisible}
             toggleLayer={handleToggleLayer}
             hasAnyEmpireLayerVisible={hasAnyEmpireLayerVisible}
-            clearAllEmpireLayers={() => {
-              setCurrentPeriod(null)
-              clearAllEmpireLayers()
-              onPeriodChange?.("")
-            }}
+            clearAllEmpireLayers={clearAllEmpireLayers}
             provinceOptions={provinceOptions}
             selectedProvinces={selectedProvinces}
             onProvinceSelectionChange={handleProvinceSelectionChange}
@@ -599,71 +551,7 @@ export const Map: React.FC<MapProps> = ({
                 </Marker>
               ))}
 
-              {/* Historical Boundaries Layer */}
-              {showBoundaries && boundaries && (
-                <GeoJSON
-                  key={currentPeriod} // Force re-render when period changes
-                  data={boundaries}
-                  style={boundaryStyle}
-                  onEachFeature={(feature, layer) => {
-                    // Add province name popup and tooltip with details
-                    if (feature.properties && "name" in feature.properties) {
-                      const props = feature.properties as {
-                        name?: string
-                        latinName?: string
-                        capital?: string
-                        governor?: string
-                        established?: number
-                        notes?: string
-                      }
 
-                      // Bind tooltip with Latin name (always visible)
-                      const latinName =
-                        props.latinName ?? props.name ?? "Unknown Province"
-                      layer.bindTooltip(latinName, {
-                        permanent: true,
-                        direction: "center",
-                        className: "province-label",
-                        opacity: 0.9,
-                      })
-
-                      // Bind detailed popup on click
-                      const details = []
-                      if (props.capital)
-                        details.push({ label: "Capital", value: props.capital })
-                      if (props.governor)
-                        details.push({
-                          label: "Governor",
-                          value: props.governor,
-                        })
-                      if (props.established) {
-                        const year =
-                          props.established > 0
-                            ? `${props.established} CE`
-                            : `${Math.abs(props.established)} BCE`
-                        details.push({ label: "Established", value: year })
-                      }
-
-                      const popup = createMapCardHTML({
-                        title:
-                          props.latinName ?? props.name ?? "Unknown Province",
-                        subtitle:
-                          props.name &&
-                          props.latinName &&
-                          props.name !== props.latinName
-                            ? `Modern: ${props.name}`
-                            : undefined,
-                        details,
-                        notes: props.notes,
-                      })
-                      layer.bindPopup(popup, {
-                        maxWidth: 300,
-                        className: "province-popup",
-                      })
-                    }
-                  }}
-                />
-              )}
             </MapContainer>
           </div>
         </div>

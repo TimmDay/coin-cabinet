@@ -5,7 +5,6 @@ import { MapControls } from "../components/map/MapControls"
 
 // Combined component for Storybook
 function MapWithControls() {
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("")
   const [showBC60, setShowBC60] = useState(false)
   const [showAD14, setShowAD14] = useState(false)
   const [showAD69, setShowAD69] = useState(false)
@@ -19,8 +18,6 @@ function MapWithControls() {
       {/* Map Controls */}
       <div className="flex-shrink-0 border-b border-gray-200 bg-gray-50 p-4">
         <MapControls
-          selectedPeriod={selectedPeriod}
-          onPeriodChange={setSelectedPeriod}
           showBC60={showBC60}
           onBC60Change={setShowBC60}
           showAD14={showAD14}
@@ -44,7 +41,6 @@ function MapWithControls() {
           <Map
             height="100%"
             hideControls={true}
-            selectedPeriod={selectedPeriod}
             showBC60={showBC60}
             showAD14={showAD14}
             showAD69={showAD69}
@@ -82,7 +78,6 @@ export const Default: Story = {}
 
 // With controls at bottom (like the actual map page)
 function MapWithControlsBelow() {
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("")
   const [showBC60, setShowBC60] = useState(false)
   const [showAD14, setShowAD14] = useState(false)
   const [showAD69, setShowAD69] = useState(false)
@@ -108,7 +103,6 @@ function MapWithControlsBelow() {
             <Map
               height="100%"
               hideControls={true}
-              selectedPeriod={selectedPeriod}
               showBC60={showBC60}
               showAD14={showAD14}
               showAD69={showAD69}
@@ -124,8 +118,6 @@ function MapWithControlsBelow() {
       {/* Map Controls at Bottom */}
       <div className="flex-shrink-0 border-t border-gray-200 bg-gray-50 px-4 py-4">
         <MapControls
-          selectedPeriod={selectedPeriod}
-          onPeriodChange={setSelectedPeriod}
           showBC60={showBC60}
           onBC60Change={setShowBC60}
           showAD14={showAD14}

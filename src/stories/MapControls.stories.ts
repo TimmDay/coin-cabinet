@@ -15,10 +15,6 @@ const meta = {
   },
   tags: ["autodocs"],
   argTypes: {
-    selectedPeriod: {
-      description: "Currently selected time period",
-      control: { type: "text" },
-    },
     showBC60: {
       description: "Show BC 60 empire extent layer",
       control: { type: "boolean" },
@@ -81,15 +77,16 @@ export const WithProvincesSelected: Story = {
   },
 }
 
-// With time period selected
-export const WithTimePeriod: Story = {
+// With empire layers active
+export const WithSelectedEmpireLayers: Story = {
   args: {
-    selectedPeriod: "trajan",
     selectedProvinces: [],
     showProvinceLabels: true,
-    onPeriodChange: (period: string) => {
-      console.log("Period changed:", period)
-    },
+    showBC60: false,
+    showAD14: true,
+    showAD69: false,
+    showAD117: true,
+    showAD200: false,
     onProvincesChange: (provinces: string[]) => {
       console.log("Provinces changed:", provinces)
     },
@@ -133,14 +130,10 @@ export const WithEmpireLayers: Story = {
 // Fully configured
 export const FullyConfigured: Story = {
   args: {
-    selectedPeriod: "severus-late",
     showAD117: true,
     showAD200: true,
     selectedProvinces: ["Italia", "Gallia", "Hispania", "Africa", "Aegyptus"],
     showProvinceLabels: true,
-    onPeriodChange: (period: string) => {
-      console.log("Period changed:", period)
-    },
     onBC60Change: (show: boolean) => {
       console.log("BC60 layer:", show)
     },

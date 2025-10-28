@@ -1,16 +1,10 @@
 import React from "react"
 import { ROMAN_PROVINCES } from "../../constants/provinces"
-import type { TimePeriod } from "../../data/romanBoundaries"
 import { SimpleMultiSelect } from "../ui/SimpleMultiSelect"
 
 type MapEmbeddedControlsProps = {
   // Layout
   layout?: "default" | "fullscreen"
-
-  // Time periods
-  timePeriods: TimePeriod[]
-  currentPeriod: string | null
-  onPeriodChange?: (periodId: string) => void
 
   // Empire layers
   empireLayerConfig: Record<string, { name: string; description: string }>
@@ -34,9 +28,6 @@ type MapEmbeddedControlsProps = {
  */
 export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
   layout = "default",
-  timePeriods,
-  currentPeriod,
-  onPeriodChange,
   empireLayerConfig,
   isLayerVisible,
   toggleLayer,
@@ -49,10 +40,6 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
   showProvinceLabels,
   onShowProvinceLabelsChange,
 }) => {
-  const handlePeriodChange = (periodId: string) => {
-    onPeriodChange?.(periodId)
-  }
-
   const handleSelectAllProvinces = () => {
     onProvinceSelectionChange([...ROMAN_PROVINCES])
   }
@@ -65,9 +52,7 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
     onShowProvinceLabelsChange(!showProvinceLabels)
   }
 
-  const clearAllPeriodsAndLayers = () => {
-    clearAllEmpireLayers()
-  }
+
 
   return (
     <div
@@ -84,46 +69,6 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
             : "space-y-4"
         }
       >
-        {/* Time Period Controls */}
-        {timePeriods.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-700">
-                Historical Periods
-              </h3>
-              {(currentPeriod ?? hasAnyEmpireLayerVisible()) && (
-                <button
-                  onClick={clearAllPeriodsAndLayers}
-                  className="text-xs text-gray-500 underline hover:text-gray-700"
-                >
-                  Clear all layers
-                </button>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {timePeriods.map((period) => (
-                <button
-                  key={period.id}
-                  onClick={() => handlePeriodChange(period.id)}
-                  className={`rounded-md border px-3 py-1 text-sm transition-colors ${
-                    currentPeriod === period.id
-                      ? "border-amber-700 bg-amber-700 text-white"
-                      : "border-amber-200 bg-white text-amber-800 hover:border-amber-300 hover:bg-amber-50"
-                  }`}
-                  title={period.description}
-                >
-                  {period.name}
-                </button>
-              ))}
-            </div>
-            {currentPeriod && (
-              <div className="text-xs text-gray-600">
-                {timePeriods.find((p) => p.id === currentPeriod)?.description}
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Empire Extent Layers */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">

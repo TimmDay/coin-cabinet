@@ -2,7 +2,8 @@
 
 ## Next Thing
 
-- [ ] deep dive page: layout. On desktop do obv/rev rows like: [normal photo] [cool light photo] [sketch photo] [legend, translation, description] then they stack on mobile. cool ight and sketch are optional, and no container for them if they aren't there (still centered).
+- [ ] new DB field: image link for alt light. Do it in the add coin form as well to the same schema.
+- [ ] deep dive page: layout. On desktop do obv/rev rows like: [normal photo] [cool light photo] [sketch photo] [legend, translation, description] then they stack on mobile. cool light and sketch are optional, and no container for them if they aren't there (still centered).
 
 ### Quick Notes
 

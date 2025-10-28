@@ -1,14 +1,8 @@
 import { useEffect, useMemo, useState } from "react"
 import { ROMAN_PROVINCES } from "../../constants/provinces"
-import type { TimePeriod } from "../../data/romanBoundaries"
-import { ROMAN_TIME_PERIODS } from "../../data/romanBoundaries"
 import { SimpleMultiSelect } from "../ui/SimpleMultiSelect"
 
 type MapControlsProps = {
-  /** Available time periods for boundary display */
-  timePeriods?: TimePeriod[]
-  /** Currently selected time period */
-  selectedPeriod?: string
   /** Show BC 60 empire extent layer */
   showBC60?: boolean
   /** Show AD 14 empire extent layer */
@@ -19,8 +13,6 @@ type MapControlsProps = {
   showAD117?: boolean
   /** Show AD 200 empire extent layer */
   showAD200?: boolean
-  /** Callback when time period changes */
-  onPeriodChange?: (periodId: string) => void
   /** Callback when BC60 layer toggle changes */
   onBC60Change?: (show: boolean) => void
   /** Callback when AD14 layer toggle changes */
@@ -42,14 +34,11 @@ type MapControlsProps = {
 }
 
 export function MapControls({
-  timePeriods = ROMAN_TIME_PERIODS,
-  selectedPeriod,
   showBC60 = false,
   showAD14 = false,
   showAD69 = false,
   showAD117 = false,
   showAD200 = false,
-  onPeriodChange,
   onBC60Change,
   onAD14Change,
   onAD69Change,
@@ -60,9 +49,6 @@ export function MapControls({
   showProvinceLabels,
   onProvinceLabelsChange,
 }: MapControlsProps) {
-  const [currentPeriod, setCurrentPeriod] = useState<string | null>(
-    selectedPeriod ?? null,
-  )
 
   // Provinces data loading
   const [provincesData, setProvincesData] =
@@ -90,7 +76,7 @@ export function MapControls({
     if (!provincesData?.features) return []
 
     return provincesData.features
-      .map((feature: any) => ({
+      .map((feature: GeoJSON.Feature) => ({
         value: (feature.properties?.name ??
           feature.properties?.Name ??
           "") as string,
@@ -101,12 +87,6 @@ export function MapControls({
       .filter((option) => option.value)
       .sort((a, b) => a.label.localeCompare(b.label))
   }, [provincesData])
-
-  const handlePeriodChange = (periodId: string) => {
-    const newPeriod = currentPeriod === periodId ? null : periodId
-    setCurrentPeriod(newPeriod)
-    onPeriodChange?.(newPeriod ?? "")
-  }
 
   const hasAnyEmpireLayerVisible = () => {
     return showBC60 || showAD14 || showAD69 || showAD117 || showAD200
@@ -122,54 +102,20 @@ export function MapControls({
 
   return (
     <div className="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {/* Time Period Controls */}
-        {timePeriods.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-700">
-                Historical Periods
-              </h3>
-              {(currentPeriod ?? hasAnyEmpireLayerVisible()) && (
-                <button
-                  onClick={() => {
-                    setCurrentPeriod(null)
-                    clearAllEmpireLayers()
-                    onPeriodChange?.("")
-                  }}
-                  className="text-xs text-gray-500 underline hover:text-gray-700"
-                >
-                  Clear all layers
-                </button>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {timePeriods.map((period) => (
-                <button
-                  key={period.id}
-                  onClick={() => handlePeriodChange(period.id)}
-                  className={`rounded-md border px-3 py-1 text-sm transition-colors ${
-                    currentPeriod === period.id
-                      ? "border-amber-700 bg-amber-700 text-white"
-                      : "border-amber-200 bg-white text-amber-800 hover:border-amber-300 hover:bg-amber-50"
-                  }`}
-                  title={period.description}
-                >
-                  {period.name}
-                </button>
-              ))}
-            </div>
-            {currentPeriod && (
-              <div className="text-xs text-gray-600">
-                {timePeriods.find((p) => p.id === currentPeriod)?.description}
-              </div>
-            )}
-          </div>
-        )}
-
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Empire Extent Layers */}
         <div className="space-y-2">
-          <h3 className="text-sm font-medium text-gray-700">Empire Extent</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-gray-700">Empire Extent</h3>
+            {hasAnyEmpireLayerVisible() && (
+              <button
+                onClick={clearAllEmpireLayers}
+                className="text-xs text-gray-500 underline hover:text-gray-700"
+              >
+                Clear all layers
+              </button>
+            )}
+          </div>
           <div className="space-y-1">
             <label className="flex cursor-pointer items-center space-x-2">
               <input

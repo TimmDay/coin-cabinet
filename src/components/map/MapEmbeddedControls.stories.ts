@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/nextjs"
-import { ROMAN_TIME_PERIODS } from "../../data/romanBoundaries"
 import { MapEmbeddedControls } from "./MapEmbeddedControls"
 
 const empireLayerConfig = {
@@ -34,11 +33,7 @@ const meta: Meta<typeof MapEmbeddedControls> = {
       options: ["default", "fullscreen"],
       description: "Layout style for the controls",
     },
-    currentPeriod: {
-      control: "select",
-      options: [null, ...ROMAN_TIME_PERIODS.map((p) => p.id)],
-      description: "Currently selected time period",
-    },
+
     selectedProvinces: {
       control: "object",
       description: "Array of selected province IDs",
@@ -60,8 +55,6 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {
     layout: "default",
-    timePeriods: ROMAN_TIME_PERIODS,
-    currentPeriod: null,
     empireLayerConfig,
     isLayerVisible: () => false,
     toggleLayer: () => {
@@ -94,7 +87,6 @@ export const FullscreenLayout: Story = {
 export const WithActiveSelections: Story = {
   args: {
     ...Default.args,
-    currentPeriod: "ad117",
     isLayerVisible: (key: string) => key === "ad14" || key === "ad117",
     hasAnyEmpireLayerVisible: () => true,
     selectedProvinces: [
@@ -118,7 +110,6 @@ export const CompactWithSelections: Story = {
   args: {
     ...Default.args,
     layout: "default",
-    currentPeriod: "ad69",
     selectedProvinces: ["britannia", "dacia"],
     showProvinceLabels: false,
   },
