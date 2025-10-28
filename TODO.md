@@ -2,11 +2,22 @@
 
 ## Next Thing
 
-- [ ] research expanded latin and translation text for legends.
-- [ ] generate geojson data for the SSeverus province splits.
+- [ ] deep dive page: layout. On desktop do obv/rev rows like: [normal photo] [cool light photo] [sketch photo] [legend, translation, description] then they stack on mobile. cool ight and sketch are optional, and no container for them if they aren't there (still centered).
 
 ### Quick Notes
 
+- [ ] research expanded latin and translation text for legends.
+- [ ] deep dive: fix the image tap modal to work on mobile. ALso the image should blow up more.
+- [ ] deep dive. Ready to clean up the map a bit.
+  - delete the dummy controls. Province controls dont show on coin maps (onoly in map tab).
+  - map centers on the Mint of that coin.
+  - Mint data source has more comprehensive info for that mint. shows in popup.
+  - Per-emperor data source of which provinces to show?
+- [ ] MAP: do roads layer
+- [ ] MAP: do lakes and oceans labels layer?
+- [ ] MAP: do forts and landmarks layer?
+- [ ] MAP: do Hadrian / Antonine wall features
+- [ ] generate geojson data for the SSeverus province splits.
 - [ ] decide whether to have a 'modern' set. Where to put the philip note.
 - [ ] deep dive page, on large monitors the coins are too spread out
 - [ ] deep dive page. font sizes and colors are all over the place
@@ -48,7 +59,7 @@ The goal of this is provide 'pins on the map'. Important events during the emper
   - [ ] Simplify polygons using mapshaper (reduce complexity by 90%)
   - [ ] Use TopoJSON for Roman Empire extents (they share borders)
   - [ ] Keep province labels as-is (they're small points)
-  - [ ]Add compression headers in Next.js config
+  - [ ] Add compression headers in Next.js config
 
 - [x] make a map component using leaflet that can show the roman provinces as layers (with date filtering to show the provinces as they were for the selected year)
 - [ ] pins for mints in my collection, sized by number of coins from that mint

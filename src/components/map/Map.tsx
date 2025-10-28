@@ -7,10 +7,12 @@ import {
   GeoJSON,
   MapContainer,
   Marker,
+  Popup,
   TileLayer,
   useMapEvents,
 } from "react-leaflet"
 import { ROMAN_PROVINCES } from "../../constants/provinces"
+import { ROMAN_MINTS } from "../../constants/mints"
 import type { TimePeriod } from "../../data/romanBoundaries"
 import { ROMAN_TIME_PERIODS } from "../../data/romanBoundaries"
 import {
@@ -21,6 +23,15 @@ import {
 } from "./hooks"
 import { createMapCardHTML } from "./MapCard"
 import { MapEmbeddedControls } from "./MapEmbeddedControls"
+import {
+  createEmpireLayerConfig,
+  LEAFLET_ICON_CONFIG,
+  MAP_BOUNDS,
+  MAP_STYLES,
+  PROVINCE_LABEL_STYLES,
+  TILE_LAYER_CONFIG,
+  type EmpireLayerConfigMap,
+} from "./mapConfig"
 
 // Component to handle zoom level changes
 function ZoomHandler({
@@ -117,7 +128,6 @@ export const Map: React.FC<MapProps> = ({
     provincesData,
     provincesLabelsData,
     loading: provincesLoading,
-    error,
   } = useMapData()
 
   // Local state for map-specific functionality
@@ -141,7 +151,7 @@ export const Map: React.FC<MapProps> = ({
       .filter(Boolean)
   }, [provincesData])
 
-  const { isExternallyControlled, defaultProvinces } = useProvinceSelection(
+  const { isExternallyControlled } = useProvinceSelection(
     allProvinces,
     externalSelectedProvinces,
   )
@@ -170,106 +180,18 @@ export const Map: React.FC<MapProps> = ({
   // Empire extent layer configuration
   const empireLayerConfig = useMemo(
     () =>
-      ({
-        bc60: {
-          id: "bc60",
-          name: "BC 60",
-          title: "Roman Republic BC 60",
-          filename: "roman_empire_bc_60_extent.geojson",
-          description:
-            "Roman Republic around 60 BCE, during the First Triumvirate (Caesar, Pompey, Crassus)",
-          showProp: showBC60,
-          onChange: onBC60Change,
-          color: "#8B4513",
-          fillColor: "#DEB887",
-          style: {
-            color: "#8B4513",
-            weight: 2,
-            opacity: 0.8,
-            fillColor: "#DEB887",
-            fillOpacity: 0.15,
-            dashArray: "6, 3",
-          },
-        },
-        ad14: {
-          id: "ad14",
-          name: "AD 14",
-          title: "Roman Empire AD 14",
-          filename: "roman_empire_ad_14_extent.geojson",
-          description: "Roman Empire at the death of Augustus in AD 14",
-          showProp: showAD14,
-          onChange: onAD14Change,
-          color: "#4169E1",
-          fillColor: "#87CEEB",
-          style: {
-            color: "#4169E1",
-            weight: 2,
-            opacity: 0.8,
-            fillColor: "#87CEEB",
-            fillOpacity: 0.15,
-            dashArray: "5, 4",
-          },
-        },
-        ad69: {
-          id: "ad69",
-          name: "AD 69",
-          title: "Roman Empire AD 69",
-          filename: "roman_empire_ad_69_extent.geojson",
-          description:
-            "Roman Empire in AD 69, the Year of the Four Emperors (Galba, Otho, Vitellius, Vespasian)",
-          showProp: showAD69,
-          onChange: onAD69Change,
-          color: "#DC143C",
-          fillColor: "#FFB6C1",
-          style: {
-            color: "#DC143C",
-            weight: 2,
-            opacity: 0.8,
-            fillColor: "#FFB6C1",
-            fillOpacity: 0.15,
-            dashArray: "4, 5",
-          },
-        },
-        ad117: {
-          id: "ad117",
-          name: "AD 117",
-          title: "Roman Empire AD 117",
-          filename: "roman_empire_ad_117_extent.geojson",
-          description:
-            "Roman Empire at its greatest extent under Trajan in AD 117",
-          showProp: showAD117,
-          onChange: onAD117Change,
-          color: "#228B22",
-          fillColor: "#90EE90",
-          style: {
-            color: "#228B22",
-            weight: 2,
-            opacity: 0.8,
-            fillColor: "#90EE90",
-            fillOpacity: 0.15,
-            dashArray: "3, 6",
-          },
-        },
-        ad200: {
-          id: "ad200",
-          name: "AD 200",
-          title: "Roman Empire AD 200",
-          filename: "roman_empire_AD_200_extent.geojson",
-          description: "Roman Empire around AD 200, during the Severan dynasty",
-          showProp: showAD200,
-          onChange: onAD200Change,
-          color: "#FF8C00",
-          fillColor: "#FFE4B5",
-          style: {
-            color: "#FF8C00",
-            weight: 2,
-            opacity: 0.8,
-            fillColor: "#FFE4B5",
-            fillOpacity: 0.15,
-            dashArray: "2, 7",
-          },
-        },
-      }) as const,
+      createEmpireLayerConfig(
+        showBC60,
+        onBC60Change,
+        showAD14,
+        onAD14Change,
+        showAD69,
+        onAD69Change,
+        showAD117,
+        onAD117Change,
+        showAD200,
+        onAD200Change,
+      ),
     [
       showBC60,
       onBC60Change,
@@ -286,7 +208,6 @@ export const Map: React.FC<MapProps> = ({
 
   // Use empire layer state management hook
   const {
-    layerStates,
     isLayerVisible,
     getLayerData,
     toggleLayer,
@@ -317,11 +238,14 @@ export const Map: React.FC<MapProps> = ({
 
   // Enhanced toggle function that also calls onChange callbacks
   const handleToggleLayer = (layerKey: string) => {
-    const config = empireLayerConfig[layerKey as keyof typeof empireLayerConfig]
     const newValue = !isLayerVisible(layerKey)
-
     toggleLayer(layerKey)
-    config?.onChange?.(newValue)
+    
+    // Call onChange callback if it exists
+    if (layerKey in empireLayerConfig) {
+      const config = empireLayerConfig[layerKey as keyof EmpireLayerConfigMap]
+      config?.onChange?.(newValue)
+    }
   }
 
   // Generate province options from loaded data
@@ -391,24 +315,11 @@ export const Map: React.FC<MapProps> = ({
     // Fix for Leaflet default markers not showing properly in Next.js
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
     delete (L.Icon.Default.prototype as any)._getIconUrl
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl:
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-      iconUrl:
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-      shadowUrl:
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-    })
+    L.Icon.Default.mergeOptions(LEAFLET_ICON_CONFIG)
   }, [])
 
   // Styling for province boundaries
-  const boundaryStyle = {
-    color: "#8B4513", // Roman brown
-    weight: 2,
-    opacity: 0.8,
-    fillColor: "#DEB887",
-    fillOpacity: 0.1,
-  }
+  const boundaryStyle = MAP_STYLES.boundaries
 
   // Styling for AD 200 empire extent layer
 
@@ -492,22 +403,15 @@ export const Map: React.FC<MapProps> = ({
               center={mapCenter}
               zoom={mapZoom}
               className="h-full w-full"
-              // Roman Empire bounds with 500km buffer (approximate)
-              // Extended from Atlantic to Mesopotamia, from Scotland to Sahara
-              maxBounds={[
-                [65.0, -15.0], // Northeast: Scotland + buffer, Atlantic + buffer
-                [20, 55.0], // Southwest: North Africa + 200km extra south, Iraq + buffer
-              ]}
-              maxBoundsViscosity={1.0}
+              maxBounds={MAP_BOUNDS.maxBounds}
+              maxBoundsViscosity={MAP_BOUNDS.maxBoundsViscosity}
               minZoom={config.minZoom}
               maxZoom={config.maxZoom}
             >
               <TileLayer
-                // Using CartoDB Positron No Labels for muted styling without country names
-                url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                // Custom styling to make it more muted
-                opacity={0.7}
+                url={TILE_LAYER_CONFIG.url}
+                attribution={TILE_LAYER_CONFIG.attribution}
+                opacity={TILE_LAYER_CONFIG.opacity}
               />
 
               {/* Zoom Level Handler */}
@@ -628,14 +532,7 @@ export const Map: React.FC<MapProps> = ({
                       features: filteredFeatures,
                     } as GeoJSON.FeatureCollection
                   })()}
-                  style={{
-                    color: "#059669", // Emerald border
-                    weight: 2,
-                    opacity: 0.8,
-                    fillColor: "#10b981", // Emerald fill
-                    fillOpacity: 0.2,
-                    dashArray: "5, 5",
-                  }}
+                  style={MAP_STYLES.provinces}
                   onEachFeature={(feature, layer) => {
                     if (feature.properties && "name" in feature.properties) {
                       const props = feature.properties as { name: string }
@@ -656,7 +553,7 @@ export const Map: React.FC<MapProps> = ({
 
               {/* Province Labels */}
               {showProvinceLabels &&
-                currentZoom > 4 &&
+                currentZoom > PROVINCE_LABEL_STYLES.minZoomLevel &&
                 provinceLabels.map((label) => (
                   <Marker
                     key={`label-${label.name}`}
@@ -665,25 +562,42 @@ export const Map: React.FC<MapProps> = ({
                     icon={
                       new DivIcon({
                         className: "province-label",
-                        html: `<div style="
-                    border-radius: 4px;
-                    padding: 2px 6px;
-                    font-size: 12px;
-                    font-weight: 600;
-                    color: #065f46;
-                    text-align: center;
-                    white-space: pre;
-                    line-height: 1.2;
-                    width: max-content;
-                    pointer-events: none;
-                    transform: translateX(-40%) translateY(-50%);
-                  ">${label.name.replace(/\s/, "\n")}</div>`,
+                        html: `<div style="${PROVINCE_LABEL_STYLES.container}">${label.name.replace(/\s/, "\n")}</div>`,
                         iconSize: undefined,
                         iconAnchor: undefined,
                       })
                     }
                   />
                 ))}
+
+              {/* Mint Markers */}
+              {ROMAN_MINTS.map((mint) => (
+                <Marker
+                  key={`mint-${mint.mintName}`}
+                  position={[mint.lat, mint.lng]}
+                  icon={
+                    new DivIcon({
+                      className: "mint-marker",
+                      html: `<div style="${MAP_STYLES.mintMarker.css}"></div>`,
+                      iconSize: MAP_STYLES.mintMarker.iconSize,
+                      iconAnchor: MAP_STYLES.mintMarker.iconAnchor,
+                    })
+                  }
+                >
+                  <Popup maxWidth={300} className="mint-popup">
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: createMapCardHTML({
+                          title: mint.mintName,
+                          subtitle: "Roman Mint",
+                          description: "Major imperial minting center",
+                          className: "text-blue-800",
+                        }),
+                      }}
+                    />
+                  </Popup>
+                </Marker>
+              ))}
 
               {/* Historical Boundaries Layer */}
               {showBoundaries && boundaries && (

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import type { EmpireLayerConfigMap } from "../mapConfig"
 
 type UseMapDataResult = {
   provincesData: GeoJSON.FeatureCollection | null
@@ -71,26 +72,10 @@ export const useMapData = (): UseMapDataResult => {
   }
 }
 
-type EmpireLayerConfig = Record<
-  string,
-  {
-    filename: string
-    id: string
-    name: string
-    title: string
-    description: string
-    showProp?: boolean
-    onChange?: (show: boolean) => void
-    color?: string
-    fillColor?: string
-    style?: Record<string, unknown>
-  }
->
-
 /**
  * Custom hook for managing empire layer visibility and data loading state
  */
-export const useEmpireLayerState = (empireLayerConfig: EmpireLayerConfig) => {
+export const useEmpireLayerState = (empireLayerConfig: EmpireLayerConfigMap) => {
   const [layerStates, setLayerStates] = useState(() => {
     const initialStates: Record<
       string,
