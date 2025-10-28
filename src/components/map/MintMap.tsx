@@ -10,7 +10,6 @@ import {
   TileLayer,
   useMapEvents,
 } from "react-leaflet"
-import { ROMAN_PROVINCES } from "../../constants/provinces"
 import type { TimePeriod } from "../../data/romanBoundaries"
 import { ROMAN_TIME_PERIODS } from "../../data/romanBoundaries"
 import {
@@ -37,7 +36,7 @@ function ZoomHandler({
   return null
 }
 
-type MapProps = {
+type MintMapProps = {
   /** Center coordinates of the map [latitude, longitude] */
   center?: [number, number]
   /** Zoom level of the map */
@@ -86,7 +85,7 @@ type MapProps = {
   hideControls?: boolean
 }
 
-export const Map: React.FC<MapProps> = ({
+export const MintMap: React.FC<MintMapProps> = ({
   center,
   zoom,
   height = "400px",
@@ -128,7 +127,7 @@ export const Map: React.FC<MapProps> = ({
     useState<GeoJSON.FeatureCollection | null>(null)
   const [internalSelectedProvinces, setInternalSelectedProvinces] = useState<
     string[]
-  >([...ROMAN_PROVINCES]) // Start with all provinces visible
+  >([])
   const [internalShowProvinceLabels, setInternalShowProvinceLabels] =
     useState(true)
   const [currentZoom, setCurrentZoom] = useState<number>(config.defaultZoom)
@@ -288,40 +287,17 @@ export const Map: React.FC<MapProps> = ({
   const {
     layerStates,
     isLayerVisible,
-    getLayerData,
     toggleLayer,
     clearAllEmpireLayers,
     hasAnyEmpireLayerVisible,
   } = useEmpireLayerState(empireLayerConfig)
 
-  // Sync external props with hook state
-  useEffect(() => {
-    Object.entries(empireLayerConfig).forEach(([key, config]) => {
-      if (
-        config.showProp !== undefined &&
-        isLayerVisible(key) !== config.showProp
-      ) {
-        toggleLayer(key)
-      }
-    })
-  }, [
-    showBC60,
-    showAD14,
-    showAD69,
-    showAD117,
-    showAD200,
-    empireLayerConfig,
-    isLayerVisible,
-    toggleLayer,
-  ])
-
-  // Enhanced toggle function that also calls onChange callbacks
-  const handleToggleLayer = (layerKey: string) => {
-    const config = empireLayerConfig[layerKey as keyof typeof empireLayerConfig]
-    const newValue = !isLayerVisible(layerKey)
-
-    toggleLayer(layerKey)
-    config?.onChange?.(newValue)
+  // Helper function to get layer data (bridge between hook and old interface)
+  const getLayerData = (layerKey: string) => {
+    // For now, since the hook doesn't load data automatically,
+    // we'll return null and let the existing logic handle it
+    // This will be improved when we move layer data loading to the hook
+    return null
   }
 
   // Generate province options from loaded data
@@ -348,12 +324,15 @@ export const Map: React.FC<MapProps> = ({
   const provinceLabels = useMemo(() => {
     if (!provincesLabelsData) return []
 
-    // Show labels only for selected provinces
+    // If no provinces are selected, show all provinces by default
+    const shouldShowAll = selectedProvinces.length === 0
+
     return provincesLabelsData.features
-      .filter((feature) => {
-        const provinceName = feature.properties?.name as string
-        return selectedProvinces.includes(provinceName)
-      })
+      .filter(
+        (feature) =>
+          shouldShowAll ||
+          selectedProvinces.includes(feature.properties?.name as string),
+      )
       .map((feature) => {
         const name = feature.properties?.name as string
         if (!name || feature.geometry.type !== "Point") return null
@@ -456,7 +435,7 @@ export const Map: React.FC<MapProps> = ({
             }}
             empireLayerConfig={empireLayerConfig}
             isLayerVisible={isLayerVisible}
-            toggleLayer={handleToggleLayer}
+            toggleLayer={toggleLayer}
             hasAnyEmpireLayerVisible={hasAnyEmpireLayerVisible}
             clearAllEmpireLayers={() => {
               setCurrentPeriod(null)
@@ -611,17 +590,16 @@ export const Map: React.FC<MapProps> = ({
               {/* Selected Provinces Layer */}
               {provincesData && (
                 <GeoJSON
-                  key={`provinces-${selectedProvinces.length === 0 ? "none" : selectedProvinces.length === ROMAN_PROVINCES.length ? "all" : selectedProvinces.join("-")}`}
+                  key={`provinces-${selectedProvinces.length === 0 ? "all" : selectedProvinces.join("-")}`}
                   data={(() => {
-                    // Filter provinces based on selection:
-                    // - Empty array [] = show no provinces
-                    // - Full array = show all provinces
-                    // - Partial array = show only selected provinces
+                    // If no provinces are selected, show all provinces by default
+                    const shouldShowAll = selectedProvinces.length === 0
                     const filteredFeatures = provincesData.features.filter(
-                      (feature) => {
-                        const provinceName = feature.properties?.name as string
-                        return selectedProvinces.includes(provinceName)
-                      },
+                      (feature) =>
+                        shouldShowAll ||
+                        selectedProvinces.includes(
+                          feature.properties?.name as string,
+                        ),
                     )
                     return {
                       type: "FeatureCollection",

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs"
 import { useState } from "react"
-import { MapControls } from "../components/map/MapControls"
 import { Map } from "../components/map/Map"
+import { MapControls } from "../components/map/MapControls"
 
 // Combined component for Storybook
 function MapWithControls() {

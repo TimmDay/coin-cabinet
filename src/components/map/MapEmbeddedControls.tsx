@@ -1,7 +1,7 @@
 import React from "react"
+import { ROMAN_PROVINCES } from "../../constants/provinces"
 import type { TimePeriod } from "../../data/romanBoundaries"
 import { SimpleMultiSelect } from "../ui/SimpleMultiSelect"
-import { ROMAN_PROVINCES } from "../../constants/provinces"
 
 type MapEmbeddedControlsProps = {
   // Layout
@@ -197,7 +197,7 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
               <button
                 onClick={handleSelectAllProvinces}
                 disabled={
-                  provincesLoading || 
+                  provincesLoading ||
                   provinceOptions.length === 0 ||
                   selectedProvinces.length === ROMAN_PROVINCES.length
                 }
@@ -209,7 +209,7 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
               <button
                 onClick={handleClearAllProvinces}
                 disabled={
-                  provincesLoading || 
+                  provincesLoading ||
                   provinceOptions.length === 0 ||
                   selectedProvinces.length === 0
                 }

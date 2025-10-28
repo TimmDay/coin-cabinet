@@ -71,27 +71,31 @@ export const useMapData = (): UseMapDataResult => {
   }
 }
 
-type EmpireLayerConfig = Record<string, {
-  filename: string
-  id: string
-  name: string
-  title: string
-  description: string
-  showProp?: boolean
-  onChange?: (show: boolean) => void
-  color?: string
-  fillColor?: string
-  style?: Record<string, unknown>
-}>
+type EmpireLayerConfig = Record<
+  string,
+  {
+    filename: string
+    id: string
+    name: string
+    title: string
+    description: string
+    showProp?: boolean
+    onChange?: (show: boolean) => void
+    color?: string
+    fillColor?: string
+    style?: Record<string, unknown>
+  }
+>
 
 /**
  * Custom hook for managing empire layer visibility and data loading state
  */
-export const useEmpireLayerState = (
-  empireLayerConfig: EmpireLayerConfig,
-) => {
+export const useEmpireLayerState = (empireLayerConfig: EmpireLayerConfig) => {
   const [layerStates, setLayerStates] = useState(() => {
-    const initialStates: Record<string, { visible: boolean; data: GeoJSON.FeatureCollection | null }> = {}
+    const initialStates: Record<
+      string,
+      { visible: boolean; data: GeoJSON.FeatureCollection | null }
+    > = {}
     Object.keys(empireLayerConfig).forEach((key) => {
       initialStates[key] = { visible: false, data: null }
     })
@@ -105,7 +109,7 @@ export const useEmpireLayerState = (
       if (!response.ok) {
         throw new Error(`Failed to load GeoJSON: ${response.statusText}`)
       }
-      const data = await response.json() as GeoJSON.FeatureCollection
+      const data = (await response.json()) as GeoJSON.FeatureCollection
 
       setLayerStates((prev) => ({
         ...prev,
@@ -139,9 +143,10 @@ export const useEmpireLayerState = (
     })
   }, [layerStates, empireLayerConfig])
 
-  const isLayerVisible = (key: string): boolean => layerStates[key]?.visible ?? false
+  const isLayerVisible = (key: string): boolean =>
+    layerStates[key]?.visible ?? false
 
-  const getLayerData = (key: string): GeoJSON.FeatureCollection | null => 
+  const getLayerData = (key: string): GeoJSON.FeatureCollection | null =>
     layerStates[key]?.data ?? null
 
   const toggleLayer = (key: string) => {

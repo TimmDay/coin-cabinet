@@ -4,14 +4,19 @@ import dynamic from "next/dynamic"
 import { useState } from "react"
 import { MapControls } from "~/components/map/MapControls"
 import { NotFound404 } from "~/components/ui/NotFound404"
-import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { ROMAN_PROVINCES } from "~/constants/provinces"
+import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 
 // Dynamically import Map component to prevent SSR issues with Leaflet
-const Map = dynamic(() => import("~/components/map/Map").then(mod => ({ default: mod.Map })), {
-  ssr: false,
-  loading: () => <div className="h-full w-full animate-pulse bg-gray-200 rounded-lg" />
-})
+const Map = dynamic(
+  () => import("~/components/map/Map").then((mod) => ({ default: mod.Map })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full w-full animate-pulse rounded-lg bg-gray-200" />
+    ),
+  },
+)
 
 export default function MapPage() {
   const isMapEnabled = useTypedFeatureFlag("map-feature")
@@ -23,7 +28,9 @@ export default function MapPage() {
   const [showAD69, setShowAD69] = useState(false)
   const [showAD117, setShowAD117] = useState(false)
   const [showAD200, setShowAD200] = useState(false)
-  const [selectedProvinces, setSelectedProvinces] = useState<string[]>([...ROMAN_PROVINCES])
+  const [selectedProvinces, setSelectedProvinces] = useState<string[]>([
+    ...ROMAN_PROVINCES,
+  ])
   const [showProvinceLabels, setShowProvinceLabels] = useState(true)
 
   // Show 404-like message if feature flag is not enabled

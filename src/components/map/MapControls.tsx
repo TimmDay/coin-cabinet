@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { ROMAN_PROVINCES } from "../../constants/provinces"
 import type { TimePeriod } from "../../data/romanBoundaries"
 import { ROMAN_TIME_PERIODS } from "../../data/romanBoundaries"
-import { ROMAN_PROVINCES } from "../../constants/provinces"
 import { SimpleMultiSelect } from "../ui/SimpleMultiSelect"
 
 type MapControlsProps = {
@@ -254,7 +254,7 @@ export function MapControls({
               <button
                 onClick={() => onProvincesChange([...ROMAN_PROVINCES])}
                 disabled={
-                  provincesLoading || 
+                  provincesLoading ||
                   provinceOptions.length === 0 ||
                   selectedProvinces.length === ROMAN_PROVINCES.length
                 }
@@ -266,7 +266,7 @@ export function MapControls({
               <button
                 onClick={() => onProvincesChange([])}
                 disabled={
-                  provincesLoading || 
+                  provincesLoading ||
                   provinceOptions.length === 0 ||
                   selectedProvinces.length === 0
                 }

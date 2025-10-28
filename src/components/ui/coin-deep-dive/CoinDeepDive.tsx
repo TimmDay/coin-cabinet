@@ -5,10 +5,15 @@ import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { CoinSketchCompare } from "../CoinSketchCompare"
 
 // Dynamically import Map component to prevent SSR issues with Leaflet
-const Map = dynamic(() => import("../../map/Map").then(mod => ({ default: mod.Map })), {
-  ssr: false,
-  loading: () => <div className="h-96 w-full animate-pulse bg-gray-200 rounded-lg" />
-})
+const Map = dynamic(
+  () => import("../../map/Map").then((mod) => ({ default: mod.Map })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-96 w-full animate-pulse rounded-lg bg-gray-200" />
+    ),
+  },
+)
 
 type CoinDeepDiveProps = {
   coin: {
