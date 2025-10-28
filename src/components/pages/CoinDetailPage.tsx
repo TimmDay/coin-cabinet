@@ -3,6 +3,7 @@
 import { RelatedPosts } from "~/components/RelatedPosts"
 import { CoinDeepDive } from "~/components/ui/coin-deep-dive"
 import { CoinSnapshot } from "~/components/ui/coin-deep-dive/CoinSnapshot"
+import { NotFound404 } from "~/components/ui/NotFound404"
 import { PageTitleWithSnapshot } from "~/components/ui/PageTitleWithSnapshot"
 import { useSomnusCoins } from "~/lib/api/somnus-collection"
 
@@ -46,10 +47,12 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
   if (!coin) {
     return (
       <main className="min-h-screen">
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center">
-            <p className="text-xl text-slate-400">Coin not found</p>
-          </div>
+        <div className="container mx-auto px-4">
+          <NotFound404
+            title="Coin not found"
+            message="The requested coin could not be found"
+            fullScreen={false}
+          />
         </div>
       </main>
     )

@@ -24,6 +24,7 @@ export default function Navbar() {
   const router = useRouter()
   const { user } = useAuth()
   const isDevMode = useTypedFeatureFlag("dev")
+  const isMapEnabled = useTypedFeatureFlag("map-feature")
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null)
   const [openMainDropdown, setOpenMainDropdown] = useState<string | null>(null)
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -218,11 +219,15 @@ export default function Navbar() {
     }
   }, [openMainDropdown])
 
-  // Filter navigation items based on authentication status
+  // Filter navigation items based on authentication status and feature flags
   const visibleNavItems = navigationItems.filter((item) => {
     // Only show "Admin" for authenticated users
     if (item.name === "Admin") {
       return !!user
+    }
+    // Only show "Map" when map feature flag is enabled
+    if (item.name === "Map") {
+      return isMapEnabled
     }
     return true
   })

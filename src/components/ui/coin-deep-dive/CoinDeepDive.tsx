@@ -1,8 +1,14 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { CoinSketchCompare } from "../CoinSketchCompare"
-import { MintMap } from "../MintMap"
+
+// Dynamically import Map component to prevent SSR issues with Leaflet
+const Map = dynamic(() => import("../../map/Map").then(mod => ({ default: mod.Map })), {
+  ssr: false,
+  loading: () => <div className="h-96 w-full animate-pulse bg-gray-200 rounded-lg" />
+})
 
 type CoinDeepDiveProps = {
   coin: {
@@ -63,7 +69,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
 
       {/* Map Section */}
 
-      {isMapFeatureEnabled && <MintMap />}
+      {isMapFeatureEnabled && <Map />}
 
       {/* Coin Details */}
       {coin.flavour_text && <FlavorFooter coin={coin} />}

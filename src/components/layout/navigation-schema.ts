@@ -1,6 +1,7 @@
 export const navigationItems = [
   { name: "Cabinet", href: "/cabinet", hasSubmenu: true },
   { name: "Articles", href: "/articles", hasSubmenu: true },
+  { name: "Map", href: "/map" },
   { name: "About", href: "/about" },
   { name: "Admin", href: "/admin", hasSubmenu: true },
 ]

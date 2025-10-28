@@ -24,7 +24,9 @@ export function LoginForm() {
     try {
       // Block sign up if not enabled
       if (isSignUp && !isSignUpEnabled) {
-        setMessage("Sign up is currently disabled. Please contact an administrator.")
+        setMessage(
+          "Sign up is currently disabled. Please contact an administrator.",
+        )
         return
       }
 
@@ -105,7 +107,11 @@ export function LoginForm() {
           variant="primary"
           className="w-full"
         >
-          {loading ? "Loading..." : (isSignUp && isSignUpEnabled) ? "Sign Up" : "Sign In"}
+          {loading
+            ? "Loading..."
+            : isSignUp && isSignUpEnabled
+              ? "Sign Up"
+              : "Sign In"}
         </RoundButton>
 
         {isSignUpEnabled && (

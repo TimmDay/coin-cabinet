@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/nextjs"
-import { MintMap } from "../components/ui/MintMap"
+import { Map } from "../components/map/Map"
 
 const meta = {
-  title: "Components/MintMap",
-  component: MintMap,
+  title: "Components/Map",
+  component: Map,
   parameters: {
     layout: "fullscreen",
     docs: {
@@ -35,6 +35,23 @@ const meta = {
       description: "Additional CSS class names",
       control: { type: "text" },
     },
+    layout: {
+      description:
+        "Layout mode - 'default' shows controls above map, 'fullscreen' shows controls below map",
+      control: { type: "select", options: ["default", "fullscreen"] },
+    },
+    hideControls: {
+      description: "Hide all map controls (for external control)",
+      control: { type: "boolean" },
+    },
+    selectedProvinces: {
+      description: "Selected provinces for highlighting",
+      control: { type: "object" },
+    },
+    showProvinceLabels: {
+      description: "Show province labels on the map",
+      control: { type: "boolean" },
+    },
     showAD200: {
       description: "Show AD 200 empire extent layer (legacy)",
       control: { type: "boolean" },
@@ -56,16 +73,16 @@ const meta = {
       control: { type: "boolean" },
     },
   },
-} satisfies Meta<typeof MintMap>
+} satisfies Meta<typeof Map>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-// Default story - Roman Empire overview
+// Default story - Centered on Rome
 export const Default: Story = {
   args: {
-    center: [41.0, 21.0], // Balkans - center of Roman Empire
-    zoom: 4,
+    center: [41.9028, 12.4964], // Rome
+    zoom: 5,
     height: "400px",
     width: "100%",
   },
@@ -411,5 +428,67 @@ export const PeakVsLaterEmpire: Story = {
     width: "100%",
     showAD117: true,
     showAD200: true,
+  },
+}
+
+// New Layout and Province Stories
+
+// Fullscreen Layout
+export const FullscreenLayout: Story = {
+  args: {
+    center: [41.9028, 12.4964], // Rome
+    zoom: 5,
+    height: "500px",
+    width: "100%",
+    layout: "fullscreen",
+  },
+}
+
+// With Controls Hidden (for external control)
+export const ExternallyControlled: Story = {
+  args: {
+    center: [41.9028, 12.4964], // Rome
+    zoom: 5,
+    height: "400px",
+    width: "100%",
+    hideControls: true,
+    showAD117: true,
+    selectedProvinces: ["Gallia", "Hispania", "Britannia"],
+    showProvinceLabels: true,
+  },
+}
+
+// Province Selection Example
+export const WithProvinceSelection: Story = {
+  args: {
+    center: [41.9028, 12.4964], // Rome
+    zoom: 4,
+    height: "400px",
+    width: "100%",
+    selectedProvinces: ["Italia", "Gallia", "Hispania", "Africa"],
+    showProvinceLabels: true,
+  },
+}
+
+// Province Labels Only
+export const ProvinceLabelsOnly: Story = {
+  args: {
+    center: [41.9028, 12.4964], // Rome
+    zoom: 4,
+    height: "400px",
+    width: "100%",
+    showProvinceLabels: true,
+  },
+}
+
+// Mediterranean Focus with Provinces
+export const MediterraneanProvinces: Story = {
+  args: {
+    center: [35.0, 18.0], // Mediterranean center
+    zoom: 5,
+    height: "400px",
+    width: "100%",
+    selectedProvinces: ["Sicilia", "Sardinia", "Cyprus", "Creta"],
+    showProvinceLabels: true,
   },
 }
