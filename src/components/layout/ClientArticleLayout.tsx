@@ -24,8 +24,8 @@
 "use client"
 
 import { usePathname } from "next/navigation"
+import { TableOfContents } from "~/components/blog/TableOfContents"
 import { PageTitle } from "~/components/ui/PageTitle"
-import { TableOfContents } from "~/components/ui/TableOfContents"
 import type { ArticleMetadata } from "~/lib/utils/article-metadata"
 
 type ClientArticleLayoutProps = {

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs"
-import { TableOfContents } from "~/components/ui/TableOfContents"
+import { TableOfContents } from "~/components/blog/TableOfContents"
 import { MockMDXFeaturedCoins } from "./MockMDXFeaturedCoins"
 
 // Demo component that replicates the blog post layout
