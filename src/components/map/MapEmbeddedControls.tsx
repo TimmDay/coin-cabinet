@@ -1,6 +1,6 @@
 import React from "react"
-import { ROMAN_PROVINCES } from "../../constants/provinces"
 import { SimpleMultiSelect } from "../ui/SimpleMultiSelect"
+import { ROMAN_PROVINCES } from "./constants/provinces"
 
 type MapEmbeddedControlsProps = {
   // Layout

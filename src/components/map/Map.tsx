@@ -11,8 +11,8 @@ import {
   TileLayer,
   useMapEvents,
 } from "react-leaflet"
-import { ROMAN_MINTS } from "../../constants/mints"
-import { ROMAN_PROVINCES } from "../../constants/provinces"
+import { ROMAN_MINTS } from "./constants/mints"
+import { ROMAN_PROVINCES } from "./constants/provinces"
 import {
   useEmpireLayerState,
   useMapConfiguration,

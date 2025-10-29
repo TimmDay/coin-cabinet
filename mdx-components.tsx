@@ -1,5 +1,5 @@
 import { Aside } from "./src/components/Aside"
-import { BPBreak } from "./src/components/BPBreak"
+import { BPBreak } from "./src/components/blog/BPBreak"
 import { MDXFeaturedCoins } from "./src/components/mdx/MDXFeaturedCoins"
 import { BPImage } from "./src/components/ui/BPImage"
 

@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
-import { CoinSketchCompare } from "../CoinSketchCompare"
+import { CoinSketchCompare } from "./CoinSketchCompare"
 
 // Dynamically import Map component to prevent SSR issues with Leaflet
 const Map = dynamic(

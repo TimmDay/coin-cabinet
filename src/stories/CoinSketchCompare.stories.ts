@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs"
-import { CoinSketchCompare } from "~/components/ui/CoinSketchCompare"
+import { CoinSketchCompare } from "~/components/ui/coin-deep-dive/CoinSketchCompare"
 import { mockCoinWithSketches, mockCoinWithoutSketches } from "./mockCoins"
 
 const meta: Meta<typeof CoinSketchCompare> = {

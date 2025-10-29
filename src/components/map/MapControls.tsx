@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
-import { ROMAN_PROVINCES } from "../../constants/provinces"
 import { SimpleMultiSelect } from "../ui/SimpleMultiSelect"
+import { ROMAN_PROVINCES } from "./constants/provinces"
 
 type MapControlsProps = {
   /** Show BC 60 empire extent layer */

@@ -6,7 +6,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { CoinsWithoutImages } from "~/components/ui/CoinsWithoutImages"
+import { CoinsWithoutImages } from "~/components/ui/coin-deep-dive/CoinsWithoutImages"
 import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper"
 import { MultiSelect } from "~/components/ui/MultiSelect"
 import { RoundButton } from "~/components/ui/RoundButton"

@@ -2,9 +2,9 @@
 
 import dynamic from "next/dynamic"
 import { useState } from "react"
+import { ROMAN_PROVINCES } from "~/components/map/constants/provinces"
 import { MapControls } from "~/components/map/MapControls"
 import { NotFound404 } from "~/components/ui/NotFound404"
-import { ROMAN_PROVINCES } from "~/constants/provinces"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 
 // Dynamically import Map component to prevent SSR issues with Leaflet

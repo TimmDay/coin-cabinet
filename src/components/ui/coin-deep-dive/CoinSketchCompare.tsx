@@ -3,7 +3,7 @@
 import { useState } from "react"
 import CloudinaryImage from "~/components/CloudinaryImage"
 import { FormattedLegendExpanded } from "~/lib/components"
-import { ImageModal } from "./coin-deep-dive/ImageModal"
+import { ImageModal } from "./ImageModal"
 
 type CoinSketchCompareProps = {
   imageLinkO: string
