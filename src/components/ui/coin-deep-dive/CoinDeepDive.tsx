@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
+import { CoinRow } from "./CoinRow"
 import { CoinSketchCompare } from "./CoinSketchCompare"
 
 // Dynamically import Map component to prevent SSR issues with Leaflet
@@ -22,6 +23,8 @@ type CoinDeepDiveProps = {
     image_link_r?: string | null
     image_link_sketch_o?: string | null
     image_link_sketch_r?: string | null
+    image_link_altlight_o?: string | null
+    image_link_altlight_r?: string | null
     legend_o_expanded?: string | null
     legend_o_translation?: string | null
     legend_r_expanded?: string | null
@@ -58,6 +61,31 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const isMapFeatureEnabled = useTypedFeatureFlag("map-feature")
   return (
     <section className="space-y-6">
+      {/* Coin Row Components */}
+      {coin.image_link_o && (
+        <CoinRow
+          side="obverse"
+          imageLink={coin.image_link_o}
+          imageLinkAltlight={coin.image_link_altlight_o}
+          imageLinkSketch={coin.image_link_sketch_o}
+          legendExpanded={coin.legend_o_expanded}
+          legendTranslation={coin.legend_o_translation}
+          description={coin.desc_o}
+        />
+      )}
+
+      {coin.image_link_r && (
+        <CoinRow
+          side="reverse"
+          imageLink={coin.image_link_r}
+          imageLinkAltlight={coin.image_link_altlight_r}
+          imageLinkSketch={coin.image_link_sketch_r}
+          legendExpanded={coin.legend_r_expanded}
+          legendTranslation={coin.legend_r_translation}
+          description={coin.desc_r}
+        />
+      )}
+
       {/* Coin Sketch Compare Component */}
       <CoinSketchCompare
         imageLinkO={coin.image_link_o ?? ""}

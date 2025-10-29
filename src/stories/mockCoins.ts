@@ -44,8 +44,14 @@ export const mockCoins = [
     vendor_grading_notes: "About Good Very Fine.",
     image_link_o: "20250911__q-fabius-labeo-denarius__o__src-the-coin-cabinet",
     image_link_r: "20250911__q-fabius-labeo-denarius__r__src-the-coin-cabinet",
-    image_link_sketch_o: null,
-    image_link_sketch_r: null,
+    image_link_sketch_o:
+      "20250911__q-fabius-labeo-denarius__o__src-the-coin-cabinet",
+    image_link_sketch_r:
+      "20250911__q-fabius-labeo-denarius__r__src-the-coin-cabinet",
+    image_link_altlight_o:
+      "20250911__q-fabius-labeo-denarius__o__src-the-coin-cabinet",
+    image_link_altlight_r:
+      "20250911__q-fabius-labeo-denarius__r__src-the-coin-cabinet",
     image_link_zoom_o: null,
     image_link_zoom_r: null,
     flavour_text:
@@ -99,8 +105,14 @@ export const mockCoins = [
     vendor_grading_notes: "",
     image_link_o: "20250714__faustina-ii-denarius__o__src-imperial-numismatics",
     image_link_r: "20250714__faustina-ii-denarius__r__src-imperial-numismatics",
-    image_link_sketch_o: null,
-    image_link_sketch_r: null,
+    image_link_sketch_o:
+      "20250714__faustina-ii-denarius__o__src-imperial-numismatics",
+    image_link_sketch_r:
+      "20250714__faustina-ii-denarius__r__src-imperial-numismatics",
+    image_link_altlight_o:
+      "20250714__faustina-ii-denarius__o__src-imperial-numismatics",
+    image_link_altlight_r:
+      "20250714__faustina-ii-denarius__r__src-imperial-numismatics",
     image_link_zoom_o: null,
     image_link_zoom_r: null,
     flavour_text:
@@ -155,8 +167,14 @@ export const mockCoins = [
       "20250820__faustina-ii-sestertius__o__src-imperial-numismatics",
     image_link_r:
       "20250820__faustina-ii-sestertius__r__src-imperial-numismatics",
-    image_link_sketch_o: null,
-    image_link_sketch_r: null,
+    image_link_sketch_o:
+      "20250820__faustina-ii-sestertius__o__src-imperial-numismatics",
+    image_link_sketch_r:
+      "20250820__faustina-ii-sestertius__r__src-imperial-numismatics",
+    image_link_altlight_o:
+      "20250820__faustina-ii-sestertius__o__src-imperial-numismatics",
+    image_link_altlight_r:
+      "20250820__faustina-ii-sestertius__r__src-imperial-numismatics",
     image_link_zoom_o: null,
     image_link_zoom_r: null,
     flavour_text:
@@ -209,6 +227,8 @@ export const mockCoins = [
     image_link_r: "20250718__julia-mamea-denarius__r__src-imperial-numismatics",
     image_link_sketch_o: null,
     image_link_sketch_r: null,
+    image_link_altlight_o: null,
+    image_link_altlight_r: null,
     image_link_zoom_o: null,
     image_link_zoom_r: null,
     flavour_text: "",

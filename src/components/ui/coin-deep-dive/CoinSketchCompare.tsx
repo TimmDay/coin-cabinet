@@ -25,6 +25,7 @@ function CoinImagePair({
   legendExpanded,
   legendTranslation,
   description,
+  onClick,
 }: {
   mainImage: string
   sketchImage?: string | null
@@ -32,6 +33,7 @@ function CoinImagePair({
   legendExpanded?: string | null
   legendTranslation?: string | null
   description?: string | null
+  onClick?: () => void
 }) {
   const hasSketch = sketchImage != null
 
@@ -39,7 +41,10 @@ function CoinImagePair({
     <div className="flex h-full flex-col space-y-4">
       {/* Images Section */}
       <div className="flex justify-center">
-        <div className="group flex gap-4">
+        <div
+          className={`group flex gap-4 ${onClick ? "cursor-pointer" : ""}`}
+          onClick={onClick}
+        >
           <div className="artemis-card flex h-[200px] w-[200px] items-center justify-center transition-transform duration-200 group-hover:scale-105 sm:h-[240px] sm:w-[240px]">
             <div className="max-h-full max-w-full">
               <CloudinaryImage
@@ -120,6 +125,7 @@ export function CoinSketchCompare({
               legendExpanded={legendExpandedO}
               legendTranslation={legendTranslationO}
               description={descO}
+              onClick={() => handleImageClick("obverse")}
             />
           </div>
 
@@ -132,6 +138,7 @@ export function CoinSketchCompare({
               legendExpanded={legendExpandedR}
               legendTranslation={legendTranslationR}
               description={descR}
+              onClick={() => handleImageClick("reverse")}
             />
           </div>
         </div>

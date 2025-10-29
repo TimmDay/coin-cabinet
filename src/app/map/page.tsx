@@ -39,16 +39,6 @@ export default function MapPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Page Header */}
-      <div className="flex-shrink-0 border-b border-gray-200 bg-white px-4 py-6 sm:px-6 lg:px-8 dark:border-gray-700 dark:bg-gray-900">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-          Interactive Map
-        </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Explore the Roman Empire with our interactive historical map
-        </p>
-      </div>
-
       {/* Full-size Map Container */}
       <div className="h-[calc(100vh-140px)] flex-shrink-0">
         <div className="h-full p-4 sm:p-6 lg:p-8">

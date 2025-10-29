@@ -39,8 +39,8 @@ export function ImageModal(props: ImageModalProps) {
     !isPairVariant && "imageUrl" in props && props.imageUrl
       ? getCldImageUrl({
           src: props.imageUrl,
-          width: 800,
-          height: 800,
+          width: 2400,
+          height: 2400,
           crop: {
             type: "pad",
             source: true,
@@ -53,8 +53,8 @@ export function ImageModal(props: ImageModalProps) {
     isPairVariant && "imageUrl1" in props
       ? getCldImageUrl({
           src: props.imageUrl1,
-          width: 600,
-          height: 600,
+          width: 1800,
+          height: 1800,
           crop: {
             type: "pad",
             source: true,
@@ -67,8 +67,8 @@ export function ImageModal(props: ImageModalProps) {
     isPairVariant && "imageUrl2" in props && props.imageUrl2
       ? getCldImageUrl({
           src: props.imageUrl2,
-          width: 600,
-          height: 600,
+          width: 1800,
+          height: 1800,
           crop: {
             type: "pad",
             source: true,
@@ -228,7 +228,7 @@ export function ImageModal(props: ImageModalProps) {
         {/* Large Image with Loading Spinner */}
         <div
           ref={imageContainerRef}
-          className="relative flex h-full w-full items-center justify-center overflow-hidden p-2"
+          className="relative flex h-full w-full items-center justify-center overflow-hidden p-4 sm:p-8"
           onClick={handleContainerClick}
         >
           {/* Loading Spinner */}
@@ -246,13 +246,13 @@ export function ImageModal(props: ImageModalProps) {
           >
             {isPairVariant ? (
               // Pair variant - show two images side by side
-              <div className="flex max-h-full max-w-full items-center justify-center gap-4">
+              <div className="flex max-h-[90vh] max-w-[95vw] items-center justify-center gap-2 sm:gap-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   ref={imageRef}
                   src={largeImageUrl1}
                   alt={"alt1" in props ? props.alt1 : ""}
-                  className={`relative max-h-full max-w-[45%] cursor-pointer object-contain transition-transform duration-300 ease-out ${
+                  className={`relative max-h-full max-w-[47%] cursor-pointer object-contain transition-transform duration-300 ease-out ${
                     zoomedImage === "first" ? "z-10 scale-300" : "z-0 scale-100"
                   }`}
                   style={{
@@ -267,7 +267,7 @@ export function ImageModal(props: ImageModalProps) {
                   <img
                     src={largeImageUrl2}
                     alt={"alt2" in props && props.alt2 ? props.alt2 : ""}
-                    className={`relative max-h-full max-w-[45%] cursor-pointer object-contain transition-transform duration-300 ease-out ${
+                    className={`relative max-h-full max-w-[47%] cursor-pointer object-contain transition-transform duration-300 ease-out ${
                       zoomedImage === "second"
                         ? "z-10 scale-300"
                         : "z-0 scale-100"
@@ -288,7 +288,7 @@ export function ImageModal(props: ImageModalProps) {
                 ref={imageRef}
                 src={largeImageUrl}
                 alt={alt}
-                className={`max-h-full max-w-full cursor-pointer object-contain transition-transform duration-300 ease-out ${
+                className={`max-h-[95vh] max-w-[95vw] cursor-pointer object-contain transition-transform duration-300 ease-out sm:max-h-[90vh] sm:max-w-[90vw] ${
                   zoomedImage === "first" ? "scale-300" : "scale-100"
                 }`}
                 style={{
