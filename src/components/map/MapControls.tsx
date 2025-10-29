@@ -49,7 +49,6 @@ export function MapControls({
   showProvinceLabels,
   onProvinceLabelsChange,
 }: MapControlsProps) {
-
   // Provinces data loading
   const [provincesData, setProvincesData] =
     useState<GeoJSON.FeatureCollection | null>(null)

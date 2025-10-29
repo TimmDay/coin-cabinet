@@ -52,8 +52,6 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
     onShowProvinceLabelsChange(!showProvinceLabels)
   }
 
-
-
   return (
     <div
       className={

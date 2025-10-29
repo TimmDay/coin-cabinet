@@ -265,6 +265,18 @@ export const coinFormSchema = z
       .or(z.literal(""))
       .transform((val) => (val === "" ? undefined : val))
       .pipe(z.string().optional()),
+    image_link_altlight_o: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val))
+      .pipe(z.string().optional()),
+    image_link_altlight_r: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => (val === "" ? undefined : val))
+      .pipe(z.string().optional()),
     image_link_zoom_o: z
       .string()
       .optional()

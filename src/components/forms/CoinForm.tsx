@@ -868,6 +868,29 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 </div>
 
                 <div>
+                  <label className={labelClass} htmlFor="image_link_altlight_o">
+                    Obverse Alternative Lighting Image Id
+                  </label>
+                  <input
+                    {...register("image_link_altlight_o")}
+                    id="image_link_altlight_o"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., marcus_aurelius_sestertius_altlight_o"
+                  />
+                  <GeneratedImageIdHelper
+                    watch={watch}
+                    view="altlight-o"
+                    timTookPhotos={timTookPhotos}
+                  />
+                  {errors.image_link_altlight_o && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.image_link_altlight_o.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
                   <label className={labelClass} htmlFor="image_link_zoom_o">
                     Obverse Zoom Image Id
                   </label>
@@ -939,6 +962,29 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                   {errors.image_link_sketch_r && (
                     <p className="mt-1 text-sm text-red-500">
                       {errors.image_link_sketch_r.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className={labelClass} htmlFor="image_link_altlight_r">
+                    Reverse Alternative Lighting Image Id
+                  </label>
+                  <input
+                    {...register("image_link_altlight_r")}
+                    id="image_link_altlight_r"
+                    type="text"
+                    className={inputClass}
+                    placeholder="e.g., marcus_aurelius_sestertius_altlight_r"
+                  />
+                  <GeneratedImageIdHelper
+                    watch={watch}
+                    view="altlight-r"
+                    timTookPhotos={timTookPhotos}
+                  />
+                  {errors.image_link_altlight_r && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.image_link_altlight_r.message}
                     </p>
                   )}
                 </div>

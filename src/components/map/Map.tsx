@@ -275,8 +275,6 @@ export const Map: React.FC<MapProps> = ({
       )
   }, [provincesLabelsData, selectedProvinces])
 
-
-
   useEffect(() => {
     // Fix for Leaflet default markers not showing properly in Next.js
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
@@ -550,8 +548,6 @@ export const Map: React.FC<MapProps> = ({
                   </Popup>
                 </Marker>
               ))}
-
-
             </MapContainer>
           </div>
         </div>
