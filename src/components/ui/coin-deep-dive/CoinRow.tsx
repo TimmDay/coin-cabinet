@@ -27,7 +27,7 @@ export function CoinRow({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalImageUrl, setModalImageUrl] = useState<string>("")
   const [modalImageAlt, setModalImageAlt] = useState<string>("")
-  const hasAnyText = Boolean(legendExpanded ?? legendTranslation ?? description)
+  const hasAnyText = Boolean(legendExpanded || legendTranslation || description)
 
   const handleImageClick = (imageUrl: string, altText: string) => {
     setModalImageUrl(imageUrl)

@@ -6,7 +6,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { CoinsWithoutImages } from "~/components/ui/coin-deep-dive/CoinsWithoutImages"
+import { CoinsWithoutImages } from "~/components/forms/CoinsWithoutImages"
+import { CoinsWithoutTimmdaySrc } from "~/components/forms/CoinsWithoutTimmdaySrc"
 import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper"
 import { MultiSelect } from "~/components/ui/MultiSelect"
 import { RoundButton } from "~/components/ui/RoundButton"
@@ -1042,12 +1043,16 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
 
       {/* Coins Without Images - Positioned to the right on wide screens */}
       <div className="absolute top-0 left-full ml-8 hidden w-80 xl:block">
-        <CoinsWithoutImages />
+        <div className="space-y-6">
+          <CoinsWithoutImages />
+          <CoinsWithoutTimmdaySrc />
+        </div>
       </div>
 
       {/* Coins Without Images - Below form on smaller screens */}
-      <div className="mt-8 xl:hidden">
+      <div className="mt-8 space-y-6 xl:hidden">
         <CoinsWithoutImages />
+        <CoinsWithoutTimmdaySrc />
       </div>
     </div>
   )

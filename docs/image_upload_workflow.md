@@ -22,19 +22,12 @@
    # Set shell options to handle missing files gracefully
    shopt -s nullglob 2>/dev/null || setopt null_glob 2>/dev/null
 
-   # Process each file type separately to avoid glob expansion issues
-   extensions=("HEIC", "jpg", "jpeg", "png", "JPG", "JPEG", "PNG")
+   # Find all image files using find command to handle extensions properly
+   image_dir="~/Desktop/somnus_collection_images/named_for_upload"
 
-   for ext in "${extensions[@]}"; do
-       # Create array of files for this extension
-       files=(~/Desktop/somnus_collection_images/named_for_upload/*.$ext)
-
-       # Skip if no files of this extension exist (nullglob makes empty array)
-       if [[ ${#files[@]} -eq 0 ]]; then
-           continue
-       fi
-
-       for file in "${files[@]}"; do
+   # Use find to locate all image files with various extensions
+   while IFS= read -r -d '' file; do
+       if [[ -f "$file" ]]; then
 
            filename=$(basename "$file")
            echo "Uploading $filename..."
@@ -65,8 +58,8 @@
                    echo "❌ Failed completely: $filename - may need manual processing"
                fi
            fi
-       done
-   done
+       fi
+   done < <(find ~/Desktop/somnus_collection_images/named_for_upload -type f \( -iname "*.heic" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -print0)
 
    # Reset shell options
    shopt -u nullglob 2>/dev/null || unsetopt null_glob 2>/dev/null
@@ -76,4 +69,4 @@
 
 5. If this ever costs significant money, we will code up something of our own and host images from Cloudflare or something. But this is great for low/no users.
 
-6. If the Cloudinary background removal fails this is a great tool to try manually foing it: https://numis.pics/app/?lang=en
+6. If the Cloudinary background removal fails this is a great tool to try manually doing it: [Numis.pics Background Removal](https://numis.pics/app/?lang=en)

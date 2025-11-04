@@ -2,13 +2,10 @@
 
 ## Next Thing
 
-- [ ] new DB field: image link for alt light. Do it in the add coin form as well to the same schema.
-- [ ] deep dive page: layout. On desktop do obv/rev rows like: [normal photo] [cool light photo] [sketch photo] [legend, translation, description] then they stack on mobile. cool light and sketch are optional, and no container for them if they aren't there (still centered).
-
 ### Quick Notes
 
 - [ ] research expanded latin and translation text for legends.
-- [ ] deep dive: fix the image tap modal to work on mobile. ALso the image should blow up more.
+
 - [ ] deep dive. Ready to clean up the map a bit.
   - delete the dummy controls. Province controls dont show on coin maps (onoly in map tab).
   - map centers on the Mint of that coin.
@@ -312,3 +309,6 @@ articles, guides
 - [x] title / legends / expanded legends / translation
   - [x] Aside component
   - [x] blog post titles (on page) take the post title, not 'articles'
+- [x] new DB field: image link for alt light. Do it in the add coin form as well to the same schema.
+- [x] deep dive page: layout. On desktop do obv/rev rows like: [normal photo] [cool light photo] [sketch photo] [legend, translation, description] then they stack on mobile. cool light and sketch are optional, and no container for them if they aren't there (still centered).
+- [x] deep dive: fix the image tap modal to work on mobile. ALso the image should blow up more.
