@@ -19,6 +19,7 @@ import {
   civSpecificOptions,
   denominationOptions,
   dieAxisOptions,
+  setsOptions,
 } from "./constants"
 
 type CoinFormProps = {
@@ -58,15 +59,6 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
     "w-full px-3 py-2 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none transition-colors"
   const labelClass = "block text-sm font-medium text-slate-300 mb-1"
   const errorClass = "text-red-400 text-sm mt-1"
-
-  const setsOptions = [
-    { value: "severan", label: "Severan" },
-    { value: "imperial women", label: "Imperial Women" },
-    { value: "crisis", label: "Crisis" },
-    { value: "tetrachy", label: "Tetrachy" },
-    { value: "gordy boys", label: "Gordy Boys" },
-    { value: "hoards", label: "Hoards" },
-  ]
 
   return (
     <div className="relative">

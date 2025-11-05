@@ -27,6 +27,7 @@ export function CoinRow({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalImageUrl, setModalImageUrl] = useState<string>("")
   const [modalImageAlt, setModalImageAlt] = useState<string>("")
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const hasAnyText = Boolean(legendExpanded || legendTranslation || description)
 
   const handleImageClick = (imageUrl: string, altText: string) => {

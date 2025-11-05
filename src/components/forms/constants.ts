@@ -34,6 +34,7 @@ export const civilizationOptions = [
   { value: "Roman Provincial", label: "Roman Provincial" },
   { value: "Byzantine", label: "Byzantine" },
   { value: "Ancient Greece", label: "Ancient Greece" },
+  { value: "Judea", label: "Judea" },
   { value: "Persian", label: "Persian" },
   { value: "Parthian", label: "Parthian" },
   { value: "Sassanian", label: "Sassanian" },
@@ -64,7 +65,18 @@ export const civSpecificOptions = {
   "Roman Provincial": [
     { value: "Alexandria", label: "Alexandria" },
     { value: "Antioch", label: "Antioch" },
+    { value: "Mesopotamia", label: "Mesopotamia" },
     { value: "Moesia Superior", label: "Moesia Superior" },
     { value: "Moesia Inferior", label: "Moesia Inferior" },
   ],
 }
+
+export const setsOptions = [
+  { value: "severan", label: "Severan" },
+  { value: "imperial women", label: "Imperial Women" },
+  { value: "crisis", label: "Crisis" },
+  { value: "tetrachy", label: "Tetrachy" },
+  { value: "constantinian", label: "Constantinian" },
+  { value: "gordy boys", label: "Gordy Boys" },
+  { value: "hoards", label: "Hoards" },
+]
