@@ -275,9 +275,9 @@ export function CoinRow({
           </div>
         </div>
 
-        {/* Text content - flexible width that maintains minimum but can wrap */}
+        {/* Text content - width matches single coin image */}
         {hasAnyText && (
-          <div className="flex max-w-[480px] min-w-[300px] flex-1 flex-col justify-center space-y-2 text-center">
+          <div className="flex w-[280px] flex-col justify-center space-y-2 text-center xl:w-[320px]">
             {legendExpanded && (
               <p className="text-lg tracking-wide break-words text-slate-400 xl:text-xl">
                 <FormattedLegendExpanded text={legendExpanded} />

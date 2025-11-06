@@ -61,13 +61,16 @@ export const civSpecificOptions = {
     { value: "Kingdom of Macedon", label: "Kingdom of Macedon" },
     { value: "Kingdom of Cappadocia", label: "Kingdom of Cappadocia" },
     { value: "Troas, Kebren", label: "Troas, Kebren" },
+    { value: "other", label: "Other" },
   ],
   "Roman Provincial": [
     { value: "Alexandria", label: "Alexandria" },
     { value: "Antioch", label: "Antioch" },
+    { value: "Bithynia-Pontus", label: "Bithynia-Pontus" },
     { value: "Mesopotamia", label: "Mesopotamia" },
     { value: "Moesia Superior", label: "Moesia Superior" },
     { value: "Moesia Inferior", label: "Moesia Inferior" },
+    { value: "other", label: "Other" },
   ],
 }
 
