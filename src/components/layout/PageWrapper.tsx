@@ -16,17 +16,13 @@ export function PageWrapper({ children }: PageWrapperProps) {
     <div className="bg-background flex min-h-screen flex-col">
       {/* Breadcrumb - positioned under header, above page content */}
       {!isHomePage && (
-        <div className="flex w-full justify-center pt-12 pb-2">
+        <div className="flex w-full justify-center pt-12 pb-18">
           <Breadcrumb />
         </div>
       )}
 
       {/* Main page content */}
-      <main
-        className={`container mx-auto flex-1 px-6 pb-8 ${isHomePage ? "pt-4" : ""}`}
-      >
-        {children}
-      </main>
+      <main className="container mx-auto flex-1 px-6 pb-8">{children}</main>
 
       <Footer />
     </div>

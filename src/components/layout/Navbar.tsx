@@ -235,7 +235,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="somnus-nav z-overlay relative flex h-48 flex-col justify-end px-4 sm:px-6 lg:px-8"
+      className="somnus-nav z-overlay relative flex h-32 flex-col justify-center px-4 sm:px-6 lg:h-48 lg:justify-end lg:px-8"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -250,7 +250,7 @@ export default function Navbar() {
       </div>
 
       {/* Site Logo placeholder */}
-      <div className="mt-6 mb-6 flex justify-center">
+      <div className="flex justify-center lg:mt-6 lg:mb-6">
         <NextLink href="/" className="transition-opacity hover:opacity-80">
           <div className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-slate-400">
             <span className="text-xs font-medium text-slate-600">LOGO</span>
@@ -259,7 +259,7 @@ export default function Navbar() {
       </div>
 
       {/* Main navigation centered at bottom - hidden on mobile */}
-      <div className="hidden lg:flex items-center justify-center space-x-8 pb-4">
+      <div className="hidden items-center justify-center space-x-8 pb-4 lg:flex">
         <div className="flex items-center space-x-8">
           {visibleNavItems.map((item) => {
             const itemIsActive = pathname === item.href
@@ -282,7 +282,9 @@ export default function Navbar() {
                         ? "border-transparent text-slate-500"
                         : "hover:border-primary/50 border-transparent text-slate-300 hover:text-slate-500",
                     )}
-                    aria-expanded={openMainDropdown === item.name ? "true" : "false"}
+                    aria-expanded={
+                      openMainDropdown === item.name ? "true" : "false"
+                    }
                     aria-haspopup="menu"
                   >
                     {item.name}
@@ -336,7 +338,9 @@ export default function Navbar() {
                                 aria-haspopup="menu"
                                 aria-expanded={
                                   openSubmenu ===
-                                  getSubmenuType(submenuItem.name) ? "true" : "false"
+                                  getSubmenuType(submenuItem.name)
+                                    ? "true"
+                                    : "false"
                                 }
                               >
                                 <span>{submenuItem.name}</span>

@@ -1,6 +1,5 @@
 "use client"
 
-import { ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "~/lib/utils"
@@ -100,70 +99,3 @@ export function Breadcrumb({ className, items }: BreadcrumbProps) {
     </nav>
   )
 }
-
-// Individual components for more granular control (shadcn style)
-export const BreadcrumbList = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) => (
-  <ol className={cn("flex items-center space-x-1", className)}>{children}</ol>
-)
-
-export const BreadcrumbListItem = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) => <li className={cn("flex items-center", className)}>{children}</li>
-
-export const BreadcrumbLink = ({
-  href,
-  children,
-  className,
-}: {
-  href: string
-  children: React.ReactNode
-  className?: string
-}) => (
-  <Link
-    href={href}
-    className={cn(
-      "flex items-center text-slate-400 transition-colors hover:text-slate-200",
-      "focus:ring-auth-accent rounded-sm px-1 py-0.5 focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:outline-none",
-      className,
-    )}
-  >
-    {children}
-  </Link>
-)
-
-export const BreadcrumbPage = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) => (
-  <span
-    className={cn("text-auth-accent font-medium", className)}
-    aria-current="page"
-  >
-    {children}
-  </span>
-)
-
-export const BreadcrumbSeparator = ({
-  children,
-  className,
-}: {
-  children?: React.ReactNode
-  className?: string
-}) => (
-  <span className={cn("mx-2 text-slate-500", className)}>
-    {children ?? <ChevronRight className="h-4 w-4" />}
-  </span>
-)

@@ -2,7 +2,7 @@ import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto px-4 py-16">
+    <div className="content-wrapper">
       <PageTitle>About</PageTitle>
 
       <div className="artemis-card mx-auto max-w-4xl p-8">

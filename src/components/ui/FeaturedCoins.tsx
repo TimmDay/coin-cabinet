@@ -67,7 +67,9 @@ export function FeaturedCoins({
                     <p className="text-sm font-medium text-slate-300">
                       {coin.nickname}
                     </p>
-                    <p className="text-xs text-slate-400">{coin.denomination}</p>
+                    <p className="text-xs text-slate-400">
+                      {coin.denomination}
+                    </p>
                   </div>
                 )}
               </div>

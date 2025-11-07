@@ -34,8 +34,7 @@ export function UserMenu() {
   }
 
   return (
-    <div className="flex items-center space-x-4">
-      <span className="text-sm text-slate-300">{user.email}</span>
+    <div className="flex flex-col items-end space-y-2">
       <RoundButton
         onClick={handleSignOut}
         disabled={isSigningOut}
@@ -44,6 +43,9 @@ export function UserMenu() {
       >
         {isSigningOut ? "Signing Out..." : "Sign Out"}
       </RoundButton>
+      <span className="max-w-24 text-right text-xs break-words text-slate-400">
+        {user.email}
+      </span>
     </div>
   )
 }
