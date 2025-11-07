@@ -20,12 +20,14 @@ type FeaturedCoinsProps = {
   title?: string
   coins: FeaturedCoin[] // Accept any array with 3 coins
   className?: string
+  displayTextOnHover?: boolean
 }
 
 export function FeaturedCoins({
   title = "Featured Coins",
   coins,
   className = "",
+  displayTextOnHover = false,
 }: FeaturedCoinsProps) {
   // Ensure exactly 3 coins are provided
   if (coins.length !== 3) {
@@ -60,12 +62,14 @@ export function FeaturedCoins({
                     alt={`${coin.civ} ${coin.denomination}`}
                   />
                 </div>
-                <div className="mt-3 text-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  <p className="text-sm font-medium text-slate-300">
-                    {coin.nickname}
-                  </p>
-                  <p className="text-xs text-slate-400">{coin.denomination}</p>
-                </div>
+                {displayTextOnHover && (
+                  <div className="mt-3 text-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <p className="text-sm font-medium text-slate-300">
+                      {coin.nickname}
+                    </p>
+                    <p className="text-xs text-slate-400">{coin.denomination}</p>
+                  </div>
+                )}
               </div>
             </Link>
           )

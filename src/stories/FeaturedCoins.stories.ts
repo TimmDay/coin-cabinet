@@ -27,6 +27,10 @@ const meta: Meta<typeof FeaturedCoins> = {
       control: { type: "text" },
       description: "Additional CSS classes to apply",
     },
+    displayTextOnHover: {
+      control: { type: "boolean" },
+      description: "Whether to show coin nickname and denomination on hover",
+    },
   },
 }
 
@@ -51,5 +55,13 @@ export const CustomTitle: Story = {
   args: {
     title: "Coins of the Week",
     coins: threeMockCoins,
+  },
+}
+
+export const WithHoverText: Story = {
+  args: {
+    title: "Featured Coins with Hover Text",
+    coins: threeMockCoins,
+    displayTextOnHover: true,
   },
 }
