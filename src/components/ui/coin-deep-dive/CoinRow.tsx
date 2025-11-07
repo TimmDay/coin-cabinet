@@ -41,63 +41,87 @@ export function CoinRow({
       {/* Mobile: Full Stack Layout */}
       <div className="flex flex-col space-y-4 md:hidden">
         {/* Images Section */}
-        <div className="flex justify-center">
-          <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
-            {/* Main coin image */}
-            <div
-              className="artemis-card flex h-[200px] w-[200px] cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 sm:h-[240px] sm:w-[240px]"
-              onClick={() => handleImageClick(imageLink, `${side} of coin`)}
-            >
-              <div className="max-h-full max-w-full">
-                <CloudinaryImage
-                  src={imageLink}
-                  alt={`${side} of coin`}
-                  width={240}
-                  height={240}
-                />
-              </div>
-            </div>
+        <div className="flex justify-center px-2">
+          <div className="flex w-full max-w-md flex-wrap justify-center gap-2">
+            {/* Count images to determine layout */}
+            {(() => {
+              const imageCount = [
+                imageLink,
+                imageLinkAltlight,
+                imageLinkSketch,
+              ].filter(Boolean).length
+              const imageWidth =
+                imageCount === 1
+                  ? "w-full"
+                  : imageCount === 2
+                    ? "w-[calc(50%-0.25rem)]"
+                    : "w-[calc(33.333%-0.333rem)]"
 
-            {/* Alternative lighting image (if available) */}
-            {imageLinkAltlight && (
-              <div
-                className="artemis-card flex h-[200px] w-[200px] cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 sm:h-[240px] sm:w-[240px]"
-                onClick={() =>
-                  handleImageClick(
-                    imageLinkAltlight,
-                    `${side} of coin (alternative lighting)`,
-                  )
-                }
-              >
-                <div className="max-h-full max-w-full">
-                  <CloudinaryImage
-                    src={imageLinkAltlight}
-                    alt={`${side} of coin (alternative lighting)`}
-                    width={240}
-                    height={240}
-                  />
-                </div>
-              </div>
-            )}
+              return (
+                <>
+                  {/* Main coin image */}
+                  <div
+                    className={`artemis-card flex aspect-square cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 ${imageWidth}`}
+                    onClick={() =>
+                      handleImageClick(imageLink, `${side} of coin`)
+                    }
+                  >
+                    <div className="max-h-full max-w-full">
+                      <CloudinaryImage
+                        src={imageLink}
+                        alt={`${side} of coin`}
+                        width={400}
+                        height={400}
+                      />
+                    </div>
+                  </div>
 
-            {/* Sketch image (if available) */}
-            {imageLinkSketch && (
-              <div
-                className="artemis-card flex h-[200px] w-[200px] cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 sm:h-[240px] sm:w-[240px]"
-                onClick={() =>
-                  handleImageClick(imageLinkSketch, `${side} sketch of coin`)
-                }
-              >
-                <div className="max-h-full max-w-full">
-                  <CloudinaryImage
-                    src={imageLinkSketch}
-                    alt={`${side} sketch of coin`}
-                    width={240}
-                    height={240}
-                  />
-                </div>
-              </div>
-            )}
+                  {/* Alternative lighting image (if available) */}
+                  {imageLinkAltlight && (
+                    <div
+                      className={`artemis-card flex aspect-square cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 ${imageWidth}`}
+                      onClick={() =>
+                        handleImageClick(
+                          imageLinkAltlight,
+                          `${side} of coin (alternative lighting)`,
+                        )
+                      }
+                    >
+                      <div className="max-h-full max-w-full">
+                        <CloudinaryImage
+                          src={imageLinkAltlight}
+                          alt={`${side} of coin (alternative lighting)`}
+                          width={400}
+                          height={400}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sketch image (if available) */}
+                  {imageLinkSketch && (
+                    <div
+                      className={`artemis-card flex aspect-square cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 ${imageWidth}`}
+                      onClick={() =>
+                        handleImageClick(
+                          imageLinkSketch,
+                          `${side} sketch of coin`,
+                        )
+                      }
+                    >
+                      <div className="max-h-full max-w-full">
+                        <CloudinaryImage
+                          src={imageLinkSketch}
+                          alt={`${side} sketch of coin`}
+                          width={400}
+                          height={400}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
           </div>
         </div>
 
@@ -128,63 +152,87 @@ export function CoinRow({
       {/* Tablet/Medium: Side by side with text below on narrower screens */}
       <div className="hidden flex-col space-y-6 md:flex lg:hidden">
         {/* Images Section */}
-        <div className="flex justify-center">
-          <div className="flex flex-wrap justify-center gap-4">
-            {/* Main coin image */}
-            <div
-              className="artemis-card flex h-[240px] w-[240px] cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105"
-              onClick={() => handleImageClick(imageLink, `${side} of coin`)}
-            >
-              <div className="max-h-full max-w-full">
-                <CloudinaryImage
-                  src={imageLink}
-                  alt={`${side} of coin`}
-                  width={240}
-                  height={240}
-                />
-              </div>
-            </div>
+        <div className="flex justify-center px-4">
+          <div className="flex w-full max-w-2xl flex-wrap justify-center gap-3">
+            {/* Count images to determine layout */}
+            {(() => {
+              const imageCount = [
+                imageLink,
+                imageLinkAltlight,
+                imageLinkSketch,
+              ].filter(Boolean).length
+              const imageWidth =
+                imageCount === 1
+                  ? "w-full max-w-md"
+                  : imageCount === 2
+                    ? "w-[calc(50%-0.375rem)]"
+                    : "w-[calc(33.333%-0.5rem)]"
 
-            {/* Alternative lighting image (if available) */}
-            {imageLinkAltlight && (
-              <div
-                className="artemis-card flex h-[240px] w-[240px] cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105"
-                onClick={() =>
-                  handleImageClick(
-                    imageLinkAltlight,
-                    `${side} of coin (alternative lighting)`,
-                  )
-                }
-              >
-                <div className="max-h-full max-w-full">
-                  <CloudinaryImage
-                    src={imageLinkAltlight}
-                    alt={`${side} of coin (alternative lighting)`}
-                    width={240}
-                    height={240}
-                  />
-                </div>
-              </div>
-            )}
+              return (
+                <>
+                  {/* Main coin image */}
+                  <div
+                    className={`artemis-card flex aspect-square cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 ${imageWidth}`}
+                    onClick={() =>
+                      handleImageClick(imageLink, `${side} of coin`)
+                    }
+                  >
+                    <div className="max-h-full max-w-full">
+                      <CloudinaryImage
+                        src={imageLink}
+                        alt={`${side} of coin`}
+                        width={400}
+                        height={400}
+                      />
+                    </div>
+                  </div>
 
-            {/* Sketch image (if available) */}
-            {imageLinkSketch && (
-              <div
-                className="artemis-card flex h-[240px] w-[240px] cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105"
-                onClick={() =>
-                  handleImageClick(imageLinkSketch, `${side} sketch of coin`)
-                }
-              >
-                <div className="max-h-full max-w-full">
-                  <CloudinaryImage
-                    src={imageLinkSketch}
-                    alt={`${side} sketch of coin`}
-                    width={240}
-                    height={240}
-                  />
-                </div>
-              </div>
-            )}
+                  {/* Alternative lighting image (if available) */}
+                  {imageLinkAltlight && (
+                    <div
+                      className={`artemis-card flex aspect-square cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 ${imageWidth}`}
+                      onClick={() =>
+                        handleImageClick(
+                          imageLinkAltlight,
+                          `${side} of coin (alternative lighting)`,
+                        )
+                      }
+                    >
+                      <div className="max-h-full max-w-full">
+                        <CloudinaryImage
+                          src={imageLinkAltlight}
+                          alt={`${side} of coin (alternative lighting)`}
+                          width={400}
+                          height={400}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sketch image (if available) */}
+                  {imageLinkSketch && (
+                    <div
+                      className={`artemis-card flex aspect-square cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 ${imageWidth}`}
+                      onClick={() =>
+                        handleImageClick(
+                          imageLinkSketch,
+                          `${side} sketch of coin`,
+                        )
+                      }
+                    >
+                      <div className="max-h-full max-w-full">
+                        <CloudinaryImage
+                          src={imageLinkSketch}
+                          alt={`${side} sketch of coin`}
+                          width={400}
+                          height={400}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
           </div>
         </div>
 

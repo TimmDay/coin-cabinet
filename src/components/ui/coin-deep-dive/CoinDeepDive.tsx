@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { CoinRow } from "./CoinRow"
-import { CoinSketchCompare } from "./CoinSketchCompare"
 
 // Dynamically import Map component to prevent SSR issues with Leaflet
 const Map = dynamic(
@@ -85,20 +84,6 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
           description={coin.desc_r}
         />
       )}
-
-      {/* Coin Sketch Compare Component */}
-      <CoinSketchCompare
-        imageLinkO={coin.image_link_o ?? ""}
-        imageLinkSketchO={coin.image_link_sketch_o}
-        imageLinkR={coin.image_link_r ?? ""}
-        imageLinkSketchR={coin.image_link_sketch_r}
-        legendExpandedO={coin.legend_o_expanded}
-        legendTranslationO={coin.legend_o_translation}
-        legendExpandedR={coin.legend_r_expanded}
-        legendTranslationR={coin.legend_r_translation}
-        descO={coin.desc_o}
-        descR={coin.desc_r}
-      />
 
       {/* Map Section */}
 
