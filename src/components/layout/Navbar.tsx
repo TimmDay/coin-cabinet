@@ -7,6 +7,7 @@ import { UserMenu } from "~/components/auth/UserMenu"
 import { useAuth } from "~/components/providers/auth-provider"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { cn } from "~/lib/utils"
+import { MobileNavigation } from "./MobileNavigation"
 import {
   adminSubmenu,
   articlesSubmenu,
@@ -238,6 +239,11 @@ export default function Navbar() {
       role="navigation"
       aria-label="Main navigation"
     >
+      {/* Mobile navigation burger menu - top left */}
+      <div className="absolute top-4 left-4 sm:left-6 lg:hidden">
+        <MobileNavigation />
+      </div>
+
       {/* UserMenu fixed to top right */}
       <div className="absolute top-4 right-4 sm:right-6 lg:right-8">
         <UserMenu />
@@ -252,8 +258,8 @@ export default function Navbar() {
         </NextLink>
       </div>
 
-      {/* Main navigation centered at bottom */}
-      <div className="flex items-center justify-center space-x-8 pb-4">
+      {/* Main navigation centered at bottom - hidden on mobile */}
+      <div className="hidden lg:flex items-center justify-center space-x-8 pb-4">
         <div className="flex items-center space-x-8">
           {visibleNavItems.map((item) => {
             const itemIsActive = pathname === item.href
@@ -276,7 +282,7 @@ export default function Navbar() {
                         ? "border-transparent text-slate-500"
                         : "hover:border-primary/50 border-transparent text-slate-300 hover:text-slate-500",
                     )}
-                    aria-expanded={openMainDropdown === item.name}
+                    aria-expanded={openMainDropdown === item.name ? "true" : "false"}
                     aria-haspopup="menu"
                   >
                     {item.name}
@@ -330,7 +336,7 @@ export default function Navbar() {
                                 aria-haspopup="menu"
                                 aria-expanded={
                                   openSubmenu ===
-                                  getSubmenuType(submenuItem.name)
+                                  getSubmenuType(submenuItem.name) ? "true" : "false"
                                 }
                               >
                                 <span>{submenuItem.name}</span>

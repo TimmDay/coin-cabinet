@@ -17,6 +17,7 @@
   --z-modal: 50;
   --z-tooltip: 60;
   --z-notification: 70;
+  --z-mobile-nav: 80;
 }
 
 /* Somnus Collection Inspired Color Palette */
@@ -233,6 +234,10 @@ main {
   z-index: var(--z-notification);
 }
 
+.z-mobile-nav {
+  z-index: var(--z-mobile-nav);
+}
+
 /* Aside component cut-out corner effect */
 .aside-cutout-box {
   clip-path: polygon(25px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 25px);
@@ -283,4 +288,13 @@ main {
 * {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--muted));
+}
+
+/* Mobile navigation opacity styles */
+[data-opacity="full"] {
+  opacity: 1;
+}
+
+[data-opacity="partial"] {
+  opacity: 0.7;
 }
