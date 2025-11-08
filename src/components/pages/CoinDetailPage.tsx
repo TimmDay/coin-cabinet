@@ -19,8 +19,8 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen">
-        <div className="container mx-auto px-4 py-16">
+      <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
+        <div className="content-wrapper">
           <div className="text-center">
             <p className="coin-description text-xl">Loading coin details...</p>
           </div>
@@ -31,8 +31,8 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
 
   if (error) {
     return (
-      <main className="min-h-screen">
-        <div className="container mx-auto px-4 py-16">
+      <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
+        <div className="content-wrapper">
           <div className="text-center">
             <p className="text-xl text-red-400">
               Error loading coin:{" "}
@@ -46,8 +46,8 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
 
   if (!coin) {
     return (
-      <main className="min-h-screen">
-        <div className="container mx-auto px-4">
+      <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
+        <div className="content-wrapper">
           <NotFound404
             title="Coin not found"
             message="The requested coin could not be found"
@@ -59,9 +59,9 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
   }
 
   return (
-    <main className="min-h-screen" data-coin-detail-page>
-      <div className="container mx-auto px-4 py-16">
-        <div className="mt-8">
+    <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
+      <div className="content-wrapper">
+        <div>
           <header className="mb-8">
             <PageTitleWithSnapshot
               coinSnapshot={

@@ -43,7 +43,7 @@ export function FeaturedCoins({
         </h2>
       )}
 
-      <div className="flex items-center justify-center gap-4 sm:gap-6 lg:gap-8">
+      <div className="flex items-center justify-center gap-2 sm:gap-4 lg:gap-6">
         {coins.map((coin) => {
           const coinUrl = generateCoinUrl(coin.id, coin.nickname)
 

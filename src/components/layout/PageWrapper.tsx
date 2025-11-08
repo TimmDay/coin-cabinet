@@ -16,7 +16,7 @@ export function PageWrapper({ children }: PageWrapperProps) {
     <div className="bg-background flex min-h-screen flex-col">
       {/* Breadcrumb - positioned under header, above page content */}
       {!isHomePage && (
-        <div className="flex w-full justify-center pt-12 pb-18">
+        <div className="flex w-full justify-center pt-8 pb-10 md:pt-12 md:pb-18">
           <Breadcrumb />
         </div>
       )}

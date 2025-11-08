@@ -2,6 +2,16 @@
 
 ## Next Thing
 
+- [ ] hand draw a logo I like
+
+### features on deck
+
+- logo
+- Map component
+- Mints data (hooking it up to the map)
+- budget photography post
+- home age
+
 ### Quick Notes
 
 - [ ] research expanded latin and translation text for legends.
@@ -16,7 +26,6 @@
 - [ ] MAP: do forts and landmarks layer?
 - [ ] MAP: do Hadrian / Antonine wall features
 - [ ] generate geojson data for the SSeverus province splits.
-- [ ] decide whether to have a 'modern' set. Where to put the philip note.
 - [ ] deep dive page, on large monitors the coins are too spread out
 - [ ] deep dive page. font sizes and colors are all over the place
 - [ ] hide year in coins 2026 and 2027 behind flag
@@ -30,7 +39,6 @@
   - [ ] bordered quote component variant
   - [ ] sources list (on Deep Dive page)
 - [ ] get a proper domain name
-- [x] somnus table - new columns - "god", "bpLink"
 - [ ] if somnus table row has a bpLink, show a link to that blog post (labelled "learn more") at the base of the CoinDetail page... Is it possible to just embed the actual post there?
 - [ ] write an actual post / coin deep dive text.
 
@@ -58,6 +66,7 @@ The goal of this is provide 'pins on the map'. Important events during the emper
   - [ ] Use TopoJSON for Roman Empire extents (they share borders)
   - [ ] Keep province labels as-is (they're small points)
   - [ ] Add compression headers in Next.js config
+- [ ] learn about PostGIS
 
 - [x] make a map component using leaflet that can show the roman provinces as layers (with date filtering to show the provinces as they were for the selected year)
 - [ ] pins for mints in my collection, sized by number of coins from that mint
@@ -87,7 +96,7 @@ The goal of this is provide 'pins on the map'. Important events during the emper
 ### UI
 
 - [ ] EmbeddedLink component (used within blog text etc)
-- [ ] Aside component. variants: alert, info (used within blog text etc)
+- [ ] Aside component. variants: info (flame torch), emperor info (wreath), battle/conflict (sword) (used within blog text etc)
 
 - [ ] Last updated date component for blog posts
 - [ ] HitCounter component for blog posts (shows views)
@@ -107,25 +116,20 @@ CoinDetailPage
 
 CoinGrid
 
+- [ ] pre-fetch the coin card detail when the grid item is hovered for X ms (so it opens instantly when clicked)
+- [ ] Explore UI component libraries. Pick one as a reference and put it in copilot-instructions. (shadcn or daisy)
+
 - [ ] CoinGrid - work out what filters I want, and how to display them (dropdown)
 - [ ] do the filters for mobile as well
 - [ ] re-style the header to be skinnier
 - [ ] db schema updates. ex_somnus (bool), is_stock (bool).
       OR: set_status (an array) ('severan', 'first_tetrachy', 'second_tetrachy', 'constantinian', 'byzantine', 'ancient_greek', ')
 
-- [ ] pre-fetch the coin card detail when the grid item is hovered for X ms (so it opens instantly when clicked)
-
 - [ ] where can/should we use the semantic html5 elements like <article>, <section>, <nav> etc?
-
-- [ ] Explore UI component libraries. Pick one as a reference and put it in copilot-instructions. (shadcn or daisy)
-
-- [ ] AI STUCK icon alignment. chevrons don't look centered in their circles. maybe pull it out to a common component too. manual attention required.
-
 - [ ] include photo credits in UI (if present in the image id -src). on hover for grid items and explicitly in CoinInfoModal info area.
 
 ### database
 
-- [ ] make sure every somnus entry has legend expanded filled in. make it compulsary on the form.
 - [ ] setup dev and prod DBs. default it points to dev. I have to manually put in the prod details to use that one.
 - [ ] Mint name dropdown in form.
 - [ ] Another table. Mint names with the associated lat/lng of each mint.
@@ -141,10 +145,11 @@ CoinGrid
 
 ### photography
 
-- [ ] research/plan beginner macro photography setup (getting most out of phone that I can).
-- [ ] set up something basic for my phone. including lighting.
+- [x] research/plan beginner macro photography setup (getting most out of phone that I can).
+- [x] set up something basic for my phone. including lighting.
 - [ ] Learn what would be required to take 'ultra zoom' macro photos.
-- [ ] cool light variant shots, with the phone attachment from alibaba.
+- [x] cool light variant shots, with the phone attachment from alibaba.
+- [ ] do a write up about the begineer level experience of the above
 
 ### real world
 
@@ -164,14 +169,12 @@ CoinGrid
 - [ ] go deep on the color scheme. simplify and clean.
 - [ ] work out how responsive / breakpoints is going to work.
 - [ ] work out decent mobile design
-- [ ] AI STUCK: on add-coin page, make it so the image naming tool position stickies with the top of the form, so it stickies to the top of viewport only if the scroll goes passed that point.
+- [ ] more consistent spacing system. are we using margin bottom everywhere?
 
 ### features product
 
 - [ ] site logo - create a beautiful one. Somnus or something related.
 - [ ] site favicon
-- [ ] expanded legends - research them and save to the db.
-- [ ] expanded info. Flavour text, but also expanded legends and latin translation.
 
 - [ ] a (free to use) map of the roman empire area. Zoomable, pannable.
   - [ ] needs it's own page/route
@@ -215,7 +218,7 @@ Set list, but main feature is a 'wooden' drawer with the coin images laid out as
 - [ ] go through 10 flavour texts and really write them nice
 - [ ] another 10 flavour texts
 - [ ] do up the home/welcome page
-- [ ] find good public images to be the face of each 'set' (as I have defined them).
+- [x] find good public images to be the face of each 'set' (as I have defined them).
 - [ ] work out a data format and way to store non-coin image links along with alt text, photo credit, item name, item desc, vintage year, moreInfoLink, location of item, caption
 
 - [ ] Admin page
@@ -237,9 +240,6 @@ articles, guides
   - sets
   - Of Provenance
 
-- [ ] Coin Cabinet page MOBILE
-  - instead of dropdown menus, accordions.
-
 #### components for embedding in blog posts
 
 - [ ] before/after image slider component (for showing coins pre and post cleaning) [example](https://artemis-collection.com/showcase/cleaning-coins/)
@@ -249,6 +249,13 @@ articles, guides
 ## Post Ideas
 
 - how I take photos of coins - my budget setup for 2026
+
+## AI STUCK list.
+
+- icon alignment. chevrons don't look centered in their circles.
+- on add-coin page, make it so the image naming tool position stickies with the top of the form, so it stickies to the top of viewport only if the scroll goes passed that point.
+- stupid fluff text everywhere
+- jsx embedded in jsx often trips it up (conditional stuff)
 
 ## DONE
 
@@ -312,3 +319,7 @@ articles, guides
 - [x] new DB field: image link for alt light. Do it in the add coin form as well to the same schema.
 - [x] deep dive page: layout. On desktop do obv/rev rows like: [normal photo] [cool light photo] [sketch photo] [legend, translation, description] then they stack on mobile. cool light and sketch are optional, and no container for them if they aren't there (still centered).
 - [x] deep dive: fix the image tap modal to work on mobile. ALso the image should blow up more.
+- [x] MOBILE friendly nav menus
+- [x] somnus table - new columns - "god", "bpLink"
+- [x] expanded legends - research them and save to the db.
+- [x] expanded info. Flavour text, but also expanded legends and latin translation.

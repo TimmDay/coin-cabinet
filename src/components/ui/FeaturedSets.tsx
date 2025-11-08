@@ -33,12 +33,12 @@ export function FeaturedSets({
         {title}
       </h2>
 
-      <div className="flex items-start justify-center gap-4 sm:gap-6 lg:gap-8">
+      <div className="flex flex-wrap items-start justify-center gap-4 sm:gap-6 lg:gap-8">
         {sets.map((set) => (
           <Link
             key={set.name}
             href={set.href}
-            className="group max-w-[150px] flex-1 transition-transform hover:scale-105 sm:max-w-[180px] lg:max-w-[200px]"
+            className="group max-w-[280px] min-w-[200px] flex-1 transition-transform hover:scale-105 sm:max-w-[300px] sm:min-w-[220px]"
           >
             <div className="flex flex-col rounded-lg border border-slate-700/50 bg-slate-800/30 p-4 transition-colors hover:border-slate-600/70">
               <div className="mb-3 flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-700/20">

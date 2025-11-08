@@ -85,6 +85,7 @@ body {
     color 0.3s ease;
   margin: 0;
   padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 /* Ensure no unwanted borders or margins */
@@ -307,6 +308,7 @@ main {
   margin-left: auto;
   margin-right: auto;
   max-width: 1280px; /* container */
+  width: 100%; /* Ensure full width utilization */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -316,10 +318,26 @@ main {
   padding-right: 1rem; /* px-4 */
   padding-top: var(--padding-top);
   padding-bottom: var(--padding-bottom);
+  overflow-x: hidden; /* Prevent any child overflow */
+}
+
+/* Ensure no top padding on mobile for regular pages */
+@media (max-width: 767px) {
+  .content-wrapper:not(.home) {
+    --padding-top: 0; /* Explicitly no top padding on mobile for non-home pages */
+  }
 }
 
 /* Modifier for home page - adds top padding */
 .content-wrapper.home {
-  --padding-top: 6rem;
-  gap: 5rem;
+  --padding-top: 3rem; /* 48px on mobile */
+  gap: 3rem; /* 48px gap on mobile - matches top padding */
+}
+
+/* Larger screens get full top padding and gap */
+@media (min-width: 768px) {
+  .content-wrapper.home {
+    --padding-top: 6rem; /* 96px on md+ screens */
+    gap: 5rem; /* 80px gap on larger screens */
+  }
 }

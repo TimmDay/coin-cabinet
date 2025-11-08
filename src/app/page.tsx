@@ -37,7 +37,7 @@ export default function HomePage() {
   }, [allCoins])
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
+    <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
       <div className="content-wrapper home">
         <PageTitle subtitle="to the Somnus Collection">Welcome</PageTitle>
 
