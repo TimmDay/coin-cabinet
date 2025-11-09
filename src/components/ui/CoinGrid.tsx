@@ -42,7 +42,34 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
       return matchesSet && matchesCiv
     })
     .sort((a, b) => {
-      // Sort by mint_year_earliest (ascending order - oldest first)
+      // Special sorting for "gordy boys" set
+      if (filterSet === "gordy boys") {
+        const denomA = a.denomination?.toLowerCase() ?? ""
+        const denomB = b.denomination?.toLowerCase() ?? ""
+        
+        // Priority order: denarius first, then antoninianus, then sestertius, then by mint year
+        const getPriority = (denom: string) => {
+          if (denom === "denarius") return 1
+          if (denom === "antoninianus") return 2
+          if (denom === "sestertius") return 3
+          return 4
+        }
+        
+        const priorityA = getPriority(denomA)
+        const priorityB = getPriority(denomB)
+        
+        // If different priorities, sort by priority
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB
+        }
+        
+        // If same priority (including both being "other"), sort by mint year
+        const yearA = a.mint_year_earliest ?? 0
+        const yearB = b.mint_year_earliest ?? 0
+        return yearA - yearB
+      }
+      
+      // Default sorting for other sets: by mint_year_earliest (ascending order - oldest first)
       const yearA = a.mint_year_earliest ?? 0
       const yearB = b.mint_year_earliest ?? 0
       return yearA - yearB

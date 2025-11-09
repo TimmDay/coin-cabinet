@@ -10,7 +10,7 @@ export default function GordyBoysPage() {
 
       <div className="mt-12 text-center">
         <p className="coin-description mb-6">
-          Explore coins from the Gordian dynasty period.
+          {`"He was very elegant in his dress, and beloved by his slaves and entire household." - Historia Augusta 20. The Three Gordians `}
         </p>
       </div>
     </main>
