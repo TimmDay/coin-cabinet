@@ -7,7 +7,6 @@ import {
   GeoJSON,
   MapContainer,
   Marker,
-  Popup,
   TileLayer,
   useMapEvents,
 } from "react-leaflet"
@@ -30,6 +29,8 @@ import {
   type EmpireLayerConfigMap,
 } from "./mapConfig"
 import { MapEmbeddedControls } from "./MapEmbeddedControls"
+import { MapPopup } from "./MapPopup"
+import { createHighlightedMintHtml } from "./MintMarkerSvg"
 
 // Component to handle zoom level changes
 function ZoomHandler({
@@ -126,6 +127,22 @@ export const Map: React.FC<MapProps> = ({
   const [internalShowProvinceLabels, setInternalShowProvinceLabels] =
     useState(true)
   const [currentZoom, setCurrentZoom] = useState<number>(config.defaultZoom)
+
+  // Custom popup state for mint markers
+  const [customPopup, setCustomPopup] = useState<{
+    isVisible: boolean
+    position: { x: number; y: number }
+    content: {
+      title: string
+      subtitle?: string
+      description?: string
+      className?: string
+    }
+  }>({
+    isVisible: false,
+    position: { x: 0, y: 0 },
+    content: { title: "" },
+  })
 
   // Province selection logic using custom hook
   const allProvinces = useMemo(() => {
@@ -551,38 +568,33 @@ export const Map: React.FC<MapProps> = ({
                       isHighlighted
                         ? new DivIcon({
                             className: "highlighted-mint-marker",
-                            html: `<div class="mint-pin-wrapper">${(() => {
-                              // Create MintPin HTML manually since we can't use JSX in DivIcon
-                              return `<div class="flex flex-col items-center">
-                                <div class="relative w-6 h-6">
-                                  <div class="absolute inset-0 flex items-center justify-center">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" class="drop-shadow-lg">
-                                      <circle cx="12" cy="12" r="10" fill="#a78bfa" stroke="#7c3aed" stroke-width="2"/>
-                                      <circle cx="12" cy="12" r="5" fill="#8b5cf6"/>
-                                      <circle cx="12" cy="12" r="2" fill="#ffffff"/>
-                                    </svg>
-                                  </div>
-                                </div>
-                                <div class="text-xs font-bold text-purple-800 mt-1 text-center whitespace-nowrap">
-                                  ${mint.displayName}
-                                </div>
-                              </div>`
-                            })()}</div>`,
+                            html: `<div class="mint-pin-wrapper" data-mint="${mint.displayName}">${createHighlightedMintHtml(mint.displayName)}</div>`,
                             iconSize: [120, 60], // Larger to accommodate label
                             iconAnchor: [60, 12], // Anchor at the center of the circle (24px circle, so 12px from top)
                           })
                         : new DivIcon({
                             className: "mint-marker",
-                            html: `<div style="${MAP_STYLES.mintMarker.css}"></div>`,
+                            html: `<div style="${MAP_STYLES.mintMarker.css}" data-mint="${mint.displayName}"></div>`,
                             iconSize: MAP_STYLES.mintMarker.iconSize,
                             iconAnchor: MAP_STYLES.mintMarker.iconAnchor,
                           })
                     }
-                  >
-                    <Popup maxWidth={300} className="mint-popup">
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: createMapCardHTML({
+                    eventHandlers={{
+                      click: (e: L.LeafletMouseEvent) => {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const mapContainer = (e.target as any)._map
+                          ._container as HTMLElement
+                        const rect = mapContainer.getBoundingClientRect()
+                        const clickX = e.originalEvent.clientX - rect.left
+                        const clickY = e.originalEvent.clientY - rect.top
+
+                        setCustomPopup({
+                          isVisible: true,
+                          position: {
+                            x: rect.left + clickX,
+                            y: rect.top + clickY,
+                          },
+                          content: {
                             title: mint.displayName,
                             subtitle: isHighlighted
                               ? "The strike-place of this coin"
@@ -591,17 +603,27 @@ export const Map: React.FC<MapProps> = ({
                             className: isHighlighted
                               ? "text-purple-800"
                               : "text-blue-800",
-                          }),
-                        }}
-                      />
-                    </Popup>
-                  </Marker>
+                          },
+                        })
+                      },
+                    }}
+                  />
                 )
               })}
             </MapContainer>
           </div>
         </div>
       </div>
+
+      {/* Custom popup that renders outside map container */}
+      <MapPopup
+        isVisible={customPopup.isVisible}
+        onClose={() =>
+          setCustomPopup((prev) => ({ ...prev, isVisible: false }))
+        }
+        position={customPopup.position}
+        content={customPopup.content}
+      />
     </>
   )
 }
