@@ -335,13 +335,6 @@ export const Map: React.FC<MapProps> = ({
         .province-label {
           /* No background - transparent labels */
         }
-        .province-popup .leaflet-popup-content-wrapper {
-          border-radius: 8px !important;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-        }
-        .province-popup .leaflet-popup-content {
-          margin: 0 !important;
-        }
       `}</style>
       <div
         className={
@@ -522,14 +515,27 @@ export const Map: React.FC<MapProps> = ({
                     if (feature.properties && "name" in feature.properties) {
                       const props = feature.properties as { name: string }
                       const name = props.name
-                      const popup = createMapCardHTML({
-                        title: name,
-                        description: "Roman Province",
-                        className: "text-emerald-800",
-                      })
-                      layer.bindPopup(popup, {
-                        maxWidth: 300,
-                        className: "province-popup",
+
+                      layer.on("click", (e: L.LeafletMouseEvent) => {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const mapContainer = (e.target as any)._map
+                          ._container as HTMLElement
+                        const rect = mapContainer.getBoundingClientRect()
+                        const clickX = e.originalEvent.clientX - rect.left
+                        const clickY = e.originalEvent.clientY - rect.top
+
+                        setCustomPopup({
+                          isVisible: true,
+                          position: {
+                            x: rect.left + clickX,
+                            y: rect.top + clickY,
+                          },
+                          content: {
+                            title: name,
+                            description: "Roman Province",
+                            className: "text-emerald-800",
+                          },
+                        })
                       })
                     }
                   }}

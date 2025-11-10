@@ -14,10 +14,11 @@
   --z-controls: 20;
   --z-overlay: 30;
   --z-dropdown: 40;
-  --z-modal: 50;
   --z-tooltip: 60;
   --z-notification: 70;
   --z-mobile-nav: 80;
+  --z-map-popup: 1000;
+  --z-modal: 1100;
 }
 
 /* Somnus Collection Inspired Color Palette */
@@ -224,6 +225,9 @@ main {
 }
 .z-dropdown {
   z-index: var(--z-dropdown);
+}
+.z-map-popup {
+  z-index: var(--z-map-popup);
 }
 .z-modal {
   z-index: var(--z-modal);

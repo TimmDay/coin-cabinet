@@ -79,7 +79,7 @@ export function MapPopup({
       `}</style>
       <div
         ref={popupRef}
-        className="popup-container fixed z-[1000] max-w-xs rounded-lg bg-white shadow-lg"
+        className="popup-container z-map-popup fixed max-w-xs rounded-lg bg-white shadow-lg"
       >
         {/* Arrow pointing down */}
         <div className="popup-arrow absolute top-full left-1/2 -translate-x-1/2 border-t-8 border-r-8 border-l-8 border-t-white border-r-transparent border-l-transparent" />
