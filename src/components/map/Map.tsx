@@ -85,6 +85,8 @@ type MapProps = {
   showProvinceLabels?: boolean
   /** Hide all map controls (for external control) */
   hideControls?: boolean
+  /** Mint name to highlight with special pin (case insensitive match) */
+  highlightMint?: string
 }
 
 export const Map: React.FC<MapProps> = ({
@@ -107,6 +109,7 @@ export const Map: React.FC<MapProps> = ({
   selectedProvinces: externalSelectedProvinces,
   showProvinceLabels: externalShowProvinceLabels = true,
   hideControls = false,
+  highlightMint,
 }) => {
   // Use custom hooks for configuration and data management
   const config = useMapConfiguration()
@@ -154,9 +157,24 @@ export const Map: React.FC<MapProps> = ({
         }
       : setInternalShowProvinceLabels
 
+  // Find highlighted mint and center on it if provided
+  const highlightedMint = useMemo(() => {
+    if (!highlightMint) return null
+    return ROMAN_MINTS.find((mint) =>
+      mint.mintNames.some(
+        (name) => name.toLowerCase() === highlightMint.toLowerCase(),
+      ),
+    )
+  }, [highlightMint])
+
   // Use actual center and zoom from config if not provided
-  const mapCenter = center ?? config.defaultCenter
-  const mapZoom = zoom ?? config.defaultZoom
+  // If highlighting a mint, center on that mint
+  const mapCenter =
+    center ??
+    (highlightedMint
+      ? [highlightedMint.lat, highlightedMint.lng]
+      : config.defaultCenter)
+  const mapZoom = zoom ?? (highlightedMint ? 6 : config.defaultZoom) // Zoom level when highlighting a mint
 
   // Empire extent layer configuration
   const empireLayerConfig = useMemo(
@@ -521,33 +539,65 @@ export const Map: React.FC<MapProps> = ({
                 ))}
 
               {/* Mint Markers */}
-              {ROMAN_MINTS.map((mint) => (
-                <Marker
-                  key={`mint-${mint.mintName}`}
-                  position={[mint.lat, mint.lng]}
-                  icon={
-                    new DivIcon({
-                      className: "mint-marker",
-                      html: `<div style="${MAP_STYLES.mintMarker.css}"></div>`,
-                      iconSize: MAP_STYLES.mintMarker.iconSize,
-                      iconAnchor: MAP_STYLES.mintMarker.iconAnchor,
-                    })
-                  }
-                >
-                  <Popup maxWidth={300} className="mint-popup">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: createMapCardHTML({
-                          title: mint.mintName,
-                          subtitle: "Roman Mint",
-                          description: "Major imperial minting center",
-                          className: "text-blue-800",
-                        }),
-                      }}
-                    />
-                  </Popup>
-                </Marker>
-              ))}
+              {ROMAN_MINTS.map((mint) => {
+                const isHighlighted =
+                  highlightedMint?.displayName === mint.displayName
+
+                return (
+                  <Marker
+                    key={`mint-${mint.displayName}`}
+                    position={[mint.lat, mint.lng]}
+                    icon={
+                      isHighlighted
+                        ? new DivIcon({
+                            className: "highlighted-mint-marker",
+                            html: `<div class="mint-pin-wrapper">${(() => {
+                              // Create MintPin HTML manually since we can't use JSX in DivIcon
+                              return `<div class="flex flex-col items-center">
+                                <div class="relative w-6 h-6">
+                                  <div class="absolute inset-0 flex items-center justify-center">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" class="drop-shadow-lg">
+                                      <circle cx="12" cy="12" r="10" fill="#a78bfa" stroke="#7c3aed" stroke-width="2"/>
+                                      <circle cx="12" cy="12" r="5" fill="#8b5cf6"/>
+                                      <circle cx="12" cy="12" r="2" fill="#ffffff"/>
+                                    </svg>
+                                  </div>
+                                </div>
+                                <div class="text-xs font-bold text-purple-800 mt-1 text-center whitespace-nowrap">
+                                  ${mint.displayName}
+                                </div>
+                              </div>`
+                            })()}</div>`,
+                            iconSize: [120, 60], // Larger to accommodate label
+                            iconAnchor: [60, 12], // Anchor at the center of the circle (24px circle, so 12px from top)
+                          })
+                        : new DivIcon({
+                            className: "mint-marker",
+                            html: `<div style="${MAP_STYLES.mintMarker.css}"></div>`,
+                            iconSize: MAP_STYLES.mintMarker.iconSize,
+                            iconAnchor: MAP_STYLES.mintMarker.iconAnchor,
+                          })
+                    }
+                  >
+                    <Popup maxWidth={300} className="mint-popup">
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: createMapCardHTML({
+                            title: mint.displayName,
+                            subtitle: isHighlighted
+                              ? "The strike-place of this coin"
+                              : "Roman Mint",
+                            description: mint.flavourText,
+                            className: isHighlighted
+                              ? "text-purple-800"
+                              : "text-blue-800",
+                          }),
+                        }}
+                      />
+                    </Popup>
+                  </Marker>
+                )
+              })}
             </MapContainer>
           </div>
         </div>

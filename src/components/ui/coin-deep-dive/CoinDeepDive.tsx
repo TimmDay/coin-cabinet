@@ -86,8 +86,17 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       )}
 
       {/* Map Section */}
-
-      {isMapFeatureEnabled && <Map />}
+      {isMapFeatureEnabled && (
+        <div className="flex justify-center">
+          <div className="w-[calc(100%-150px)]">
+            <Map
+              highlightMint={coin.mint ?? undefined}
+              hideControls={true}
+              height="400px"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Coin Details */}
       {coin.flavour_text && <FlavorFooter coin={coin} />}
