@@ -70,7 +70,7 @@ export const ROMAN_MINTS: Mint[] = [
     ],
     openedBy: "Augustus",
     flavourText:
-      "The mint at Lugdunam (modern day Lyon) supplied coins to pay the legions in Gaul, along the Rhine frontier, and provided distribution for the western provinces. Having a mint at this key location meant that it could receive gold and silver shipments directly from the mines in Hispania, without having to ship it all the way to Rome and then ship the coinage back north again",
+      "The mint at Lugdunam (modern day Lyon) supplied coins to pay the legions in Gaul, along the Rhine frontier, and provided distribution for the western provinces. Having a mint at this key location meant that it could receive gold and silver shipments directly from the mines in Hispania, without having to ship it all the way over the Alps to Rome and then ship the coinage back north over the Alps again.",
   },
   {
     mintNames: ["Trier", "Treveri"],

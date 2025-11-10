@@ -2,17 +2,28 @@
 
 ## Next Thing
 
+- [ ] DeepDive page: Mint info text box. Display above|below the map. style nicely.
 - [ ] hand draw a logo I like
 
 ### features on deck
 
 - logo
 - Map component
-- Mints data (hooking it up to the map)
+- [x] MVP. Mints data (hooking it up to the map)
+- [ ] Mints data. is this better in a db?
+- [ ] Mint data: operation dates and flavour text for each mint I have coins from.
+- [ ] Province data: existence dates for each province.
+- [ ] Get geojson for the provinces I am missing
+- [ ] work out how to put geojson into a db table (postGIS)
+- [ ] Map page: make a slider to choose the year. Provinces and mints on the map update to only show those that are operational in that year (as far as we know).
 - budget photography post
-- home age
+- new to coin cleaning post
+  - [ ] photo slider component.
+- home page
 
 ### Quick Notes
+
+- [ ] Map: work out a nice color scheme
 
 - [ ] research expanded latin and translation text for legends.
 

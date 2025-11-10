@@ -32,13 +32,24 @@ import { MapEmbeddedControls } from "./MapEmbeddedControls"
 import { MapPopup } from "./MapPopup"
 import { createHighlightedMintHtml } from "./MintMarkerSvg"
 
+// Helper function to safely get map container from Leaflet event
+function getMapContainer(event: L.LeafletMouseEvent): HTMLElement | null {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+  return (event.target as any)?._map?._container ?? null
+}
+
 // Component to handle zoom level changes
 function ZoomHandler({
   onZoomChange,
+  onZoomStart,
 }: {
   onZoomChange: (zoom: number) => void
+  onZoomStart?: () => void
 }) {
   useMapEvents({
+    zoomstart: () => {
+      onZoomStart?.()
+    },
     zoomend: (e) => {
       const zoom = (e.target as L.Map).getZoom()
       onZoomChange(zoom)
@@ -143,6 +154,20 @@ export const Map: React.FC<MapProps> = ({
     position: { x: 0, y: 0 },
     content: { title: "" },
   })
+
+  // Close popup on scroll
+  useEffect(() => {
+    if (!customPopup.isVisible) return
+
+    const handleScroll = () => {
+      setCustomPopup((prev) => ({ ...prev, isVisible: false }))
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [customPopup.isVisible])
 
   // Province selection logic using custom hook
   const allProvinces = useMemo(() => {
@@ -393,7 +418,12 @@ export const Map: React.FC<MapProps> = ({
               />
 
               {/* Zoom Level Handler */}
-              <ZoomHandler onZoomChange={setCurrentZoom} />
+              <ZoomHandler
+                onZoomChange={setCurrentZoom}
+                onZoomStart={() =>
+                  setCustomPopup((prev) => ({ ...prev, isVisible: false }))
+                }
+              />
 
               {/* BC 60 Empire Extent Layer */}
               {isLayerVisible("bc60") && getLayerData("bc60") && (
@@ -517,9 +547,9 @@ export const Map: React.FC<MapProps> = ({
                       const name = props.name
 
                       layer.on("click", (e: L.LeafletMouseEvent) => {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const mapContainer = (e.target as any)._map
-                          ._container as HTMLElement
+                        const mapContainer = getMapContainer(e)
+                        if (!mapContainer) return
+
                         const rect = mapContainer.getBoundingClientRect()
                         const clickX = e.originalEvent.clientX - rect.left
                         const clickY = e.originalEvent.clientY - rect.top
@@ -532,7 +562,8 @@ export const Map: React.FC<MapProps> = ({
                           },
                           content: {
                             title: name,
-                            description: "Roman Province",
+                            // TODO: hook this up to a data file with info for provinces.
+                            description: "Roman Territory",
                             className: "text-emerald-800",
                           },
                         })
@@ -587,9 +618,9 @@ export const Map: React.FC<MapProps> = ({
                     }
                     eventHandlers={{
                       click: (e: L.LeafletMouseEvent) => {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const mapContainer = (e.target as any)._map
-                          ._container as HTMLElement
+                        const mapContainer = getMapContainer(e)
+                        if (!mapContainer) return
+
                         const rect = mapContainer.getBoundingClientRect()
                         const clickX = e.originalEvent.clientX - rect.left
                         const clickY = e.originalEvent.clientY - rect.top
@@ -603,8 +634,8 @@ export const Map: React.FC<MapProps> = ({
                           content: {
                             title: mint.displayName,
                             subtitle: isHighlighted
-                              ? "The strike-place of this coin"
-                              : "Roman Mint",
+                              ? "This coin was struck here"
+                              : "",
                             description: mint.flavourText,
                             className: isHighlighted
                               ? "text-purple-800"
