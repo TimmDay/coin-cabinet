@@ -1,1 +1,1 @@
-export { MintInfo } from "./MintInfo"
+export { MintInfo } from "./coin-deep-dive/MintInfo"

@@ -22,12 +22,13 @@ export const ROMAN_MINTS: Mint[] = [
     displayName: "Rome",
     lat: 41.9028,
     lng: 12.4964,
-    operationDates: [],
-    mintMarks: [],
-    coinageMaterials: [],
+    operationDates: [[-260, 476, "Republic"]],
+    mintMarks: ["ROMA", "R", "ROM", "RM", "XXIR", "SMR"],
+    coinageMaterials: ["bronze", "silver", "gold"],
     referenceLinks: [],
-    openedBy: "",
-    flavourText: "",
+    openedBy: "Republic Temple of Juno Moneta",
+    flavourText:
+      "The original and capital mint during the Republic and most of the Empire. Starting allegedly at the Temple of Juno Moneta, the name of the goddess came to be used to refer to money itself. She was a goddess who gave warnings, with foresight. Roman coinage too made statements about the future. Being the heart of the Empire, at times of crisis coins with your face and the Rome mint mark had extra value in establishing political legitimacy.",
   },
   {
     mintNames: ["Alexandria"],

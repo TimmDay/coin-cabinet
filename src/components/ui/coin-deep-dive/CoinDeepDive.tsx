@@ -47,16 +47,6 @@ type CoinDeepDiveProps = {
   }
 }
 
-function FlavorFooter({ coin }: { coin: CoinDeepDiveProps["coin"] }) {
-  return (
-    <footer className="mt-4 border-t border-slate-600 pt-4">
-      <p className="text-xs leading-relaxed break-words text-slate-400 italic">
-        {coin.flavour_text}
-      </p>
-    </footer>
-  )
-}
-
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const isMapFeatureEnabled = useTypedFeatureFlag("map-feature")
   return (
@@ -86,15 +76,6 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         />
       )}
 
-      {/* Mint Information Section */}
-      {isMapFeatureEnabled && coin.mint && (
-        <div className="flex justify-center">
-          <div className="w-full max-w-none md:w-[calc(100%-150px)]">
-            <MintInfo mintName={coin.mint} />
-          </div>
-        </div>
-      )}
-
       {/* Map Section */}
       {isMapFeatureEnabled && (
         <div className="flex justify-center">
@@ -108,8 +89,27 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         </div>
       )}
 
+      {/* Mint Information Section */}
+      {isMapFeatureEnabled && coin.mint && (
+        <div className="flex justify-center">
+          <div className="w-full max-w-none md:w-[calc(100%-150px)]">
+            <MintInfo mintName={coin.mint} />
+          </div>
+        </div>
+      )}
+
       {/* Coin Details */}
-      {coin.flavour_text && <FlavorFooter coin={coin} />}
+      {coin.flavour_text && <FlavorFooter flavourText={coin.flavour_text} />}
     </section>
+  )
+}
+
+function FlavorFooter({ flavourText }: { flavourText: string }) {
+  return (
+    <footer className="mt-4 border-t border-slate-600 pt-4">
+      <p className="text-xs leading-relaxed break-words text-slate-400 italic">
+        {flavourText}
+      </p>
+    </footer>
   )
 }
