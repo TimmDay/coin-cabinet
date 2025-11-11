@@ -32,7 +32,7 @@ export const MapCard: React.FC<MapCardProps> = ({
 }) => {
   return (
     <div className={`min-w-0 p-3 ${className}`}>
-      <h4 className="mb-2 text-base font-bold text-purple-800">{title}</h4>
+      <h4 className="text-map-label mb-2 text-base font-bold">{title}</h4>
 
       {subtitle && (
         <p className="mb-2 text-sm text-gray-600">
@@ -76,7 +76,7 @@ export const createMapCardHTML = (props: MapCardProps): string => {
 
   return `
     <div class="p-3 min-w-0 ${props.className ?? ""}">
-      <h4 class="font-bold text-purple-800 text-base mb-2">
+      <h4 class="font-bold text-map-label text-base mb-2">
         ${props.title}
       </h4>
       ${props.subtitle ? `<p class="text-sm text-gray-600 mb-2"><em>${props.subtitle}</em></p>` : ""}

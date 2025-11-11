@@ -1,5 +1,9 @@
 /**
- * SVG component for highlighted mint markers (purple circular design)
+ * SVG component for high        <div className="mt      <div class="text-xs font-bold text-map-label mt-1 text-center whitespace-nowrap uppercase">
+        ${displayName}
+      </div>text-center text-xs font-bold whitespace-nowrap text-map-label uppercase">
+          {displayName}
+        </div>hted mint markers (purple circular design)
  * Used when a specific mint is highlighted on coin detail pages
  */
 export function HighlightedMintSvg({ displayName }: { displayName: string }) {
@@ -27,7 +31,7 @@ export function HighlightedMintSvg({ displayName }: { displayName: string }) {
             </svg>
           </div>
         </div>
-        <div className="mt-1 text-center text-xs font-bold whitespace-nowrap text-purple-800 uppercase">
+        <div className="mt-1 text-center text-xs font-bold whitespace-nowrap text-map-label uppercase">
           {displayName}
         </div>
       </div>
@@ -51,7 +55,7 @@ export function createHighlightedMintHtml(displayName: string): string {
           </svg>
         </div>
       </div>
-      <div class="text-xs font-bold text-purple-800 mt-1 text-center whitespace-nowrap uppercase">
+      <div class="text-xs font-bold text-map-label mt-1 text-center whitespace-nowrap uppercase">
         ${displayName}
       </div>
     </div>

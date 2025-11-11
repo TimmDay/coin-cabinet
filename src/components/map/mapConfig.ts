@@ -160,7 +160,7 @@ export const MAP_STYLES = {
       width: 12px;
       height: 12px;
       background-color: #a78bfa;
-      border: 2px solid #6b21a8;
+      border: 2px solid hsl(var(--map-label));
       border-radius: 50%;
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     `,
@@ -207,7 +207,7 @@ export const PROVINCE_LABEL_STYLES = {
     padding: 2px 6px;
     font-size: 12px;
     font-weight: 600;
-    color: #6b21a8;
+    color: hsl(var(--map-label));
     text-align: center;
     white-space: pre;
     line-height: 1.2;

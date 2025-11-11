@@ -62,6 +62,9 @@
   --input: 216 15% 25%; /* Input background */
   --ring: 36 45% 50%; /* Focus ring matches primary */
 
+  /* Map theming colors */
+  --map-label: 273 46% 33%; /* Purple for map labels and popup titles - #6b21a8 */
+
   --radius: 0.375rem; /* Slightly smaller radius for elegance */
 }
 
@@ -116,6 +119,11 @@ main {
 
 .ring-auth-accent {
   --tw-ring-color: hsl(var(--auth-accent));
+}
+
+/* Map label utility classes */
+.text-map-label {
+  color: hsl(var(--map-label));
 }
 
 /* Enhanced typography for numismatic content */
