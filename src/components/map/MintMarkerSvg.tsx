@@ -27,7 +27,7 @@ export function HighlightedMintSvg({ displayName }: { displayName: string }) {
             </svg>
           </div>
         </div>
-        <div className="mt-1 text-center text-xs font-bold whitespace-nowrap text-purple-800">
+        <div className="mt-1 text-center text-xs font-bold whitespace-nowrap text-purple-800 uppercase">
           {displayName}
         </div>
       </div>
@@ -51,7 +51,7 @@ export function createHighlightedMintHtml(displayName: string): string {
           </svg>
         </div>
       </div>
-      <div class="text-xs font-bold text-purple-800 mt-1 text-center whitespace-nowrap">
+      <div class="text-xs font-bold text-purple-800 mt-1 text-center whitespace-nowrap uppercase">
         ${displayName}
       </div>
     </div>

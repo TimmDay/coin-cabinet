@@ -146,10 +146,10 @@ export const MAP_STYLES = {
 
   // Province boundaries style
   provinces: {
-    color: "#059669", // Emerald border
+    color: "#7c3aed", // Purple border
     weight: 2,
     opacity: 0.8,
-    fillColor: "#10b981", // Emerald fill
+    fillColor: "#8b5cf6", // Purple fill
     fillOpacity: 0.2,
     dashArray: "5, 5",
   },
@@ -159,8 +159,8 @@ export const MAP_STYLES = {
     css: `
       width: 12px;
       height: 12px;
-      background-color: #dc2626;
-      border: 2px solid #fff;
+      background-color: #a78bfa;
+      border: 2px solid #6b21a8;
       border-radius: 50%;
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     `,
@@ -182,12 +182,12 @@ export const MAP_BOUNDS = {
 
 // Tile layer configuration
 export const TILE_LAYER_CONFIG = {
-  // Using CartoDB Positron No Labels for muted styling without country names
-  url: "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
+  // Using CartoDB Dark Matter No Labels for darker, muted styling
+  url: "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png",
   attribution:
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   // Custom styling to make it more muted
-  opacity: 0.7,
+  opacity: 0.5,
 } as const
 
 // Leaflet icon fix for Next.js
@@ -207,7 +207,7 @@ export const PROVINCE_LABEL_STYLES = {
     padding: 2px 6px;
     font-size: 12px;
     font-weight: 600;
-    color: #065f46;
+    color: #6b21a8;
     text-align: center;
     white-space: pre;
     line-height: 1.2;

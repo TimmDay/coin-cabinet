@@ -49,7 +49,7 @@ export function MintInfo({ mintName }: MintInfoProps) {
         </div>
 
         {/* Middle column - flavour text */}
-        <div>
+        <div className="flex items-center">
           <p className="text-justify text-sm leading-relaxed text-gray-300">
             {mint.flavourText}
           </p>
@@ -58,14 +58,16 @@ export function MintInfo({ mintName }: MintInfoProps) {
         {/* Right column - mint marks (only if available) */}
         {mint.mintMarks && mint.mintMarks.length > 0 && (
           <div className="flex flex-col items-center justify-center space-y-1 text-center md:items-end md:text-right">
-            {mint.mintMarks.map((mark, index) => (
-              <div
-                key={index}
-                className="text-sm whitespace-nowrap text-gray-400"
-              >
-                {mark}
-              </div>
-            ))}
+            <div className="grid grid-cols-1 gap-1 2xl:grid-cols-2 2xl:gap-x-3 2xl:gap-y-1">
+              {mint.mintMarks.map((mark, index) => (
+                <div
+                  key={index}
+                  className="text-sm whitespace-nowrap text-gray-400"
+                >
+                  {mark}
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
