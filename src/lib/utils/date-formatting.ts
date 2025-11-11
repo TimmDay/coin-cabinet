@@ -32,3 +32,28 @@ export function formatYearRange(
 
   return ""
 }
+
+/**
+ * Format a Roman date range for display (without parentheses)
+ * @param startYear - Start year (negative for BCE, positive for CE)
+ * @param endYear - End year (negative for BCE, positive for CE)
+ * @returns Formatted date range string
+ */
+export function formatRomanDateRange(
+  startYear: number,
+  endYear: number,
+): string {
+  const formatYear = (year: number): string => {
+    if (year < 0) {
+      return `${Math.abs(year)} BCE`
+    } else {
+      return `${year} CE`
+    }
+  }
+
+  if (startYear === endYear) {
+    return formatYear(startYear)
+  }
+
+  return `${formatYear(startYear)} - ${formatYear(endYear)}`
+}

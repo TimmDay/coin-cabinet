@@ -1,6 +1,7 @@
 "use client"
 
 import dynamic from "next/dynamic"
+import { MintInfo } from "~/components/ui"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { CoinRow } from "./CoinRow"
 
@@ -85,10 +86,19 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         />
       )}
 
+      {/* Mint Information Section */}
+      {isMapFeatureEnabled && coin.mint && (
+        <div className="flex justify-center">
+          <div className="w-full max-w-none md:w-[calc(100%-150px)]">
+            <MintInfo mintName={coin.mint} />
+          </div>
+        </div>
+      )}
+
       {/* Map Section */}
       {isMapFeatureEnabled && (
         <div className="flex justify-center">
-          <div className="w-[calc(100%-150px)]">
+          <div className="w-full max-w-none md:w-[calc(100%-150px)]">
             <Map
               highlightMint={coin.mint ?? undefined}
               hideControls={true}
