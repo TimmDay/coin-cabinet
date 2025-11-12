@@ -24,14 +24,17 @@ export const adminSubmenu = [
 export const cabinetSubmenu = [
   { name: "Roman", href: "/cabinet/roman", hasSubmenu: true },
   { name: "Greek", href: "/cabinet/greek" },
+  { name: "Judea", href: "/cabinet/judea" },
   { name: "All Coins", href: "/cabinet/all-coins" },
 ]
 
 export const cabinetRomanSubmenu = [
+  { name: "Roman Emperors", href: "/cabinet/silver-emperors" },
+  { name: "Imperial Women", href: "/cabinet/imperial-women" },
+  { name: "The Adoptive Emperors", href: "/cabinet/adoptive-emperors" },
   { name: "Severan Dynasty", href: "/cabinet/severan-dynasty" },
   { name: "Gordy Boys", href: "/cabinet/gordy-boys" },
   { name: "Crisis", href: "/cabinet/crisis" },
-  { name: "Imperial Women", href: "/cabinet/imperial-women" },
   { name: "Tetrachy", href: "/cabinet/tetrachy" },
   { name: "Constantinian", href: "/cabinet/constantinian" },
   { name: "Hoards", href: "/cabinet/hoards" },

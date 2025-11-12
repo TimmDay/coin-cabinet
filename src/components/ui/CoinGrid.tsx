@@ -69,6 +69,32 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
         return yearA - yearB
       }
 
+      // Special sorting for "adoptive-emperors" set
+      if (filterSet === "adoptive-emperors") {
+        const denomA = a.denomination?.toLowerCase() ?? ""
+        const denomB = b.denomination?.toLowerCase() ?? ""
+
+        // Denarius first, then all others by mint year
+        const isDenariusA = denomA === "denarius"
+        const isDenariusB = denomB === "denarius"
+
+        // If one is denarius and other isn't, denarius comes first
+        if (isDenariusA && !isDenariusB) return -1
+        if (!isDenariusA && isDenariusB) return 1
+
+        // If both are denarius or both are non-denarius, sort by mint start date
+        const yearA = a.mint_year_earliest ?? 0
+        const yearB = b.mint_year_earliest ?? 0
+        return yearA - yearB
+      }
+
+      // Special sorting for "silver-emperors" set - order by reign start
+      if (filterSet === "silver-emperors") {
+        const yearA = a.reign_start ?? 0
+        const yearB = b.reign_start ?? 0
+        return yearA - yearB
+      }
+
       // Default sorting for other sets: by mint_year_earliest (ascending order - oldest first)
       const yearA = a.mint_year_earliest ?? 0
       const yearB = b.mint_year_earliest ?? 0

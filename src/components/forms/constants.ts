@@ -75,11 +75,13 @@ export const civSpecificOptions = {
 }
 
 export const setsOptions = [
-  { value: "severan", label: "Severan" },
+  { value: "silver-emperors", label: "Roman Emperors in Silver" },
   { value: "imperial women", label: "Imperial Women" },
+  { value: "adoptive-emperors", label: "The Adoptive Emperors" },
+  { value: "severan", label: "Severan Dynasty" },
+  { value: "gordy boys", label: "Gordy Boys" },
   { value: "crisis", label: "Crisis" },
   { value: "tetrachy", label: "Tetrachy" },
   { value: "constantinian", label: "Constantinian" },
-  { value: "gordy boys", label: "Gordy Boys" },
   { value: "hoards", label: "Hoards" },
 ]

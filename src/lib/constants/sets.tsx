@@ -10,6 +10,7 @@ const tetrachyImages = [
 ]
 const constantinianImages = ["z_helena_pubdom"]
 const hoardsImages = [""]
+const adoptiveEmperorsImages = [""]
 
 const severanSet = {
   name: "Severan Dynasty",
@@ -64,18 +65,34 @@ const hoardsSet = {
   image: pickRandomImage(hoardsImages),
 }
 
+const adoptiveEmperorsSet = {
+  name: "The Adoptive Emperors",
+  href: "/cabinet/adoptive-emperors",
+  description: "Five guys kept things pretty peaceful for 84 years.",
+  image: pickRandomImage(adoptiveEmperorsImages),
+}
+
+const silverEmperorsSet = {
+  name: "Roman Emperors in Silver",
+  href: "/cabinet/silver-emperors",
+  description:
+    "The cleanest silver observe for each emperor in the Somnus Collection",
+  image: pickRandomImage([]),
+}
+
 export const featuredSets = [severanSet, gordySet, imperialWomenSet]
 
 export const romanSets = [
+  adoptiveEmperorsSet,
   severanSet,
   gordySet,
-  imperialWomenSet,
   crisisSet,
   tetrachySet,
   constantinianSet,
   hoardsSet,
+  imperialWomenSet,
+  silverEmperorsSet,
 ]
-export const allSets = [severanSet, gordySet, imperialWomenSet]
 
 function pickRandomImage(images: string[]) {
   return images[Math.floor(Math.random() * images.length)]
