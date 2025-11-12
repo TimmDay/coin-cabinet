@@ -19,7 +19,15 @@
 - budget photography post
 - new to coin cleaning post
   - [ ] photo slider component.
-- home page
+- home page design/tidy/writing
+
+- emperor timeline
+  - (birth, death, reign, notable events, coin in collection mint dates)
+
+Map Page
+
+- filters
+- year slider (map contents/layers/even zoom and center change based on selected year)
 
 ### Quick Notes
 

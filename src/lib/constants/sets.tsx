@@ -39,7 +39,7 @@ const crisisSet = {
   name: "Crisis",
   href: "/cabinet/crisis",
   description:
-    "Turmoil in the Crisis of the Third Century. A rapid succession of emperors and usurpers and their coins reflect the political instability and economic decline.",
+    "Turmoil in the Crisis of the Third Century. A rapid succession of emperors and usurpers and their coins reflect the political instability and economic chaos.",
   image: pickRandomImage(crisisImages),
 }
 const tetrachySet = {

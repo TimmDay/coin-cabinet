@@ -115,7 +115,7 @@ export const ROMAN_MINTS: Mint[] = [
     lat: 40.6401,
     lng: 22.9444,
     operationDates: [],
-    mintMarks: ["THES", "TES", "ΘΕC"],
+    mintMarks: ["THES", "TES", "ΘΕC", "SMT"],
     coinageMaterials: [],
     referenceLinks: [],
     openedBy: "",

@@ -50,7 +50,7 @@ type CoinDeepDiveProps = {
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const isMapFeatureEnabled = useTypedFeatureFlag("map-feature")
   return (
-    <section className="space-y-6">
+    <section className="space-y-8 md:space-y-12">
       {/* Coin Row Components */}
       {coin.image_link_o && (
         <CoinRow

@@ -62,7 +62,7 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
     <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
       <div className="content-wrapper">
         <div>
-          <header className="mb-8">
+          <header className="mb-8 md:mb-12">
             <PageTitleWithSnapshot
               coinSnapshot={
                 <CoinSnapshot
