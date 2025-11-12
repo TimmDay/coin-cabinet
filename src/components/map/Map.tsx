@@ -38,13 +38,15 @@ function getMapContainer(event: L.LeafletMouseEvent): HTMLElement | null {
   return (event.target as any)?._map?._container ?? null
 }
 
-// Component to handle zoom level changes
+// Component to handle zoom level changes and pan events
 function ZoomHandler({
   onZoomChange,
   onZoomStart,
+  onPanStart,
 }: {
   onZoomChange: (zoom: number) => void
   onZoomStart?: () => void
+  onPanStart?: () => void
 }) {
   useMapEvents({
     zoomstart: () => {
@@ -53,6 +55,10 @@ function ZoomHandler({
     zoomend: (e) => {
       const zoom = (e.target as L.Map).getZoom()
       onZoomChange(zoom)
+    },
+    movestart: () => {
+      // Close popups when user starts panning/dragging the map
+      onPanStart?.()
     },
   })
   return null
@@ -421,6 +427,9 @@ export const Map: React.FC<MapProps> = ({
               <ZoomHandler
                 onZoomChange={setCurrentZoom}
                 onZoomStart={() =>
+                  setCustomPopup((prev) => ({ ...prev, isVisible: false }))
+                }
+                onPanStart={() =>
                   setCustomPopup((prev) => ({ ...prev, isVisible: false }))
                 }
               />

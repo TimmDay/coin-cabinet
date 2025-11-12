@@ -31,7 +31,7 @@ export function HighlightedMintSvg({ displayName }: { displayName: string }) {
             </svg>
           </div>
         </div>
-        <div className="mt-1 text-center text-xs font-bold whitespace-nowrap text-map-label uppercase">
+        <div className="text-map-label mt-1 text-center text-xs font-bold whitespace-nowrap uppercase">
           {displayName}
         </div>
       </div>

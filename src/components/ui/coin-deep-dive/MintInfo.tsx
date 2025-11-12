@@ -58,7 +58,12 @@ export function MintInfo({ mintName }: MintInfoProps) {
         {/* Right column - mint marks (only if available) */}
         {mint.mintMarks && mint.mintMarks.length > 0 && (
           <div className="flex flex-col items-center justify-center space-y-1 text-center md:items-end md:text-right">
-            <div className="grid grid-cols-1 gap-1 2xl:grid-cols-2 2xl:gap-x-3 2xl:gap-y-1">
+            {/* Mobile: comma-separated on one line */}
+            <div className="text-sm text-gray-400 md:hidden">
+              {mint.mintMarks.join(", ")}
+            </div>
+            {/* Desktop: grid layout */}
+            <div className="hidden grid-cols-1 gap-1 md:grid 2xl:grid-cols-2 2xl:gap-x-3 2xl:gap-y-1">
               {mint.mintMarks.map((mark, index) => (
                 <div
                   key={index}
