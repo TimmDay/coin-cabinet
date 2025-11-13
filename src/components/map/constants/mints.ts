@@ -147,6 +147,19 @@ export const ROMAN_MINTS: Mint[] = [
     flavourText: "",
   },
   {
+    mintNames: ["Carthage"],
+    displayName: "Carthage",
+    lat: 36.8531,
+    lng: 10.3238,
+    operationDates: [],
+    mintMarks: [],
+    coinageMaterials: ["bronze", "silver", "gold", "electrum"],
+    referenceLinks: [],
+    openedBy: "Carthaginian Republic",
+    flavourText:
+      "Ancient Carthage was a major maritime power and rival to Rome, famous for producing high-quality coinage including the distinctive horse and palm tree designs. The mint operated from the founding of the city until its destruction by Rome in 146 BCE.",
+  },
+  {
     mintNames: ["Nicea"],
     displayName: "Nicea",
     lat: 40.4272,

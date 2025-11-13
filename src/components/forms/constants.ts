@@ -9,6 +9,7 @@ export const denominationOptions = [
   { value: "Tetradrachm", label: "Tetradrachm" },
   { value: "Drachm", label: "Drachm" },
   { value: "Obol", label: "Obol" },
+  { value: "Prutah", label: "Prutah" },
   { value: "Æ1", label: "Æ1" },
   { value: "Æ2", label: "Æ2" },
   { value: "Æ3", label: "Æ3" },
@@ -34,6 +35,7 @@ export const civilizationOptions = [
   { value: "Roman Provincial", label: "Roman Provincial" },
   { value: "Byzantine", label: "Byzantine" },
   { value: "Ancient Greece", label: "Ancient Greece" },
+  { value: "Carthage", label: "Carthage" },
   { value: "Judea", label: "Judea" },
   { value: "Persian", label: "Persian" },
   { value: "Parthian", label: "Parthian" },
@@ -63,6 +65,10 @@ export const civSpecificOptions = {
     { value: "Troas, Kebren", label: "Troas, Kebren" },
     { value: "other", label: "Other" },
   ],
+  Carthage: [
+    { value: "North Africa", label: "North Africa" },
+    { value: "other", label: "Other" },
+  ],
   "Roman Provincial": [
     { value: "Alexandria", label: "Alexandria" },
     { value: "Antioch", label: "Antioch" },
@@ -75,11 +81,11 @@ export const civSpecificOptions = {
 }
 
 export const setsOptions = [
-  { value: "silver-emperors", label: "Roman Emperors in Silver" },
-  { value: "imperial women", label: "Imperial Women" },
+  { value: "silver-emperors", label: "Roman Emperors" },
+  { value: "imperial-women", label: "Imperial Women" },
   { value: "adoptive-emperors", label: "The Adoptive Emperors" },
   { value: "severan", label: "Severan Dynasty" },
-  { value: "gordy boys", label: "Gordy Boys" },
+  { value: "gordy-boys", label: "Gordy Boys" },
   { value: "crisis", label: "Crisis" },
   { value: "tetrachy", label: "Tetrachy" },
   { value: "constantinian", label: "Constantinian" },
