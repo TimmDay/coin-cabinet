@@ -19,7 +19,7 @@ const philipTimeline: Timeline = {
     },
     {
       kind: "family",
-      name: "Married Otacilia Severa",
+      name: "Married Otacilia",
       year: 236,
       description:
         "Married Otacilia Severa, a daughter of gens Otacilia, an aristocratic family. Her father had several governing appointments. Place and year of marriage are best-guesstimates.",
@@ -27,7 +27,7 @@ const philipTimeline: Timeline = {
     },
     {
       kind: "family",
-      name: "Son Phillipus II is born",
+      name: "Philip II is born",
       year: 238,
       description:
         "Son Phillipus II is born to Philip I and Otacilia Severa. A daughter was also born around this time, but her name is unknown. Perhaps in Antioch (best guess, somewhere east while Philip was in a military administrative role)",
@@ -35,7 +35,7 @@ const philipTimeline: Timeline = {
     },
     {
       kind: "political",
-      name: "Appointed Praetorian Prefect",
+      name: "Praetorian Prefect",
       year: 243,
       description:
         "Appointed Praetorian Prefect, commander of the Praetorian Guard, after the death of Timesitheus due to illness.",
@@ -43,7 +43,7 @@ const philipTimeline: Timeline = {
     },
     {
       kind: "made-emperor",
-      name: "Philip I",
+      name: "Emperor",
       year: 244,
       description:
         "Proclaimed emperor by his troops. Served as Consul for the first time either immediately before or after.",
@@ -51,13 +51,13 @@ const philipTimeline: Timeline = {
     },
     {
       kind: "political",
-      name: "Served as Consul II",
+      name: "Consul II",
       year: 247,
       description: "Served as Consul for the second time.",
     },
     {
       kind: "political",
-      name: "Served as Consul III",
+      name: "Consul III",
       year: 248,
       description:
         "Served as Consul for the third time, with his son as his colleague and co-emperor.",
@@ -73,10 +73,10 @@ const philipTimeline: Timeline = {
     },
     {
       kind: "military",
-      name: "Revolt at the Danubian Frontier",
+      name: "Revolt!",
       year: 248,
       description:
-        "A revolt broke out. Philip sent his trusted general Gaius Messius Quintus Decius to squash it.",
+        "A revolt broke out on the Danubian Frontier. Philip sent his trusted general Gaius Messius Quintus Decius to squash it.",
       ...PLACES.viminacium,
     },
     // rebuilt Shahba as Philippopolis,
@@ -84,7 +84,7 @@ const philipTimeline: Timeline = {
     // battles, treaties. Shapur
     {
       kind: "death",
-      name: "Philip I",
+      name: "Killed in Battle",
       year: 249,
       description:
         "Dies in battle against Decius, after he had been proclaimed emperor by his troops after suppressing the revolt.",
