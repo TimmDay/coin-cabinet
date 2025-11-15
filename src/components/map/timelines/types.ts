@@ -1,4 +1,4 @@
-type EventKind =
+export type EventKind =
   | "birth"
   | "death"
   | "made-emperor"
@@ -8,7 +8,7 @@ type EventKind =
   | "coin-minted" // added dynamically to the list on coin detail pages.
   | "other"
 
-type Event = {
+export type Event = {
   kind: EventKind // To choose icon.
   name: string
   year: number

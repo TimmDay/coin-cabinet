@@ -1,13 +1,4 @@
-type TimelineEvent = {
-  kind: string
-  name: string
-  year: number
-  yearEnd?: number
-  description?: string
-  place?: string
-  lat?: number
-  lng?: number
-}
+import type { Event as TimelineEvent } from "../map/timelines/types"
 
 export type MarkerProps = {
   year: number

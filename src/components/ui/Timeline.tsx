@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import type { Timeline as TimelineType } from "../map/timelines/types"
+import type { Timeline as TimelineType, Event as TimelineEvent, EventKind } from "../map/timelines/types"
 import {
   InvertedMarker,
   InvertedStackedMarkers,
@@ -14,17 +14,6 @@ type TimelineProps = {
   timeline: TimelineType
   className?: string
   onEventInteraction?: (event: TimelineEvent) => void
-}
-
-type TimelineEvent = {
-  kind: string
-  name: string
-  year: number
-  yearEnd?: number
-  description?: string
-  place?: string
-  lat?: number
-  lng?: number
 }
 
 export function Timeline({
@@ -92,7 +81,6 @@ export function Timeline({
     const padding = 16 // Minimum distance from viewport edges
 
     const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
 
     // Calculate horizontal position
     let x = clientX
@@ -230,7 +218,7 @@ export function Timeline({
 
 // Helper function to get icon component for event kinds
 function getEventIcon(
-  kind: string,
+  kind: EventKind,
   colorClass: string,
 ): React.JSX.Element | null {
   // CSS filter values to match brighter Tailwind colors
