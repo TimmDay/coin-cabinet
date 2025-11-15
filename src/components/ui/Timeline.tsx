@@ -1,6 +1,13 @@
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import type { Timeline as TimelineType } from "../map/timelines/types"
+import {
+  InvertedMarker,
+  InvertedStackedMarkers,
+  NormalMarker,
+  SideLineMarker,
+  StackedMarkers,
+} from "./TimelineMarkers"
 
 // TODO: icons for all timeline event types
 type TimelineProps = {
@@ -26,7 +33,11 @@ export function Timeline({
   onEventInteraction,
 }: TimelineProps) {
   const [hoveredEvent, setHoveredEvent] = useState<TimelineEvent | null>(null)
-  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 })
+  const [popupPosition, setPopupPosition] = useState({
+    x: 0,
+    y: 0,
+    showBelow: false,
+  })
 
   // Close popup on scroll
   useEffect(() => {
@@ -50,7 +61,7 @@ export function Timeline({
   const sideLineEvent = hasLargeGap ? events[0] : null
   const timelineEvents = hasLargeGap ? events.slice(1) : events
 
-  const startYear = (timelineEvents[0]?.year ?? 0) - 3
+  const startYear = (timelineEvents[0]?.year ?? 0) - 1
   const endYear = (timelineEvents[timelineEvents.length - 1]?.year ?? 0) + 3
   const totalYears = endYear - startYear
 
@@ -74,7 +85,37 @@ export function Timeline({
     clientY: number,
   ) => {
     setHoveredEvent(event)
-    setPopupPosition({ x: clientX, y: clientY - 10 })
+
+    // Smart popup positioning to keep it within viewport
+    const popupWidth = 320 // Approximate width of max-w-sm (20rem = 320px)
+    const popupHeight = 150 // Approximate height
+    const padding = 16 // Minimum distance from viewport edges
+
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight
+
+    // Calculate horizontal position
+    let x = clientX
+    if (x + popupWidth / 2 > viewportWidth - padding) {
+      // Too far right, anchor to right edge
+      x = viewportWidth - popupWidth / 2 - padding
+    } else if (x - popupWidth / 2 < padding) {
+      // Too far left, anchor to left edge
+      x = popupWidth / 2 + padding
+    }
+
+    // Calculate vertical position
+    let y = clientY - 10
+    let showBelow = false
+
+    // Check if popup would be cut off at the top of viewport
+    if (y - popupHeight < padding) {
+      // Not enough space above, show below the marker instead
+      y = clientY + 40 // Show below marker
+      showBelow = true
+    }
+
+    setPopupPosition({ x, y, showBelow })
 
     // Call the optional callback for external interactions (like map panning)
     if (onEventInteraction) {
@@ -108,18 +149,8 @@ export function Timeline({
           const position = getEventPosition(Number(year))
           const isMultipleEvents = yearEvents.length > 1
 
-          // Check if previous year had multiple events (stacked marker)
-          const yearEntries = Object.entries(eventsByYear)
-          const prevYearEntry =
-            yearIndex > 0 ? yearEntries[yearIndex - 1] : null
-          const prevHadMultipleEvents = prevYearEntry
-            ? prevYearEntry[1].length > 1
-            : false
-
-          // If this is a single event and previous was stacked, force inverted
-          // Otherwise use normal alternating pattern
-          const isInverted =
-            !isMultipleEvents && (prevHadMultipleEvents || yearIndex % 2 === 1)
+          // Simple alternating pattern for all markers (normal and stacked)
+          const isInverted = yearIndex % 2 === 1
 
           return (
             <div
@@ -128,12 +159,21 @@ export function Timeline({
               style={{ left: `${position}%` }} // Dynamic positioning required
             >
               {isMultipleEvents ? (
-                <StackedMarkers
-                  year={Number(year)}
-                  events={yearEvents}
-                  onEventInteraction={handleEventInteraction}
-                  onEventLeave={handleEventLeave}
-                />
+                isInverted ? (
+                  <InvertedStackedMarkers
+                    year={Number(year)}
+                    events={yearEvents}
+                    onEventInteraction={handleEventInteraction}
+                    onEventLeave={handleEventLeave}
+                  />
+                ) : (
+                  <StackedMarkers
+                    year={Number(year)}
+                    events={yearEvents}
+                    onEventInteraction={handleEventInteraction}
+                    onEventLeave={handleEventLeave}
+                  />
+                )
               ) : isInverted ? (
                 <InvertedMarker
                   year={Number(year)}
@@ -157,7 +197,9 @@ export function Timeline({
       {/* Info popup */}
       {hoveredEvent && (
         <div
-          className="pointer-events-none fixed z-50 max-w-sm -translate-x-1/2 -translate-y-full transform rounded-lg border border-slate-600 bg-slate-800 p-4 shadow-xl"
+          className={`pointer-events-none fixed z-50 max-w-sm min-w-72 -translate-x-1/2 transform rounded-lg border border-slate-600 bg-slate-800 p-4 shadow-xl ${
+            popupPosition.showBelow ? "translate-y-2" : "-translate-y-full"
+          }`}
           style={{
             left: `${popupPosition.x}px`,
             top: `${popupPosition.y}px`,
@@ -184,29 +226,6 @@ export function Timeline({
       )}
     </div>
   )
-}
-
-// Marker Components
-
-type MarkerProps = {
-  year: number
-  event: TimelineEvent
-  onEventInteraction: (
-    event: TimelineEvent,
-    clientX: number,
-    clientY: number,
-  ) => void
-  onEventLeave: () => void
-}
-
-type SideLineMarkerProps = {
-  event: TimelineEvent
-  onEventInteraction: (
-    event: TimelineEvent,
-    clientX: number,
-    clientY: number,
-  ) => void
-  onEventLeave: () => void
 }
 
 // Helper function to get icon component for event kinds
@@ -265,210 +284,4 @@ function getEventIcon(
     default:
       return null
   }
-}
-
-type StackedMarkersProps = {
-  year: number
-  events: TimelineEvent[]
-  onEventInteraction: (
-    event: TimelineEvent,
-    clientX: number,
-    clientY: number,
-  ) => void
-  onEventLeave: () => void
-}
-
-function NormalMarker({
-  year,
-  event,
-  onEventInteraction,
-  onEventLeave,
-}: MarkerProps) {
-  // Calculate if text will wrap (approximate)
-  const textWidth = event.name.length * 6 // rough estimate: 6px per character
-  const willWrap = textWidth > 80
-
-  return (
-    <div key={`${year}-0`}>
-      {/* Year and event name labels */}
-      <div
-        className={`absolute left-1/2 -translate-x-1/2 transform ${willWrap ? "-top-14" : "-top-10"}`}
-      >
-        <div className="w-20 space-y-1 text-center">
-          <div className="font-mono text-xs whitespace-nowrap text-slate-400">
-            {year}
-          </div>
-          <div className="text-xs font-medium break-words text-slate-400">
-            {event.name}
-          </div>
-        </div>
-      </div>
-
-      {/* Event marker */}
-      <div
-        className="relative transform cursor-pointer transition-all duration-200 hover:scale-110"
-        onMouseEnter={(e) => onEventInteraction(event, e.clientX, e.clientY)}
-        onMouseLeave={onEventLeave}
-        onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
-      >
-        {/* Circle marker */}
-        <div
-          className={`flex h-8 w-8 items-center justify-center rounded-full border bg-transparent shadow-lg ${
-            event.kind === "coin-minted"
-              ? "border-amber-500"
-              : "border-gray-500"
-          }`}
-        ></div>
-
-        {/* Normal teardrop tail - pointing down */}
-        <div className="absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-t-8 border-r-4 border-l-4 border-t-gray-500 border-r-transparent border-l-transparent"></div>
-      </div>
-    </div>
-  )
-}
-
-function InvertedMarker({
-  year,
-  event,
-  onEventInteraction,
-  onEventLeave,
-}: MarkerProps) {
-  return (
-    <div key={`${year}-0`}>
-      {/* Event marker - below timeline */}
-      <div
-        className="relative transform cursor-pointer transition-all duration-200 hover:scale-110"
-        onMouseEnter={(e) => onEventInteraction(event, e.clientX, e.clientY)}
-        onMouseLeave={onEventLeave}
-        onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
-      >
-        {/* Circle marker */}
-        <div
-          className={`flex h-8 w-8 items-center justify-center rounded-full border bg-transparent shadow-lg ${
-            event.kind === "coin-minted"
-              ? "border-amber-500"
-              : "border-gray-500"
-          }`}
-        ></div>
-
-        {/* Inverted teardrop tail - pointing up */}
-        <div className="absolute bottom-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-r-4 border-b-8 border-l-4 border-r-transparent border-b-gray-500 border-l-transparent"></div>
-      </div>
-
-      {/* Year and event name labels - horizontal */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 transform">
-        <div className="w-20 space-y-1 text-center">
-          <div className="font-mono text-xs whitespace-nowrap text-slate-400">
-            {year}
-          </div>
-          <div className="text-xs font-medium break-words text-slate-400">
-            {event.name}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function StackedMarkers({
-  year,
-  events,
-  onEventInteraction,
-  onEventLeave,
-}: StackedMarkersProps) {
-  return (
-    <>
-      {/* Year label - at the top of the stack */}
-      <div
-        className="absolute left-1/2 -translate-x-1/2 transform whitespace-nowrap"
-        style={{ top: `-${24 + (events.length - 1) * 32}px` }} // Dynamic top position
-      >
-        <div className="text-center font-mono text-xs text-slate-400">
-          {year}
-        </div>
-      </div>
-
-      {/* Stacked markers */}
-      {events.map((event, eventIndex) => (
-        <div key={`${year}-${eventIndex}`}>
-          {/* Event marker */}
-          <div
-            className="absolute -translate-x-1/2 transform cursor-pointer transition-all duration-200 hover:scale-110"
-            style={{ top: `${eventIndex * -32}px`, left: "50%" }} // Stack vertically, no overlap
-            onMouseEnter={(e) =>
-              onEventInteraction(event, e.clientX, e.clientY)
-            }
-            onMouseLeave={onEventLeave}
-            onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
-          >
-            {/* Circle marker */}
-            <div
-              className={`flex h-8 w-8 items-center justify-center rounded-full border bg-transparent shadow-lg ${
-                event.kind === "coin-minted"
-                  ? "border-amber-500"
-                  : "border-gray-500"
-              }`}
-            ></div>
-
-            {/* Teardrop tail - only for bottom marker */}
-            {eventIndex === 0 && (
-              <div className="absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-t-8 border-r-4 border-l-4 border-t-gray-500 border-r-transparent border-l-transparent"></div>
-            )}
-          </div>
-
-          {/* Event name label - to the right of each circle */}
-          <div
-            className="absolute transform whitespace-nowrap"
-            style={{ top: `${eventIndex * -32 + 8}px`, left: "24px" }} // Center with each circle, moved right 2px
-          >
-            <div className="text-xs font-medium text-slate-400">
-              {event.name}
-            </div>
-          </div>
-        </div>
-      ))}
-    </>
-  )
-}
-
-function SideLineMarker({
-  event,
-  onEventInteraction,
-  onEventLeave,
-}: SideLineMarkerProps) {
-  return (
-    <div>
-      {/* Year and event name labels - horizontal */}
-      <div className="absolute -top-12 left-1/2 -translate-x-1/2 transform">
-        <div className="w-20 space-y-1 text-center">
-          <div className="text-xs font-medium break-words text-slate-400">
-            {event.name}
-          </div>
-          <div className="font-mono text-xs whitespace-nowrap text-slate-400">
-            {event.year}
-          </div>
-        </div>
-      </div>
-
-      {/* Event marker - gray colored */}
-      <div
-        className="relative transform cursor-pointer transition-all duration-200 hover:scale-110"
-        onMouseEnter={(e) => onEventInteraction(event, e.clientX, e.clientY)}
-        onMouseLeave={onEventLeave}
-        onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
-      >
-        {/* Circle marker - gray theme */}
-        <div
-          className={`flex h-8 w-8 items-center justify-center rounded-full border bg-transparent shadow-lg ${
-            event.kind === "coin-minted"
-              ? "border-amber-500"
-              : "border-gray-500"
-          }`}
-        ></div>
-
-        {/* Gray teardrop tail - pointing right toward timeline */}
-        <div className="absolute top-1/2 left-full h-0 w-0 -translate-y-1/2 transform border-t-4 border-b-4 border-l-8 border-t-transparent border-b-transparent border-l-gray-500"></div>
-      </div>
-    </div>
-  )
 }

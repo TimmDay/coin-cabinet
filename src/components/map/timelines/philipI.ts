@@ -46,14 +46,25 @@ const philipTimeline: Timeline = {
       name: "Emperor",
       year: 244,
       description:
-        "Proclaimed emperor by his troops. Served as Consul for the first time either immediately before or after.",
+        "Proclaimed emperor by his troops after the death of Gordian III. Served as Consul for the first time either immediately before or after.",
       ...proclamationPlace,
     },
+    {
+      kind: "military",
+      name: "Peace terms",
+      year: 244,
+      description:
+        "Paid a large sum of money to Shapur I to end hostilities... suggesting that the Sassanid rock reliefs and inscriptions depicting Gordian III's death by battle wounds may well have validity, and perhaps Philip was not actually a murderous plotter?",
+      ...proclamationPlace,
+    },
+
+    //https://www.cais-soas.com/CAIS/History/Sasanian/shapour_I.htm
     {
       kind: "political",
       name: "Consul II",
       year: 247,
       description: "Served as Consul for the second time.",
+      ...PLACES.rome,
     },
     {
       kind: "political",
@@ -79,15 +90,14 @@ const philipTimeline: Timeline = {
         "A revolt broke out on the Danubian Frontier. Philip sent his trusted general Gaius Messius Quintus Decius to squash it.",
       ...PLACES.viminacium,
     },
-    // rebuilt Shahba as Philippopolis,
+    // rebuilt Shahba as Philippopolis, 245/46?
     // notable constructions / ruins / tourist spots built
-    // battles, treaties. Shapur
     {
       kind: "death",
       name: "Killed in Battle",
       year: 249,
       description:
-        "Dies in battle against Decius, after he had been proclaimed emperor by his troops after suppressing the revolt.",
+        "Dies in battle against his own general Decius, after Decius had been proclaimed emperor by his troops after suppressing the revolt.",
       ...PLACES.verona,
     },
   ],
