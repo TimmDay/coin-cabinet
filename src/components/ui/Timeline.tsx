@@ -1,23 +1,46 @@
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { Timeline as TimelineType } from "../map/timelines/types"
 
 // TODO: icons for all timeline event types
 type TimelineProps = {
   timeline: TimelineType
   className?: string
+  onEventInteraction?: (event: TimelineEvent) => void
 }
 
 type TimelineEvent = {
   kind: string
   name: string
   year: number
+  yearEnd?: number
   description?: string
+  place?: string
+  lat?: number
+  lng?: number
 }
 
-export function Timeline({ timeline, className = "" }: TimelineProps) {
+export function Timeline({
+  timeline,
+  className = "",
+  onEventInteraction,
+}: TimelineProps) {
   const [hoveredEvent, setHoveredEvent] = useState<TimelineEvent | null>(null)
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 })
+
+  // Close popup on scroll
+  useEffect(() => {
+    if (!hoveredEvent) return
+
+    const handleScroll = () => {
+      setHoveredEvent(null)
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [hoveredEvent])
 
   const events = timeline.events.sort((a, b) => a.year - b.year)
 
@@ -52,6 +75,11 @@ export function Timeline({ timeline, className = "" }: TimelineProps) {
   ) => {
     setHoveredEvent(event)
     setPopupPosition({ x: clientX, y: clientY - 10 })
+
+    // Call the optional callback for external interactions (like map panning)
+    if (onEventInteraction) {
+      onEventInteraction(event)
+    }
   }
 
   const handleEventLeave = () => {
@@ -62,7 +90,7 @@ export function Timeline({ timeline, className = "" }: TimelineProps) {
     <div className={`relative w-full ${className}`}>
       {/* Side line event (if there's a large gap after first event, ie birth and then nothing for a while) */}
       {sideLineEvent && (
-        <div className="absolute top-1/2 right-full -translate-y-1/2">
+        <div className="absolute top-1/2 left-4 -translate-y-1/2">
           <SideLineMarker
             event={sideLineEvent}
             onEventInteraction={handleEventInteraction}
@@ -72,7 +100,9 @@ export function Timeline({ timeline, className = "" }: TimelineProps) {
       )}
 
       {/* Timeline axis */}
-      <div className="relative mx-4 my-16 h-2 rounded-full bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500">
+      <div
+        className={`relative my-16 h-2 rounded-full bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 ${sideLineEvent ? "mr-4 ml-20" : "mx-4"}`}
+      >
         {/* Events */}
         {Object.entries(eventsByYear).map(([year, yearEvents], yearIndex) => {
           const position = getEventPosition(Number(year))
@@ -221,6 +251,17 @@ function getEventIcon(
           style={{ filter: filterStyle, transform: "translateY(1px)" }}
         />
       )
+    case "coin-minted":
+      return (
+        <Image
+          src="/assets/icon-torch.png"
+          alt="Coin minted"
+          width={22}
+          height={22}
+          className="h-5 w-5"
+          style={{ filter: filterStyle }}
+        />
+      )
     default:
       return null
   }
@@ -271,7 +312,13 @@ function NormalMarker({
         onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
       >
         {/* Circle marker */}
-        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-500 bg-transparent shadow-lg"></div>
+        <div
+          className={`flex h-8 w-8 items-center justify-center rounded-full border bg-transparent shadow-lg ${
+            event.kind === "coin-minted"
+              ? "border-amber-500"
+              : "border-gray-500"
+          }`}
+        ></div>
 
         {/* Normal teardrop tail - pointing down */}
         <div className="absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-t-8 border-r-4 border-l-4 border-t-gray-500 border-r-transparent border-l-transparent"></div>
@@ -296,7 +343,13 @@ function InvertedMarker({
         onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
       >
         {/* Circle marker */}
-        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-500 bg-transparent shadow-lg"></div>
+        <div
+          className={`flex h-8 w-8 items-center justify-center rounded-full border bg-transparent shadow-lg ${
+            event.kind === "coin-minted"
+              ? "border-amber-500"
+              : "border-gray-500"
+          }`}
+        ></div>
 
         {/* Inverted teardrop tail - pointing up */}
         <div className="absolute bottom-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-r-4 border-b-8 border-l-4 border-r-transparent border-b-gray-500 border-l-transparent"></div>
@@ -349,7 +402,13 @@ function StackedMarkers({
             onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
           >
             {/* Circle marker */}
-            <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-500 bg-transparent shadow-lg"></div>
+            <div
+              className={`flex h-8 w-8 items-center justify-center rounded-full border bg-transparent shadow-lg ${
+                event.kind === "coin-minted"
+                  ? "border-amber-500"
+                  : "border-gray-500"
+              }`}
+            ></div>
 
             {/* Teardrop tail - only for bottom marker */}
             {eventIndex === 0 && (
@@ -399,7 +458,13 @@ function SideLineMarker({
         onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
       >
         {/* Circle marker - gray theme */}
-        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-500 bg-transparent shadow-lg"></div>
+        <div
+          className={`flex h-8 w-8 items-center justify-center rounded-full border bg-transparent shadow-lg ${
+            event.kind === "coin-minted"
+              ? "border-amber-500"
+              : "border-gray-500"
+          }`}
+        ></div>
 
         {/* Gray teardrop tail - pointing right toward timeline */}
         <div className="absolute top-1/2 left-full h-0 w-0 -translate-y-1/2 transform border-t-4 border-b-4 border-l-8 border-t-transparent border-b-transparent border-l-gray-500"></div>

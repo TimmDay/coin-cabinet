@@ -2,7 +2,7 @@
 
 import L, { DivIcon } from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import {
   GeoJSON,
   MapContainer,
@@ -64,6 +64,36 @@ function ZoomHandler({
   return null
 }
 
+// Component to handle external center/zoom changes
+function MapViewController({
+  center,
+  zoom,
+}: {
+  center: [number, number]
+  zoom: number
+}) {
+  const map = useMapEvents({})
+  const hasMountedRef = useRef(false)
+
+  useEffect(() => {
+    if (map && center && zoom) {
+      // Skip the first render to avoid interfering with initial map setup
+      if (!hasMountedRef.current) {
+        hasMountedRef.current = true
+        return
+      }
+
+      // Use flyTo for smooth aerial-style animation to new position and zoom
+      map.flyTo(center, zoom, {
+        animate: true,
+        duration: 1.5, // 1.5 second animation for smoother effect
+      })
+    }
+  }, [map, center, zoom])
+
+  return null
+}
+
 type MapProps = {
   /** Center coordinates of the map [latitude, longitude] */
   center?: [number, number]
@@ -105,6 +135,14 @@ type MapProps = {
   hideControls?: boolean
   /** Mint name to highlight with special pin (case insensitive match) */
   highlightMint?: string
+  /** Timeline event marker to show on the map */
+  timelineEventMarker?: {
+    lat: number
+    lng: number
+    name: string
+    year: number
+    description?: string
+  } | null
 }
 
 export const Map: React.FC<MapProps> = ({
@@ -128,6 +166,7 @@ export const Map: React.FC<MapProps> = ({
   showProvinceLabels: externalShowProvinceLabels = true,
   hideControls = false,
   highlightMint,
+  timelineEventMarker,
 }) => {
   // Use custom hooks for configuration and data management
   const config = useMapConfiguration()
@@ -366,6 +405,68 @@ export const Map: React.FC<MapProps> = ({
         .province-label {
           /* No background - transparent labels */
         }
+
+        .timeline-event-marker-container {
+          position: relative;
+          width: 120px;
+          height: 60px;
+        }
+
+        .timeline-event-label {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(
+            31,
+            41,
+            55,
+            0.95
+          ); /* dark gray-800 with transparency */
+          color: #f9fafb; /* gray-50 */
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 11px;
+          font-weight: 500;
+          white-space: nowrap;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+          border: 1px solid #9ca3af; /* gray-400 */
+        }
+
+        .timeline-event-circle {
+          position: absolute;
+          top: 28px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 24px;
+          height: 24px;
+          border: 2px solid #9ca3af; /* gray-400 - brighter border */
+          border-radius: 50%;
+          background: #374151; /* gray-700 - dark app bg color */
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+          transition: all 0.2s ease;
+        }
+
+        .timeline-event-tail {
+          position: absolute;
+          top: 52px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-left: 6px solid transparent;
+          border-right: 6px solid transparent;
+          border-top: 8px solid #9ca3af; /* gray-400 - brighter tail */
+        }
+
+        .timeline-event-marker:hover .timeline-event-circle {
+          transform: translateX(-50%) scale(1.1);
+          border-color: #f59e0b; /* amber-500 */
+        }
+
+        .timeline-event-marker:hover .timeline-event-tail {
+          border-top-color: #f59e0b; /* amber-500 */
+        }
       `}</style>
       <div
         className={
@@ -433,6 +534,11 @@ export const Map: React.FC<MapProps> = ({
                   setCustomPopup((prev) => ({ ...prev, isVisible: false }))
                 }
               />
+
+              {/* Map View Controller - handles external center/zoom changes */}
+              {center && zoom && (
+                <MapViewController center={center} zoom={zoom} />
+              )}
 
               {/* BC 60 Empire Extent Layer */}
               {isLayerVisible("bc60") && getLayerData("bc60") && (
@@ -656,6 +762,53 @@ export const Map: React.FC<MapProps> = ({
                   />
                 )
               })}
+
+              {/* Timeline Event Marker */}
+              {timelineEventMarker && (
+                <Marker
+                  key={`timeline-event-${timelineEventMarker.year}`}
+                  position={[timelineEventMarker.lat, timelineEventMarker.lng]}
+                  icon={
+                    new DivIcon({
+                      className: "timeline-event-marker",
+                      html: `
+                        <div class="timeline-event-marker-container">
+                          <div class="timeline-event-label">${timelineEventMarker.name} (${timelineEventMarker.year})</div>
+                          <div class="timeline-event-circle"></div>
+                          <div class="timeline-event-tail"></div>
+                        </div>
+                      `,
+                      iconSize: [120, 60], // Width 120px, height 60px (label + circle + tail)
+                      iconAnchor: [60, 48], // Anchor at bottom center of tail
+                    })
+                  }
+                  eventHandlers={{
+                    click: (e: L.LeafletMouseEvent) => {
+                      const mapContainer = getMapContainer(e)
+                      if (!mapContainer) return
+
+                      const rect = mapContainer.getBoundingClientRect()
+                      const clickX = e.originalEvent.clientX - rect.left
+                      const clickY = e.originalEvent.clientY - rect.top
+
+                      setCustomPopup({
+                        isVisible: true,
+                        position: {
+                          x: rect.left + clickX,
+                          y: rect.top + clickY,
+                        },
+                        content: {
+                          title: "", // No heading
+                          description:
+                            timelineEventMarker.description ??
+                            "Timeline Event Location",
+                          className: "text-center",
+                        },
+                      })
+                    },
+                  }}
+                />
+              )}
             </MapContainer>
           </div>
         </div>

@@ -5,6 +5,7 @@ type EventKind =
   | "military"
   | "political"
   | "family"
+  | "coin-minted" // added dynamically to the list on coin detail pages.
   | "other"
 
 type Event = {

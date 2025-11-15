@@ -1,13 +1,30 @@
 "use client"
 
 import dynamic from "next/dynamic"
+import { TIMELINES } from "~/components/map/timelines/timelines"
 import { MintInfo } from "~/components/ui"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
+import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
+import { matchTimelineToNickname } from "~/lib/utils/timeline-matcher"
 import { CoinRow } from "./CoinRow"
 
 // Dynamically import Map component to prevent SSR issues with Leaflet
 const Map = dynamic(
   () => import("../../map/Map").then((mod) => ({ default: mod.Map })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-96 w-full animate-pulse rounded-lg bg-gray-200" />
+    ),
+  },
+)
+
+// Dynamically import TimelineWithMap component to prevent SSR issues with Leaflet
+const TimelineWithMap = dynamic(
+  () =>
+    import("../../map/TimelineWithMap").then((mod) => ({
+      default: mod.TimelineWithMap,
+    })),
   {
     ssr: false,
     loading: () => (
@@ -49,6 +66,20 @@ type CoinDeepDiveProps = {
 
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const isMapFeatureEnabled = useTypedFeatureFlag("map-feature")
+
+  // Check if there's a matching timeline for this coin
+  const baseTimeline = matchTimelineToNickname(coin.nickname, TIMELINES)
+
+  // Add coin minting event to timeline if we have one
+  const matchingTimeline = baseTimeline
+    ? addCoinMintingEventToTimeline(baseTimeline, {
+        denomination: coin.denomination,
+        mint: coin.mint,
+        mint_year_earliest: coin.mint_year_earliest,
+        mint_year_latest: coin.mint_year_latest,
+      })
+    : null
+
   return (
     <section className="space-y-8 md:space-y-12">
       {/* Coin Row Components */}
@@ -76,15 +107,28 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         />
       )}
 
-      {/* Map Section */}
+      {/* Map Section - show Timeline+Map if matching timeline, otherwise regular Map */}
       {isMapFeatureEnabled && (
         <div className="flex justify-center">
           <div className="w-full max-w-none md:w-[calc(100%-150px)]">
-            <Map
-              highlightMint={coin.mint ?? undefined}
-              hideControls={true}
-              height="400px"
-            />
+            {matchingTimeline ? (
+              <TimelineWithMap
+                timeline={matchingTimeline}
+                showHeaders={false}
+                initialCenter={coin.mint ? undefined : [41.9028, 12.4964]} // Let map center on mint if available
+                eventZoomLevel={6}
+                mapProps={{
+                  highlightMint: coin.mint ?? undefined,
+                  height: "400px",
+                }}
+              />
+            ) : (
+              <Map
+                highlightMint={coin.mint ?? undefined}
+                hideControls={true}
+                height="400px"
+              />
+            )}
           </div>
         </div>
       )}
