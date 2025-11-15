@@ -59,6 +59,9 @@ const philipTimeline: Timeline = {
     },
 
     //https://www.cais-soas.com/CAIS/History/Sasanian/shapour_I.htm
+
+    // shaba -> phillipopolis 245/46?
+    //32.854° N, 36.629
     {
       kind: "political",
       name: "Consul II",
@@ -90,7 +93,6 @@ const philipTimeline: Timeline = {
         "A revolt broke out on the Danubian Frontier. Philip sent his trusted general Gaius Messius Quintus Decius to squash it.",
       ...PLACES.viminacium,
     },
-    // rebuilt Shahba as Philippopolis, 245/46?
     // notable constructions / ruins / tourist spots built
     {
       kind: "death",

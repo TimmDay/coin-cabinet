@@ -1,6 +1,10 @@
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import type { Timeline as TimelineType, Event as TimelineEvent, EventKind } from "../map/timelines/types"
+import type {
+  EventKind,
+  Event as TimelineEvent,
+  Timeline as TimelineType,
+} from "../map/timelines/types"
 import {
   InvertedMarker,
   InvertedStackedMarkers,
@@ -119,7 +123,7 @@ export function Timeline({
     <div className={`relative w-full ${className}`}>
       {/* Side line event (if there's a large gap after first event, ie birth and then nothing for a while) */}
       {sideLineEvent && (
-        <div className="absolute top-1/2 left-4 -translate-y-1/2">
+        <div className="absolute top-1/2 left-0 -translate-y-1/2">
           <SideLineMarker
             event={sideLineEvent}
             onEventInteraction={handleEventInteraction}
@@ -130,7 +134,7 @@ export function Timeline({
 
       {/* Timeline axis */}
       <div
-        className={`relative my-16 h-2 rounded-full bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 ${sideLineEvent ? "mr-4 ml-20" : "mx-4"}`}
+        className={`relative my-12 h-2 rounded-full bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 ${sideLineEvent ? "mr-0 ml-10" : "mx-0"}`}
       >
         {/* Events */}
         {Object.entries(eventsByYear).map(([year, yearEvents], yearIndex) => {

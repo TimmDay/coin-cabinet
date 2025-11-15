@@ -85,9 +85,11 @@ export function TimelineWithMap({
   return (
     <div className={`mt-12 flex flex-col space-y-10 md:mt-8 ${className}`}>
       {/* Timeline at top */}
-      <div className="px-4">
+      <div className="px-0">
         {showHeaders && (
-          <h2 className="mb-4 text-2xl font-bold text-slate-800">Timeline</h2>
+          <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
+            Timeline
+          </h2>
         )}
         <Timeline
           timeline={timeline}
