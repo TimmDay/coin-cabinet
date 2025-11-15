@@ -76,6 +76,11 @@ export const PLACES = {
     lat: 40.98,
     lng: 29.03,
   },
+  praetorianCamp: {
+    place: "Praetorian Camp, Rome",
+    lat: 41.8947,
+    lng: 12.4853,
+  },
 } as const
 
 // Legacy exports for backward compatibility (can be removed later)

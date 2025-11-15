@@ -86,7 +86,7 @@ const macrinusTimeline: Timeline = {
       name: "Revolt and Battle",
       year: 218,
       description:
-        "in May Julia Maesa and Elagabalus initiate a revolt. In June, Macrinus is defeated at the Battle of Antioch.",
+        "in May Julia Maesa (the sister to the mother of Caracalla), via her daughter Julia Soaemias and grandson Elagabalus, initiate a revolt by falsely proclaiming Elagabalus as the son of Caracalla and spreading money around so nobody asks questions. In June, Macrinus is defeated at the Battle of Antioch.",
       source: "",
       ...PLACES.antioch,
     },

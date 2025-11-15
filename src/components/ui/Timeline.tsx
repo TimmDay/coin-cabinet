@@ -48,14 +48,20 @@ export function Timeline({
 
   const events = timeline.events.sort((a, b) => a.year - b.year)
 
-  // Check for large gap (20 years) between first and second event
+  // Check for large gap (18 years) between first and second event
   const hasLargeGap =
-    events.length >= 2 && events[1]!.year - events[0]!.year >= 20
+    events.length >= 2 && events[1]!.year - events[0]!.year >= 18
   const sideLineEvent = hasLargeGap ? events[0] : null
   const timelineEvents = hasLargeGap ? events.slice(1) : events
 
-  const startYear = (timelineEvents[0]?.year ?? 0) - 1
-  const endYear = (timelineEvents[timelineEvents.length - 1]?.year ?? 0) + 3
+  const firstEventYear = timelineEvents[0]?.year ?? 0
+  const lastEventYear = timelineEvents[timelineEvents.length - 1]?.year ?? 0
+  const timelineMagnitude = lastEventYear - firstEventYear
+  
+  const startYear = firstEventYear - 1
+  // For short timelines (< 6 years), use 1 year extension; otherwise use 3 years
+  const endExtension = timelineMagnitude < 6 ? 1 : 3
+  const endYear = lastEventYear + endExtension
   const totalYears = endYear - startYear
 
   // Group timeline events by year (excluding side line event)
