@@ -83,7 +83,7 @@ export function TimelineWithMap({
   )
 
   return (
-    <div className={`mt-12 flex flex-col space-y-10 md:mt-8 ${className}`}>
+    <div className={`mt-12 flex flex-col md:mt-8 ${className}`}>
       {/* Timeline at top */}
       <div className="px-0">
         {showHeaders && (
@@ -98,7 +98,7 @@ export function TimelineWithMap({
       </div>
 
       {/* Map at bottom */}
-      <div className="mt-4 px-4">
+      <div className="px-4">
         {showHeaders && (
           <h2 className="mb-4 text-2xl font-bold text-slate-800">Map</h2>
         )}

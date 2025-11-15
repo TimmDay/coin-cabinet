@@ -185,7 +185,10 @@ export function StackedMarkers({
           {/* Event marker */}
           <div
             className="absolute -translate-x-1/2 transform cursor-pointer transition-all duration-200 hover:scale-110"
-            style={{ top: `${eventIndex * -32}px`, left: "50%" }} // Stack vertically, no overlap
+            style={{
+              top: `${(events.length - 1 - eventIndex) * -32}px`,
+              left: "50%",
+            }} // Stack vertically, top to bottom order
             onMouseEnter={(e) =>
               onEventInteraction(event, e.clientX, e.clientY)
             }
@@ -201,8 +204,8 @@ export function StackedMarkers({
               }`}
             ></div>
 
-            {/* Teardrop tail - only for bottom marker */}
-            {eventIndex === 0 && (
+            {/* Teardrop tail - only for bottom marker (closest to timeline) */}
+            {eventIndex === events.length - 1 && (
               <div className="absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-t-8 border-r-4 border-l-4 border-t-gray-500 border-r-transparent border-l-transparent"></div>
             )}
           </div>
@@ -211,7 +214,7 @@ export function StackedMarkers({
           <div
             className="absolute hidden transform md:block"
             style={{
-              top: `${eventIndex * -32 + (willTextWrap(event.name) ? 2 : 8)}px`,
+              top: `${(events.length - 1 - eventIndex) * -32 + (willTextWrap(event.name) ? 2 : 8)}px`,
               left: "24px",
             }} // Center with each circle, move up when wrapped
           >

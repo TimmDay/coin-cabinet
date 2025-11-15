@@ -51,6 +51,7 @@ export function createCoinMintingEvent(coin: CoinData) {
     name: "Coin Minted",
     year: coin.mint_year_earliest,
     description,
+    source: "",
     place: coin.mint ?? "Unknown mint",
     lat: mintData?.lat,
     lng: mintData?.lng,
@@ -72,7 +73,23 @@ export function addCoinMintingEventToTimeline(
 
   // Create a new timeline with the coin event added and sorted by year
   const eventsWithCoin = [...timeline.events, coinEvent]
-  eventsWithCoin.sort((a, b) => a.year - b.year)
+  eventsWithCoin.sort((a, b) => {
+    // First sort by year
+    if (a.year !== b.year) {
+      return a.year - b.year
+    }
+
+    // For events in the same year, prioritize coin-minted events first
+    if (a.kind === "coin-minted" && b.kind !== "coin-minted") {
+      return -1 // a (coin-minted) comes before b
+    }
+    if (a.kind !== "coin-minted" && b.kind === "coin-minted") {
+      return 1 // b (coin-minted) comes before a
+    }
+
+    // If both are coin-minted or both are not coin-minted, maintain original order
+    return 0
+  })
 
   return {
     ...timeline,

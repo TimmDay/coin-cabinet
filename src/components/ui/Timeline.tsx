@@ -119,11 +119,39 @@ export function Timeline({
     setHoveredEvent(null)
   }
 
+  // Calculate the maximum downward extension of inverted stacked markers
+  const maxInvertedStackExtension = Object.entries(eventsByYear).reduce(
+    (maxExtension, [_year, yearEvents], yearIndex) => {
+      const isInverted = yearIndex % 2 === 1
+      if (isInverted && yearEvents.length > 1) {
+        // For inverted stacked markers:
+        // - They start 16px below timeline (top-4)
+        // - Each event takes 32px height
+        // - Year label is 26px below the last event
+        const stackHeight = yearEvents.length * 28
+        const totalExtension = 16 + stackHeight // top-4 + stack height
+        return Math.max(maxExtension, totalExtension)
+      }
+      return maxExtension
+    },
+    0,
+  )
+
+  // Add 8px spacing below the lowest inverted marker (only if there are inverted markers)
+  const timelineBottomPadding =
+    maxInvertedStackExtension > 0 ? maxInvertedStackExtension + 8 : 0
+
   return (
-    <div className={`relative w-full ${className}`}>
+    <div
+      className={`relative w-full ${className}`}
+      style={{ paddingBottom: `${timelineBottomPadding}px` }}
+    >
       {/* Side line event (if there's a large gap after first event, ie birth and then nothing for a while) */}
       {sideLineEvent && (
-        <div className="absolute top-1/2 left-0 -translate-y-1/2">
+        <div
+          className="absolute left-0 -translate-y-1/2"
+          style={{ top: "4px" }}
+        >
           <SideLineMarker
             event={sideLineEvent}
             onEventInteraction={handleEventInteraction}
@@ -134,7 +162,7 @@ export function Timeline({
 
       {/* Timeline axis */}
       <div
-        className={`relative my-12 h-2 rounded-full bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 ${sideLineEvent ? "mr-0 ml-10" : "mx-0"}`}
+        className={`relative mt-16 mb-12 h-2 rounded-full bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 ${sideLineEvent ? "mr-0 ml-10" : "mx-0"}`}
       >
         {/* Events */}
         {Object.entries(eventsByYear).map(([year, yearEvents], yearIndex) => {

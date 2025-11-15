@@ -55,6 +55,27 @@ export const PLACES = {
     lat: 32.8547,
     lng: 36.6287,
   },
+  caesareaMauretania: {
+    place: "Caesarea Mauretaniae (modern Cherchell, Algeria)",
+    lat: 36.61,
+    lng: 2.19,
+  },
+  caracallaAssassinationSite: {
+    place: "Near Carrhae (on road from Edessa)",
+    lat: 37.167,
+    lng: 39.307,
+    // source: "Cassius Dio 78.5–6; Herodian 4.12;",
+  },
+  nisibis: {
+    place: "Nisibis",
+    lat: 37.07,
+    lng: 41.22,
+  },
+  chalcedon: {
+    place: "Chalcedon",
+    lat: 40.98,
+    lng: 29.03,
+  },
 } as const
 
 // Legacy exports for backward compatibility (can be removed later)

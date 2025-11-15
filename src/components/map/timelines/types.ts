@@ -14,6 +14,7 @@ export type Event = {
   year: number
   yearEnd?: number
   description?: string
+  source?: string
   place?: string
   lat?: number
   lng?: number

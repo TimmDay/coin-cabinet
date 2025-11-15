@@ -15,6 +15,7 @@ const philipTimeline: Timeline = {
       name: "Born",
       year: 204,
       description: `Born in Shahba "around" 204. Later renamed Philippopolis`,
+      source: "",
       ...PLACES.shahba,
     },
     {
@@ -23,6 +24,7 @@ const philipTimeline: Timeline = {
       year: 236,
       description:
         "Married Otacilia Severa, a daughter of gens Otacilia, an aristocratic family. Her father had several governing appointments. Place and year of marriage are best-guesstimates.",
+      source: "",
       ...PLACES.rome,
     },
     {
@@ -31,6 +33,7 @@ const philipTimeline: Timeline = {
       year: 238,
       description:
         "Son Phillipus II is born to Philip I and Otacilia Severa. A daughter was also born around this time, but her name is unknown. Perhaps in Antioch (best guess, somewhere east while Philip was in a military administrative role)",
+      source: "",
       ...PLACES.antioch,
     },
     {
@@ -39,6 +42,7 @@ const philipTimeline: Timeline = {
       year: 243,
       description:
         "Appointed Praetorian Prefect, commander of the Praetorian Guard, after the death of Timesitheus due to illness.",
+      source: "",
       ...proclamationPlace,
     },
     {
@@ -47,6 +51,7 @@ const philipTimeline: Timeline = {
       year: 244,
       description:
         "Proclaimed emperor by his troops after the death of Gordian III. Served as Consul for the first time either immediately before or after.",
+      source: "",
       ...proclamationPlace,
     },
     {
@@ -55,6 +60,7 @@ const philipTimeline: Timeline = {
       year: 244,
       description:
         "Paid a large sum of money to Shapur I to end hostilities... suggesting that the Sassanid rock reliefs and inscriptions depicting Gordian III's death by battle wounds may well have validity, and perhaps Philip was not actually a murderous plotter?",
+      source: "",
       ...proclamationPlace,
     },
 
@@ -67,6 +73,7 @@ const philipTimeline: Timeline = {
       name: "Consul II",
       year: 247,
       description: "Served as Consul for the second time.",
+      source: "",
       ...PLACES.rome,
     },
     {
@@ -75,6 +82,7 @@ const philipTimeline: Timeline = {
       year: 248,
       description:
         "Served as Consul for the third time, with his son as his colleague and co-emperor.",
+      source: "",
       ...PLACES.rome,
     },
     {
@@ -83,6 +91,7 @@ const philipTimeline: Timeline = {
       year: 248,
       description:
         "Hosted Rome's 1000th anniversary Millennium Games, the Ludi Saeculares, with his son.",
+      source: "",
       ...PLACES.rome,
     },
     {
@@ -91,6 +100,7 @@ const philipTimeline: Timeline = {
       year: 248,
       description:
         "A revolt broke out on the Danubian Frontier. Philip sent his trusted general Gaius Messius Quintus Decius to squash it.",
+      source: "",
       ...PLACES.viminacium,
     },
     // notable constructions / ruins / tourist spots built
@@ -99,7 +109,8 @@ const philipTimeline: Timeline = {
       name: "Killed in Battle",
       year: 249,
       description:
-        "Dies in battle against his own general Decius, after Decius had been proclaimed emperor by his troops after suppressing the revolt.",
+        "Dies in battle against his own general Decius, after Decius had been proclaimed emperor (by his troops) after suppressing the revolt. They marched towards Rome, and Philip marched to meet them.",
+      source: "",
       ...PLACES.verona,
     },
   ],
