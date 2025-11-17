@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic"
 import { MintInfo } from "~/components/ui"
+import { DEITIES } from "~/data/deities"
 import { TIMELINES } from "~/data/timelines"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
@@ -63,6 +64,7 @@ type CoinDeepDiveProps = {
     reference?: string | null
     provenance?: string | null
     sets?: string[] | null
+    devices?: string[] | null
     flavour_text?: string | null
   }
 }
@@ -82,6 +84,19 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         mint_year_latest: coin.mint_year_latest,
       })
     : null
+
+  // Find matching deities based on devices
+  const matchingDeities = coin.devices
+    ? coin.devices
+        .map((device) => {
+          const deityKey = device.toLowerCase()
+          if (deityKey in DEITIES) {
+            return DEITIES[deityKey as keyof typeof DEITIES]
+          }
+          return null
+        })
+        .filter((deity): deity is NonNullable<typeof deity> => deity !== null)
+    : []
 
   return (
     <section className="space-y-8 md:space-y-12">
@@ -141,15 +156,27 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         <div className="w-full max-w-none md:w-[calc(100%-150px)]">
           {/* Cards in separate columns - mobile stacks, desktop 2 independent columns */}
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
-            {/* Left Column - Mint Information */}
-            <div className="flex-1 space-y-2">
+            {/* Left Column - Mint Information and Deity Cards */}
+            <div className="flex flex-1 flex-col gap-2">
               {coin.mint && <MintInfo mintName={coin.mint} />}
+              {/* Deity Cards */}
+              {matchingDeities.map((deity, index) => (
+                <DeepDiveCard
+                  key={index}
+                  defaultOpen={false}
+                  title={deity.title}
+                  subtitle={deity.subtitle}
+                  primaryInfo={deity.primaryInfo}
+                  secondaryInfo={deity.secondaryInfo}
+                  footer={deity.footer}
+                />
+              ))}
             </div>
 
             {/* Right Column - Coin Details */}
-            <div className="flex-1 space-y-2">
+            <div className="flex flex-1 flex-col gap-2">
               <DeepDiveCard
-                defaultOpen={true}
+                defaultOpen={false}
                 title={coin.denomination}
                 subtitle={
                   formatPhysicalCharacteristics(

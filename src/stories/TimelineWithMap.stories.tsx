@@ -69,51 +69,48 @@ export const PhilipITimelineWithMap: Story = {
 }
 
 // Create a test timeline with specific coordinates
-const interactiveTimeline = {
-  id: "interactive-test",
-  events: [
-    {
-      kind: "birth" as const,
-      name: "Born in Shahba",
-      year: 204,
-      description: "Born in Shahba, later renamed Philippopolis",
-      source: "",
-      place: "Shahba",
-      lat: 32.8167,
-      lng: 36.8167,
-    },
-    {
-      kind: "political" as const,
-      name: "Made Emperor in Mesopotamia",
-      year: 244,
-      description: "Proclaimed emperor by troops near the frontier",
-      source: "",
-      place: "Mesopotamian frontier",
-      lat: 34.81,
-      lng: 41.19,
-    },
-    {
-      kind: "other" as const,
-      name: "Millennium Games in Rome",
-      year: 248,
-      description: "Hosted Rome's 1000th anniversary celebration",
-      source: "",
-      place: "Rome",
-      lat: 41.9028,
-      lng: 12.4964,
-    },
-    {
-      kind: "death" as const,
-      name: "Died in Verona",
-      year: 249,
-      description: "Killed in battle against Decius",
-      source: "",
-      place: "Verona",
-      lat: 45.4384,
-      lng: 10.9916,
-    },
-  ],
-}
+const interactiveTimeline = [
+  {
+    kind: "birth" as const,
+    name: "Born in Shahba",
+    year: 204,
+    description: "Born in Shahba, later renamed Philippopolis",
+    source: "",
+    place: "Shahba",
+    lat: 32.8167,
+    lng: 36.8167,
+  },
+  {
+    kind: "political" as const,
+    name: "Made Emperor in Mesopotamia",
+    year: 244,
+    description: "Proclaimed emperor by troops near the frontier",
+    source: "",
+    place: "Mesopotamian frontier",
+    lat: 34.81,
+    lng: 41.19,
+  },
+  {
+    kind: "other" as const,
+    name: "Millennium Games in Rome",
+    year: 248,
+    description: "Hosted Rome's 1000th anniversary celebration",
+    source: "",
+    place: "Rome",
+    lat: 41.9028,
+    lng: 12.4964,
+  },
+  {
+    kind: "death" as const,
+    name: "Died in Verona",
+    year: 249,
+    description: "Killed in battle against Decius",
+    source: "",
+    place: "Verona",
+    lat: 45.4384,
+    lng: 10.9916,
+  },
+]
 
 export const InteractiveTest: Story = {
   args: {
@@ -134,61 +131,58 @@ export const InteractiveTest: Story = {
 }
 
 // Create a timeline without large gaps (no sideline marker)
-const compactTimeline = {
-  id: "compact-timeline",
-  events: [
-    {
-      kind: "political" as const,
-      name: "Consul I",
-      year: 244,
-      description: "First consulship appointment",
-      source: "",
-      place: "Rome",
-      lat: 41.9028,
-      lng: 12.4964,
-    },
-    {
-      kind: "military" as const,
-      name: "Campaign in Gaul",
-      year: 246,
-      description: "Military campaign in Gaul",
-      source: "",
-      place: "Lugdunum",
-      lat: 45.764,
-      lng: 4.8357,
-    },
-    {
-      kind: "political" as const,
-      name: "Consul II",
-      year: 247,
-      description: "Second consulship",
-      source: "",
-      place: "Rome",
-      lat: 41.9028,
-      lng: 12.4964,
-    },
-    {
-      kind: "other" as const,
-      name: "Games",
-      year: 248,
-      description: "Hosted public games",
-      source: "",
-      place: "Rome",
-      lat: 41.9028,
-      lng: 12.4964,
-    },
-    {
-      kind: "military" as const,
-      name: "Final Battle",
-      year: 249,
-      description: "Final military engagement",
-      source: "",
-      place: "Verona",
-      lat: 45.4384,
-      lng: 10.9916,
-    },
-  ],
-}
+const compactTimeline = [
+  {
+    kind: "political" as const,
+    name: "Consul I",
+    year: 244,
+    description: "First consulship appointment",
+    source: "",
+    place: "Rome",
+    lat: 41.9028,
+    lng: 12.4964,
+  },
+  {
+    kind: "military" as const,
+    name: "Campaign in Gaul",
+    year: 246,
+    description: "Military campaign in Gaul",
+    source: "",
+    place: "Lugdunum",
+    lat: 45.764,
+    lng: 4.8357,
+  },
+  {
+    kind: "political" as const,
+    name: "Consul II",
+    year: 247,
+    description: "Second consulship",
+    source: "",
+    place: "Rome",
+    lat: 41.9028,
+    lng: 12.4964,
+  },
+  {
+    kind: "other" as const,
+    name: "Games",
+    year: 248,
+    description: "Hosted public games",
+    source: "",
+    place: "Rome",
+    lat: 41.9028,
+    lng: 12.4964,
+  },
+  {
+    kind: "military" as const,
+    name: "Final Battle",
+    year: 249,
+    description: "Final military engagement",
+    source: "",
+    place: "Verona",
+    lat: 45.4384,
+    lng: 10.9916,
+  },
+]
 
 export const CompactTimeline: Story = {
   args: {

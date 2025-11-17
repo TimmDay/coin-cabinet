@@ -42,7 +42,6 @@ export function MintInfo({ mintName }: MintInfoProps) {
       subtitle={operationDatesSubtitle}
       primaryInfo={mint.flavourText}
       footer={mintMarksFooter}
-      className="mb-6"
       defaultOpen={false}
     />
   )

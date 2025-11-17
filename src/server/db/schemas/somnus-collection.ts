@@ -83,6 +83,7 @@ export const somnus_collection = pgTable(
 
     // Set classifications
     sets: d.text().array(), // Array of set names this coin belongs to
+    devices: d.text().array(), // Array of device names (deities, symbols, etc.)
 
     // Collection status
     ex_collection: d.boolean("ex_collection").default(false), // Whether the coin is no longer in collection

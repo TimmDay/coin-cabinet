@@ -53,28 +53,28 @@ export const PhilipITimelineCompact: Story = {
 
 // Create a simplified timeline for testing
 const simpleTimeline = [
-    {
-      kind: "birth" as const,
-      name: "Born",
-      year: 200,
-      description: "A simple birth event for testing the timeline component.",
-      source: "",
-    },
-    {
-      kind: "political" as const,
-      name: "Became Emperor",
-      year: 220,
-      description:
-        "Ascended to the throne after a series of political maneuvers.",
-      source: "",
-    },
-    {
-      kind: "death" as const,
-      name: "Died",
-      year: 235,
-      description: "Died in battle defending the empire.",
-      source: "",
-    },
+  {
+    kind: "birth" as const,
+    name: "Born",
+    year: 200,
+    description: "A simple birth event for testing the timeline component.",
+    source: "",
+  },
+  {
+    kind: "political" as const,
+    name: "Became Emperor",
+    year: 220,
+    description:
+      "Ascended to the throne after a series of political maneuvers.",
+    source: "",
+  },
+  {
+    kind: "death" as const,
+    name: "Died",
+    year: 235,
+    description: "Died in battle defending the empire.",
+    source: "",
+  },
 ]
 
 export const SimpleTimeline: Story = {

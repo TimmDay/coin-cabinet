@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs"
 import { DeepDiveCard } from "../components/ui/DeepDiveCard"
+import { DEITIES } from "../data/deities"
 
 const meta = {
   title: "Components/DeepDiveCard",
@@ -81,12 +82,7 @@ type Story = StoryObj<typeof meta>
 
 export const Concordia: Story = {
   args: {
-    title: "Concordia",
-    subtitle: "goddess of harmony and unity",
-    secondaryInfo:
-      "Seated, wearing a long robe (stola). wearing a long robe (stola), Holding a cornucopia (abundance) and a patera (libation dish), or sometimes two clasped hands or a caduceus (symbol of peace).",
-    primaryInfo: `Her name literally means "harmony" or "agreement" (from concordia, "with one heart"). She symbolized social order, political stability, and marital concord. she personified an ideal, rather than being part of a mythological narrative. The most similar in Greek culture was Harmonia`,
-    footer: "seated, stola, cornucopia, patera, caduceus",
+    ...DEITIES.concordia,
     defaultOpen: true,
   },
   parameters: {
@@ -101,12 +97,7 @@ export const Concordia: Story = {
 
 export const ConcordiaCollapsed: Story = {
   args: {
-    title: "Concordia",
-    subtitle: "goddess of harmony and unity",
-    secondaryInfo:
-      "Seated, wearing a long robe (stola). wearing a long robe (stola), Holding a cornucopia (abundance) and a patera (libation dish), or sometimes two clasped hands or a caduceus (symbol of peace).",
-    primaryInfo: `Her name literally means "harmony" or "agreement" (from concordia, "with one heart"). She symbolized social order, political stability, and marital concord. she personified an ideal, rather than being part of a mythological narrative. The most similar in Greek culture was Harmonia`,
-    footer: "seated, stola, cornucopia, patera, caduceus",
+    ...DEITIES.concordia,
     // defaultOpen: false is now the default, so we don't need to specify it
   },
   parameters: {
@@ -136,13 +127,7 @@ export const FlexLayout: Story = {
       <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
         {/* Left Column */}
         <div className="flex-1 space-y-2">
-          <DeepDiveCard
-            title="Concordia"
-            subtitle="goddess of harmony and unity"
-            secondaryInfo="Seated, wearing a long robe (stola). Holding a cornucopia (abundance) and a patera (libation dish), or sometimes two clasped hands or a caduceus (symbol of peace)."
-            primaryInfo="Her name literally means 'harmony' or 'agreement' (from concordia, 'with one heart'). She symbolized social order, political stability, and marital concord. she personified an ideal, rather than being part of a mythological narrative. The most similar in Greek culture was Harmonia"
-            footer="seated, stola, cornucopia, patera, caduceus"
-          />
+          <DeepDiveCard {...DEITIES.concordia} />
 
           <DeepDiveCard
             title="Abundantia"
