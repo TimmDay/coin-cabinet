@@ -1,75 +1,49 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import {
+  useAllSomnusCoins,
+  useUpdateSomnusCoin,
+} from "~/lib/api/somnus-collection"
+import type { SomnusCollection } from "~/server/db/schema"
 
-type SomnusItem = {
-  id: string
-  nickname: string | null
-  legend_o: string | null
-  legend_o_expanded: string | null
-  legend_o_translation: string | null
-  legend_r: string | null
-  legend_r_expanded: string | null
-  legend_r_translation: string | null
-  flavour_text: string | null
-  godName: string | null
-  devices: string[] | null
-  created_at: string
-  updated_at: string
-}
-
-type EditableItem = SomnusItem & {
+type EditableItem = SomnusCollection & {
   isEditing: boolean
   hasChanges: boolean
   devicesRaw?: string // Raw string input for devices field while editing
 }
 
-type ApiResponse = {
-  success: boolean
-  message?: string
-  data?: SomnusItem[]
-}
-
 export function EditSomnusView() {
   const [items, setItems] = useState<EditableItem[]>([])
-  const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState<string | null>(null)
-  const [saving, setSaving] = useState<string | null>(null)
+  const [saving, setSaving] = useState<number | null>(null)
   const [nicknameFilter, setNicknameFilter] = useState("")
 
+  const { data: somnusData, isLoading: loading, error } = useAllSomnusCoins()
+  const updateCoinMutation = useUpdateSomnusCoin()
+
+  // Transform data when it loads
   useEffect(() => {
-    void fetchSomnusData()
-  }, [])
-
-  const fetchSomnusData = async () => {
-    try {
-      const response = await fetch("/api/somnus-collection?includeAll=true", {
-        credentials: "include",
-      })
-
-      const result = (await response.json()) as ApiResponse
-
-      if (result.success && result.data) {
-        setItems(
-          result.data.map((item) => ({
-            ...item,
-            isEditing: false,
-            hasChanges: false,
-            devicesRaw: item.devices?.join(", ") ?? "",
-          })),
-        )
-      } else {
-        setMessage("❌ Failed to load Somnus collection")
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error)
-      setMessage("❌ Error loading data")
-    } finally {
-      setLoading(false)
+    if (somnusData) {
+      setItems(
+        somnusData.map((item) => ({
+          ...item,
+          isEditing: false,
+          hasChanges: false,
+          devicesRaw: item.devices?.join(", ") ?? "",
+        })),
+      )
     }
-  }
+  }, [somnusData])
 
-  const handleEdit = (id: string) => {
+  // Handle errors
+  useEffect(() => {
+    if (error) {
+      setMessage("❌ Failed to load Somnus collection")
+    }
+  }, [error])
+
+  const handleEdit = (id: number) => {
     setItems((prev) =>
       prev.map((item) =>
         item.id === id
@@ -79,7 +53,7 @@ export function EditSomnusView() {
     )
   }
 
-  const handleCancel = (id: string) => {
+  const handleCancel = (id: number) => {
     setItems((prev) =>
       prev.map((item) =>
         item.id === id
@@ -90,8 +64,8 @@ export function EditSomnusView() {
   }
 
   const handleFieldChange = (
-    id: string,
-    field: keyof SomnusItem,
+    id: number,
+    field: keyof SomnusCollection,
     value: string,
   ) => {
     setItems((prev) =>
@@ -101,7 +75,7 @@ export function EditSomnusView() {
     )
   }
 
-  const handleDevicesFieldChange = (id: string, value: string) => {
+  const handleDevicesFieldChange = (id: number, value: string) => {
     setItems((prev) =>
       prev.map((item) =>
         item.id === id
@@ -122,7 +96,7 @@ export function EditSomnusView() {
     return devicesArray.length > 0 ? devicesArray : null
   }
 
-  const handleSave = async (id: string) => {
+  const handleSave = async (id: number) => {
     const item = items.find((i) => i.id === id)
     if (!item?.hasChanges) return
 
@@ -142,37 +116,27 @@ export function EditSomnusView() {
         devices: processDevicesString(item.devicesRaw ?? ""),
       }
 
-      const response = await fetch(`/api/somnus-collection/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(updateData),
+      await updateCoinMutation.mutateAsync({
+        id: id.toString(),
+        data: updateData,
       })
 
-      const result = (await response.json()) as ApiResponse
-
-      if (result.success) {
-        const processedDevices = processDevicesString(item.devicesRaw ?? "")
-        setItems((prev) =>
-          prev.map((i) =>
-            i.id === id
-              ? {
-                  ...i,
-                  isEditing: false,
-                  hasChanges: false,
-                  devices: processedDevices,
-                  devicesRaw: processedDevices?.join(", ") ?? "",
-                }
-              : i,
-          ),
-        )
-        setMessage("✅ Item updated successfully")
-        setTimeout(() => setMessage(null), 3000)
-      } else {
-        setMessage(`❌ Error: ${result.message}`)
-      }
+      const processedDevices = processDevicesString(item.devicesRaw ?? "")
+      setItems((prev) =>
+        prev.map((i) =>
+          i.id === id
+            ? {
+                ...i,
+                isEditing: false,
+                hasChanges: false,
+                devices: processedDevices,
+                devicesRaw: processedDevices?.join(", ") ?? "",
+              }
+            : i,
+        ),
+      )
+      setMessage("✅ Item updated successfully")
+      setTimeout(() => setMessage(null), 3000)
     } catch (error) {
       console.error("Error saving:", error)
       setMessage("❌ Failed to save changes")

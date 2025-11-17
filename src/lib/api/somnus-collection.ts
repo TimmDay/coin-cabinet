@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { NewSomnusCollection, SomnusCollection } from "~/server/db/schema"
+import type { CoinFormData } from "~/lib/validations/coin-form"
+import type { SomnusCollection } from "~/server/db/schema"
 
 // Custom React Query hooks for somnus collection
 export function useSomnusCoins() {
@@ -22,11 +23,28 @@ export function useAddSomnusCoin() {
   return useMutation({
     mutationFn: insertSomnusCoin,
     onSuccess: () => {
-      // Invalidate and refetch somnus coins after successful addition
+      // Invalidate and refetch all somnus coin queries after successful addition
       void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
     },
     onError: (error) => {
       console.error("Error inserting somnus coin:", error)
+    },
+  })
+}
+
+export function useUpdateSomnusCoin() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: updateSomnusCoin,
+    onSuccess: () => {
+      // Invalidate and refetch all somnus coin queries after successful update
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
+    },
+    onError: (error) => {
+      console.error("Error updating somnus coin:", error)
     },
   })
 }
@@ -37,8 +55,9 @@ export function useDeleteSomnusCoin() {
   return useMutation({
     mutationFn: deleteSomnusCoin,
     onSuccess: () => {
-      // Invalidate and refetch somnus coins after successful deletion
+      // Invalidate and refetch all somnus coin queries after successful deletion
       void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
     },
     onError: (error) => {
       console.error("Error deleting somnus coin:", error)
@@ -78,7 +97,7 @@ async function fetchAllSomnusCoins(): Promise<SomnusCollection[]> {
 }
 
 async function insertSomnusCoin(
-  coinData: NewSomnusCollection,
+  coinData: CoinFormData,
 ): Promise<SomnusCollection> {
   const response = await fetch("/api/somnus-collection/admin", {
     method: "POST",
@@ -99,6 +118,29 @@ async function insertSomnusCoin(
   }
 
   return result.coin!
+}
+
+async function updateSomnusCoin(params: {
+  id: string
+  data: Partial<SomnusCollection>
+}): Promise<void> {
+  const response = await fetch(`/api/somnus-collection/${params.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(params.data),
+  })
+
+  const result = (await response.json()) as {
+    success: boolean
+    message?: string
+  }
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message ?? "Failed to update somnus coin")
+  }
 }
 
 async function deleteSomnusCoin(id: number): Promise<void> {
