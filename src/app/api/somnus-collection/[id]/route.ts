@@ -14,6 +14,7 @@ type UpdateData = {
   legend_r_translation?: string | null
   flavour_text?: string | null
   godName?: string | null
+  devices?: string[] | null
 }
 
 export async function PUT(
@@ -36,10 +37,11 @@ export async function PUT(
       legend_r_translation,
       flavour_text,
       godName,
+      devices,
     } = body
 
     // Build update object
-    const updateData: Record<string, string | null> = {}
+    const updateData: Record<string, string | string[] | null> = {}
     if (nickname !== undefined) updateData.nickname = nickname
     if (legend_o !== undefined) updateData.legend_o = legend_o
     if (legend_o_expanded !== undefined)
@@ -53,6 +55,7 @@ export async function PUT(
       updateData.legend_r_translation = legend_r_translation
     if (flavour_text !== undefined) updateData.flavour_text = flavour_text
     if (godName !== undefined) updateData.godName = godName
+    if (devices !== undefined) updateData.devices = devices
 
     // Update the item in the database
     const updatedItems = await db

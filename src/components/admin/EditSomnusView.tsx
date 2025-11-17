@@ -13,6 +13,7 @@ type SomnusItem = {
   legend_r_translation: string | null
   flavour_text: string | null
   godName: string | null
+  devices: string[] | null
   created_at: string
   updated_at: string
 }
@@ -20,6 +21,7 @@ type SomnusItem = {
 type EditableItem = SomnusItem & {
   isEditing: boolean
   hasChanges: boolean
+  devicesRaw?: string // Raw string input for devices field while editing
 }
 
 type ApiResponse = {
@@ -53,6 +55,7 @@ export function EditSomnusView() {
             ...item,
             isEditing: false,
             hasChanges: false,
+            devicesRaw: item.devices?.join(", ") ?? "",
           })),
         )
       } else {
@@ -98,6 +101,27 @@ export function EditSomnusView() {
     )
   }
 
+  const handleDevicesFieldChange = (id: string, value: string) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, devicesRaw: value, hasChanges: true }
+          : item,
+      ),
+    )
+  }
+
+  const processDevicesString = (devicesString: string): string[] | null => {
+    if (!devicesString.trim()) return null
+
+    const devicesArray = devicesString
+      .split(",")
+      .map((device) => device.trim().toLowerCase().replace(/\s+/g, "-"))
+      .filter(Boolean)
+
+    return devicesArray.length > 0 ? devicesArray : null
+  }
+
   const handleSave = async (id: string) => {
     const item = items.find((i) => i.id === id)
     if (!item?.hasChanges) return
@@ -115,6 +139,7 @@ export function EditSomnusView() {
         legend_r_translation: item.legend_r_translation,
         flavour_text: item.flavour_text,
         godName: item.godName,
+        devices: processDevicesString(item.devicesRaw ?? ""),
       }
 
       const response = await fetch(`/api/somnus-collection/${id}`, {
@@ -129,9 +154,18 @@ export function EditSomnusView() {
       const result = (await response.json()) as ApiResponse
 
       if (result.success) {
+        const processedDevices = processDevicesString(item.devicesRaw ?? "")
         setItems((prev) =>
           prev.map((i) =>
-            i.id === id ? { ...i, isEditing: false, hasChanges: false } : i,
+            i.id === id
+              ? {
+                  ...i,
+                  isEditing: false,
+                  hasChanges: false,
+                  devices: processedDevices,
+                  devicesRaw: processedDevices?.join(", ") ?? "",
+                }
+              : i,
           ),
         )
         setMessage("✅ Item updated successfully")
@@ -147,13 +181,23 @@ export function EditSomnusView() {
     }
   }
 
-  // Filter items based on nickname
+  // Filter items based on nickname and devices
   const filteredItems = items.filter((item) => {
     if (!nicknameFilter.trim()) return true
-    return (
-      item.nickname?.toLowerCase().includes(nicknameFilter.toLowerCase()) ??
-      false
-    )
+
+    const searchTerm = nicknameFilter.toLowerCase()
+
+    // Check nickname
+    const nicknameMatch =
+      item.nickname?.toLowerCase().includes(searchTerm) ?? false
+
+    // Check devices array
+    const devicesMatch =
+      item.devices?.some((device) =>
+        device.toLowerCase().includes(searchTerm),
+      ) ?? false
+
+    return nicknameMatch || devicesMatch
   })
 
   if (loading) {
@@ -187,14 +231,14 @@ export function EditSomnusView() {
           htmlFor="nickname-filter"
           className="mb-2 block text-sm font-medium"
         >
-          Filter by Nickname
+          Filter by Nickname or Devices
         </label>
         <input
           id="nickname-filter"
           type="text"
           value={nicknameFilter}
           onChange={(e) => setNicknameFilter(e.target.value)}
-          placeholder="Enter nickname to filter..."
+          placeholder="Search by nickname or device (e.g., victoria, mars)..."
           className="w-full max-w-md rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none"
         />
         {nicknameFilter && (
@@ -214,7 +258,7 @@ export function EditSomnusView() {
       ) : (
         <div className="artemis-card p-6">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1720px] border-collapse">
+            <table className="w-full min-w-[1870px] border-collapse">
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="sticky left-0 z-10 min-w-[120px] border-r border-gray-200 bg-slate-800 p-3 text-left font-semibold">
@@ -243,6 +287,9 @@ export function EditSomnusView() {
                   </th>
                   <th className="min-w-[120px] p-3 text-left font-semibold">
                     God
+                  </th>
+                  <th className="min-w-[150px] p-3 text-left font-semibold">
+                    Devices
                   </th>
                   <th className="sticky right-0 z-10 min-w-[120px] border-l border-gray-200 bg-slate-800 p-3 text-center font-semibold">
                     Actions
@@ -445,6 +492,23 @@ export function EditSomnusView() {
                         />
                       ) : (
                         <span className="text-sm">{item.godName ?? "—"}</span>
+                      )}
+                    </td>
+                    <td className="p-3">
+                      {item.isEditing ? (
+                        <input
+                          type="text"
+                          value={item.devicesRaw}
+                          onChange={(e) =>
+                            handleDevicesFieldChange(item.id, e.target.value)
+                          }
+                          className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                          placeholder="e.g., concordia, victoria, mars"
+                        />
+                      ) : (
+                        <span className="text-sm">
+                          {item.devices?.length ? item.devices.join(", ") : "—"}
+                        </span>
                       )}
                     </td>
                     <td

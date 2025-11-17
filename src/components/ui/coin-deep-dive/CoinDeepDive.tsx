@@ -177,7 +177,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             <div className="flex flex-1 flex-col gap-2">
               <DeepDiveCard
                 defaultOpen={false}
-                title={coin.denomination}
+                title={` This ${coin.denomination}`}
                 subtitle={
                   formatPhysicalCharacteristics(
                     {

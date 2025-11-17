@@ -503,6 +503,23 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
               </div>
             </div>
 
+            {/* Devices */}
+            <div>
+              <label className={labelClass} htmlFor="devices">
+                Coin Devices (comma separated)
+              </label>
+              <input
+                {...register("devices")}
+                id="devices"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., concordia, hadrian, handshake, lion"
+              />
+              {errors.devices && (
+                <p className={errorClass}>{errors.devices.message}</p>
+              )}
+            </div>
+
             {/* Flavor Text */}
             <div>
               <label className={labelClass} htmlFor="flavour_text">

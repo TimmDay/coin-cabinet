@@ -291,6 +291,21 @@ export const coinFormSchema = z
       .pipe(z.string().optional()),
 
     // Additional information
+    devices: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .transform((val) => {
+        if (!val || val === "") return undefined
+        // Split by comma, clean up whitespace, and replace spaces with hyphens
+        return val
+          .split(",")
+          .map(
+            (device) => device.trim().toLowerCase().replace(/\s+/g, "-"), // Replace one or more whitespace characters with a single hyphen
+          )
+          .filter(Boolean)
+      })
+      .pipe(z.array(z.string()).optional()),
     flavour_text: z.string().optional(),
     godName: z.string().optional(),
     bpRoute: z
