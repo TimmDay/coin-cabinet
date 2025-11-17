@@ -23,7 +23,7 @@ const aquiliaSeveraTimeline: Timeline = {
     },
     {
       kind: "made-emperor",
-      name: "Marriage",
+      name: "Married",
       year: 220,
       description:
         "Becomes an Augusta with her controversial marriage to Elagabalus (his second wife). As a high priest of Elagabal, Elagabalus may have been trying to unite his religion with Vesta to promote it in Rome.",
@@ -32,7 +32,7 @@ const aquiliaSeveraTimeline: Timeline = {
     },
     {
       kind: "political",
-      name: "Divorce",
+      name: "Divorced",
       year: 221,
       description:
         "After massive public outcry due to a marriage to a chaste religious figure, Elagabalus divorces Aquilia and marries Annia Faustina (third wife) for political legitimacy for his family (Julia Maesa might have had something to say about this).",
@@ -50,7 +50,7 @@ const aquiliaSeveraTimeline: Timeline = {
     },
     {
       kind: "political",
-      name: "Elagabalus Assassinated",
+      name: "Husband Assassinated",
       year: 222,
       description:
         "Elagabalus and his mother Julia Soaemias are assassinated by the Praetorians... quite likely with the encouragement of his grandmother Julia Maesa.",

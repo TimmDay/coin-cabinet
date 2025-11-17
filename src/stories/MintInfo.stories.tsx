@@ -9,7 +9,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "A component that displays detailed information about Roman mints, including operation periods, founding emperor, and historical context. Shows a 2-column layout on desktop (25%/75%) that stacks on mobile.",
+          "A component that displays detailed information about Roman mints using the DeepDiveCard component. Shows mint name as title, operation periods as subtitle, flavour text as primary info, and mint marks as footer. Features an accordion-style expandable content area.",
       },
     },
     backgrounds: {
@@ -38,7 +38,7 @@ const meta = {
           fontFamily: "var(--font-sans, ui-sans-serif, system-ui, sans-serif)",
         }}
       >
-        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <div style={{ maxWidth: "600px", margin: "0 auto" }}>
           <Story />
         </div>
       </div>
@@ -63,7 +63,7 @@ export const Lugdunum: Story = {
     docs: {
       description: {
         story:
-          "Shows information for the Lugdunum mint (modern-day Lyon, France), one of the most important mints in the Roman Empire. This mint supplied coins to the legions in Gaul and along the Rhine frontier.",
+          "Shows information for the Lugdunum mint (modern-day Lyon, France) using the new DeepDiveCard layout. Displays operation periods, historical context, and mint marks in an accordion format.",
       },
     },
   },
@@ -77,7 +77,7 @@ export const Rome: Story = {
     docs: {
       description: {
         story:
-          "Shows information for the Rome mint, the primary mint of the Roman Empire.",
+          "Shows information for the Rome mint, the primary mint of the Roman Empire, presented in the new DeepDiveCard format with gold title and accordion content.",
       },
     },
   },
@@ -91,7 +91,28 @@ export const Alexandria: Story = {
     docs: {
       description: {
         story:
-          "Shows information for the Alexandria mint in Egypt, an important provincial mint.",
+          "Shows information for the Alexandria mint in Egypt, an important provincial mint. Demonstrates the DeepDiveCard format with operation periods and historical context.",
+      },
+    },
+  },
+}
+
+export const MultipleMints: Story = {
+  args: {
+    mintName: "Rome",
+  },
+  render: () => (
+    <div className="space-y-4">
+      <MintInfo mintName="Rome" />
+      <MintInfo mintName="Lugdunum" />
+      <MintInfo mintName="Alexandria" />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Shows multiple MintInfo components using DeepDiveCard layout. Demonstrates how they stack and maintain independent accordion states.",
       },
     },
   },

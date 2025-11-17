@@ -57,7 +57,7 @@ export function Timeline({
   const firstEventYear = timelineEvents[0]?.year ?? 0
   const lastEventYear = timelineEvents[timelineEvents.length - 1]?.year ?? 0
   const timelineMagnitude = lastEventYear - firstEventYear
-  
+
   const startYear = firstEventYear - 1
   // For short timelines (< 6 years), use 1 year extension; otherwise use 3 years
   const endExtension = timelineMagnitude < 6 ? 1 : 3

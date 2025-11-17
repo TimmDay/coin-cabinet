@@ -1,6 +1,7 @@
 "use client"
 
 import { formatYearRange } from "~/lib/utils/date-formatting"
+import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
 
 type CoinSnapshotProps = {
   civ: string
@@ -36,14 +37,12 @@ export function CoinSnapshot({
   const yearDisplay = formatYearRange(mintYearEarliest, mintYearLatest)
   const mintYearText = [mint, yearDisplay].filter(Boolean).join(" ")
 
-  // Build specs line (diameter | mass | die axis)
-  const specs = [
-    diameter ? `${diameter}mm` : null,
-    mass ? `${mass}g` : null,
+  // Build specs line (diameter | mass | die axis) using utility function
+  const specs = formatPhysicalCharacteristicsCompact({
+    diameter,
+    mass,
     dieAxis,
-  ]
-    .filter(Boolean)
-    .join(" | ")
+  })
 
   return (
     <div className="space-y-1 text-sm">

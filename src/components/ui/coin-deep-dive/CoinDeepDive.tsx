@@ -5,7 +5,10 @@ import { TIMELINES } from "~/components/map/timelines/timelines"
 import { MintInfo } from "~/components/ui"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
+import { formatYearRange } from "~/lib/utils/date-formatting"
+import { formatPhysicalCharacteristics } from "~/lib/utils/physical-formatting"
 import { matchTimelineToNickname } from "~/lib/utils/timeline-matcher"
+import { DeepDiveCard } from "../DeepDiveCard"
 import { CoinRow } from "./CoinRow"
 
 // Dynamically import Map component to prevent SSR issues with Leaflet
@@ -133,14 +136,56 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         </div>
       )}
 
-      {/* Mint Information Section */}
-      {isMapFeatureEnabled && coin.mint && (
-        <div className="flex justify-center">
-          <div className="w-full max-w-none md:w-[calc(100%-150px)]">
-            <MintInfo mintName={coin.mint} />
+      {/* DeepDive Cards Section - Side by Side Layout */}
+      <div className="flex justify-center">
+        <div className="w-full max-w-none md:w-[calc(100%-150px)]">
+          {/* Cards in separate columns - mobile stacks, desktop 2 independent columns */}
+          <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
+            {/* Left Column - Mint Information */}
+            <div className="flex-1 space-y-2">
+              {coin.mint && <MintInfo mintName={coin.mint} />}
+            </div>
+
+            {/* Right Column - Coin Details */}
+            <div className="flex-1 space-y-2">
+              <DeepDiveCard
+                defaultOpen={true}
+                title={coin.denomination}
+                subtitle={
+                  formatPhysicalCharacteristics(
+                    {
+                      diameter: coin.diameter,
+                      mass: coin.mass,
+                      dieAxis: coin.die_axis,
+                    },
+                    { style: "compact" },
+                  ) ?? ""
+                }
+                primaryInfo={
+                  [
+                    coin.mint,
+                    formatYearRange(
+                      coin.mint_year_earliest,
+                      coin.mint_year_latest,
+                    ),
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || undefined
+                }
+                secondaryInfo={coin.flavour_text ?? undefined}
+                footer={
+                  [
+                    coin.reference ? `${coin.reference}` : null,
+                    coin.provenance ? ` ${coin.provenance}` : null,
+                  ]
+                    .filter(Boolean)
+                    .join("") || undefined
+                }
+              />
+            </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Coin Details */}
       {coin.flavour_text && <FlavorFooter flavourText={coin.flavour_text} />}

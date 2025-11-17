@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { prefetchCloudinaryImage } from "~/components/CloudinaryImage"
 import { useViewport } from "~/hooks/useViewport"
 import { formatYearRange } from "~/lib/utils/date-formatting"
+import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
 import { generateCoinUrl } from "~/lib/utils/url-helpers"
 import { IconButton } from "./IconButton"
 import { InfoTooltip } from "./InfoTooltip"
@@ -308,14 +309,12 @@ export function CoinInfoModal({
 
   if (!isOpen) return null
 
-  // Build specs line (diameter | mass | die axis)
-  const specs = [
-    diameter ? `${diameter}mm` : null,
-    mass ? `${mass}g` : null,
-    die_axis,
-  ]
-    .filter(Boolean)
-    .join(" | ")
+  // Build specs line (diameter | mass | die axis) using utility function
+  const specs = formatPhysicalCharacteristicsCompact({
+    diameter,
+    mass,
+    dieAxis: die_axis,
+  })
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto py-4 lg:items-center lg:py-0">
@@ -473,7 +472,6 @@ export function CoinInfoModal({
               </h2>
 
               {/* Physical Properties Line */}
-              {/* TODO: import from a utility */}
               <p className="mb-4 text-base text-slate-400">{specs}</p>
 
               {/* Legend */}
