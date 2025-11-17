@@ -1,5 +1,5 @@
-import { ROMAN_MINTS } from "~/components/map/constants/mints"
-import type { Timeline } from "~/components/map/timelines/types"
+import { ROMAN_MINTS } from "~/data/mints"
+import type { Timeline } from "~/data/timelines/types"
 
 type CoinData = {
   denomination: string
@@ -72,7 +72,7 @@ export function addCoinMintingEventToTimeline(
   }
 
   // Create a new timeline with the coin event added and sorted by year
-  const eventsWithCoin = [...timeline.events, coinEvent]
+  const eventsWithCoin = [...timeline, coinEvent]
   eventsWithCoin.sort((a, b) => {
     // First sort by year
     if (a.year !== b.year) {
@@ -91,8 +91,5 @@ export function addCoinMintingEventToTimeline(
     return 0
   })
 
-  return {
-    ...timeline,
-    events: eventsWithCoin,
-  }
+  return eventsWithCoin
 }

@@ -50,7 +50,7 @@ yarn-error.log*
 storybook-static
 
 # data reference local
-pleiades-places-latest.json
+/src/data/pleiades-places-latest.json
 
 # data files - exclude large GeoJSON and other data files
-/src/data/
+# /src/data/

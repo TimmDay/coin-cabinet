@@ -1,5 +1,5 @@
 import { formatRomanDateRange } from "~/lib/utils/date-formatting"
-import { ROMAN_MINTS } from "../../map/constants/mints"
+import { ROMAN_MINTS } from "../../../data/mints"
 import { DeepDiveCard } from "../DeepDiveCard"
 
 type MintInfoProps = {

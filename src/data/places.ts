@@ -82,14 +82,3 @@ export const PLACES = {
     lng: 12.4853,
   },
 } as const
-
-// Legacy exports for backward compatibility (can be removed later)
-export const rome = PLACES.rome
-export const alexandria = PLACES.alexandria
-export const antioch = PLACES.antioch
-export const lugdunum = PLACES.lugdunum
-export const carthage = PLACES.carthage
-export const jerusalem = PLACES.jerusalem
-export const constantinople = PLACES.constantinople
-export const verona = PLACES.verona
-export const viminacium = PLACES.viminacium

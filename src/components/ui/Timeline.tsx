@@ -4,7 +4,7 @@ import type {
   EventKind,
   Event as TimelineEvent,
   Timeline as TimelineType,
-} from "../map/timelines/types"
+} from "../../data/timelines/types"
 import {
   InvertedMarker,
   InvertedStackedMarkers,
@@ -46,7 +46,7 @@ export function Timeline({
     }
   }, [hoveredEvent])
 
-  const events = timeline.events.sort((a, b) => a.year - b.year)
+  const events = timeline.sort((a, b) => a.year - b.year)
 
   // Check for large gap (18 years) between first and second event
   const hasLargeGap =

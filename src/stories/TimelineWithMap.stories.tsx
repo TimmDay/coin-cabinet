@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs"
-import philipTimeline from "~/components/map/timelines/philipI"
 import { TimelineWithMap } from "~/components/map/TimelineWithMap"
+import philipTimeline from "~/data/timelines/philipI"
 
 const meta: Meta<typeof TimelineWithMap> = {
   title: "Combined/Timeline with Map",

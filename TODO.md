@@ -21,8 +21,14 @@
   - [ ] photo slider component.
 - home page design/tidy/writing
 
-- emperor timeline
+- emperor timelines
   - (birth, death, reign, notable events, coin in collection mint dates)
+
+- [ ] devices[] data for each coin. contains data of major design elements that are on the coin. usually [emperor name, god name] but I can write whatever on the list. This data will be used to match to static data with tidbits of info about each device (gods list, emperor list)
+
+- [ ] structure some data for the gods list. static for now
+- [ ] the emperor/empress list too.
+- [ ] should I move all this static data into a db call?
 
 Map Page
 

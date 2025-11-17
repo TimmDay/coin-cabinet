@@ -1,9 +1,9 @@
 "use client"
 
 import { useCallback, useState } from "react"
+import type { Timeline as TimelineType } from "../../data/timelines/types"
 import { Timeline } from "../ui/Timeline"
 import { Map } from "./Map"
-import type { Timeline as TimelineType } from "./timelines/types"
 
 export type TimelineWithMapProps = {
   timeline: TimelineType

@@ -20,7 +20,4 @@ export type Event = {
   lng?: number
 }
 
-export type Timeline = {
-  id: string
-  events: Event[]
-}
+export type Timeline = Event[]

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs"
-import philipTimeline from "~/components/map/timelines/philipI"
 import { Timeline } from "~/components/ui/Timeline"
+import philipTimeline from "~/data/timelines/philipI"
 
 const meta: Meta<typeof Timeline> = {
   title: "UI/Timeline",
@@ -52,9 +52,7 @@ export const PhilipITimelineCompact: Story = {
 }
 
 // Create a simplified timeline for testing
-const simpleTimeline = {
-  id: "simple-test",
-  events: [
+const simpleTimeline = [
     {
       kind: "birth" as const,
       name: "Born",
@@ -77,8 +75,7 @@ const simpleTimeline = {
       description: "Died in battle defending the empire.",
       source: "",
     },
-  ],
-}
+]
 
 export const SimpleTimeline: Story = {
   args: {

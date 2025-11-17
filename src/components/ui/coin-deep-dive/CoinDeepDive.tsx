@@ -1,8 +1,8 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import { TIMELINES } from "~/components/map/timelines/timelines"
 import { MintInfo } from "~/components/ui"
+import { TIMELINES } from "~/data/timelines"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
 import { formatYearRange } from "~/lib/utils/date-formatting"
