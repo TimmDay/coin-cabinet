@@ -2,7 +2,13 @@
 
 import { useState } from "react"
 
-type DeepDiveCardProps = {
+export type Source = {
+  quote?: string
+  quoteEnglish?: string
+  source: string
+}
+
+export type DeepDiveCardProps = {
   /** The main title of the card */
   title: string
   /** Subtitle for additional context */
@@ -13,6 +19,7 @@ type DeepDiveCardProps = {
   secondaryInfo?: string
   /** Footer text (usually styled greyish) */
   footer?: string
+  sources?: Source[]
   /** Additional CSS classes */
   className?: string
   /** Whether the accordion is open by default */

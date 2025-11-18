@@ -27,7 +27,11 @@
 - [ ] devices[] data for each coin. contains data of major design elements that are on the coin. usually [emperor name, god name] but I can write whatever on the list. This data will be used to match to static data with tidbits of info about each device (gods list, emperor list)
 
 - [ ] structure some data for the gods list. static for now
-- [ ] the emperor/empress list too.
+  - [ ] include ancientSources object[], with a reference to ancient sources, latin quote, translated quote, myInterpretation
+- [ ] redo Cabinet nav to include gods. Has a dropdown of available gods. View all coins with a certain god, auto-rev view.
+- [ ] link to this god collection page from deep dive page if that god is present on the coin.
+
+- [ ] the person (emperor/empress) list too. Likewise has ancientSources.
 - [ ] should I move all this static data into a db call?
 
 Map Page
@@ -254,11 +258,11 @@ Set list, but main feature is a 'wooden' drawer with the coin images laid out as
 
 articles, guides
 
-- [ ] first write a post - how roman coins were made.
+- [ ] first write a post.
 - [ ] make the page showing all posts
 - [ ] do up a posts db etc
 - [ ] make a page for individual posts
-- [ ] posts can have interactive react components in them (i.e a map, a rotatable coin image)
+- [x] posts can have interactive react components in them (i.e a map, a rotatable coin image)
   - year in coins
     - page/article by year. a grid of thumbnails
       - click for card (card contains link to coin page with that coin highlighted)
@@ -274,6 +278,9 @@ articles, guides
 ## Post Ideas
 
 - how I take photos of coins - my budget setup for 2026
+- how Roman coins were made
+- my notes on spotting fakes
+- my notes on cleaning Roman bronze - beginner
 
 ## AI STUCK list.
 
