@@ -91,7 +91,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         .map((device) => {
           const deityKey = device.toLowerCase()
           if (deityKey in DEITIES) {
-            return DEITIES[deityKey as keyof typeof DEITIES]
+            return DEITIES[deityKey]
           }
           return null
         })
@@ -156,25 +156,9 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         <div className="w-full max-w-none md:w-[calc(100%-150px)]">
           {/* Cards in separate columns - mobile stacks, desktop 2 independent columns */}
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
-            {/* Left Column - Mint Information and Deity Cards */}
+            {/* Left Column - This Coin and Mint Information */}
             <div className="flex flex-1 flex-col gap-2">
-              {coin.mint && <MintInfo mintName={coin.mint} />}
-              {/* Deity Cards */}
-              {matchingDeities.map((deity, index) => (
-                <DeepDiveCard
-                  key={index}
-                  defaultOpen={false}
-                  title={deity.title}
-                  subtitle={deity.subtitle}
-                  primaryInfo={deity.primaryInfo}
-                  secondaryInfo={deity.secondaryInfo}
-                  footer={deity.footer}
-                />
-              ))}
-            </div>
-
-            {/* Right Column - Coin Details */}
-            <div className="flex flex-1 flex-col gap-2">
+              {/* This Coin Card - First */}
               <DeepDiveCard
                 defaultOpen={false}
                 title={` This ${coin.denomination}`}
@@ -209,6 +193,24 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                     .join("") || undefined
                 }
               />
+              {/* Mint Information - Second */}
+              {coin.mint && <MintInfo mintName={coin.mint} />}
+            </div>
+
+            {/* Right Column - Deity Cards */}
+            <div className="flex flex-1 flex-col gap-2">
+              {/* Deity Cards */}
+              {matchingDeities.map((deity, index) => (
+                <DeepDiveCard
+                  key={index}
+                  defaultOpen={false}
+                  title={deity.title}
+                  subtitle={deity.subtitle}
+                  primaryInfo={deity.primaryInfo}
+                  secondaryInfo={deity.secondaryInfo}
+                  footer={deity.footer}
+                />
+              ))}
             </div>
           </div>
         </div>

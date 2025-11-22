@@ -4,6 +4,7 @@ import Navbar from "~/components/layout/Navbar"
 import { PageWrapper } from "~/components/layout/PageWrapper"
 import { AuthProvider } from "~/components/providers/auth-provider"
 import { ReactQueryProvider } from "~/components/providers/react-query-provider"
+import { ScrollToTop } from "~/components/ui"
 import "~/styles/globals.css"
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export default function RootLayout({
           <ReactQueryProvider>
             <Navbar />
             <PageWrapper>{children}</PageWrapper>
+            <ScrollToTop />
           </ReactQueryProvider>
         </AuthProvider>
       </body>
