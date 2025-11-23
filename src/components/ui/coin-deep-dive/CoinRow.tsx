@@ -27,8 +27,35 @@ export function CoinRow({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalImageUrl, setModalImageUrl] = useState<string>("")
   const [modalImageAlt, setModalImageAlt] = useState<string>("")
+
+  // State for mobile image switching
+  const [currentMobileImageIndex, setCurrentMobileImageIndex] = useState(0)
+
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const hasAnyText = Boolean(legendExpanded || legendTranslation || description)
+
+  // Available images array for mobile switching
+  const availableImages = [
+    { src: imageLink, alt: `${side} of coin`, label: "main" },
+    ...(imageLinkAltlight
+      ? [
+          {
+            src: imageLinkAltlight,
+            alt: `${side} of coin (alternative lighting)`,
+            label: "alt light",
+          },
+        ]
+      : []),
+    ...(imageLinkSketch
+      ? [
+          {
+            src: imageLinkSketch,
+            alt: `${side} sketch of coin`,
+            label: "sketch",
+          },
+        ]
+      : []),
+  ]
 
   const handleImageClick = (imageUrl: string, altText: string) => {
     setModalImageUrl(imageUrl)
@@ -38,90 +65,61 @@ export function CoinRow({
 
   return (
     <div className="mx-auto max-w-7xl">
-      {/* Mobile: Full Stack Layout */}
+      {/* Mobile: Single Image with Mini-Image Buttons */}
       <div className="flex flex-col space-y-4 md:hidden">
         {/* Images Section */}
         <div className="flex justify-center px-2">
-          <div className="flex w-full max-w-md flex-wrap justify-center gap-2">
-            {/* Count images to determine layout */}
-            {(() => {
-              const imageCount = [
-                imageLink,
-                imageLinkAltlight,
-                imageLinkSketch,
-              ].filter(Boolean).length
-              const imageWidth =
-                imageCount === 1
-                  ? "w-full"
-                  : imageCount === 2
-                    ? "w-[calc(50%-0.25rem)]"
-                    : "w-[calc(33.333%-0.333rem)]"
+          <div className="relative w-full max-w-md">
+            {/* Main displayed image */}
+            <div
+              className="artemis-card flex aspect-square w-full cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105"
+              onClick={() => {
+                const currentImage = availableImages[currentMobileImageIndex]
+                if (currentImage) {
+                  handleImageClick(currentImage.src, currentImage.alt)
+                }
+              }}
+            >
+              <div className="max-h-full max-w-full">
+                {availableImages[currentMobileImageIndex] && (
+                  <CloudinaryImage
+                    src={availableImages[currentMobileImageIndex].src}
+                    alt={availableImages[currentMobileImageIndex].alt}
+                    width={400}
+                    height={400}
+                  />
+                )}
+              </div>
+            </div>
 
-              return (
-                <>
-                  {/* Main coin image */}
-                  <div
-                    className={`artemis-card flex aspect-square cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 ${imageWidth}`}
-                    onClick={() =>
-                      handleImageClick(imageLink, `${side} of coin`)
-                    }
-                  >
-                    <div className="max-h-full max-w-full">
-                      <CloudinaryImage
-                        src={imageLink}
-                        alt={`${side} of coin`}
-                        width={400}
-                        height={400}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Alternative lighting image (if available) */}
-                  {imageLinkAltlight && (
-                    <div
-                      className={`artemis-card flex aspect-square cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 ${imageWidth}`}
-                      onClick={() =>
-                        handleImageClick(
-                          imageLinkAltlight,
-                          `${side} of coin (alternative lighting)`,
-                        )
-                      }
-                    >
-                      <div className="max-h-full max-w-full">
-                        <CloudinaryImage
-                          src={imageLinkAltlight}
-                          alt={`${side} of coin (alternative lighting)`}
-                          width={400}
-                          height={400}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Sketch image (if available) */}
-                  {imageLinkSketch && (
-                    <div
-                      className={`artemis-card flex aspect-square cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 ${imageWidth}`}
-                      onClick={() =>
-                        handleImageClick(
-                          imageLinkSketch,
-                          `${side} sketch of coin`,
-                        )
-                      }
-                    >
-                      <div className="max-h-full max-w-full">
-                        <CloudinaryImage
-                          src={imageLinkSketch}
-                          alt={`${side} sketch of coin`}
-                          width={400}
-                          height={400}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </>
-              )
-            })()}
+            {/* Mini-image buttons for switching (only show if there are multiple images) */}
+            {availableImages.length > 1 && (
+              <div className="absolute top-2 right-2 flex translate-x-1/2 flex-col gap-1">
+                {availableImages.map(
+                  (image, index) =>
+                    index !== currentMobileImageIndex && (
+                      <button
+                        key={index}
+                        className="artemis-card flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-slate-600 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setCurrentMobileImageIndex(index)
+                        }}
+                        aria-label={`Switch to ${image.label} image`}
+                      >
+                        <div className="h-full w-full overflow-hidden rounded-full">
+                          <CloudinaryImage
+                            src={image.src}
+                            alt={`${image.label} thumbnail`}
+                            width={44}
+                            height={44}
+                          />
+                        </div>
+                      </button>
+                    ),
+                )}
+              </div>
+            )}
           </div>
         </div>
 
