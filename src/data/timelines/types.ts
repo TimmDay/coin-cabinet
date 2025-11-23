@@ -6,6 +6,7 @@ export type EventKind =
   | "political"
   | "family"
   | "coin-minted" // added dynamically to the list on coin detail pages.
+  | "unrest"
   | "other"
 
 export type Event = {

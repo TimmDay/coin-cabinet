@@ -223,7 +223,7 @@ export function Timeline({
       {/* Info popup */}
       {hoveredEvent && (
         <div
-          className={`pointer-events-none fixed z-50 max-w-sm min-w-72 -translate-x-1/2 transform rounded-lg border border-slate-600 bg-slate-800 p-4 shadow-xl ${
+          className={`z-modal pointer-events-none fixed max-w-sm min-w-72 -translate-x-1/2 transform rounded-lg border border-slate-600 bg-slate-800 p-4 shadow-xl ${
             popupPosition.showBelow ? "translate-y-2" : "-translate-y-full"
           }`}
           style={{

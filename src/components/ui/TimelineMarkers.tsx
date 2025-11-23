@@ -35,16 +35,20 @@ export type StackedMarkersProps = {
 export type InvertedStackedMarkersProps = StackedMarkersProps
 
 // Helper function to process text for smart word wrapping
-// Replaces spaces with non-breaking spaces between words where one word is 3 characters or less
+// Replaces spaces with non-breaking spaces between words where one word is 4 characters or less
+// Also replaces hyphens with non-breaking hyphens to prevent wrapping on hyphens
 function processTextForSmartWrapping(text: string): string {
-  const words = text.split(" ")
+  // First, replace hyphens with non-breaking hyphens (‑) to prevent wrapping on hyphens
+  const textWithNonBreakingHyphens = text.replace(/-/g, "‑")
+
+  const words = textWithNonBreakingHyphens.split(" ")
   const processedWords: string[] = []
 
   for (let i = 0; i < words.length; i++) {
     const currentWord = words[i]!
     const nextWord = words[i + 1]
 
-    if (nextWord && (currentWord.length <= 3 || nextWord.length <= 3)) {
+    if (nextWord && (currentWord.length <= 6 || nextWord.length <= 6)) {
       // Use non-breaking space (\u00A0) to prevent wrapping between short words
       processedWords.push(currentWord + "\u00A0" + nextWord)
       i++ // Skip the next word since we've processed it
@@ -219,7 +223,7 @@ export function StackedMarkers({
             }} // Center with each circle, move up when wrapped
           >
             <div className="text-left">
-              <div className="text-xs font-medium text-slate-400">
+              <div className="text-xs leading-tight font-medium text-slate-400">
                 {processTextForSmartWrapping(event.name)}
               </div>
             </div>
@@ -285,7 +289,7 @@ export function InvertedStackedMarkers({
             }} // Center with each circle, move up when wrapped
           >
             <div className="text-left">
-              <div className="text-xs font-medium text-slate-400">
+              <div className="text-xs leading-tight font-medium text-slate-400">
                 {processTextForSmartWrapping(event.name)}
               </div>
             </div>

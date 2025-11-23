@@ -66,5 +66,4 @@ const aquiliaSeveraTimeline: Timeline = [
     ...PLACES.rome,
   },
 ]
-
 export default aquiliaSeveraTimeline
