@@ -8,10 +8,8 @@ import {
 import type { SomnusCollection } from "~/server/db/schema"
 import { EditCoinModal } from "./EditCoinModal"
 
-type EditableItem = SomnusCollection
-
 export function EditSomnusView() {
-  const [items, setItems] = useState<EditableItem[]>([])
+  const [items, setItems] = useState<SomnusCollection[]>([])
   const [message, setMessage] = useState<string | null>(null)
   const [saving, setSaving] = useState<number | null>(null)
   const [nicknameFilter, setNicknameFilter] = useState("")
@@ -36,17 +34,6 @@ export function EditSomnusView() {
       setMessage("❌ Failed to load Somnus collection")
     }
   }, [error])
-
-  const processDevicesString = (devicesString: string): string[] | null => {
-    if (!devicesString.trim()) return null
-
-    const devicesArray = devicesString
-      .split(",")
-      .map((device) => device.trim().toLowerCase().replace(/\s+/g, "-"))
-      .filter(Boolean)
-
-    return devicesArray.length > 0 ? devicesArray : null
-  }
 
   // Handle mobile modal interactions
   const handleCoinSelect = (coin: SomnusCollection) => {

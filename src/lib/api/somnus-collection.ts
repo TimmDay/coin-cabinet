@@ -129,7 +129,7 @@ async function updateSomnusCoin(params: {
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "include",
+    credentials: "same-origin", // Better for same-origin requests
     body: JSON.stringify(params.data),
   })
 

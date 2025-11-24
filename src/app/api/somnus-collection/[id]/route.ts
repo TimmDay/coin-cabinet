@@ -1,3 +1,4 @@
+import { createServerClient } from "@supabase/ssr"
 import { eq } from "drizzle-orm"
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
@@ -25,6 +26,34 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    // Check authentication
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll()
+          },
+          setAll() {
+            // No-op for server client
+          },
+        },
+      },
+    )
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required" },
+        { status: 401 },
+      )
+    }
+
     // Await params in Next.js 15
     const { id } = await params
 
@@ -87,8 +116,24 @@ export async function PUT(
     })
   } catch (error) {
     console.error("Error updating somnus collection item:", error)
+
+    // Provide more specific error information in development
+    const errorMessage =
+      process.env.NODE_ENV === "production"
+        ? "Internal server error"
+        : error instanceof Error
+          ? error.message
+          : "Unknown error occurred"
+
     return NextResponse.json(
-      { success: false, message: "Internal server error" },
+      {
+        success: false,
+        message: errorMessage,
+        // Include error details in development only
+        ...(process.env.NODE_ENV !== "production" && {
+          error: error instanceof Error ? error.stack : String(error),
+        }),
+      },
       { status: 500 },
     )
   }
