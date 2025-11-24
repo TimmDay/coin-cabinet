@@ -1,7 +1,6 @@
 import fs from "fs/promises"
 import path from "path"
-import { db } from "~/server/db"
-import { somnus_collection } from "~/server/db/schema"
+import { createClient } from "~/lib/supabase-server"
 
 /**
  * Export all database data to JSON backup files
@@ -15,8 +14,20 @@ export async function createDatabaseBackup() {
     // Ensure backup directory exists
     await fs.mkdir(backupDir, { recursive: true })
 
-    // Export somnus_collection data
-    const coins = await db.select().from(somnus_collection)
+    // Export somnus_collection data using Supabase
+    const supabase = await createClient()
+    const { data: coins, error } = await supabase
+      .from("somnus_collection")
+      .select("*")
+      .order("id", { ascending: true })
+
+    if (error) {
+      throw new Error(`Failed to fetch coins for backup: ${error.message}`)
+    }
+
+    if (!coins) {
+      throw new Error("No coin data returned from database")
+    }
 
     const backupData = {
       timestamp: new Date().toISOString(),
@@ -37,9 +48,6 @@ export async function createDatabaseBackup() {
     console.log(`✅ Backup created: ${backupFile}`)
     console.log(`📊 Exported ${coins.length} coin records`)
 
-    // Keep only last 30 days of backups
-    await cleanOldBackups(backupDir)
-
     return backupFile
   } catch (error) {
     console.error("❌ Backup failed:", error)
@@ -50,31 +58,31 @@ export async function createDatabaseBackup() {
 /**
  * Clean up backups older than 30 days
  */
-async function cleanOldBackups(backupDir: string) {
-  try {
-    const files = await fs.readdir(backupDir)
-    const backupFiles = files.filter(
-      (file) => file.startsWith("backup-") && file.endsWith(".json"),
-    )
+// async function cleanOldBackups(backupDir: string) {
+//   try {
+//     const files = await fs.readdir(backupDir)
+//     const backupFiles = files.filter(
+//       (file) => file.startsWith("backup-") && file.endsWith(".json"),
+//     )
 
-    const cutoffDate = new Date()
-    cutoffDate.setDate(cutoffDate.getDate() - 30)
+//     const cutoffDate = new Date()
+//     cutoffDate.setDate(cutoffDate.getDate() - 30)
 
-    for (const file of backupFiles) {
-      const dateRegex = /backup-(\d{4}-\d{2}-\d{2})\.json/
-      const dateMatch = dateRegex.exec(file)
-      if (dateMatch?.[1]) {
-        const fileDate = new Date(dateMatch[1])
-        if (fileDate < cutoffDate) {
-          await fs.unlink(path.join(backupDir, file))
-          console.log(`🗑️  Deleted old backup: ${file}`)
-        }
-      }
-    }
-  } catch (error) {
-    console.error("⚠️  Failed to clean old backups:", error)
-  }
-}
+//     for (const file of backupFiles) {
+//       const dateRegex = /backup-(\d{4}-\d{2}-\d{2})\.json/
+//       const dateMatch = dateRegex.exec(file)
+//       if (dateMatch?.[1]) {
+//         const fileDate = new Date(dateMatch[1])
+//         if (fileDate < cutoffDate) {
+//           await fs.unlink(path.join(backupDir, file))
+//           console.log(`🗑️  Deleted old backup: ${file}`)
+//         }
+//       }
+//     }
+//   } catch (error) {
+//     console.error("⚠️  Failed to clean old backups:", error)
+//   }
+// }
 
 type BackupData = {
   timestamp: string

@@ -54,3 +54,6 @@ storybook-static
 
 # data files - exclude large GeoJSON and other data files
 # /src/data/
+
+# backup files
+/backups/

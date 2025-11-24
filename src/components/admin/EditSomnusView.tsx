@@ -5,7 +5,7 @@ import {
   useAllSomnusCoins,
   useUpdateSomnusCoin,
 } from "~/lib/api/somnus-collection"
-import type { SomnusCollection } from "~/server/db/schema"
+import type { SomnusCollection } from "~/types/database"
 import { EditCoinModal } from "./EditCoinModal"
 
 export function EditSomnusView() {
@@ -92,7 +92,7 @@ export function EditSomnusView() {
 
     // Check devices array
     const devicesMatch =
-      item.devices?.some((device) =>
+      item.devices?.some((device: string) =>
         device.toLowerCase().includes(searchTerm),
       ) ?? false
 

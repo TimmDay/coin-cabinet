@@ -1,9 +1,6 @@
 import { createServerClient } from "@supabase/ssr"
-import { eq } from "drizzle-orm"
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
-import { db } from "~/server/db"
-import { somnus_collection } from "~/server/db/schemas/somnus-collection"
 
 type UpdateData = {
   nickname?: string
@@ -57,54 +54,31 @@ export async function PUT(
     // Await params in Next.js 15
     const { id } = await params
 
-    // Parse the request body
+    // Parse the request body and filter out undefined values
     const body = (await request.json()) as UpdateData
-    const {
-      nickname,
-      legend_o,
-      legend_o_expanded,
-      legend_o_translation,
-      desc_o,
-      legend_r,
-      legend_r_expanded,
-      legend_r_translation,
-      desc_r,
-      flavour_text,
-      godName,
-      devices,
-      sets,
-    } = body
+    const updateData = Object.fromEntries(
+      Object.entries(body).filter(([_, value]) => value !== undefined),
+    )
 
-    // Build update object
-    const updateData: Record<string, string | string[] | null> = {}
-    if (nickname !== undefined) updateData.nickname = nickname
-    if (legend_o !== undefined) updateData.legend_o = legend_o
-    if (legend_o_expanded !== undefined)
-      updateData.legend_o_expanded = legend_o_expanded
-    if (legend_o_translation !== undefined)
-      updateData.legend_o_translation = legend_o_translation
-    if (desc_o !== undefined) updateData.desc_o = desc_o
-    if (legend_r !== undefined) updateData.legend_r = legend_r
-    if (legend_r_expanded !== undefined)
-      updateData.legend_r_expanded = legend_r_expanded
-    if (legend_r_translation !== undefined)
-      updateData.legend_r_translation = legend_r_translation
-    if (desc_r !== undefined) updateData.desc_r = desc_r
-    if (flavour_text !== undefined) updateData.flavour_text = flavour_text
-    if (godName !== undefined) updateData.godName = godName
-    if (devices !== undefined) updateData.devices = devices
-    if (sets !== undefined) updateData.sets = sets
+    // Update the item in the database using Supabase client (respects RLS)
+    const { data: updatedItems, error: updateError } = await supabase
+      .from("somnus_collection")
+      .update(updateData)
+      .eq("id", parseInt(id))
+      .eq("user_id", user.id)
+      .select()
 
-    // Update the item in the database
-    const updatedItems = await db
-      .update(somnus_collection)
-      .set(updateData)
-      .where(eq(somnus_collection.id, parseInt(id)))
-      .returning()
+    if (updateError) {
+      console.error("Supabase update error:", updateError)
+      throw new Error(`Database update failed: ${updateError.message}`)
+    }
 
-    if (updatedItems.length === 0) {
+    if (!updatedItems || updatedItems.length === 0) {
       return NextResponse.json(
-        { success: false, message: "Item not found" },
+        {
+          success: false,
+          message: "Item not found or you do not have permission to update it",
+        },
         { status: 404 },
       )
     }
@@ -112,7 +86,7 @@ export async function PUT(
     return NextResponse.json({
       success: true,
       message: "Item updated successfully",
-      data: updatedItems[0],
+      data: (updatedItems as unknown[])?.[0] ?? null,
     })
   } catch (error) {
     console.error("Error updating somnus collection item:", error)

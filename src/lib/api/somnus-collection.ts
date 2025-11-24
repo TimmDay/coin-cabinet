@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import type { CoinFormData } from "~/lib/validations/coin-form"
-import type { SomnusCollection } from "~/server/db/schema"
+import type { SomnusCollection } from "~/types/database"
 
 // Custom React Query hooks for somnus collection
 export function useSomnusCoins() {

@@ -1,23 +1,23 @@
+import { createClient } from "@supabase/supabase-js"
 import { config } from "dotenv"
-import { drizzle } from "drizzle-orm/postgres-js"
 import fs from "fs/promises"
 import path from "path"
-import postgres from "postgres"
 
 // Load environment variables
 config()
 
-if (!process.env.DATABASE_URL) {
-  console.error("❌ DATABASE_URL is not set in environment variables")
+if (
+  !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+) {
+  console.error("❌ Supabase environment variables are not set")
   process.exit(1)
 }
 
-const conn = postgres(process.env.DATABASE_URL, {
-  ssl: "require",
-  max: 1,
-})
-
-const db = drizzle(conn)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+)
 
 async function createDatabaseBackup() {
   try {
@@ -27,8 +27,19 @@ async function createDatabaseBackup() {
     // Ensure backup directory exists
     await fs.mkdir(backupDir, { recursive: true })
 
-    // Export somnus_collection data using raw SQL since we don't have the schema imported
-    const coins = await conn`SELECT * FROM somnus_collection ORDER BY id`
+    // Export somnus_collection data using Supabase
+    const { data: coins, error } = await supabase
+      .from("somnus_collection")
+      .select("*")
+      .order("id", { ascending: true })
+
+    if (error) {
+      throw new Error(`Failed to fetch coins for backup: ${error.message}`)
+    }
+
+    if (!coins) {
+      throw new Error("No coin data returned from database")
+    }
 
     const backupData = {
       timestamp: new Date().toISOString(),
@@ -49,11 +60,9 @@ async function createDatabaseBackup() {
     console.log(`✅ Backup created: ${backupFile}`)
     console.log(`📊 Exported ${coins.length} coin records`)
 
-    await conn.end()
     return backupFile
   } catch (error) {
     console.error("❌ Backup failed:", error)
-    await conn.end()
     throw error
   }
 }
