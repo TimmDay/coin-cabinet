@@ -190,7 +190,6 @@ CoinGrid
 
 - [ ] Config: review Supabase auth. Is it secure, how can I hide it from normal visitor UI.
 - [ ] have sign in using google instead of (in addition to?) user/pass. MFA etc.
-- [ ] what is drizzle and how should I use it?
 - [ ] consider site functionality going forward. Will a regular visitor ever need to login (ie maintain their own collection?)
 
 ## site styles

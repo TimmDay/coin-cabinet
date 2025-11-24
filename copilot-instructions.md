@@ -12,9 +12,7 @@ Components/Docs: Storybook.
 
 Testing: Vitest (unit), consider Playwright (e2e) later.
 
-DB & Auth: Supabase (Postgres + Auth + RLS) with Drizzle ORM.
-
-Do not model Supabase auth tables with Drizzle.
+DB & Auth: Supabase (Postgres + Auth + RLS). Use TypeScript types for database schema.
 
 Payments: Stripe Checkout + Customer Portal (+ Stripe Tax). Webhooks on Node runtime.
 
@@ -56,33 +54,31 @@ Add export const runtime = 'nodejs' in routes that talk to DB/Stripe.
 
 Use Server Actions (Node) for mutations; avoid exposing secrets in client.
 
-### Data layer (Drizzle + Supabase)
+### Data layer (Supabase)
 
-Use a single db client in lib/db.ts. Connect via pooled connection string (Supabase).
+Use Supabase client for database operations. Define TypeScript types in /src/types/database.ts.
 
-Migrations: use Drizzle SQL migrations; keep them readable and idempotent.
+Migrations: use Supabase dashboard or SQL migrations; keep them readable and idempotent.
 
 Never write to Supabase auth.\* tables; only reference auth.users by UUID.
 
-Prefer explicit queries over magic relations. Write joins and selects clearly.
+Use Supabase client queries with proper RLS policies for security.
 
-Example Drizzle table & query (Postgres UUIDs):
+Example TypeScript types and query:
 
-// lib/schema/products.ts
-import { pgTable, text, numeric, timestamp, uuid } from 'drizzle-orm/pg-core';
-
-export const products = pgTable('products', {
-id: uuid('id').defaultRandom().primaryKey(),
-title: text('title').notNull(),
-price: numeric('price', { precision: 10, scale: 2 }).notNull(),
-createdAt: timestamp('created_at').defaultNow().notNull(),
-});
+// src/types/database.ts
+export type Product = {
+id: string
+title: string
+price: number
+created_at: string
+}
 
 // lib/queries/products.ts
-import { db } from '@/lib/db';
-import { products } from '@/lib/schema/products';
-export async function listProducts(limit = 20) {
-return db.select().from(products).limit(limit);
+import { createClient } from '@supabase/supabase-js'
+export async function listProducts(limit = 20): Promise<Product[]> {
+const { data } = await supabase.from('products').select('\*').limit(limit)
+return data ?? []
 }
 
 Auth & RLS
@@ -186,11 +182,11 @@ Do not echo Stripe errors or secrets to clients.
 
 - Commit messages: feat:, fix:, chore:, test:, docs:.
 - Block merges if type checks/tests fail.
-- Run Drizzle migrations in CI before deploy; ensure idempotency.
+- Run Supabase migrations in CI before deploy; ensure idempotency.
 
 ### Things Copilot should avoid
 
-- Generating Prisma code or Edge-only DB access.
+- Generating Drizzle/Prisma code or Edge-only DB access.
 - Touching Supabase auth tables or bypassing RLS.
 - Client-side Stripe card collection (use Checkout).
 - Ad-hoc image transforms scattered across components (use the helper).
