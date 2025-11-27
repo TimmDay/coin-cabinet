@@ -2,12 +2,21 @@
 
 ## Next Thing
 
-- [ ] DeepDive page: Mint info text box. Display above|below the map. style nicely.
 - [ ] hand draw a logo I like
+- [ ] timeline - elagabalus
+- [ ] photos - gordy tranquillina
 
 ### features on deck
 
+- [ ] DB overkill. DB for deities, DB for timelines, DB for mints.
+  - gives me practice for SQL joins etc.
+  - [ ] make requests maximally DB efficient
+  - [ ]eventually do up a lovely API layer that other sites can use
+  - [ ] data collection page for deities, timelines, mints
+  - [ ] DB for 'artifacts/museums, ruins, tourist spots - with a field for 'tags' that can be used to join to coins based on 'devices' (also tags)?
+
 - logo
+
 - Map component
 - [x] MVP. Mints data (hooking it up to the map)
 - [ ] Mints data. is this better in a db?
@@ -30,7 +39,6 @@
   - [ ] include ancientSources object[], with a reference to ancient sources, latin quote, translated quote, myInterpretation
 - [ ] redo Cabinet nav to include gods. Has a dropdown of available gods. View all coins with a certain god, auto-rev view.
 - [ ] link to this god collection page from deep dive page if that god is present on the coin.
-
 - [ ] the person (emperor/empress) list too. Likewise has ancientSources.
 - [ ] should I move all this static data into a db call?
 
@@ -134,8 +142,6 @@ The goal of this is provide 'pins on the map'. Important events during the emper
 
 CoinDetailPage
 
-- [ ] design it on paper for mobile/desktop
-
 - [ ] images, with space for sketch side-by-sides
 - [ ] space for a map with mint. zoom/pan
 - flavor text is displayed
@@ -183,7 +189,6 @@ CoinGrid
 ### real world
 
 - [ ] find scale and weigh coins to confirm current data.
-- [ ] order coin capsules to bulk up supply.
 - [ ] research how I will make coin sketches from plates (ipad?)
 
 ### auth
@@ -207,6 +212,7 @@ CoinGrid
 - [ ] a (free to use) map of the roman empire area. Zoomable, pannable.
   - [ ] needs it's own page/route
   - [ ] with a layer with province boundaries at Severan time (can make other layers for other times later)
+  - [ ] timeline of emperors (and the leading coin in collection for each)
   - [ ] lat/lngs from Mints table can cause pins to show on the map in the right place
 
 ### Set Page(s)
@@ -354,3 +360,6 @@ articles, guides
 - [x] somnus table - new columns - "god", "bpLink"
 - [x] expanded legends - research them and save to the db.
 - [x] expanded info. Flavour text, but also expanded legends and latin translation.
+- [x] DeepDive page: Mint info text box. Display above|below the map. style nicely.
+- [x] design it on paper for mobile/desktop
+- [x] order coin capsules to bulk up supply.

@@ -51,24 +51,21 @@ export default function HomePage() {
         <div className="text-center">
           <div className="mx-auto max-w-2xl">
             <p className="body-text mb-6 text-xl">
-              The Somnus collection is my private collection of ancient coins. I
-              started this site while on paternity leave with my first child,
-              hence my appeal to the god of sleep (Cloacina would also have been
-              appropriate). I love the imagination and stories inspired by
-              ancient coins, and learning about the ancient world. I also enjoy
-              programming, web design and photography. I aim to combine these
-              interests here. I am NOT a historian or photographer so please
-              forgive my errors (and let me know if you spot something).
-              I&apos;ll try to include references to back up my exaggerations. A
-              shoutout to the wonderful Artemis-Collection.com, which inspired
-              this site. Please take a look around and share in the curiosity
-              and joy of the ancient world. Tim, October 2025.
+              This site is dedicated to my collection of ancient coins. I
+              started it while on paternity leave with my first child, hence my
+              appeal to the god of sleep (Cloacina would also have been
+              appropriate). I love the imagination inspired by ancient coins,
+              and learning about the ancient world. It scratches my travel itch
+              without the travel, and makes tangible the feeling that we are all
+              just part of a long long line of human beings with human stories.
+              I am NOT a historian or photographer so please forgive my errors
+              (and let me know if you spot something). Please take a look around
+              and share in the curiosity.
             </p>
             <p className="body-text mb-6 text-xl">
               My goal for this site is to give each coin the attention it
-              deserves. The next big feature I would like to build is a heavily
-              interactive map, showing mints, hoard locations and events from
-              historical figures lives.
+              deserves. I love travel but with a young one A shoutout to the
+              wonderful Artemis-Collection.com, which inspired this site.
             </p>
             <p className="body-text text-xl">
               Please drop me a note via my contact form if you have any
