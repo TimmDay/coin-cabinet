@@ -1,9 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useAddSomnusCoin } from "~/api/somnus-collection"
 import { CoinForm } from "~/components/forms/CoinForm"
 import { useAuth } from "~/components/providers/auth-provider"
-import { useAddSomnusCoin } from "~/lib/api/somnus-collection"
 import type { CoinFormData } from "~/lib/validations/coin-form"
 
 export function AddCoinView() {

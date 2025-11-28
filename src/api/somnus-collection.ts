@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import type { SomnusCollection } from "~/database/schema-somnus-collection"
 import type { CoinFormData } from "~/lib/validations/coin-form"
-import type { SomnusCollection } from "~/types/database"
 
 // Custom React Query hooks for somnus collection
 export function useSomnusCoins() {
@@ -81,6 +81,9 @@ async function fetchSomnusCoins(): Promise<SomnusCollection[]> {
   return result.data ?? []
 }
 
+/**
+ * Fetch all, ie for admin purposes.
+ */
 async function fetchAllSomnusCoins(): Promise<SomnusCollection[]> {
   const response = await fetch("/api/somnus-collection?includeAll=true")
   const result = (await response.json()) as {

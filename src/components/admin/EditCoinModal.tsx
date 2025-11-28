@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import type { SomnusCollection } from "~/types/database"
+import type { SomnusCollection } from "~/database/schema-somnus-collection"
 
 type EditCoinModalProps = {
   isOpen: boolean

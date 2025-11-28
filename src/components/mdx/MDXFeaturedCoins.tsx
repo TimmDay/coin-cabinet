@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
-import { useAllSomnusCoins } from "~/lib/api/somnus-collection"
+import { useAllSomnusCoins } from "~/api/somnus-collection"
 import { FeaturedCoins } from "../ui/FeaturedCoins"
 
 // Client-side wrapper for FeaturedCoins to use in MDX with real coin data

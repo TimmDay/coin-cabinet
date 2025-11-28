@@ -1,7 +1,7 @@
 import type { PostgrestSingleResponse } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 import { ZodError } from "zod"
-import { createClient } from "~/lib/supabase-server"
+import { createClient } from "~/database/supabase-server"
 import { coinFormSchema } from "~/lib/validations/coin-form"
 
 export async function POST(request: Request) {

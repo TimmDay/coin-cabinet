@@ -1,6 +1,6 @@
 import fs from "fs/promises"
 import path from "path"
-import { createClient } from "~/lib/supabase-server"
+import { createClient } from "~/database/supabase-server"
 
 /**
  * Export all database data to JSON backup files

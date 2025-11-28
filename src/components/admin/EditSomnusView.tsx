@@ -1,11 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import {
-  useAllSomnusCoins,
-  useUpdateSomnusCoin,
-} from "~/lib/api/somnus-collection"
-import type { SomnusCollection } from "~/types/database"
+import { useAllSomnusCoins, useUpdateSomnusCoin } from "~/api/somnus-collection"
+import type { SomnusCollection } from "~/database/schema-somnus-collection"
 import { EditCoinModal } from "./EditCoinModal"
 
 export function EditSomnusView() {

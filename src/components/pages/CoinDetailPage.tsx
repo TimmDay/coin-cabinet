@@ -1,11 +1,11 @@
 "use client"
 
+import { useSomnusCoins } from "~/api/somnus-collection"
 import { RelatedPosts } from "~/components/RelatedPosts"
 import { CoinDeepDive } from "~/components/ui/coin-deep-dive"
 import { CoinSnapshot } from "~/components/ui/coin-deep-dive/CoinSnapshot"
 import { NotFound404 } from "~/components/ui/NotFound404"
 import { PageTitleWithSnapshot } from "~/components/ui/PageTitleWithSnapshot"
-import { useSomnusCoins } from "~/lib/api/somnus-collection"
 
 type CoinDetailPageProps = {
   coinId: string

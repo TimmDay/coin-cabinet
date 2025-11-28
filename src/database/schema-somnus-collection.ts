@@ -1,8 +1,6 @@
-/**
- * Database table type definitions
- * These types match the Supabase database schema
- */
-
+// ============================================================================
+// SOMNUS COLLECTION - Your coin collection (CURRENT schema - not yet normalized)
+// ============================================================================
 export type SomnusCollection = {
   // Primary key and metadata
   id: number
@@ -54,8 +52,6 @@ export type SomnusCollection = {
   purchase_vendor: string | null
   purchase_link: string | null
   vendor_grading_notes: string | null
-
-  // Auction details
   auction_name?: string | null
   auction_lot?: number | null
 
@@ -84,5 +80,3 @@ export type SomnusCollection = {
   // Collection status
   ex_collection?: boolean | null
 }
-
-export type NewSomnusCollection = Omit<SomnusCollection, "id" | "created_at">

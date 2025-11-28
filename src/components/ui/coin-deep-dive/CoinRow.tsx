@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import CloudinaryImage from "~/components/CloudinaryImage"
-import { FormattedLegendExpanded } from "~/lib/components"
+import { FormattedLegendExpanded } from "~/components/FormattedLegendExpanded"
 import { ImageModal } from "./ImageModal"
 
 type CoinRowProps = {

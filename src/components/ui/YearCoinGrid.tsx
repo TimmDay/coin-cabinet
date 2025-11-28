@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import { useAllSomnusCoins } from "~/api/somnus-collection"
 import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { CoinInfoModal } from "~/components/ui/CoinInfoModal"
 import { ViewModeControls } from "~/components/ui/ViewModeControls"
-import { useAllSomnusCoins } from "~/lib/api/somnus-collection"
 
 type YearCoinGridProps = {
   year: string

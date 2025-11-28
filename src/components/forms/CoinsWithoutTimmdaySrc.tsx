@@ -1,6 +1,6 @@
 "use client"
 
-import { useAllSomnusCoins } from "~/lib/api/somnus-collection"
+import { useAllSomnusCoins } from "~/api/somnus-collection"
 import { generateImageId } from "~/lib/utils/image-id-generation"
 
 type CoinData = {
