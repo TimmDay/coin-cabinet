@@ -46,6 +46,36 @@ async function addDeity(data: DeityFormData): Promise<Deity> {
   return result.deity
 }
 
+// Update a deity (admin only)
+async function updateDeity(
+  id: number,
+  updates: Partial<DeityFormData>,
+): Promise<Deity> {
+  const response = await fetch("/api/deities/admin", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id, updates }),
+  })
+
+  const result = (await response.json()) as {
+    success: boolean
+    deity?: Deity
+    message?: string
+  }
+
+  if (!result.success) {
+    throw new Error(result.message ?? "Failed to update deity")
+  }
+
+  if (!result.deity) {
+    throw new Error("Deity data not returned")
+  }
+
+  return result.deity
+}
+
 // Delete a deity (admin only)
 async function deleteDeity(id: number): Promise<void> {
   const response = await fetch("/api/deities/admin", {
@@ -80,6 +110,24 @@ export function useAddDeity() {
 
   return useMutation({
     mutationFn: addDeity,
+    onSuccess: () => {
+      // Invalidate and refetch deities list
+      void queryClient.invalidateQueries({ queryKey: ["deities"] })
+    },
+  })
+}
+
+export function useUpdateDeity() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      updates,
+    }: {
+      id: number
+      updates: Partial<DeityFormData>
+    }) => updateDeity(id, updates),
     onSuccess: () => {
       // Invalidate and refetch deities list
       void queryClient.invalidateQueries({ queryKey: ["deities"] })
