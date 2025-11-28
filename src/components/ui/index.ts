@@ -1,3 +1,5 @@
+export { AuthRequiredPage } from "./AuthRequiredPage"
 export { MintInfo } from "./coin-deep-dive/MintInfo"
 export { DeepDiveCard } from "./DeepDiveCard"
+export { Loading } from "./Loading"
 export { ScrollToTop } from "./ScrollToTop"

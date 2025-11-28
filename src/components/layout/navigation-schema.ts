@@ -16,6 +16,7 @@ export type SubmenuTypes =
 export const adminSubmenu = [
   { name: "Add Coin", href: "/admin/add-coin" },
   { name: "Edit Somnus", href: "/admin/edit-somnus" },
+  { name: "Add Deity", href: "/admin/add-deity" },
   { name: "Edit Map", href: "/admin/edit-map" },
   { name: "Edit Mints", href: "/admin/edit-mints" },
   { name: "Feature Flags", href: "/admin/feature-flags" },
