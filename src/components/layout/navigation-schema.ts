@@ -18,8 +18,9 @@ export const adminSubmenu = [
   { name: "Edit Somnus", href: "/admin/edit-somnus" },
   { name: "Add Deity", href: "/admin/add-deity" },
   { name: "Edit Deities", href: "/admin/edit-deities" },
-  { name: "Edit Map", href: "/admin/edit-map" },
+  { name: "Add Mint", href: "/admin/add-mint" },
   { name: "Edit Mints", href: "/admin/edit-mints" },
+  { name: "Edit Map", href: "/admin/edit-map" },
   { name: "Feature Flags", href: "/admin/feature-flags" },
 ]
 

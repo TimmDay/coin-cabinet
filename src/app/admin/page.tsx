@@ -93,12 +93,42 @@ export default function AdminPage() {
             </a>
 
             <a
+              href="/admin/add-deity"
+              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
+            >
+              <h3 className="coin-title mb-4 text-xl">Add Deity</h3>
+              <p className="coin-description">
+                Add a new deity to the database
+              </p>
+            </a>
+
+            <a
+              href="/admin/edit-deities"
+              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
+            >
+              <h3 className="coin-title mb-4 text-xl">Edit Deities</h3>
+              <p className="coin-description">
+                Edit existing deity information
+              </p>
+            </a>
+
+            <a
+              href="/admin/add-mint"
+              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
+            >
+              <h3 className="coin-title mb-4 text-xl">Add Mint</h3>
+              <p className="coin-description">
+                Add a new mint location to the database
+              </p>
+            </a>
+
+            <a
               href="/admin/edit-mints"
               className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
             >
               <h3 className="coin-title mb-4 text-xl">Edit Mints</h3>
               <p className="coin-description">
-                Edit mint information and locations
+                Manage mint information and locations
               </p>
             </a>
           </div>
