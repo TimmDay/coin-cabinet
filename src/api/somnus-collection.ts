@@ -124,26 +124,29 @@ async function insertSomnusCoin(
 }
 
 async function updateSomnusCoin(params: {
-  id: string
+  id: number
   data: Partial<SomnusCollection>
-}): Promise<void> {
-  const response = await fetch(`/api/somnus-collection/${params.id}`, {
+}): Promise<SomnusCollection> {
+  const response = await fetch("/api/somnus-collection/admin", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
     credentials: "same-origin", // Better for same-origin requests
-    body: JSON.stringify(params.data),
+    body: JSON.stringify({ id: params.id, updates: params.data }),
   })
 
   const result = (await response.json()) as {
     success: boolean
     message?: string
+    coin?: SomnusCollection
   }
 
   if (!response.ok || !result.success) {
     throw new Error(result.message ?? "Failed to update somnus coin")
   }
+
+  return result.coin!
 }
 
 async function deleteSomnusCoin(id: number): Promise<void> {

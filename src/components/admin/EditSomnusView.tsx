@@ -51,7 +51,7 @@ export function EditSomnusView() {
 
     try {
       await updateCoinMutation.mutateAsync({
-        id: id.toString(),
+        id: id,
         data: updates,
       })
 
