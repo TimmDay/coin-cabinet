@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import type { PostgrestSingleResponse } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 import { ZodError } from "zod"
+import type { Deity } from "~/database/schema-deities"
 import { createClient } from "~/database/supabase-server"
 import type { DeityFormData } from "~/lib/validations/deity-form"
 
@@ -198,20 +197,20 @@ export async function PUT(request: Request) {
     }
 
     // Update deity
-    const { data, error } = await supabase
+    const result = await supabase
       .from("deities")
       .update(updates)
       .eq("id", id)
       .select()
       .single()
 
-    if (error) {
-      console.error("Supabase error:", error)
+    if (result.error) {
+      console.error("Supabase error:", result.error)
       return NextResponse.json(
         {
           success: false,
           message: "Failed to update deity",
-          error: error.message,
+          error: result.error.message,
         },
         { status: 500 },
       )
@@ -221,8 +220,8 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Deity updated successfully!",
-      deity: data,
+      message: "Deity updated successfully",
+      deity: result.data as Deity,
     })
   } catch (error: unknown) {
     console.error("Error updating deity:", error)

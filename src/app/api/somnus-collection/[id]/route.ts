@@ -44,18 +44,19 @@ export async function GET(
     const url = new URL(request.url)
     const includeDeities = url.searchParams.get("include")?.includes("deities")
 
-    // Fetch the coin data
-    const { data: coin, error: coinError } = await supabase
+    const coinResult = await supabase
       .from("somnus_collection")
       .select("*")
       .eq("id", parseInt(id))
       .eq("user_id", user.id)
-      .single()
+      .single<SomnusCollection>()
 
-    if (coinError) {
-      console.error("Supabase coin fetch error:", coinError)
-      throw new Error(`Database fetch failed: ${coinError.message}`)
+    if (coinResult.error) {
+      console.error("Supabase coin fetch error:", coinResult.error)
+      throw new Error(`Database fetch failed: ${coinResult.error.message}`)
     }
+
+    const coin = coinResult.data
 
     if (!coin) {
       return NextResponse.json(
@@ -64,8 +65,8 @@ export async function GET(
       )
     }
 
-    // Cast to proper type
-    const typedCoin = coin as SomnusCollection
+    // Use coin data directly (already properly typed)
+    const typedCoin = coin
 
     // If deities are requested and coin has deity_id array, fetch deity details
     let coinWithDeities: CoinEnhanced = typedCoin
@@ -93,7 +94,7 @@ export async function GET(
           // Don't fail the whole request if deities can't be fetched
         } else {
           coinWithDeities = {
-            ...typedCoin,
+            ...coin,
             deities: deities || [],
           }
         }
