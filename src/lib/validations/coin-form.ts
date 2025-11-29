@@ -307,6 +307,7 @@ export const coinFormSchema = z
       })
       .pipe(z.array(z.string()).optional()),
     flavour_text: z.string().optional(),
+    secondary_info: z.string().optional(),
     deity_id: z.array(z.string()).optional(),
     bpRoute: z
       .string()

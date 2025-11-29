@@ -77,6 +77,9 @@ export function useSpecificCoinData(coinId: number | null): CoinEditData {
       queryKey: ["specific-coin-with-deities", coinId],
     })
     void queryClient.invalidateQueries({ queryKey: ["coin", coinId] })
+    // Also invalidate any collection views that might show this coin
+    void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+    void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
   }
 
   return {

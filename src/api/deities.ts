@@ -131,6 +131,17 @@ export function useUpdateDeity() {
     onSuccess: () => {
       // Invalidate and refetch deities list
       void queryClient.invalidateQueries({ queryKey: ["deities"] })
+
+      // Invalidate all coin queries that might include deity data
+      void queryClient.invalidateQueries({
+        queryKey: ["specific-coin-with-deities"],
+      })
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
+
+      // This ensures that any coin detail pages or edit forms will refetch
+      // the updated deity information when the cache is invalidated
     },
   })
 }

@@ -48,10 +48,6 @@ export function DeityForm({ onSubmit, isLoading }: DeityFormProps) {
     <div className="relative">
       {/* Main centered form */}
       <div className="somnus-card mx-auto w-full max-w-4xl p-8">
-        <h2 className="mb-6 text-3xl font-bold">
-          <span className="text-auth-accent">Add New Deity</span>
-        </h2>
-
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
           {/* Basic Information Section */}
           <div className="space-y-4">
@@ -189,12 +185,7 @@ export function DeityForm({ onSubmit, isLoading }: DeityFormProps) {
             </div>
           </div>
 
-          {/* Numismatic Information Section */}
           <div className="space-y-4">
-            <h3 className="text-auth-accent mb-4 text-xl font-semibold">
-              Numismatic Information
-            </h3>
-
             <div>
               <label className={labelClass} htmlFor="features_coinage">
                 Common features found on coins
