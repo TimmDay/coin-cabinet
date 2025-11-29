@@ -65,6 +65,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
     name: string
     subtitle?: string
     flavour_text?: string | null
+    secondary_info?: string | null
     features_coinage?: { name: string; alt_name?: string; notes?: string }[]
   }) => {
     const coinageFeatureNames =
@@ -74,7 +75,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       title: deity.name,
       subtitle: deity.subtitle ?? "",
       primaryInfo: deity.flavour_text ?? "",
-      secondaryInfo: "", // TODO: update db
+      secondaryInfo: deity.secondary_info ?? "",
       footer: coinageFeatureNames,
     }
 

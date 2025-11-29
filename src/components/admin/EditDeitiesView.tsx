@@ -43,11 +43,12 @@ export function EditDeitiesView() {
 
   const handleModalSave = async (id: number, updates: Partial<Deity>) => {
     try {
-      // Convert null to undefined for flavour_text to match DeityFormData
       const formUpdates = {
         ...updates,
         flavour_text:
           updates.flavour_text === null ? undefined : updates.flavour_text,
+        secondary_info:
+          updates.secondary_info === null ? undefined : updates.secondary_info,
       }
 
       await updateDeityMutation.mutateAsync({ id, updates: formUpdates })

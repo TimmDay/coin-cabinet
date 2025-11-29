@@ -157,6 +157,21 @@ export function DeityForm({ onSubmit, isLoading }: DeityFormProps) {
             </div>
 
             <div>
+              <label className={labelClass} htmlFor="secondary_info">
+                Secondary Information
+              </label>
+              <textarea
+                {...register("secondary_info")}
+                id="secondary_info"
+                className={textareaClass}
+                placeholder="Additional descriptive information, iconography, or coin-specific details..."
+              />
+              {errors.secondary_info && (
+                <p className={errorClass}>{errors.secondary_info.message}</p>
+              )}
+            </div>
+
+            <div>
               <label className={labelClass} htmlFor="historical_sources">
                 Historical Sources
               </label>

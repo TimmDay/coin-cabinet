@@ -42,7 +42,7 @@ export async function GET(
 
     // Check if we should include deity data
     const url = new URL(request.url)
-    const includeDeities = url.searchParams.get('include')?.includes('deities')
+    const includeDeities = url.searchParams.get("include")?.includes("deities")
 
     // Fetch the coin data
     const { data: coin, error: coinError } = await supabase
@@ -69,14 +69,23 @@ export async function GET(
 
     // If deities are requested and coin has deity_id array, fetch deity details
     let coinWithDeities: CoinEnhanced = typedCoin
-    if (includeDeities && typedCoin.deity_id && Array.isArray(typedCoin.deity_id) && typedCoin.deity_id.length > 0) {
+    if (
+      includeDeities &&
+      typedCoin.deity_id &&
+      Array.isArray(typedCoin.deity_id) &&
+      typedCoin.deity_id.length > 0
+    ) {
       // Convert string IDs to numbers for the query
-      const deityIds = typedCoin.deity_id.map((id: string) => parseInt(id)).filter((id: number) => !isNaN(id))
-      
+      const deityIds = typedCoin.deity_id
+        .map((id: string) => parseInt(id))
+        .filter((id: number) => !isNaN(id))
+
       if (deityIds.length > 0) {
         const { data: deities, error: deitiesError } = await supabase
           .from("deities")
-          .select("id, name, subtitle, flavour_text, features_coinage")
+          .select(
+            "id, name, subtitle, flavour_text, secondary_info, features_coinage",
+          )
           .in("id", deityIds)
 
         if (deitiesError) {
@@ -85,7 +94,7 @@ export async function GET(
         } else {
           coinWithDeities = {
             ...typedCoin,
-            deities: deities || []
+            deities: deities || [],
           }
         }
       }

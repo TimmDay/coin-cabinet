@@ -25,6 +25,7 @@ export const deityFormInputSchema = z.object({
 
   // Descriptive information
   flavour_text: z.string().optional(),
+  secondary_info: z.string().optional(),
   historical_sources: z.string().optional(),
   god_of: z.string().min(1, "At least one domain is required"),
 
@@ -75,6 +76,7 @@ export const deityFormSchema = z.object({
 
   // Descriptive information
   flavour_text: z.string().optional(),
+  secondary_info: z.string().optional(),
   historical_sources: z
     .string()
     .optional()

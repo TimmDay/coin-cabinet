@@ -22,6 +22,7 @@ export function EditDeityModal({
     name: "",
     subtitle: "",
     flavour_text: "",
+    secondary_info: "",
     alt_names_raw: "",
     similar_gods_raw: "",
     god_of_raw: "",
@@ -35,9 +36,10 @@ export function EditDeityModal({
   useEffect(() => {
     if (deity) {
       const initialData = {
-        name: deity.name ?? "",
+        name: deity.name,
         subtitle: deity.subtitle ?? "",
         flavour_text: deity.flavour_text ?? "",
+        secondary_info: deity.secondary_info ?? "",
         alt_names_raw: deity.alt_names?.join(", ") ?? "",
         similar_gods_raw: deity.similar_gods?.join(", ") ?? "",
         god_of_raw: deity.god_of?.join(", ") ?? "",
@@ -75,6 +77,7 @@ export function EditDeityModal({
       name: formData.name.trim(),
       subtitle: formData.subtitle.trim() || undefined,
       flavour_text: formData.flavour_text.trim() || null,
+      secondary_info: formData.secondary_info.trim() || null,
       alt_names: processArrayString(formData.alt_names_raw),
       similar_gods: processArrayString(formData.similar_gods_raw),
       god_of: processArrayString(formData.god_of_raw),
@@ -292,6 +295,22 @@ export function EditDeityModal({
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
               rows={4}
               placeholder="Rich description of the deity's role and significance..."
+            />
+          </div>
+
+          {/* Secondary Information */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Secondary Information
+            </label>
+            <textarea
+              value={formData.secondary_info}
+              onChange={(e) =>
+                handleFieldChange("secondary_info", e.target.value)
+              }
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              rows={3}
+              placeholder="Additional descriptive information, iconography, or coin-specific details..."
             />
           </div>
 
