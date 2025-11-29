@@ -191,7 +191,6 @@ export function SimpleMultiSelect({
           role="listbox"
           id="simple-multiselect-listbox"
           aria-label="Options"
-          style={{ backgroundColor: "white" }}
         >
           {options.map((option, index) => {
             const isSelected = selectedValues.includes(option.value)

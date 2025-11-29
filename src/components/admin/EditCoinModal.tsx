@@ -1,7 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
+import { useSpecificCoinData } from "~/hooks/useEnhancedCoinData"
 
 type EditCoinModalProps = {
   isOpen: boolean
@@ -29,38 +31,54 @@ export function EditCoinModal({
     legend_r_translation: "",
     desc_r: "",
     flavour_text: "",
-    godName: "",
+    deity_id: [] as string[],
     devicesRaw: "",
     setsRaw: "",
   })
   const [hasChanges, setHasChanges] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  // Initialize form data when coin changes
+  const {
+    coin: freshCoinData,
+    deityOptions,
+    isLoading: editDataLoading,
+    invalidateCache,
+  } = useSpecificCoinData(coin?.id ?? null)
+
+  // Initialize form data immediately with coin prop, then update with fresh API data
   useEffect(() => {
-    if (coin) {
-      const initialData = {
-        nickname: coin.nickname ?? "",
-        legend_o: coin.legend_o ?? "",
-        legend_o_expanded: coin.legend_o_expanded ?? "",
-        legend_o_translation: coin.legend_o_translation ?? "",
-        desc_o: coin.desc_o ?? "",
-        legend_r: coin.legend_r ?? "",
-        legend_r_expanded: coin.legend_r_expanded ?? "",
-        legend_r_translation: coin.legend_r_translation ?? "",
-        desc_r: coin.desc_r ?? "",
-        flavour_text: coin.flavour_text ?? "",
-        godName: coin.godName ?? "",
-        devicesRaw: coin.devices?.join(", ") ?? "",
-        setsRaw: coin.sets?.join(", ") ?? "",
-      }
-      setFormData(initialData)
+    const dataSource = freshCoinData ?? coin // Use fresh API data if available, otherwise use the coin prop
+
+    if (dataSource) {
+      setFormData({
+        nickname: dataSource.nickname ?? "",
+        legend_o: dataSource.legend_o ?? "",
+        legend_o_expanded: dataSource.legend_o_expanded ?? "",
+        legend_o_translation: dataSource.legend_o_translation ?? "",
+        desc_o: dataSource.desc_o ?? "",
+        legend_r: dataSource.legend_r ?? "",
+        legend_r_expanded: dataSource.legend_r_expanded ?? "",
+        legend_r_translation: dataSource.legend_r_translation ?? "",
+        desc_r: dataSource.desc_r ?? "",
+        flavour_text: dataSource.flavour_text ?? "",
+        deity_id: dataSource.deity_id ?? [],
+        devicesRaw: dataSource.devices?.join(", ") ?? "",
+        setsRaw: dataSource.sets?.join(", ") ?? "",
+      })
       setHasChanges(false)
       setErrorMessage(null)
     }
-  }, [coin])
+  }, [coin, freshCoinData])
 
-  const handleFieldChange = (field: string, value: string) => {
+  // Reset form when modal closes to prevent stale data
+  useEffect(() => {
+    if (!isOpen) {
+      setHasChanges(false)
+      setErrorMessage(null)
+    }
+  }, [isOpen])
+
+  const handleFieldChange = (field: string, value: string | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
     setHasChanges(true)
   }
@@ -103,13 +121,15 @@ export function EditCoinModal({
       legend_r_translation: formData.legend_r_translation,
       desc_r: formData.desc_r,
       flavour_text: formData.flavour_text,
-      godName: formData.godName.toLowerCase(), // Convert to lowercase
+      deity_id: formData.deity_id.length > 0 ? formData.deity_id : null,
       devices: processArrayString(formData.devicesRaw, true), // Convert to lowercase
       sets: processArrayString(formData.setsRaw, false), // Keep original case for sets
     }
 
     try {
       await onSave(coin.id, updates)
+      // Invalidate cache to ensure fresh data on next load
+      invalidateCache()
       setHasChanges(false)
       onClose()
     } catch (error) {
@@ -311,16 +331,16 @@ export function EditCoinModal({
             <label className="mb-2 block text-sm font-medium text-slate-300">
               God/Deity
             </label>
-            <input
-              type="text"
-              value={formData.godName}
-              onChange={(e) => handleFieldChange("godName", e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              placeholder="e.g., Jupiter, Mars, Diana"
+
+            <SimpleMultiSelect
+              options={deityOptions}
+              selectedValues={formData.deity_id}
+              onSelectionChange={(values) =>
+                handleFieldChange("deity_id", values)
+              }
+              placeholder={editDataLoading ? "Loading..." : "Select deities..."}
+              className="w-full"
             />
-            <p className="mt-1 text-sm text-gray-400">
-              Will be saved in lowercase
-            </p>
           </div>
 
           {/* Devices */}

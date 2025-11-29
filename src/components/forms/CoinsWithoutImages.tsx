@@ -60,18 +60,6 @@ export function CoinsWithoutImages() {
       return missingObverse || missingReverse
     }) ?? []
 
-  // Debug: log the filtering results
-  console.log("All coins:", coins?.length)
-  console.log("Coins without images:", coinsWithoutImages.length)
-  console.log(
-    "Coins missing images:",
-    coinsWithoutImages.map((coin) => ({
-      nickname: coin.nickname,
-      obverse: coin.image_link_o,
-      reverse: coin.image_link_r,
-    })),
-  )
-
   if (coinsWithoutImages.length === 0) {
     return (
       <div className="somnus-card p-6">

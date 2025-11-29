@@ -58,6 +58,8 @@ export type SomnusCollection = {
   // Image links
   image_link_o: string | null
   image_link_r: string | null
+  image_link_altlight_o: string | null
+  image_link_altlight_r: string | null
   image_link_sketch_o: string | null
   image_link_sketch_r: string | null
   image_link_zoom_o: string | null
@@ -66,7 +68,6 @@ export type SomnusCollection = {
 
   // Additional information
   flavour_text?: string | null
-  godName?: string | null
   bpRoute?: string[] | null
   antiquities_register?: string | null
   provenance?: string | null
@@ -79,4 +80,7 @@ export type SomnusCollection = {
 
   // Collection status
   ex_collection?: boolean | null
+
+  // joins
+  deity_id?: string[] | null
 }

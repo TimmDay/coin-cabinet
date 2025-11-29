@@ -12,6 +12,7 @@ import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper"
 import { MultiSelect } from "~/components/ui/MultiSelect"
 import { RoundButton } from "~/components/ui/RoundButton"
 import { Select } from "~/components/ui/Select"
+import { useDeityOptions } from "~/hooks/useDeityOptions"
 import { coinFormSchema, type CoinFormData } from "~/lib/validations/coin-form"
 import {
   authorityOptions,
@@ -29,6 +30,7 @@ type CoinFormProps = {
 
 export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
   const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false)
+  const { options: deityOptions, isLoading: deitiesLoading } = useDeityOptions()
 
   const {
     register,
@@ -537,19 +539,20 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
             {/* God Name and Blog Post Routes */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label className={labelClass} htmlFor="godName">
+                <label className={labelClass} htmlFor="deity_id">
                   God/Deity Name
                 </label>
-                <input
-                  {...register("godName")}
-                  id="godName"
-                  type="text"
+                <MultiSelect
+                  options={deityOptions}
+                  setValue={setValue}
+                  watch={watch}
+                  fieldName="deity_id"
                   className={inputClass}
-                  placeholder="e.g., Jupiter, Mars, Salus"
+                  placeholder={
+                    deitiesLoading ? "Loading deities..." : "Select deities..."
+                  }
+                  error={errors.deity_id?.message}
                 />
-                {errors.godName && (
-                  <p className={errorClass}>{errors.godName?.message}</p>
-                )}
               </div>
 
               <div>
@@ -577,6 +580,7 @@ export function CoinForm({ onSubmit, isLoading }: CoinFormProps) {
                 options={setsOptions}
                 setValue={setValue}
                 watch={watch}
+                fieldName="sets"
                 className={inputClass}
                 placeholder="Select sets..."
                 error={errors.sets?.message}

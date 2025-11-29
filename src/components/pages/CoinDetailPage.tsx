@@ -1,21 +1,18 @@
 "use client"
 
-import { useSomnusCoins } from "~/api/somnus-collection"
 import { RelatedPosts } from "~/components/RelatedPosts"
 import { CoinDeepDive } from "~/components/ui/coin-deep-dive"
 import { CoinSnapshot } from "~/components/ui/coin-deep-dive/CoinSnapshot"
 import { NotFound404 } from "~/components/ui/NotFound404"
 import { PageTitleWithSnapshot } from "~/components/ui/PageTitleWithSnapshot"
+import { useSpecificCoinData } from "~/hooks/useEnhancedCoinData"
 
 type CoinDetailPageProps = {
   coinId: string
 }
 
 export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
-  const { data: coins, isLoading, error } = useSomnusCoins()
-
-  // Find the specific coin by ID
-  const coin = coins?.find((c) => c.id?.toString() === coinId)
+  const { coin, isLoading, error } = useSpecificCoinData(parseInt(coinId))
 
   if (isLoading) {
     return (

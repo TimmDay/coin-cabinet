@@ -6,6 +6,7 @@ type MultiSelectProps = {
   options: { value: string; label: string }[]
   setValue: UseFormSetValue<CoinFormData>
   watch: UseFormWatch<CoinFormData>
+  fieldName: "sets" | "deity_id"
   className?: string
   placeholder?: string
   error?: string
@@ -15,15 +16,16 @@ export function MultiSelect({
   options,
   setValue,
   watch,
+  fieldName,
   className,
-  placeholder = "Select sets...",
+  placeholder = "Select options...",
   error,
 }: MultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [focusedIndex, setFocusedIndex] = useState(-1)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLDivElement>(null)
-  const selectedValues = watch("sets") ?? []
+  const selectedValues = watch(fieldName) ?? []
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -106,13 +108,13 @@ export function MultiSelect({
       ? currentValues.filter((v) => v !== value)
       : [...currentValues, value]
 
-    setValue("sets", newValues, { shouldValidate: true })
+    setValue(fieldName, newValues, { shouldValidate: true })
   }
 
   const removeValue = (valueToRemove: string) => {
     const currentValues = selectedValues || []
     const newValues = currentValues.filter((v) => v !== valueToRemove)
-    setValue("sets", newValues, { shouldValidate: true })
+    setValue(fieldName, newValues, { shouldValidate: true })
   }
 
   return (

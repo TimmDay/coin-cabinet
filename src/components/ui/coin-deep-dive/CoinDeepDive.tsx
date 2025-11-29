@@ -37,36 +37,10 @@ const TimelineWithMap = dynamic(
   },
 )
 
+import type { CoinEnhanced } from "~/types/api"
+
 type CoinDeepDiveProps = {
-  coin: {
-    nickname?: string | null
-    image_link_o?: string | null
-    image_link_r?: string | null
-    image_link_sketch_o?: string | null
-    image_link_sketch_r?: string | null
-    image_link_altlight_o?: string | null
-    image_link_altlight_r?: string | null
-    legend_o_expanded?: string | null
-    legend_o_translation?: string | null
-    legend_r_expanded?: string | null
-    legend_r_translation?: string | null
-    desc_o?: string | null
-    desc_r?: string | null
-    civ: string
-    civ_specific?: string | null
-    denomination: string
-    mint?: string | null
-    mint_year_earliest?: number | null
-    mint_year_latest?: number | null
-    diameter?: number | null
-    mass?: number | null
-    die_axis?: string | null
-    reference?: string | null
-    provenance?: string | null
-    sets?: string[] | null
-    devices?: string[] | null
-    flavour_text?: string | null
-  }
+  coin: CoinEnhanced
 }
 
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
@@ -85,18 +59,44 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       })
     : null
 
-  // Find matching deities based on devices
-  const matchingDeities = coin.devices
-    ? coin.devices
-        .map((device) => {
-          const deityKey = device.toLowerCase()
-          if (deityKey in DEITIES) {
-            return DEITIES[deityKey]
-          }
-          return null
-        })
-        .filter((deity): deity is NonNullable<typeof deity> => deity !== null)
-    : []
+  // Transform database deity data to DeepDiveCard format matching UI card structure
+  const transformDbDeityToCard = (deity: {
+    id: number
+    name: string
+    subtitle?: string
+    flavour_text?: string | null
+    features_coinage?: { name: string; alt_name?: string; notes?: string }[]
+  }) => {
+    const coinageFeatureNames =
+      deity.features_coinage?.map((f) => f.name).join(", ") ?? ""
+
+    const result = {
+      title: deity.name,
+      subtitle: deity.subtitle ?? "",
+      primaryInfo: deity.flavour_text ?? "",
+      secondaryInfo: "", // TODO: update db
+      footer: coinageFeatureNames,
+    }
+
+    return result
+  }
+  // Use database deity information if available, otherwise fallback to devices lookup
+  const matchingDeities =
+    coin.deities && coin.deities.length > 0
+      ? coin.deities.map(transformDbDeityToCard) // Transform database deities
+      : coin.devices // Fallback to static DEITIES lookup for backwards compatibility
+        ? coin.devices
+            .map((device) => {
+              const deityKey = device.toLowerCase()
+              if (deityKey in DEITIES) {
+                return DEITIES[deityKey]
+              }
+              return null
+            })
+            .filter(
+              (deity): deity is NonNullable<typeof deity> => deity !== null,
+            )
+        : []
 
   return (
     <section className="space-y-8 md:space-y-12">

@@ -119,10 +119,20 @@ export function EditDeityModal({
     }
   }
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    // Only close if clicking on the backdrop itself, not on child elements
+    if (e.target === e.currentTarget) {
+      handleClose()
+    }
+  }
+
   if (!isOpen || !deity) return null
 
   return (
-    <div className="z-modal bg-opacity-50 fixed inset-0 flex items-center justify-center bg-black p-4">
+    <div
+      className="z-modal bg-opacity-50 fixed inset-0 flex items-center justify-center bg-black p-4"
+      onClick={handleBackdropClick}
+    >
       <div className="somnus-card max-h-[90vh] w-full max-w-2xl overflow-y-auto">
         <div className="sticky top-0 border-b border-gray-200 bg-slate-800 p-4">
           <div className="flex items-center justify-between">

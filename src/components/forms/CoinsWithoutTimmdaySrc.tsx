@@ -68,18 +68,6 @@ export function CoinsWithoutTimmdaySrc() {
       return Boolean(obverseLacksTimmdaySrc) || Boolean(reverseLacksTimmdaySrc)
     }) ?? []
 
-  // Debug: log the filtering results
-  console.log("All coins:", coins?.length)
-  console.log("Coins without timmday src:", coinsWithoutTimmdaySrc.length)
-  console.log(
-    "Coins missing timmday src:",
-    coinsWithoutTimmdaySrc.map((coin) => ({
-      nickname: coin.nickname,
-      obverse: coin.image_link_o,
-      reverse: coin.image_link_r,
-    })),
-  )
-
   if (coinsWithoutTimmdaySrc.length === 0) {
     return (
       <div className="somnus-card p-6">
