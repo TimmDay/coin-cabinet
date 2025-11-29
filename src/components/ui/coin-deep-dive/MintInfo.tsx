@@ -1,5 +1,5 @@
+import { useMints } from "~/api/mints"
 import { formatRomanDateRange } from "~/lib/utils/date-formatting"
-import { ROMAN_MINTS } from "../../../data/mints"
 import { DeepDiveCard } from "../DeepDiveCard"
 
 type MintInfoProps = {
@@ -7,22 +7,39 @@ type MintInfoProps = {
 }
 
 export function MintInfo({ mintName }: MintInfoProps) {
+  const { data: mints, isLoading, error } = useMints()
+
+  if (isLoading) {
+    return (
+      <DeepDiveCard
+        title="Mint Information"
+        subtitle="Loading mint data..."
+        primaryInfo=""
+        defaultOpen={false}
+      />
+    )
+  }
+
+  if (error || !mints) {
+    return null
+  }
+
   // Find the mint data that matches the coin's mint
-  const mint = ROMAN_MINTS.find(
+  const mint = mints.find(
     (m) =>
-      m.mintNames.some(
+      m.alt_names?.some(
         (name) => name.toLowerCase() === mintName.toLowerCase(),
-      ) || m.displayName.toLowerCase() === mintName.toLowerCase(),
+      ) ?? m.name.toLowerCase() === mintName.toLowerCase(),
   )
 
-  if (!mint?.flavourText) {
+  if (!mint?.flavour_text) {
     return null
   }
 
   // Format operation dates as separate lines
   const operationDatesSubtitle =
-    mint.operationDates.length > 0
-      ? mint.operationDates
+    mint.operation_periods && mint.operation_periods.length > 0
+      ? mint.operation_periods
           .map(
             ([startYear, endYear, emperor]) =>
               `${formatRomanDateRange(startYear, endYear)} (${emperor})`,
@@ -32,15 +49,15 @@ export function MintInfo({ mintName }: MintInfoProps) {
 
   // Join mint marks as comma-separated footer
   const mintMarksFooter =
-    mint.mintMarks && mint.mintMarks.length > 0
-      ? mint.mintMarks.join(", ")
+    mint.mint_marks && mint.mint_marks.length > 0
+      ? mint.mint_marks.join(", ")
       : undefined
 
   return (
     <DeepDiveCard
-      title={`${mint.displayName} Mint`}
+      title={`${mint.name} Mint`}
       subtitle={operationDatesSubtitle}
-      primaryInfo={mint.flavourText}
+      primaryInfo={mint.flavour_text}
       footer={mintMarksFooter}
       defaultOpen={false}
     />

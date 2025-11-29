@@ -10,7 +10,7 @@ import {
   TileLayer,
   useMapEvents,
 } from "react-leaflet"
-import { ROMAN_MINTS } from "../../data/mints"
+import { useMints } from "~/api/mints"
 import { ROMAN_PROVINCES } from "./constants/provinces"
 import {
   useEmpireLayerState,
@@ -170,6 +170,7 @@ export const Map: React.FC<MapProps> = ({
 }) => {
   // Use custom hooks for configuration and data management
   const config = useMapConfiguration()
+  const { data: mints } = useMints()
   const {
     provincesData,
     provincesLabelsData,
@@ -246,13 +247,14 @@ export const Map: React.FC<MapProps> = ({
 
   // Find highlighted mint and center on it if provided
   const highlightedMint = useMemo(() => {
-    if (!highlightMint) return null
-    return ROMAN_MINTS.find((mint) =>
-      mint.mintNames.some(
-        (name) => name.toLowerCase() === highlightMint.toLowerCase(),
-      ),
+    if (!highlightMint || !mints) return null
+    return mints.find(
+      (mint) =>
+        mint.alt_names?.some(
+          (name) => name.toLowerCase() === highlightMint.toLowerCase(),
+        ) ?? mint.name.toLowerCase() === highlightMint.toLowerCase(),
     )
-  }, [highlightMint])
+  }, [highlightMint, mints])
 
   // Use actual center and zoom from config if not provided
   // If highlighting a mint, center on that mint
@@ -708,25 +710,24 @@ export const Map: React.FC<MapProps> = ({
                 ))}
 
               {/* Mint Markers */}
-              {ROMAN_MINTS.map((mint) => {
-                const isHighlighted =
-                  highlightedMint?.displayName === mint.displayName
+              {mints?.map((mint) => {
+                const isHighlighted = highlightedMint?.name === mint.name
 
                 return (
                   <Marker
-                    key={`mint-${mint.displayName}`}
+                    key={`mint-${mint.name}`}
                     position={[mint.lat, mint.lng]}
                     icon={
                       isHighlighted
                         ? new DivIcon({
                             className: "highlighted-mint-marker",
-                            html: `<div class="mint-pin-wrapper" data-mint="${mint.displayName}">${createHighlightedMintHtml(mint.displayName)}</div>`,
+                            html: `<div class="mint-pin-wrapper" data-mint="${mint.name}">${createHighlightedMintHtml(mint.name)}</div>`,
                             iconSize: [120, 60], // Larger to accommodate label
                             iconAnchor: [60, 12], // Anchor at the center of the circle (24px circle, so 12px from top)
                           })
                         : new DivIcon({
                             className: "mint-marker",
-                            html: `<div style="${MAP_STYLES.mintMarker.css}" data-mint="${mint.displayName}"></div>`,
+                            html: `<div style="${MAP_STYLES.mintMarker.css}" data-mint="${mint.name}"></div>`,
                             iconSize: MAP_STYLES.mintMarker.iconSize,
                             iconAnchor: MAP_STYLES.mintMarker.iconAnchor,
                           })
@@ -747,11 +748,11 @@ export const Map: React.FC<MapProps> = ({
                             y: rect.top + clickY,
                           },
                           content: {
-                            title: mint.displayName,
+                            title: mint.name,
                             subtitle: isHighlighted
                               ? "This coin was struck here"
                               : "",
-                            description: mint.flavourText,
+                            description: mint.flavour_text ?? "",
                             className: isHighlighted
                               ? "text-purple-800"
                               : "text-blue-800",

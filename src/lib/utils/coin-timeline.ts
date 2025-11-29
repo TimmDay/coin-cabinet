@@ -1,5 +1,5 @@
-import { ROMAN_MINTS } from "~/data/mints"
 import type { Timeline } from "~/data/timelines/types"
+import type { Mint } from "~/database/schema-mints"
 
 type CoinData = {
   denomination: string
@@ -11,20 +11,21 @@ type CoinData = {
 /**
  * Creates a timeline event for the minting of a coin using available coin data
  */
-export function createCoinMintingEvent(coin: CoinData) {
+export function createCoinMintingEvent(coin: CoinData, mints?: Mint[]) {
   if (!coin.mint_year_earliest) {
     return null
   }
 
   // Find the matching mint data for coordinates
-  const mintData = coin.mint
-    ? ROMAN_MINTS.find(
-        (m) =>
-          m.mintNames.some(
-            (name) => name.toLowerCase() === coin.mint!.toLowerCase(),
-          ) || m.displayName.toLowerCase() === coin.mint!.toLowerCase(),
-      )
-    : null
+  const mintData =
+    coin.mint && mints
+      ? mints.find(
+          (m) =>
+            m.alt_names?.some(
+              (name) => name.toLowerCase() === coin.mint!.toLowerCase(),
+            ) ?? m.name.toLowerCase() === coin.mint!.toLowerCase(),
+        )
+      : undefined
 
   // Build description
   let description = `This ${coin.denomination} was minted`
@@ -64,8 +65,9 @@ export function createCoinMintingEvent(coin: CoinData) {
 export function addCoinMintingEventToTimeline(
   timeline: Timeline,
   coin: CoinData,
+  mints?: Mint[],
 ): Timeline {
-  const coinEvent = createCoinMintingEvent(coin)
+  const coinEvent = createCoinMintingEvent(coin, mints)
 
   if (!coinEvent) {
     return timeline

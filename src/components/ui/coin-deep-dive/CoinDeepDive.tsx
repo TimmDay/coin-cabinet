@@ -1,6 +1,7 @@
 "use client"
 
 import dynamic from "next/dynamic"
+import { useMints } from "~/api/mints"
 import { MintInfo } from "~/components/ui"
 import { DEITIES } from "~/data/deities"
 import { TIMELINES } from "~/data/timelines"
@@ -45,18 +46,23 @@ type CoinDeepDiveProps = {
 
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const isMapFeatureEnabled = useTypedFeatureFlag("map-feature")
+  const { data: mints } = useMints()
 
   // Check if there's a matching timeline for this coin
   const baseTimeline = matchTimelineToNickname(coin.nickname, TIMELINES)
 
   // Add coin minting event to timeline if we have one
   const matchingTimeline = baseTimeline
-    ? addCoinMintingEventToTimeline(baseTimeline, {
-        denomination: coin.denomination,
-        mint: coin.mint,
-        mint_year_earliest: coin.mint_year_earliest,
-        mint_year_latest: coin.mint_year_latest,
-      })
+    ? addCoinMintingEventToTimeline(
+        baseTimeline,
+        {
+          denomination: coin.denomination,
+          mint: coin.mint,
+          mint_year_earliest: coin.mint_year_earliest,
+          mint_year_latest: coin.mint_year_latest,
+        },
+        mints,
+      )
     : null
 
   // Transform database deity data to DeepDiveCard format matching UI card structure
