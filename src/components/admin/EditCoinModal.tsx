@@ -31,7 +31,6 @@ export function EditCoinModal({
     legend_r_translation: "",
     desc_r: "",
     flavour_text: "",
-    secondary_info: "",
     deity_id: [] as string[],
     devicesRaw: "",
     setsRaw: "",
@@ -62,7 +61,6 @@ export function EditCoinModal({
         legend_r_translation: dataSource.legend_r_translation ?? "",
         desc_r: dataSource.desc_r ?? "",
         flavour_text: dataSource.flavour_text ?? "",
-        secondary_info: dataSource.secondary_info ?? "",
         deity_id: dataSource.deity_id ?? [],
         devicesRaw: dataSource.devices?.join(", ") ?? "",
         setsRaw: dataSource.sets?.join(", ") ?? "",
@@ -123,7 +121,6 @@ export function EditCoinModal({
       legend_r_translation: formData.legend_r_translation,
       desc_r: formData.desc_r,
       flavour_text: formData.flavour_text,
-      secondary_info: formData.secondary_info,
       deity_id: formData.deity_id.length > 0 ? formData.deity_id : null,
       devices: processArrayString(formData.devicesRaw, true), // Convert to lowercase
       sets: processArrayString(formData.setsRaw, false), // Keep original case for sets
@@ -326,22 +323,6 @@ export function EditCoinModal({
               rows={3}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
               placeholder="Enter flavour text"
-            />
-          </div>
-
-          {/* Secondary Info */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Secondary Info
-            </label>
-            <textarea
-              value={formData.secondary_info}
-              onChange={(e) =>
-                handleFieldChange("secondary_info", e.target.value)
-              }
-              rows={2}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              placeholder="Enter additional secondary information"
             />
           </div>
 
