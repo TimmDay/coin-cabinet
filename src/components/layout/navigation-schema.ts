@@ -20,6 +20,8 @@ export const adminSubmenu = [
   { name: "Edit Deities", href: "/admin/edit-deities" },
   { name: "Add Mint", href: "/admin/add-mint" },
   { name: "Edit Mints", href: "/admin/edit-mints" },
+  { name: "Add Place", href: "/admin/add-place" },
+  { name: "Edit Places", href: "/admin/edit-places" },
   { name: "Edit Map", href: "/admin/edit-map" },
   { name: "Feature Flags", href: "/admin/feature-flags" },
 ]

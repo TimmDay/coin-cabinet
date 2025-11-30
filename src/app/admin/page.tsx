@@ -131,6 +131,26 @@ export default function AdminPage() {
                 Manage mint information and locations
               </p>
             </a>
+
+            <a
+              href="/admin/add-place"
+              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
+            >
+              <h3 className="coin-title mb-4 text-xl">Add Place</h3>
+              <p className="coin-description">
+                Add a new historical place to the database
+              </p>
+            </a>
+
+            <a
+              href="/admin/edit-places"
+              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
+            >
+              <h3 className="coin-title mb-4 text-xl">Edit Places</h3>
+              <p className="coin-description">
+                Manage historical places and locations
+              </p>
+            </a>
           </div>
         </div>
       </div>

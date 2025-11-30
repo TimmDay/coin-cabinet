@@ -21,7 +21,7 @@ import {
   denominationOptions,
   dieAxisOptions,
   setsOptions,
-} from "../../../components/forms/constants"
+} from "./constants"
 
 type CoinFormProps = {
   onSubmit: (data: CoinFormData) => Promise<void>

@@ -9,18 +9,18 @@ export type CoinageFeature = {
 
 export type Deity = {
   id: number
-  name: string // "Jupiter", "Mars", "Victoria"
-  subtitle?: string // "King of the Gods", "God of War" - short descriptive subtitle
-  alt_names?: string[] // ["Jove", "Optimus Maximus"] - alternative names and epithets
-  similar_gods?: string[] // ["Zeus", "Ammon"] - equivalent gods from other civilizations
-  flavour_text?: string | null // Rich description of the deity's role and significance
-  secondary_info?: string | null // Additional descriptive information for display
-  historical_sources?: string[] // ["Ovid Metamorphoses 1.163", "Pliny Natural History 2.7"] - formatted academic sources
-  god_of: string[] // ["sky", "thunder", "justice", "state"] - domains and responsibilities
-  features_coinage: CoinageFeature[] // Detailed features on coins with names, alt names, and notes
-  legends_coinage: string[] // ["IOM", "IOVI OPTIMO MAXIMO", "CONSERVATORI"] - common abbreviations and legends
-  temples: string[] // ["temple_001", "temple_042"] - IDs for joining to future places table
-  festivals: string[] // ["Ides of Mars", "Ludi Romani", "Saturnalia"] - associated festivals and celebrations
+  name: string // The display name for the card
+  subtitle?: string
+  alt_names?: string[] //  a list of names to search against. include the main one
+  similar_gods?: string[] // similar gods from other civilizations
+  flavour_text?: string | null
+  secondary_info?: string | null
+  historical_sources?: string[] //TODO: need a type for historical sources objects
+  god_of: string[]
+  features_coinage: CoinageFeature[] // TODO: work out how to get the forms to handle the JSONB
+  legends_coinage: string[]
+  temples: string[] // TODO: update to type Place (with kind 'temple')
+  festivals: string[] // TODO: tighter type: {name: string, date: string (mm/dd), place: Place}
   artifact_ids: string[] // For joining to future artifacts table - museum pieces, statues, etc.
   created_at: string
   updated_at: string

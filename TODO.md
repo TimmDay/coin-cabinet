@@ -15,6 +15,9 @@
   - [ ] data collection page for deities, timelines, mints
   - [ ] DB for 'artifacts/museums, ruins, tourist spots - with a field for 'tags' that can be used to join to coins based on 'devices' (also tags)?
 
+- [ ] wrape up the tbles impls. delete all local static data in favour of the dbs
+- [ ] have the appropriate places get joined with the things that need them when req
+
 - logo
 
 - Map component
