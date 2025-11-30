@@ -23,9 +23,9 @@ export function useAddSomnusCoin() {
   return useMutation({
     mutationFn: insertSomnusCoin,
     onSuccess: () => {
-      // Invalidate and refetch all somnus coin queries after successful addition
-      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
-      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
+      // Force immediate refetch of all somnus coin queries
+      void queryClient.refetchQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.refetchQueries({ queryKey: ["all-somnus-coins"] })
     },
     onError: (error) => {
       console.error("Error inserting somnus coin:", error)
@@ -39,9 +39,12 @@ export function useUpdateSomnusCoin() {
   return useMutation({
     mutationFn: updateSomnusCoin,
     onSuccess: () => {
-      // Invalidate and refetch all somnus coin queries after successful update
-      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
-      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
+      // Force immediate refetch of somnus coin queries
+      void queryClient.refetchQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.refetchQueries({ queryKey: ["all-somnus-coins"] })
+
+      // Invalidate related coin queries
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
     },
     onError: (error) => {
       console.error("Error updating somnus coin:", error)

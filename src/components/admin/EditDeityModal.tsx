@@ -1,6 +1,7 @@
 "use client"
 
 import { useForm } from "react-hook-form"
+import { FormActions, FormErrorDisplay, ModalWrapper, processArray } from "~/components/admin/shared"
 import type { Deity } from "~/database/schema-deities"
 
 type FormData = {
@@ -25,6 +26,21 @@ type EditDeityModalProps = {
   isSaving?: boolean
 }
 
+// Helper function to transform deity data for form
+const createDeityFormData = (deity: Deity | null): FormData => ({
+  name: deity?.name ?? "",
+  subtitle: deity?.subtitle ?? "",
+  flavour_text: deity?.flavour_text ?? "",
+  secondary_info: deity?.secondary_info ?? "",
+  alt_names_raw: deity?.alt_names?.join(", ") ?? "",
+  similar_gods_raw: deity?.similar_gods?.join(", ") ?? "",
+  god_of_raw: deity?.god_of?.join(", ") ?? "",
+  legends_coinage_raw: deity?.legends_coinage?.join(", ") ?? "",
+  historical_sources_raw: deity?.historical_sources?.join(", ") ?? "",
+  temples_raw: deity?.temples?.join(", ") ?? "",
+  festivals_raw: deity?.festivals?.join(", ") ?? "",
+})
+
 export function EditDeityModal({
   isOpen,
   onClose,
@@ -32,35 +48,6 @@ export function EditDeityModal({
   onSave,
   isSaving = false,
 }: EditDeityModalProps) {
-  // Create form data from deity props
-  const defaultValues: FormData = deity
-    ? {
-        name: deity.name,
-        subtitle: deity.subtitle ?? "",
-        flavour_text: deity.flavour_text ?? "",
-        secondary_info: deity.secondary_info ?? "",
-        alt_names_raw: deity.alt_names?.join(", ") ?? "",
-        similar_gods_raw: deity.similar_gods?.join(", ") ?? "",
-        god_of_raw: deity.god_of?.join(", ") ?? "",
-        legends_coinage_raw: deity.legends_coinage?.join(", ") ?? "",
-        historical_sources_raw: deity.historical_sources?.join(", ") ?? "",
-        temples_raw: deity.temples?.join(", ") ?? "",
-        festivals_raw: deity.festivals?.join(", ") ?? "",
-      }
-    : {
-        name: "",
-        subtitle: "",
-        flavour_text: "",
-        secondary_info: "",
-        alt_names_raw: "",
-        similar_gods_raw: "",
-        god_of_raw: "",
-        legends_coinage_raw: "",
-        historical_sources_raw: "",
-        temples_raw: "",
-        festivals_raw: "",
-      }
-
   const {
     register,
     handleSubmit,
@@ -68,23 +55,12 @@ export function EditDeityModal({
     setError,
     clearErrors,
   } = useForm<FormData>({
-    // Automatically reset form when defaultValues change
-    values: defaultValues,
+    values: createDeityFormData(deity),
   })
-
-  const processArrayString = (arrayString: string): string[] => {
-    if (!arrayString.trim()) return []
-
-    return arrayString
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean)
-  }
 
   const onSubmit = async (data: FormData) => {
     if (!deity) return
 
-    // Clear any previous error messages
     clearErrors()
 
     const updates = {
@@ -92,16 +68,15 @@ export function EditDeityModal({
       subtitle: data.subtitle.trim() || undefined,
       flavour_text: data.flavour_text.trim() || null,
       secondary_info: data.secondary_info.trim() || null,
-      alt_names: processArrayString(data.alt_names_raw),
-      similar_gods: processArrayString(data.similar_gods_raw),
-      god_of: processArrayString(data.god_of_raw),
-      legends_coinage: processArrayString(data.legends_coinage_raw),
-      historical_sources: processArrayString(data.historical_sources_raw),
-      temples: processArrayString(data.temples_raw),
-      festivals: processArrayString(data.festivals_raw),
+      alt_names: processArray(data.alt_names_raw),
+      similar_gods: processArray(data.similar_gods_raw),
+      god_of: processArray(data.god_of_raw),
+      legends_coinage: processArray(data.legends_coinage_raw),
+      historical_sources: processArray(data.historical_sources_raw),
+      temples: processArray(data.temples_raw),
+      festivals: processArray(data.festivals_raw),
     }
 
-    // Validate required fields
     if (!updates.name) {
       setError("name", { message: "Name is required" })
       return
@@ -128,9 +103,7 @@ export function EditDeityModal({
 
   const handleClose = () => {
     if (isDirty) {
-      if (
-        confirm("You have unsaved changes. Are you sure you want to close?")
-      ) {
+      if (confirm("You have unsaved changes. Are you sure you want to close?")) {
         onClose()
       }
     } else {
@@ -138,237 +111,198 @@ export function EditDeityModal({
     }
   }
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    // Only close if clicking on the backdrop itself, not on child elements
-    if (e.target === e.currentTarget) {
-      handleClose()
-    }
-  }
-
-  if (!isOpen || !deity) return null
+  if (!deity) return null
 
   return (
-    <div
-      className="z-modal bg-opacity-50 fixed inset-0 flex items-center justify-center bg-black p-4"
-      onClick={handleBackdropClick}
+    <ModalWrapper
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={`Edit Deity: ${deity.name}`}
     >
-      <div className="somnus-card max-h-[90vh] w-full max-w-2xl overflow-y-auto">
-        <div className="sticky top-0 border-b border-gray-200 bg-slate-800 p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-white">
-              Edit Deity: {deity.name}
-            </h2>
-            <button
-              onClick={handleClose}
-              className="text-gray-400 hover:text-white"
-              aria-label="Close modal"
-            >
-              ✕
-            </button>
-          </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <FormErrorDisplay errors={errors} />
+
+        {/* Name */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Name *
+          </label>
+          <input
+            type="text"
+            {...register("name", { required: "Name is required" })}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="Jupiter, Mars, Victoria..."
+          />
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+          )}
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-6">
-          {errors.root && (
-            <div className="rounded-md bg-red-50 p-4">
-              <p className="text-sm text-red-800">{errors.root.message}</p>
-            </div>
+        {/* Subtitle */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Subtitle
+          </label>
+          <input
+            type="text"
+            {...register("subtitle")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="King of the Gods, God of War..."
+          />
+        </div>
+
+        {/* God Of */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            God Of (Domains) *
+          </label>
+          <input
+            type="text"
+            {...register("god_of_raw", {
+              required: "At least one domain is required",
+            })}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="sky, thunder, justice, state..."
+          />
+          {errors.god_of_raw && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.god_of_raw.message}
+            </p>
           )}
+          <p className="mt-1 text-xs text-gray-500">
+            Separate multiple domains with commas
+          </p>
+        </div>
 
-          {/* Name */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Name *
-            </label>
-            <input
-              type="text"
-              {...register("name", { required: "Name is required" })}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              placeholder="Jupiter, Mars, Victoria..."
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-            )}
-          </div>
+        {/* Alternative Names */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Alternative Names
+          </label>
+          <input
+            type="text"
+            {...register("alt_names_raw")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="Jove, Optimus Maximus..."
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Separate multiple names with commas
+          </p>
+        </div>
 
-          {/* Subtitle */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Subtitle
-            </label>
-            <input
-              type="text"
-              {...register("subtitle")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              placeholder="King of the Gods, God of War..."
-            />
-          </div>
+        {/* Similar Gods */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Similar Gods (Other Cultures)
+          </label>
+          <input
+            type="text"
+            {...register("similar_gods_raw")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="Zeus, Ammon..."
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Separate multiple gods with commas
+          </p>
+        </div>
 
-          {/* God Of */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              God Of (Domains) *
-            </label>
-            <input
-              type="text"
-              {...register("god_of_raw", {
-                required: "At least one domain is required",
-              })}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              placeholder="sky, thunder, justice, state..."
-            />
-            {errors.god_of_raw && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.god_of_raw.message}
-              </p>
-            )}
-            <p className="mt-1 text-xs text-gray-500">
-              Separate multiple domains with commas
-            </p>
-          </div>
+        {/* Legends on Coinage */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Legends on Coinage
+          </label>
+          <input
+            type="text"
+            {...register("legends_coinage_raw")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="IOM, IOVI OPTIMO MAXIMO, CONSERVATORI..."
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Separate multiple legends with commas
+          </p>
+        </div>
 
-          {/* Alternative Names */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Alternative Names
-            </label>
-            <input
-              type="text"
-              {...register("alt_names_raw")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              placeholder="Jove, Optimus Maximus..."
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Separate multiple names with commas
-            </p>
-          </div>
+        {/* Historical Sources */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Historical Sources
+          </label>
+          <input
+            type="text"
+            {...register("historical_sources_raw")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="Ovid Metamorphoses 1.163, Pliny Natural History 2.7..."
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Separate multiple sources with commas
+          </p>
+        </div>
 
-          {/* Similar Gods */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Similar Gods (Other Cultures)
-            </label>
-            <input
-              type="text"
-              {...register("similar_gods_raw")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              placeholder="Zeus, Ammon..."
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Separate multiple gods with commas
-            </p>
-          </div>
+        {/* Flavour Text */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Description
+          </label>
+          <textarea
+            {...register("flavour_text")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            rows={4}
+            placeholder="Rich description of the deity's role and significance..."
+          />
+        </div>
 
-          {/* Legends on Coinage */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Legends on Coinage
-            </label>
-            <input
-              type="text"
-              {...register("legends_coinage_raw")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              placeholder="IOM, IOVI OPTIMO MAXIMO, CONSERVATORI..."
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Separate multiple legends with commas
-            </p>
-          </div>
+        {/* Secondary Information */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Secondary Information
+          </label>
+          <textarea
+            {...register("secondary_info")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            rows={3}
+            placeholder="Additional descriptive information, iconography, or coin-specific details..."
+          />
+        </div>
 
-          {/* Historical Sources */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Historical Sources
-            </label>
-            <input
-              type="text"
-              {...register("historical_sources_raw")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              placeholder="Ovid Metamorphoses 1.163, Pliny Natural History 2.7..."
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Separate multiple sources with commas
-            </p>
-          </div>
+        {/* Temples */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Associated Temples
+          </label>
+          <input
+            type="text"
+            {...register("temples_raw")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="temple_001, temple_042 (IDs for future places table)..."
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Separate multiple temple IDs with commas
+          </p>
+        </div>
 
-          {/* Flavour Text */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Description
-            </label>
-            <textarea
-              {...register("flavour_text")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              rows={4}
-              placeholder="Rich description of the deity's role and significance..."
-            />
-          </div>
+        {/* Festivals */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Associated Festivals
+          </label>
+          <input
+            type="text"
+            {...register("festivals_raw")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="Ides of Mars, Ludi Romani, Saturnalia..."
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Separate multiple festivals with commas
+          </p>
+        </div>
 
-          {/* Secondary Information */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Secondary Information
-            </label>
-            <textarea
-              {...register("secondary_info")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              rows={3}
-              placeholder="Additional descriptive information, iconography, or coin-specific details..."
-            />
-          </div>
-
-          {/* Temples */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Associated Temples
-            </label>
-            <input
-              type="text"
-              {...register("temples_raw")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              placeholder="temple_001, temple_042 (IDs for future places table)..."
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Separate multiple temple IDs with commas
-            </p>
-          </div>
-
-          {/* Festivals */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Associated Festivals
-            </label>
-            <input
-              type="text"
-              {...register("festivals_raw")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              placeholder="Ides of Mars, Ludi Romani, Saturnalia..."
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Separate multiple festivals with commas
-            </p>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-4">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="rounded-md bg-gray-500 px-4 py-2 text-white hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:outline-none"
-              disabled={isSaving}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={!isDirty || isSaving}
-              className="rounded-md bg-amber-500 px-6 py-2 text-white hover:bg-amber-600 focus:ring-2 focus:ring-amber-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {isSaving ? "Saving..." : "Save Changes"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <FormActions
+          onCancel={handleClose}
+          isDirty={isDirty}
+          isSaving={isSaving}
+          saveLabel="Save Changes"
+        />
+      </form>
+    </ModalWrapper>
   )
 }

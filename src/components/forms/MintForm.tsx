@@ -47,6 +47,12 @@ export function MintForm({
 }: MintFormProps) {
   const [mounted, setMounted] = useState(false)
 
+  const inputClass =
+    "w-full px-3 py-2 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none transition-colors"
+  const textareaClass = `${inputClass} min-h-[100px] resize-y`
+  const labelClass = "block text-sm font-medium text-slate-300 mb-1"
+  const errorClass = "text-red-400 text-sm mt-1"
+
   const form = useForm<MintFormInputData>({
     resolver: zodResolver(mintFormInputSchema),
     defaultValues: {
@@ -81,144 +87,147 @@ export function MintForm({
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      {/* Basic Information */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Basic Information</h3>
+    <div className="relative">
+      {/* Main centered form */}
+      <div className="somnus-card mx-auto w-full max-w-4xl p-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          {/* Basic Information Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-200">Basic Information</h3>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Mint Name *
-          </label>
-          <input
-            type="text"
-            placeholder="e.g., Rome, Alexandria, Antioch"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            {...form.register("name")}
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Primary name of the mint location
-          </p>
-          {form.formState.errors.name && (
-            <p className="mt-1 text-sm text-red-600">
-              {form.formState.errors.name.message}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Alternative Names
-          </label>
-          <input
-            type="text"
-            placeholder="Roma, Ῥώμη (comma separated)"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            {...form.register("alt_names")}
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Ancient names, transliterations, or alternative spellings
-          </p>
-          {form.formState.errors.alt_names && (
-            <p className="mt-1 text-sm text-red-600">
-              {form.formState.errors.alt_names.message}
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Location */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Location</h3>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Latitude *
-            </label>
-            <input
-              type="number"
-              step="any"
-              placeholder="41.9028"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              {...form.register("lat", { valueAsNumber: true })}
-            />
-            <p className="mt-1 text-sm text-gray-500">
-              Decimal degrees (-90 to 90)
-            </p>
-            {form.formState.errors.lat && (
-              <p className="mt-1 text-sm text-red-600">
-                {form.formState.errors.lat.message}
+            <div>
+              <label className={labelClass}>
+                Mint Name *
+              </label>
+              <input
+                type="text"
+                placeholder="e.g., Rome, Alexandria, Antioch"
+                className={inputClass}
+                {...form.register("name")}
+              />
+              <p className="mt-1 text-sm text-slate-400">
+                Primary name of the mint location
               </p>
-            )}
+              {form.formState.errors.name && (
+                <p className={errorClass}>
+                  {form.formState.errors.name.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className={labelClass}>
+                Alternative Names
+              </label>
+              <input
+                type="text"
+                placeholder="Roma, Ῥώμη (comma separated)"
+                className={inputClass}
+                {...form.register("alt_names")}
+              />
+              <p className="mt-1 text-sm text-slate-400">
+                Ancient names, transliterations, or alternative spellings
+              </p>
+              {form.formState.errors.alt_names && (
+                <p className={errorClass}>
+                  {form.formState.errors.alt_names.message}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Longitude *
-            </label>
-            <input
-              type="number"
-              step="any"
-              placeholder="12.4964"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-              {...form.register("lng", { valueAsNumber: true })}
-            />
-            <p className="mt-1 text-sm text-gray-500">
-              Decimal degrees (-180 to 180)
-            </p>
-            {form.formState.errors.lng && (
-              <p className="mt-1 text-sm text-red-600">
-                {form.formState.errors.lng.message}
-              </p>
-            )}
+          {/* Location */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-200">Location</h3>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className={labelClass}>
+                  Latitude *
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  placeholder="41.9028"
+                  className={inputClass}
+                  {...form.register("lat", { valueAsNumber: true })}
+                />
+                <p className="mt-1 text-sm text-slate-400">
+                  Decimal degrees (-90 to 90)
+                </p>
+                {form.formState.errors.lat && (
+                  <p className={errorClass}>
+                    {form.formState.errors.lat.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className={labelClass}>
+                  Longitude *
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  placeholder="12.4964"
+                  className={inputClass}
+                  {...form.register("lng", { valueAsNumber: true })}
+                />
+                <p className="mt-1 text-sm text-slate-400">
+                  Decimal degrees (-180 to 180)
+                </p>
+                {form.formState.errors.lng && (
+                  <p className={errorClass}>
+                    {form.formState.errors.lng.message}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Mint Details */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Mint Details</h3>
+          {/* Mint Details */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-200">Mint Details</h3>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Mint Marks
-          </label>
-          <input
-            type="text"
-            placeholder="ROMA, R, ROM (comma separated)"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            {...form.register("mint_marks")}
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Common abbreviations and symbols used on coins
-          </p>
-          {form.formState.errors.mint_marks && (
-            <p className="mt-1 text-sm text-red-600">
-              {form.formState.errors.mint_marks.message}
-            </p>
-          )}
-        </div>
+            <div>
+              <label className={labelClass}>
+                Mint Marks
+              </label>
+              <input
+                type="text"
+                placeholder="ROMA, R, ROM (comma separated)"
+                className={inputClass}
+                {...form.register("mint_marks")}
+              />
+              <p className="mt-1 text-sm text-slate-400">
+                Common abbreviations and symbols used on coins
+              </p>
+              {form.formState.errors.mint_marks && (
+                <p className={errorClass}>
+                  {form.formState.errors.mint_marks.message}
+                </p>
+              )}
+            </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Opened By
-          </label>
-          <input
-            type="text"
-            placeholder="Augustus, Roman Republic, etc."
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            {...form.register("opened_by")}
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Emperor or authority who established the mint
-          </p>
-          {form.formState.errors.opened_by && (
-            <p className="mt-1 text-sm text-red-600">
-              {form.formState.errors.opened_by.message}
-            </p>
-          )}
-        </div>
+            <div>
+              <label className={labelClass}>
+                Opened By
+              </label>
+              <input
+                type="text"
+                placeholder="Augustus, Roman Republic, etc."
+                className={inputClass}
+                {...form.register("opened_by")}
+              />
+              <p className="mt-1 text-sm text-slate-400">
+                Emperor or authority who established the mint
+              </p>
+              {form.formState.errors.opened_by && (
+                <p className={errorClass}>
+                  {form.formState.errors.opened_by.message}
+                </p>
+              )}
+            </div>
 
         <div>
           <label className="mb-2 block text-sm font-medium text-slate-300">
@@ -228,88 +237,90 @@ export function MintForm({
             type="text"
             placeholder="bronze, silver, gold (comma separated)"
             className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            {...form.register("coinage_materials")}
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Metals and materials used for coin production
-          </p>
-          {form.formState.errors.coinage_materials && (
-            <p className="mt-1 text-sm text-red-600">
-              {form.formState.errors.coinage_materials.message}
-            </p>
-          )}
-        </div>
+                {...form.register("coinage_materials")}
+              />
+              <p className="mt-1 text-sm text-slate-400">
+                Metals and materials used for coin production
+              </p>
+              {form.formState.errors.coinage_materials && (
+                <p className={errorClass}>
+                  {form.formState.errors.coinage_materials.message}
+                </p>
+              )}
+            </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Historical Sources
-          </label>
-          <input
-            type="text"
-            placeholder="Pliny, Tacitus, Archaeological evidence (comma separated)"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            {...form.register("historical_sources")}
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Primary sources documenting this mint
-          </p>
-          {form.formState.errors.historical_sources && (
-            <p className="mt-1 text-sm text-red-600">
-              {form.formState.errors.historical_sources.message}
-            </p>
-          )}
-        </div>
+            <div>
+              <label className={labelClass}>
+                Historical Sources
+              </label>
+              <input
+                type="text"
+                placeholder="Pliny, Tacitus, Archaeological evidence (comma separated)"
+                className={inputClass}
+                {...form.register("historical_sources")}
+              />
+              <p className="mt-1 text-sm text-slate-400">
+                Primary sources documenting this mint
+              </p>
+              {form.formState.errors.historical_sources && (
+                <p className={errorClass}>
+                  {form.formState.errors.historical_sources.message}
+                </p>
+              )}
+            </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Operation Periods
-          </label>
-          <input
-            type="text"
-            placeholder="[[-260, 476, 'Republic'], [294, 423, 'Diocletian']]"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-amber-500 focus:outline-none"
-            {...form.register("operation_periods")}
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            JSON array of operation periods: [[startYear, endYear,
-            &quot;ruler/period&quot;], ...]
-          </p>
-          {form.formState.errors.operation_periods && (
-            <p className="mt-1 text-sm text-red-600">
-              {form.formState.errors.operation_periods.message}
-            </p>
-          )}
-        </div>
+            <div>
+              <label className={labelClass}>
+                Operation Periods
+              </label>
+              <input
+                type="text"
+                placeholder="[[-260, 476, 'Republic'], [294, 423, 'Diocletian']]"
+                className={inputClass}
+                {...form.register("operation_periods")}
+              />
+              <p className="mt-1 text-sm text-slate-400">
+                JSON array of operation periods: [[startYear, endYear,
+                &quot;ruler/period&quot;], ...]
+              </p>
+              {form.formState.errors.operation_periods && (
+                <p className={errorClass}>
+                  {form.formState.errors.operation_periods.message}
+                </p>
+              )}
+            </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Description
-          </label>
-          <textarea
-            placeholder="Historical context, significance, and interesting details about this mint..."
-            className="min-h-[100px] w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-amber-500 focus:outline-none"
-            {...form.register("flavour_text")}
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Rich historical context and significance
-          </p>
-          {form.formState.errors.flavour_text && (
-            <p className="mt-1 text-sm text-red-600">
-              {form.formState.errors.flavour_text.message}
-            </p>
+            <div>
+              <label className={labelClass}>
+                Description
+              </label>
+              <textarea
+                placeholder="Historical context, significance, and interesting details about this mint..."
+                className={textareaClass}
+                {...form.register("flavour_text")}
+              />
+              <p className="mt-1 text-sm text-slate-400">
+                Rich historical context and significance
+              </p>
+              {form.formState.errors.flavour_text && (
+                <p className={errorClass}>
+                  {form.formState.errors.flavour_text.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {showSubmitButton && (
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full rounded-md bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isLoading ? "Saving..." : submitLabel}
+            </button>
           )}
-        </div>
+        </form>
       </div>
-
-      {showSubmitButton && (
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full rounded-md bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isLoading ? "Saving..." : submitLabel}
-        </button>
-      )}
-    </form>
+    </div>
   )
 }

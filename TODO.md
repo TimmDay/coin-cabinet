@@ -287,7 +287,7 @@ articles, guides
 - my notes on spotting fakes
 - my notes on cleaning Roman bronze - beginner
 
-## AI STUCK list.
+## AI STUCK list
 
 - icon alignment. chevrons don't look centered in their circles.
 - on add-coin page, make it so the image naming tool position stickies with the top of the form, so it stickies to the top of viewport only if the scroll goes passed that point.

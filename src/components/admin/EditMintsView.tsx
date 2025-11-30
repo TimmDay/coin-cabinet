@@ -2,25 +2,18 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { useMints } from "~/api/mints"
+import { useMints, useUpdateMint } from "~/api/mints"
 import type { Mint } from "~/database/schema-mints"
 import { EditMintModal } from "./EditMintModal"
 
 export function EditMintsView() {
-  const [items, setItems] = useState<Mint[]>([])
   const [message, setMessage] = useState<string | null>(null)
   const [nameFilter, setNameFilter] = useState("")
-  const [selectedMint, setSelectedMint] = useState<Mint | null>(null)
+  const [selectedMintId, setSelectedMintId] = useState<number | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const { data: mintsData, isLoading: loading, error } = useMints()
-
-  // Transform data when it loads
-  useEffect(() => {
-    if (mintsData) {
-      setItems(mintsData)
-    }
-  }, [mintsData])
+  const updateMintMutation = useUpdateMint()
 
   // Handle errors
   useEffect(() => {
@@ -29,15 +22,17 @@ export function EditMintsView() {
     }
   }, [error])
 
+  const items = mintsData ?? []
+
   // Handle modal interactions
   const handleMintSelect = (mint: Mint) => {
-    setSelectedMint(mint)
+    setSelectedMintId(mint.id)
     setIsModalOpen(true)
   }
 
   const handleModalClose = () => {
     setIsModalOpen(false)
-    setSelectedMint(null)
+    setSelectedMintId(null)
   }
 
   const handleSuccess = (successMessage: string) => {
@@ -182,14 +177,22 @@ export function EditMintsView() {
       )}
 
       {/* Edit Mint Modal */}
-      {selectedMint && (
-        <EditMintModal
-          isOpen={isModalOpen}
-          onClose={handleModalClose}
-          mint={selectedMint}
-          onSuccess={handleSuccess}
-        />
-      )}
+      {(() => {
+        const selectedMint = selectedMintId
+          ? (items.find((item) => item.id === selectedMintId) ?? null)
+          : null
+
+        return selectedMint ? (
+          <EditMintModal
+            key={`mint-${selectedMint.id}-${selectedMint.updated_at}`}
+            isOpen={isModalOpen}
+            onClose={handleModalClose}
+            mint={selectedMint}
+            onSuccess={handleSuccess}
+            isSaving={updateMintMutation.isPending}
+          />
+        ) : null
+      })()}
     </div>
   )
 }

@@ -111,8 +111,8 @@ export function useAddMint() {
   return useMutation({
     mutationFn: addMint,
     onSuccess: () => {
-      // Invalidate and refetch mints list
-      void queryClient.invalidateQueries({ queryKey: ["mints"] })
+      // Force immediate refetch of mints list
+      void queryClient.refetchQueries({ queryKey: ["mints"] })
     },
   })
 }
@@ -129,8 +129,13 @@ export function useUpdateMint() {
       updates: Partial<MintFormData>
     }) => updateMint(id, updates),
     onSuccess: () => {
-      // Invalidate and refetch mints list
-      void queryClient.invalidateQueries({ queryKey: ["mints"] })
+      // Force immediate refetch of mints list
+      void queryClient.refetchQueries({ queryKey: ["mints"] })
+
+      // Invalidate coin queries that might include mint data
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
     },
   })
 }

@@ -1,129 +1,320 @@
 "use client"
 
-import React, { useState } from "react"
+import { useForm } from "react-hook-form"
 import { useUpdateMint } from "~/api/mints"
-import { MintForm } from "~/components/forms/MintForm"
 import type { Mint } from "~/database/schema-mints"
-import type { MintFormInputData } from "~/lib/validations/mint-form"
-import { mintFormSchema } from "~/lib/validations/mint-form"
+import { FormActions } from "./shared/FormActions"
+import { FormErrorDisplay } from "./shared/FormErrorDisplay"
+import { ModalWrapper } from "./shared/ModalWrapper"
+
+import { handleUnsavedChanges, parseJSONSafe } from "./shared/formUtils"
+
+type FormData = {
+  name: string
+  alt_names_raw: string
+  lat: number
+  lng: number
+  mint_marks_raw: string
+  flavour_text: string
+  historical_sources_raw: string
+  opened_by: string
+  coinage_materials_raw: string
+  operation_periods_raw: string
+}
 
 type EditMintModalProps = {
-  mint: Mint
+  mint: Mint | null
   isOpen: boolean
   onClose: () => void
   onSuccess?: (message: string) => void
+  isSaving?: boolean
 }
+
+// Helper function to transform mint data for form
+const createFormData = (mint: Mint | null): FormData => ({
+  name: mint?.name ?? "",
+  alt_names_raw: mint?.alt_names?.join(", ") ?? "",
+  lat: mint?.lat ?? 0,
+  lng: mint?.lng ?? 0,
+  mint_marks_raw: mint?.mint_marks?.join(", ") ?? "",
+  flavour_text: mint?.flavour_text ?? "",
+  historical_sources_raw: mint?.historical_sources?.join(", ") ?? "",
+  opened_by: mint?.opened_by ?? "",
+  coinage_materials_raw: mint?.coinage_materials?.join(", ") ?? "",
+  operation_periods_raw: mint?.operation_periods
+    ? JSON.stringify(mint.operation_periods)
+    : "",
+})
 
 export function EditMintModal({
   mint,
   isOpen,
   onClose,
   onSuccess,
+  isSaving = false,
 }: EditMintModalProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty, errors },
+    setError,
+    clearErrors,
+  } = useForm<FormData>({
+    values: createFormData(mint),
+  })
+
   const updateMintMutation = useUpdateMint()
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const handleSubmit = async (formData: MintFormInputData) => {
+  // Helper function for processing arrays
+  const processArray = (str: string) =>
+    str.trim()
+      ? str
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : []
+
+  const onSubmit = async (data: FormData) => {
+    if (!mint) return
+
+    clearErrors()
+
+    const updates = {
+      name: data.name.trim(),
+      alt_names: processArray(data.alt_names_raw),
+      lat: data.lat,
+      lng: data.lng,
+      mint_marks: processArray(data.mint_marks_raw),
+      flavour_text: data.flavour_text.trim() || undefined,
+      historical_sources: processArray(data.historical_sources_raw),
+      opened_by: data.opened_by.trim() || undefined,
+      coinage_materials: processArray(data.coinage_materials_raw),
+      operation_periods: parseJSONSafe<Array<[number, number, string]>>(
+        data.operation_periods_raw,
+      ),
+    }
+
+    // Validate required fields
+    if (!updates.name) {
+      setError("name", { message: "Name is required" })
+      return
+    }
+
+    if (updates.lat < -90 || updates.lat > 90) {
+      setError("lat", { message: "Latitude must be between -90 and 90" })
+      return
+    }
+
+    if (updates.lng < -180 || updates.lng > 180) {
+      setError("lng", { message: "Longitude must be between -180 and 180" })
+      return
+    }
+
     try {
-      setErrorMessage(null)
-      // Validate and transform the form data
-      const processedData = mintFormSchema.parse(formData)
-
       await updateMintMutation.mutateAsync({
         id: mint.id,
-        updates: processedData,
+        updates,
       })
-
       onSuccess?.("✅ Mint updated successfully")
       onClose()
     } catch (error) {
-      console.error("Failed to update mint:", error)
-      const message =
-        error instanceof Error ? error.message : "Failed to update mint"
-      setErrorMessage(message)
+      console.error("Failed to save mint:", error)
+      setError("root", {
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to save changes. Please try again.",
+      })
     }
   }
 
-  const isLoading = updateMintMutation.isPending
+  const handleClose = () => handleUnsavedChanges(isDirty, onClose)
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    // Only close if clicking on the backdrop itself, not on child elements
-    if (e.target === e.currentTarget) {
-      onClose()
-    }
-  }
-
-  if (!isOpen) return null
+  if (!isOpen || !mint) return null
 
   return (
-    <div
-      className="z-modal bg-opacity-50 fixed inset-0 flex items-center justify-center bg-black p-4"
-      onClick={handleBackdropClick}
+    <ModalWrapper
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={`Edit Mint: ${mint?.name || "Unknown"}`}
     >
-      <div className="somnus-card max-h-[90vh] w-full max-w-2xl overflow-y-auto">
-        <div className="sticky top-0 border-b border-gray-200 bg-slate-800 p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-white">
-              Edit Mint: {mint.name}
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-white"
-              aria-label="Close modal"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-6">
+        <FormErrorDisplay errors={errors} />
 
-        <div className="p-6">
-          {errorMessage && (
-            <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-red-700">
-              {errorMessage}
-            </div>
+        {/* Name */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Mint Name *
+          </label>
+          <input
+            type="text"
+            {...register("name", { required: "Name is required" })}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="Rome, Alexandria, Antioch..."
+          />
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
           )}
+        </div>
 
-          <div className="space-y-6">
-            <MintForm
-              mint={mint}
-              onSubmit={handleSubmit}
-              isLoading={isLoading}
-              submitLabel="Save Changes"
-              showSubmitButton={false}
+        {/* Alt Names */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Alternative Names
+          </label>
+          <input
+            type="text"
+            {...register("alt_names_raw")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="Roma, Ῥώμη (comma separated)"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Separate multiple names with commas
+          </p>
+        </div>
+
+        {/* Location */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Latitude *
+            </label>
+            <input
+              type="number"
+              step="any"
+              {...register("lat", {
+                valueAsNumber: true,
+                required: "Latitude is required",
+                min: { value: -90, message: "Latitude must be >= -90" },
+                max: { value: 90, message: "Latitude must be <= 90" },
+              })}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              placeholder="41.9028"
             />
+            {errors.lat && (
+              <p className="mt-1 text-sm text-red-600">{errors.lat.message}</p>
+            )}
+          </div>
 
-            {/* Action Buttons matching deity modal */}
-            <div className="flex justify-end gap-3 pt-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded-md bg-gray-500 px-4 py-2 text-white hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:outline-none"
-                disabled={isLoading}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  // Trigger form submission - we'll need to update MintForm to expose this
-                  const form = document.querySelector("form")!
-                  if (form) {
-                    const event = new Event("submit", {
-                      bubbles: true,
-                      cancelable: true,
-                    })
-                    form.dispatchEvent(event)
-                  }
-                }}
-                disabled={isLoading}
-                className="rounded-md bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 focus:ring-2 focus:ring-amber-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-400"
-              >
-                {isLoading ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Longitude *
+            </label>
+            <input
+              type="number"
+              step="any"
+              {...register("lng", {
+                valueAsNumber: true,
+                required: "Longitude is required",
+                min: { value: -180, message: "Longitude must be >= -180" },
+                max: { value: 180, message: "Longitude must be <= 180" },
+              })}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              placeholder="12.4964"
+            />
+            {errors.lng && (
+              <p className="mt-1 text-sm text-red-600">{errors.lng.message}</p>
+            )}
           </div>
         </div>
-      </div>
-    </div>
+
+        {/* Mint Marks */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Mint Marks
+          </label>
+          <input
+            type="text"
+            {...register("mint_marks_raw")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="ROMA, R, ROM (comma separated)"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Separate multiple marks with commas
+          </p>
+        </div>
+
+        {/* Opened By */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Opened By
+          </label>
+          <input
+            type="text"
+            {...register("opened_by")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="Augustus, Roman Republic, etc."
+          />
+        </div>
+
+        {/* Coinage Materials */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Coinage Materials
+          </label>
+          <input
+            type="text"
+            {...register("coinage_materials_raw")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="bronze, silver, gold (comma separated)"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Separate multiple materials with commas
+          </p>
+        </div>
+
+        {/* Historical Sources */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Historical Sources
+          </label>
+          <input
+            type="text"
+            {...register("historical_sources_raw")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder="Pliny, Tacitus, Archaeological evidence (comma separated)"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Separate multiple sources with commas
+          </p>
+        </div>
+
+        {/* Operation Periods */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Operation Periods
+          </label>
+          <input
+            type="text"
+            {...register("operation_periods_raw")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            placeholder='[[-260, 476, "Republic"], [294, 423, "Diocletian"]]'
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            JSON array format: [[startYear, endYear,
+            &ldquo;ruler/period&rdquo;], ...]
+          </p>
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Description
+          </label>
+          <textarea
+            {...register("flavour_text")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            rows={4}
+            placeholder="Historical context, significance, and interesting details..."
+          />
+        </div>
+
+        <FormActions
+          onCancel={handleClose}
+          isDirty={isDirty}
+          isSaving={isSaving}
+        />
+      </form>
+    </ModalWrapper>
   )
 }

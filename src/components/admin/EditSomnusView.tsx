@@ -6,24 +6,13 @@ import type { SomnusCollection } from "~/database/schema-somnus-collection"
 import { EditCoinModal } from "./EditCoinModal"
 
 export function EditSomnusView() {
-  const [items, setItems] = useState<SomnusCollection[]>([])
   const [message, setMessage] = useState<string | null>(null)
-  const [saving, setSaving] = useState<number | null>(null)
   const [nicknameFilter, setNicknameFilter] = useState("")
-  const [selectedCoin, setSelectedCoin] = useState<SomnusCollection | null>(
-    null,
-  )
+  const [selectedCoinId, setSelectedCoinId] = useState<number | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const { data: somnusData, isLoading: loading, error } = useAllSomnusCoins()
   const updateCoinMutation = useUpdateSomnusCoin()
-
-  // Transform data when it loads
-  useEffect(() => {
-    if (somnusData) {
-      setItems(somnusData)
-    }
-  }, [somnusData])
 
   // Handle errors
   useEffect(() => {
@@ -32,48 +21,34 @@ export function EditSomnusView() {
     }
   }, [error])
 
-  // Handle mobile modal interactions
+  const items = somnusData ?? []
+
+  // Handle modal interactions
   const handleCoinSelect = (coin: SomnusCollection) => {
-    setSelectedCoin(coin)
+    setSelectedCoinId(coin.id)
     setIsModalOpen(true)
   }
 
   const handleModalClose = () => {
     setIsModalOpen(false)
-    setSelectedCoin(null)
+    setSelectedCoinId(null)
   }
 
   const handleModalSave = async (
     id: number,
     updates: Partial<SomnusCollection>,
   ) => {
-    setSaving(id)
-
     try {
       await updateCoinMutation.mutateAsync({
         id: id,
         data: updates,
       })
-
-      // Update the local items state
-      setItems((prev) =>
-        prev.map((item) =>
-          item.id === id
-            ? {
-                ...item,
-                ...updates,
-              }
-            : item,
-        ),
-      )
       setMessage("✅ Item updated successfully")
       setTimeout(() => setMessage(null), 3000)
     } catch (error) {
       console.error("Error saving:", error)
       setMessage("❌ Failed to save changes")
       throw error // Re-throw so modal can handle it
-    } finally {
-      setSaving(null)
     }
   }
 
@@ -195,13 +170,26 @@ export function EditSomnusView() {
       )}
 
       {/* Edit Coin Modal */}
-      <EditCoinModal
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        coin={selectedCoin}
-        onSave={handleModalSave}
-        isSaving={saving === selectedCoin?.id}
-      />
+      {(() => {
+        const selectedCoin = selectedCoinId
+          ? (items.find((item) => item.id === selectedCoinId) ?? null)
+          : null
+
+        return (
+          <EditCoinModal
+            key={
+              selectedCoin
+                ? `somnus-coin-${selectedCoin.id}-${selectedCoin.created_at}`
+                : "no-coin"
+            }
+            isOpen={isModalOpen}
+            onClose={handleModalClose}
+            coin={selectedCoin}
+            onSave={handleModalSave}
+            isSaving={updateCoinMutation.isPending}
+          />
+        )
+      })()}
     </div>
   )
 }
