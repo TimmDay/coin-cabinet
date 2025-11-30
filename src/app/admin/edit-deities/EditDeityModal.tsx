@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import {
   FormActions,
@@ -7,7 +8,10 @@ import {
   ModalWrapper,
   processArray,
 } from "~/components/forms"
-import type { Deity } from "~/database/schema-deities"
+import { FestivalsEditor } from "~/components/forms/FestivalsEditor"
+import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
+import { usePlaceOptions } from "~/hooks/usePlaceOptions"
+import type { Deity, Festival } from "~/database/schema-deities"
 
 type FormData = {
   name: string
@@ -19,7 +23,7 @@ type FormData = {
   god_of_raw: string
   legends_coinage_raw: string
   historical_sources_raw: string
-  temples_raw: string
+  place_ids: string[]
   festivals_raw: string
 }
 
@@ -32,19 +36,56 @@ type EditDeityModalProps = {
 }
 
 // Helper function to transform deity data for form
-const createDeityFormData = (deity: Deity | null): FormData => ({
-  name: deity?.name ?? "",
-  subtitle: deity?.subtitle ?? "",
-  flavour_text: deity?.flavour_text ?? "",
-  secondary_info: deity?.secondary_info ?? "",
-  alt_names_raw: deity?.alt_names?.join(", ") ?? "",
-  similar_gods_raw: deity?.similar_gods?.join(", ") ?? "",
-  god_of_raw: deity?.god_of?.join(", ") ?? "",
-  legends_coinage_raw: deity?.legends_coinage?.join(", ") ?? "",
-  historical_sources_raw: deity?.historical_sources?.join(", ") ?? "",
-  temples_raw: deity?.temples?.join(", ") ?? "",
-  festivals_raw: deity?.festivals?.join(", ") ?? "",
-})
+const createDeityFormData = (deity: Deity | null): FormData => {
+  const formData = {
+    name: deity?.name ?? "",
+    subtitle: deity?.subtitle ?? "",
+    flavour_text: deity?.flavour_text ?? "",
+    secondary_info: deity?.secondary_info ?? "",
+    alt_names_raw: deity?.alt_names?.join(", ") ?? "",
+    similar_gods_raw: deity?.similar_gods?.join(", ") ?? "",
+    god_of_raw: deity?.god_of?.join(", ") ?? "",
+    legends_coinage_raw: deity?.legends_coinage?.join(", ") ?? "",
+    historical_sources_raw: deity?.historical_sources?.join(", ") ?? "",
+    place_ids:
+      deity?.place_ids && Array.isArray(deity.place_ids)
+        ? deity.place_ids.map((id) => id.toString())
+        : [],
+    festivals_raw: (() => {
+      if (!deity?.festivals) return ""
+
+      // If it's an empty array, return empty string
+      if (Array.isArray(deity.festivals) && deity.festivals.length === 0) {
+        return ""
+      }
+
+      // If it's already a string (from database), use as-is
+      if (typeof deity.festivals === "string") {
+        return deity.festivals
+      }
+
+      // Handle array of strings (double-encoded JSON)
+      if (
+        Array.isArray(deity.festivals) &&
+        deity.festivals.every((item) => typeof item === "string")
+      ) {
+        try {
+          const parsed = deity.festivals.map(
+            (jsonString) => JSON.parse(jsonString) as Festival,
+          )
+          return JSON.stringify(parsed)
+        } catch {
+          return JSON.stringify(deity.festivals)
+        }
+      }
+
+      // If it's an object/array, stringify it
+      return JSON.stringify(deity.festivals)
+    })(),
+  }
+
+  return formData
+}
 
 export function EditDeityModal({
   isOpen,
@@ -53,15 +94,27 @@ export function EditDeityModal({
   onSave,
   isSaving = false,
 }: EditDeityModalProps) {
+  const { options: placeOptions } = usePlaceOptions()
   const {
     register,
     handleSubmit,
     formState: { isDirty, errors },
     setError,
     clearErrors,
+    setValue,
+    watch,
+    reset,
   } = useForm<FormData>({
-    values: createDeityFormData(deity),
+    defaultValues: createDeityFormData(null),
   })
+
+  // Reset form when deity changes
+  useEffect(() => {
+    if (deity) {
+      const formData = createDeityFormData(deity)
+      reset(formData)
+    }
+  }, [deity, reset])
 
   const onSubmit = async (data: FormData) => {
     if (!deity) return
@@ -78,8 +131,28 @@ export function EditDeityModal({
       god_of: processArray(data.god_of_raw),
       legends_coinage: processArray(data.legends_coinage_raw),
       historical_sources: processArray(data.historical_sources_raw),
-      temples: processArray(data.temples_raw),
-      festivals: processArray(data.festivals_raw),
+      place_ids: (data.place_ids || []).map((id) => parseInt(id, 10)),
+      festivals: (() => {
+        if (!data.festivals_raw || data.festivals_raw === "") return []
+        try {
+          const parsed = JSON.parse(data.festivals_raw) as unknown
+          if (Array.isArray(parsed)) {
+            return parsed as Array<{
+              name: string
+              date?: string
+              note?: string
+            }>
+          }
+          return []
+        } catch {
+          // Fallback to comma-separated processing for backward compatibility
+          return processArray(data.festivals_raw).map((name) => ({
+            name,
+            date: undefined,
+            note: undefined,
+          }))
+        }
+      })(),
     }
 
     if (!updates.name) {
@@ -126,190 +199,181 @@ export function EditDeityModal({
       onClose={handleClose}
       title={`Edit Deity: ${deity.name}`}
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <FormErrorDisplay errors={errors} />
+      <div className="p-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <FormErrorDisplay errors={errors} />
 
-        {/* Name */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Name *
-          </label>
-          <input
-            type="text"
-            {...register("name", { required: "Name is required" })}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            placeholder="Jupiter, Mars, Victoria..."
-          />
-          {errors.name && (
-            <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-          )}
-        </div>
+          {/* Name */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Name *
+            </label>
+            <input
+              type="text"
+              {...register("name", { required: "Name is required" })}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              placeholder="Jupiter, Mars, Victoria..."
+            />
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+            )}
+          </div>
 
-        {/* Subtitle */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Subtitle
-          </label>
-          <input
-            type="text"
-            {...register("subtitle")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            placeholder="King of the Gods, God of War..."
-          />
-        </div>
+          {/* Subtitle */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Subtitle
+            </label>
+            <input
+              type="text"
+              {...register("subtitle")}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              placeholder="King of the Gods, God of War..."
+            />
+          </div>
 
-        {/* God Of */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            God Of (Domains) *
-          </label>
-          <input
-            type="text"
-            {...register("god_of_raw", {
-              required: "At least one domain is required",
-            })}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            placeholder="sky, thunder, justice, state..."
-          />
-          {errors.god_of_raw && (
-            <p className="mt-1 text-sm text-red-600">
-              {errors.god_of_raw.message}
+          {/* God Of */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              God Of (Domains) *
+            </label>
+            <input
+              type="text"
+              {...register("god_of_raw", {
+                required: "At least one domain is required",
+              })}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              placeholder="sky, thunder, justice, state..."
+            />
+            {errors.god_of_raw && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.god_of_raw.message}
+              </p>
+            )}
+            <p className="mt-1 text-xs text-gray-500">
+              Separate multiple domains with commas
             </p>
-          )}
-          <p className="mt-1 text-xs text-gray-500">
-            Separate multiple domains with commas
-          </p>
-        </div>
+          </div>
 
-        {/* Alternative Names */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Alternative Names
-          </label>
-          <input
-            type="text"
-            {...register("alt_names_raw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            placeholder="Jove, Optimus Maximus..."
+          {/* Alternative Names */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Alternative Names
+            </label>
+            <input
+              type="text"
+              {...register("alt_names_raw")}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              placeholder="Jove, Optimus Maximus..."
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Separate multiple names with commas
+            </p>
+          </div>
+
+          {/* Similar Gods */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Similar Gods (Other Cultures)
+            </label>
+            <input
+              type="text"
+              {...register("similar_gods_raw")}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              placeholder="Zeus, Ammon..."
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Separate multiple gods with commas
+            </p>
+          </div>
+
+          {/* Legends on Coinage */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Legends on Coinage
+            </label>
+            <input
+              type="text"
+              {...register("legends_coinage_raw")}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              placeholder="IOM, IOVI OPTIMO MAXIMO, CONSERVATORI..."
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Separate multiple legends with commas
+            </p>
+          </div>
+
+          {/* Historical Sources */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Historical Sources
+            </label>
+            <input
+              type="text"
+              {...register("historical_sources_raw")}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              placeholder="Ovid Metamorphoses 1.163, Pliny Natural History 2.7..."
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Separate multiple sources with commas
+            </p>
+          </div>
+
+          {/* Flavour Text */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Description
+            </label>
+            <textarea
+              {...register("flavour_text")}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              rows={4}
+              placeholder="Rich description of the deity's role and significance..."
+            />
+          </div>
+
+          {/* Secondary Information */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Secondary Information
+            </label>
+            <textarea
+              {...register("secondary_info")}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              rows={3}
+              placeholder="Additional descriptive information, iconography, or coin-specific details..."
+            />
+          </div>
+
+          {/* Place IDs */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Associated Places
+            </label>
+            <SimpleMultiSelect
+              options={placeOptions}
+              selectedValues={watch("place_ids") || []}
+              onSelectionChange={(values) => setValue("place_ids", values)}
+              placeholder="Select temples, shrines, sacred sites..."
+              className="w-full rounded-md border border-gray-300 bg-white text-slate-900"
+            />
+          </div>
+
+          {/* Festivals */}
+          <FestivalsEditor
+            value={watch("festivals_raw")}
+            onChange={(value) => setValue("festivals_raw", value)}
+            error={errors.festivals_raw?.message}
           />
-          <p className="mt-1 text-xs text-gray-500">
-            Separate multiple names with commas
-          </p>
-        </div>
 
-        {/* Similar Gods */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Similar Gods (Other Cultures)
-          </label>
-          <input
-            type="text"
-            {...register("similar_gods_raw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            placeholder="Zeus, Ammon..."
+          <FormActions
+            onCancel={handleClose}
+            isDirty={isDirty}
+            isSaving={isSaving}
+            saveLabel="Save Changes"
           />
-          <p className="mt-1 text-xs text-gray-500">
-            Separate multiple gods with commas
-          </p>
-        </div>
-
-        {/* Legends on Coinage */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Legends on Coinage
-          </label>
-          <input
-            type="text"
-            {...register("legends_coinage_raw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            placeholder="IOM, IOVI OPTIMO MAXIMO, CONSERVATORI..."
-          />
-          <p className="mt-1 text-xs text-gray-500">
-            Separate multiple legends with commas
-          </p>
-        </div>
-
-        {/* Historical Sources */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Historical Sources
-          </label>
-          <input
-            type="text"
-            {...register("historical_sources_raw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            placeholder="Ovid Metamorphoses 1.163, Pliny Natural History 2.7..."
-          />
-          <p className="mt-1 text-xs text-gray-500">
-            Separate multiple sources with commas
-          </p>
-        </div>
-
-        {/* Flavour Text */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Description
-          </label>
-          <textarea
-            {...register("flavour_text")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            rows={4}
-            placeholder="Rich description of the deity's role and significance..."
-          />
-        </div>
-
-        {/* Secondary Information */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Secondary Information
-          </label>
-          <textarea
-            {...register("secondary_info")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            rows={3}
-            placeholder="Additional descriptive information, iconography, or coin-specific details..."
-          />
-        </div>
-
-        {/* Temples */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Associated Temples
-          </label>
-          <input
-            type="text"
-            {...register("temples_raw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            placeholder="temple_001, temple_042 (IDs for future places table)..."
-          />
-          <p className="mt-1 text-xs text-gray-500">
-            Separate multiple temple IDs with commas
-          </p>
-        </div>
-
-        {/* Festivals */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Associated Festivals
-          </label>
-          <input
-            type="text"
-            {...register("festivals_raw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            placeholder="Ides of Mars, Ludi Romani, Saturnalia..."
-          />
-          <p className="mt-1 text-xs text-gray-500">
-            Separate multiple festivals with commas
-          </p>
-        </div>
-
-        <FormActions
-          onCancel={handleClose}
-          isDirty={isDirty}
-          isSaving={isSaving}
-          saveLabel="Save Changes"
-        />
-      </form>
+        </form>
+      </div>
     </ModalWrapper>
   )
 }

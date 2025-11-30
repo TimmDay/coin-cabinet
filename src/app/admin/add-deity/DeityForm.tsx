@@ -4,9 +4,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { FestivalsEditor } from "~/components/forms/FestivalsEditor"
+import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
+import { usePlaceOptions } from "~/hooks/usePlaceOptions"
 import {
   deityFormInputSchema,
-  transformDeityFormInput,
+  deityFormSchema,
   type DeityFormData,
   type DeityFormInputData,
 } from "~/lib/validations/deity-form"
@@ -17,18 +20,21 @@ type DeityFormProps = {
 }
 
 export function DeityForm({ onSubmit, isLoading }: DeityFormProps) {
+  const { options: placeOptions } = usePlaceOptions()
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
+    watch,
   } = useForm<DeityFormInputData>({
     resolver: zodResolver(deityFormInputSchema) as any,
   })
 
   const handleFormSubmit = async (data: DeityFormInputData) => {
     try {
-      const transformedData = transformDeityFormInput(data)
+      const transformedData = deityFormSchema.parse(data)
       await onSubmit(transformedData)
       // Only clear form if onSubmit completes without throwing
       reset() // Clear form on success
@@ -223,36 +229,24 @@ Advanced JSON: [{"name": "eagle", "alt_name": "aquila", "notes": "Sacred bird, o
             </div>
 
             <div>
-              <label className={labelClass} htmlFor="temples">
-                Associated Temples
-              </label>
-              <input
-                {...register("temples")}
-                id="temples"
-                type="text"
-                className={inputClass}
-                placeholder="e.g., temple_001, temple_042 (IDs for future places table)"
+              <label className={labelClass}>Associated Places</label>
+              <SimpleMultiSelect
+                options={placeOptions}
+                selectedValues={watch("place_ids") ?? []}
+                onSelectionChange={(values) => setValue("place_ids", values)}
+                placeholder="Select temples, shrines, sacred sites..."
+                className="w-full rounded-md border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400"
               />
-              {errors.temples && (
-                <p className={errorClass}>{errors.temples.message}</p>
+              {errors.place_ids && (
+                <p className={errorClass}>{errors.place_ids.message}</p>
               )}
             </div>
 
-            <div>
-              <label className={labelClass} htmlFor="festivals">
-                Associated Festivals
-              </label>
-              <input
-                {...register("festivals")}
-                id="festivals"
-                type="text"
-                className={inputClass}
-                placeholder="e.g., Ides of Mars, Ludi Romani, Saturnalia (comma-separated)"
-              />
-              {errors.festivals && (
-                <p className={errorClass}>{errors.festivals.message}</p>
-              )}
-            </div>
+            <FestivalsEditor
+              value={watch("festivals")}
+              onChange={(value) => setValue("festivals", value)}
+              error={errors.festivals?.message}
+            />
 
             <div>
               <label className={labelClass} htmlFor="artifact_ids">

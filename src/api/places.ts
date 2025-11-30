@@ -78,12 +78,28 @@ async function updatePlace(
   return result.place
 }
 
+// Delete a place
+async function deletePlace(id: number): Promise<void> {
+  const response = await fetch(`/api/places/admin?id=${id}`, {
+    method: "DELETE",
+  })
+
+  const result = (await response.json()) as {
+    success: boolean
+    message?: string
+  }
+
+  if (!result.success) {
+    throw new Error(result.message ?? "Failed to delete place")
+  }
+}
+
 // React Query Hooks
 export function usePlaces() {
   return useQuery({
     queryKey: ["places"],
     queryFn: fetchPlaces,
-    staleTime: 1000 * 60 * 60 * 24 * 7, // 7 days
+    staleTime: 1000 * 60 * 5, // 5 minutes - reasonable for places data
   })
 }
 
@@ -93,7 +109,8 @@ export function useAddPlace() {
   return useMutation({
     mutationFn: addPlace,
     onSuccess: () => {
-      // Force immediate refetch of places list
+      // Invalidate and immediately refetch places cache
+      void queryClient.invalidateQueries({ queryKey: ["places"] })
       void queryClient.refetchQueries({ queryKey: ["places"] })
     },
   })
@@ -111,8 +128,25 @@ export function useUpdatePlace() {
       updates: Partial<PlaceFormData>
     }) => updatePlace(id, updates),
     onSuccess: () => {
-      // Force immediate refetch of places list
+      // Invalidate and immediately refetch places cache
+      void queryClient.invalidateQueries({ queryKey: ["places"] })
       void queryClient.refetchQueries({ queryKey: ["places"] })
+
+      // Invalidate any related queries that might include place data
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+    },
+  })
+}
+
+export function useDeletePlace() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: deletePlace,
+    onSuccess: () => {
+      // Invalidate places cache to ensure fresh data
+      void queryClient.invalidateQueries({ queryKey: ["places"] })
 
       // Invalidate any related queries that might include place data
       void queryClient.invalidateQueries({ queryKey: ["coin"] })

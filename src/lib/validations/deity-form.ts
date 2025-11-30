@@ -36,7 +36,7 @@ export const deityFormInputSchema = z.object({
   legends_coinage: z.string().min(1, "At least one legend is required"),
 
   // Religious information
-  temples: z.string().optional(),
+  place_ids: z.array(z.string()).optional(),
   festivals: z.string().optional(),
 
   // Future relationships
@@ -149,32 +149,43 @@ export const deityFormSchema = z.object({
     .pipe(z.array(z.string()).min(1, "At least one legend is required")),
 
   // Religious information
-  temples: z
-    .string()
+  place_ids: z
+    .array(z.string())
     .optional()
-    .or(z.literal(""))
-    .transform((val) => {
-      if (!val || val === "") return []
-      // Split by comma and clean up whitespace
-      return val
-        .split(",")
-        .map((temple) => temple.trim())
-        .filter(Boolean)
-    })
-    .pipe(z.array(z.string())),
+    .default([])
+    .transform((ids) => ids.map((id) => parseInt(id, 10))),
   festivals: z
     .string()
     .optional()
     .or(z.literal(""))
     .transform((val) => {
       if (!val || val === "") return []
-      // Split by comma and clean up whitespace
-      return val
-        .split(",")
-        .map((festival) => festival.trim())
-        .filter(Boolean)
+      try {
+        // Parse JSON string from FestivalsEditor
+        const parsed = JSON.parse(val) as Array<{
+          name: string
+          date?: string
+          note?: string
+        }>
+        return parsed
+      } catch {
+        // If JSON parsing fails, treat as comma-separated simple festival names
+        return val
+          .split(",")
+          .map((festival) => festival.trim())
+          .filter(Boolean)
+          .map((name) => ({ name, date: undefined, note: undefined }))
+      }
     })
-    .pipe(z.array(z.string())),
+    .pipe(
+      z.array(
+        z.object({
+          name: z.string(),
+          date: z.string().optional(),
+          note: z.string().optional(),
+        }),
+      ),
+    ),
 
   // Future relationships
   artifact_ids: z
@@ -247,18 +258,29 @@ export function transformDeityFormInput(
       .split(",")
       .map((legend) => legend.trim().toUpperCase())
       .filter(Boolean),
-    temples: input.temples
-      ? input.temples
-          .split(",")
-          .map((temple) => temple.trim())
-          .filter(Boolean)
-      : [],
-    festivals: input.festivals
-      ? input.festivals
+    place_ids: (input.place_ids ?? []).map((id) => parseInt(id, 10)),
+    festivals: (() => {
+      if (!input.festivals) return []
+      try {
+        // Try to parse as JSON first (for structured Festival objects)
+        const parsed = JSON.parse(input.festivals) as unknown
+        if (Array.isArray(parsed)) {
+          return parsed as Array<{
+            name: string
+            date?: string
+            note?: string
+          }>
+        }
+        return []
+      } catch {
+        // If JSON parsing fails, treat as comma-separated simple festival names
+        return input.festivals
           .split(",")
           .map((festival) => festival.trim())
           .filter(Boolean)
-      : [],
+          .map((name) => ({ name, date: undefined, note: undefined }))
+      }
+    })(),
     artifact_ids: input.artifact_ids
       ? input.artifact_ids
           .split(",")

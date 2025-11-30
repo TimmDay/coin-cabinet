@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    // Check authentication
+    // Create public supabase client (no authentication required for GET)
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -25,18 +25,6 @@ export async function GET(
       },
     )
 
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json(
-        { success: false, message: "Authentication required" },
-        { status: 401 },
-      )
-    }
-
     // Await params in Next.js 15
     const { id } = await params
 
@@ -48,7 +36,6 @@ export async function GET(
       .from("somnus_collection")
       .select("*")
       .eq("id", parseInt(id))
-      .eq("user_id", user.id)
       .single<SomnusCollection>()
 
     if (coinResult.error) {

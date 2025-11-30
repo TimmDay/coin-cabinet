@@ -2,22 +2,37 @@
 
 ## Next Thing
 
+- [ ] Add a places_id to the deities form top level. (we have temples already. rename this)
+- [ ] remove the concept of places from the festivals part - instead just make a 'note' single string where I can write about where it was celbrated or whatever.
+      -- update the table to make festivals jsonb
+      -- test with Venus
+
 - [ ] hand draw a logo I like
 - [ ] timeline - elagabalus
 - [ ] photos - gordy tranquillina
 
 ### features on deck
 
-- [ ] Mint Operation dates: work out how to display and edit the JSONB for mint operation dates
+- [x] Mint Operation dates: work out how to display and edit the JSONB for mint operation dates
+- [x] Deity Festivals: implement table editor for Festival objects in JSONB format
+- [ ] likewise for the Deities JSONB fields. Use similar styles.
 
-- [ ] DB overkill. DB for deities, DB for timelines, DB for mints.
+- [ ] DB overkill.
+  - [x] DB for deities,
+  - [ ] DB for timelines,
+  - [x] DB for mints.
+  - [ ] DB for historical figures (joins to coins)
   - gives me practice for SQL joins etc.
   - [ ] make requests maximally DB efficient
   - [ ] eventually do up a lovely API layer that other sites can use
   - [ ] data collection page for deities, timelines, mints
-  - [ ] DB for 'artifacts/museums, ruins, tourist spots - with a field for 'tags' that can be used to join to coins based on 'devices' (also tags)?
+  - [ ] DB for Places: ruins, tourist spots, museums, temples
+  - [ ] DB for artifacts. kind (statue, bust, coin, engraving, etc), location (Place), description, image links, historical_references
+  - [ ] DB for timelines. Not sure how to impl this in add/edit UI yet - heavy JSONB. Also, how to tie it to coins (a [] field on the coin)
 
-- [ ] wrape up the tbles impls. delete all local static data in favour of the dbs
+  - [ ] deep dive UI. How to display (menu?) multiple timelines.
+
+- [ ] wrap up the tables impls. delete all local static data in favour of the dbs
 - [ ] have the appropriate places get joined with the things that need them when req
 
 - logo

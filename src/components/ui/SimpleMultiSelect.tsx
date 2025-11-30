@@ -15,7 +15,7 @@ export function SimpleMultiSelect({
   options,
   selectedValues,
   onSelectionChange,
-  className = "rounded-md border border-slate-300 bg-white text-slate-900",
+  className = "rounded-md border border-slate-600 bg-slate-800/50 text-slate-200",
   placeholder = "Select options...",
   maxHeight = "max-h-60",
 }: SimpleMultiSelectProps) {
@@ -163,13 +163,13 @@ export function SimpleMultiSelect({
 
         {/* Placeholder text */}
         {selectedValues.length === 0 && (
-          <span className="text-gray-400">{placeholder}</span>
+          <span className="text-slate-400">{placeholder}</span>
         )}
 
         {/* Dropdown arrow */}
         <div className="ml-auto">
           <svg
-            className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+            className={`h-4 w-4 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -187,7 +187,7 @@ export function SimpleMultiSelect({
       {/* Dropdown menu */}
       {isOpen && (
         <div
-          className={`absolute z-50 mt-1 ${maxHeight} w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-xl`}
+          className={`absolute z-50 mt-1 ${maxHeight} w-full overflow-auto rounded-md border border-slate-600 bg-slate-800 shadow-xl`}
           role="listbox"
           id="simple-multiselect-listbox"
           aria-label="Options"
@@ -198,10 +198,10 @@ export function SimpleMultiSelect({
             return (
               <div
                 key={option.value}
-                className={`cursor-pointer bg-white px-3 py-2 transition-colors ${
-                  isFocused ? "!bg-gray-100" : "hover:!bg-gray-50"
+                className={`cursor-pointer bg-slate-800 px-3 py-2 transition-colors ${
+                  isFocused ? "!bg-slate-700" : "hover:!bg-slate-700/50"
                 } ${
-                  isSelected ? "!bg-amber-100 text-amber-800" : "text-gray-900"
+                  isSelected ? "!bg-amber-600 text-white" : "text-slate-200"
                 }`}
                 onClick={() => toggleOption(option.value)}
                 role="option"
