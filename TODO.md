@@ -8,10 +8,12 @@
 
 ### features on deck
 
+- [ ] Mint Operation dates: work out how to display and edit the JSONB for mint operation dates
+
 - [ ] DB overkill. DB for deities, DB for timelines, DB for mints.
   - gives me practice for SQL joins etc.
   - [ ] make requests maximally DB efficient
-  - [ ]eventually do up a lovely API layer that other sites can use
+  - [ ] eventually do up a lovely API layer that other sites can use
   - [ ] data collection page for deities, timelines, mints
   - [ ] DB for 'artifacts/museums, ruins, tourist spots - with a field for 'tags' that can be used to join to coins based on 'devices' (also tags)?
 
@@ -22,7 +24,7 @@
 
 - Map component
 - [x] MVP. Mints data (hooking it up to the map)
-- [ ] Mints data. is this better in a db?
+- [x] Mints data. is this better in a db?
 - [ ] Mint data: operation dates and flavour text for each mint I have coins from.
 - [ ] Province data: existence dates for each province.
 - [ ] Get geojson for the provinces I am missing

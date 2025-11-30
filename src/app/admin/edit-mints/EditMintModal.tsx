@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { useUpdateMint } from "~/api/mints"
+import { OperationPeriodsEditor } from "~/components/forms/OperationPeriodsEditor"
 import type { Mint } from "~/database/schema-mints"
 import { FormActions } from "../../../components/forms/FormActions"
 import { FormErrorDisplay } from "../../../components/forms/FormErrorDisplay"
@@ -62,6 +63,8 @@ export function EditMintModal({
     formState: { isDirty, errors },
     setError,
     clearErrors,
+    setValue,
+    watch,
   } = useForm<FormData>({
     values: createFormData(mint),
   })
@@ -283,21 +286,10 @@ export function EditMintModal({
         </div>
 
         {/* Operation Periods */}
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Operation Periods
-          </label>
-          <input
-            type="text"
-            {...register("operation_periods_raw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-            placeholder='[[-260, 476, "Republic"], [294, 423, "Diocletian"]]'
-          />
-          <p className="mt-1 text-xs text-gray-500">
-            JSON array format: [[startYear, endYear,
-            &ldquo;ruler/period&rdquo;], ...]
-          </p>
-        </div>
+        <OperationPeriodsEditor
+          value={watch("operation_periods_raw")}
+          onChange={(value) => setValue("operation_periods_raw", value)}
+        />
 
         {/* Description */}
         <div>

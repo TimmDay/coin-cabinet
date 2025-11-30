@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+import { OperationPeriodsEditor } from "~/components/forms/OperationPeriodsEditor"
 import type { Mint } from "~/database/schema-mints"
 import {
   mintFormInputSchema,
@@ -259,24 +260,11 @@ export function MintForm({
               )}
             </div>
 
-            <div>
-              <label className={labelClass}>Operation Periods</label>
-              <input
-                type="text"
-                placeholder="[[-260, 476, 'Republic'], [294, 423, 'Diocletian']]"
-                className={inputClass}
-                {...form.register("operation_periods")}
-              />
-              <p className="mt-1 text-sm text-slate-400">
-                JSON array of operation periods: [[startYear, endYear,
-                &quot;ruler/period&quot;], ...]
-              </p>
-              {form.formState.errors.operation_periods && (
-                <p className={errorClass}>
-                  {form.formState.errors.operation_periods.message}
-                </p>
-              )}
-            </div>
+            <OperationPeriodsEditor
+              value={form.watch("operation_periods")}
+              onChange={(value) => form.setValue("operation_periods", value)}
+              error={form.formState.errors.operation_periods?.message}
+            />
 
             <div>
               <label className={labelClass}>Description</label>

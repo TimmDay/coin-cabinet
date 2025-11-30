@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic"
 import { useMints } from "~/api/mints"
 import { MintInfo } from "~/components/ui"
-import { DEITIES } from "~/data/deities"
 import { TIMELINES } from "~/data/timelines"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
@@ -12,6 +11,7 @@ import { formatPhysicalCharacteristics } from "~/lib/utils/physical-formatting"
 import { matchTimelineToNickname } from "~/lib/utils/timeline-matcher"
 import { DeepDiveCard } from "../DeepDiveCard"
 import { CoinRow } from "./CoinRow"
+import type { CoinEnhanced } from "~/types/api"
 
 // Dynamically import Map component to prevent SSR issues with Leaflet
 const Map = dynamic(
@@ -37,8 +37,6 @@ const TimelineWithMap = dynamic(
     ),
   },
 )
-
-import type { CoinEnhanced } from "~/types/api"
 
 type CoinDeepDiveProps = {
   coin: CoinEnhanced
@@ -87,23 +85,10 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
 
     return result
   }
-  // Use database deity information if available, otherwise fallback to devices lookup
-  const matchingDeities =
-    coin.deities && coin.deities.length > 0
-      ? coin.deities.map(transformDbDeityToCard) // Transform database deities
-      : coin.devices // Fallback to static DEITIES lookup for backwards compatibility
-        ? coin.devices
-            .map((device) => {
-              const deityKey = device.toLowerCase()
-              if (deityKey in DEITIES) {
-                return DEITIES[deityKey]
-              }
-              return null
-            })
-            .filter(
-              (deity): deity is NonNullable<typeof deity> => deity !== null,
-            )
-        : []
+  // Use database deity information
+  const matchingDeities = coin.deities
+    ? coin.deities.map(transformDbDeityToCard)
+    : []
 
   return (
     <section className="space-y-8 md:space-y-12">
