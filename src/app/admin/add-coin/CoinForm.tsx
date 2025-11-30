@@ -6,8 +6,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { CoinsWithoutImages } from "~/components/forms/CoinsWithoutImages"
-import { CoinsWithoutTimmdaySrc } from "~/components/forms/CoinsWithoutTimmdaySrc"
+import { CoinsWithoutImages } from "~/app/admin/add-coin/CoinsWithoutImages"
+import { CoinsWithoutTimmdaySrc } from "~/app/admin/add-coin/CoinsWithoutTimmdaySrc"
 import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper"
 import { MultiSelect } from "~/components/ui/MultiSelect"
 import { RoundButton } from "~/components/ui/RoundButton"
@@ -21,7 +21,7 @@ import {
   denominationOptions,
   dieAxisOptions,
   setsOptions,
-} from "./constants"
+} from "../../../components/forms/constants"
 
 type CoinFormProps = {
   onSubmit: (data: CoinFormData) => Promise<void>

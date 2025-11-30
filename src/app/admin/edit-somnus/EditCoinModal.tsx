@@ -4,7 +4,11 @@ import { useForm } from "react-hook-form"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
 import { useDeityOptions } from "~/hooks/useDeityOptions"
-import { FormErrorDisplay, handleUnsavedChanges, ModalWrapper } from "./shared"
+import {
+  FormErrorDisplay,
+  handleUnsavedChanges,
+  ModalWrapper,
+} from "../../../components/forms"
 
 type FormData = {
   nickname: string

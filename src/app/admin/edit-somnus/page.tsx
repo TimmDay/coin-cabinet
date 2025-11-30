@@ -1,6 +1,6 @@
 "use client"
 
-import { EditSomnusView } from "~/components/admin/EditSomnusView"
+import { EditSomnusView } from "~/app/admin/edit-somnus/EditSomnusView"
 import { useAuth } from "~/components/providers/auth-provider"
 import { PageTitle } from "~/components/ui/PageTitle"
 

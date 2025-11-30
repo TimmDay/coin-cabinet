@@ -29,7 +29,7 @@ type AddFormWrapperProps<TFormData> = {
  * Shared wrapper component for add forms that handles common patterns:
  * - User authentication check
  * - Success/error message state
- * - Auto-clearing success messages  
+ * - Auto-clearing success messages
  * - Optional redirect after success
  * - Consistent error handling
  */
@@ -46,10 +46,14 @@ export function AddFormWrapper<TFormData>({
 
   // Auto-clear success message
   useEffect(() => {
-    if (message?.startsWith("✅") || message?.includes("🌙") || message?.includes("✨")) {
+    if (
+      message?.startsWith("✅") ||
+      message?.includes("🌙") ||
+      message?.includes("✨")
+    ) {
       const timer = setTimeout(() => {
         setMessage(null)
-        
+
         // Handle auto-redirect
         if (autoRedirect?.enabled && autoRedirect.router && autoRedirect.path) {
           autoRedirect.router.push(autoRedirect.path)

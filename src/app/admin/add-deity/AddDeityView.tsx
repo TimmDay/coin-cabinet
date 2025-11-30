@@ -1,8 +1,8 @@
 "use client"
 
 import { useAddDeity } from "~/api/deities"
-import { AddFormWrapper } from "~/components/admin/shared"
-import { DeityForm } from "~/components/forms/DeityForm"
+import { DeityForm } from "~/app/admin/add-deity/DeityForm"
+import { AddFormWrapper } from "~/components/forms"
 
 export function AddDeityView() {
   const addDeityMutation = useAddDeity()

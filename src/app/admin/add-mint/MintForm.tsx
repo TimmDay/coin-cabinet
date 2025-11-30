@@ -93,12 +93,12 @@ export function MintForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Basic Information Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-200">Basic Information</h3>
+            <h3 className="text-lg font-semibold text-slate-200">
+              Basic Information
+            </h3>
 
             <div>
-              <label className={labelClass}>
-                Mint Name *
-              </label>
+              <label className={labelClass}>Mint Name *</label>
               <input
                 type="text"
                 placeholder="e.g., Rome, Alexandria, Antioch"
@@ -116,9 +116,7 @@ export function MintForm({
             </div>
 
             <div>
-              <label className={labelClass}>
-                Alternative Names
-              </label>
+              <label className={labelClass}>Alternative Names</label>
               <input
                 type="text"
                 placeholder="Roma, Ῥώμη (comma separated)"
@@ -142,9 +140,7 @@ export function MintForm({
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className={labelClass}>
-                  Latitude *
-                </label>
+                <label className={labelClass}>Latitude *</label>
                 <input
                   type="number"
                   step="any"
@@ -163,9 +159,7 @@ export function MintForm({
               </div>
 
               <div>
-                <label className={labelClass}>
-                  Longitude *
-                </label>
+                <label className={labelClass}>Longitude *</label>
                 <input
                   type="number"
                   step="any"
@@ -187,12 +181,12 @@ export function MintForm({
 
           {/* Mint Details */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-200">Mint Details</h3>
+            <h3 className="text-lg font-semibold text-slate-200">
+              Mint Details
+            </h3>
 
             <div>
-              <label className={labelClass}>
-                Mint Marks
-              </label>
+              <label className={labelClass}>Mint Marks</label>
               <input
                 type="text"
                 placeholder="ROMA, R, ROM (comma separated)"
@@ -210,9 +204,7 @@ export function MintForm({
             </div>
 
             <div>
-              <label className={labelClass}>
-                Opened By
-              </label>
+              <label className={labelClass}>Opened By</label>
               <input
                 type="text"
                 placeholder="Augustus, Roman Republic, etc."
@@ -229,14 +221,14 @@ export function MintForm({
               )}
             </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-            Coinage Materials
-          </label>
-          <input
-            type="text"
-            placeholder="bronze, silver, gold (comma separated)"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300">
+                Coinage Materials
+              </label>
+              <input
+                type="text"
+                placeholder="bronze, silver, gold (comma separated)"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
                 {...form.register("coinage_materials")}
               />
               <p className="mt-1 text-sm text-slate-400">
@@ -250,9 +242,7 @@ export function MintForm({
             </div>
 
             <div>
-              <label className={labelClass}>
-                Historical Sources
-              </label>
+              <label className={labelClass}>Historical Sources</label>
               <input
                 type="text"
                 placeholder="Pliny, Tacitus, Archaeological evidence (comma separated)"
@@ -270,9 +260,7 @@ export function MintForm({
             </div>
 
             <div>
-              <label className={labelClass}>
-                Operation Periods
-              </label>
+              <label className={labelClass}>Operation Periods</label>
               <input
                 type="text"
                 placeholder="[[-260, 476, 'Republic'], [294, 423, 'Diocletian']]"
@@ -291,9 +279,7 @@ export function MintForm({
             </div>
 
             <div>
-              <label className={labelClass}>
-                Description
-              </label>
+              <label className={labelClass}>Description</label>
               <textarea
                 placeholder="Historical context, significance, and interesting details about this mint..."
                 className={textareaClass}

@@ -1,8 +1,8 @@
 "use client"
 
 import { useAddSomnusCoin } from "~/api/somnus-collection"
-import { AddFormWrapper } from "~/components/admin/shared"
-import { CoinForm } from "~/components/forms/CoinForm"
+import { CoinForm } from "~/app/admin/add-coin/CoinForm"
+import { AddFormWrapper } from "~/components/forms"
 
 export function AddCoinView() {
   const addCoinMutation = useAddSomnusCoin()

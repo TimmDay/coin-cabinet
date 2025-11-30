@@ -1,6 +1,6 @@
 "use client"
 
-import { AddMintView } from "~/components/admin/AddMintView"
+import { AddMintView } from "~/app/admin/add-mint/AddMintView"
 import { useAuth } from "~/components/providers/auth-provider"
 import { AuthRequiredPage } from "~/components/ui/AuthRequiredPage"
 import { Loading } from "~/components/ui/Loading"

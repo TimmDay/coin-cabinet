@@ -1,6 +1,6 @@
 "use client"
 
-import { EditDeitiesView } from "~/components/admin/EditDeitiesView"
+import { EditDeitiesView } from "~/app/admin/edit-deities/EditDeitiesView"
 import { useAuth } from "~/components/providers/auth-provider"
 import { AuthRequiredPage } from "~/components/ui/AuthRequiredPage"
 import { Loading } from "~/components/ui/Loading"

@@ -3,11 +3,14 @@
 import { useForm } from "react-hook-form"
 import { useUpdateMint } from "~/api/mints"
 import type { Mint } from "~/database/schema-mints"
-import { FormActions } from "./shared/FormActions"
-import { FormErrorDisplay } from "./shared/FormErrorDisplay"
-import { ModalWrapper } from "./shared/ModalWrapper"
+import { FormActions } from "../../../components/forms/FormActions"
+import { FormErrorDisplay } from "../../../components/forms/FormErrorDisplay"
+import { ModalWrapper } from "../../../components/forms/ModalWrapper"
 
-import { handleUnsavedChanges, parseJSONSafe } from "./shared/formUtils"
+import {
+  handleUnsavedChanges,
+  parseJSONSafe,
+} from "../../../components/forms/formUtils"
 
 type FormData = {
   name: string

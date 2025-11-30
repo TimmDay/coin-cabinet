@@ -1,7 +1,12 @@
 "use client"
 
 import { useForm } from "react-hook-form"
-import { FormActions, FormErrorDisplay, ModalWrapper, processArray } from "~/components/admin/shared"
+import {
+  FormActions,
+  FormErrorDisplay,
+  ModalWrapper,
+  processArray,
+} from "~/components/forms"
 import type { Deity } from "~/database/schema-deities"
 
 type FormData = {
@@ -103,7 +108,9 @@ export function EditDeityModal({
 
   const handleClose = () => {
     if (isDirty) {
-      if (confirm("You have unsaved changes. Are you sure you want to close?")) {
+      if (
+        confirm("You have unsaved changes. Are you sure you want to close?")
+      ) {
         onClose()
       }
     } else {

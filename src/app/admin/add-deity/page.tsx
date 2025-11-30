@@ -1,6 +1,6 @@
 "use client"
 
-import { AddDeityView } from "~/components/admin/AddDeityView"
+import { AddDeityView } from "~/app/admin/add-deity/AddDeityView"
 import { useAuth } from "~/components/providers/auth-provider"
 import { AuthRequiredPage } from "~/components/ui/AuthRequiredPage"
 import { Loading } from "~/components/ui/Loading"
