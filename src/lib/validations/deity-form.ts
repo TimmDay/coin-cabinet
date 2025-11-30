@@ -35,6 +35,10 @@ export const deityFormInputSchema = z.object({
     .min(1, "At least one coinage feature is required"),
   legends_coinage: z.string().min(1, "At least one legend is required"),
 
+  // Religious information
+  temples: z.string().optional(),
+  festivals: z.string().optional(),
+
   // Future relationships
   artifact_ids: z.string().optional(),
 })
@@ -144,6 +148,34 @@ export const deityFormSchema = z.object({
     })
     .pipe(z.array(z.string()).min(1, "At least one legend is required")),
 
+  // Religious information
+  temples: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .transform((val) => {
+      if (!val || val === "") return []
+      // Split by comma and clean up whitespace
+      return val
+        .split(",")
+        .map((temple) => temple.trim())
+        .filter(Boolean)
+    })
+    .pipe(z.array(z.string())),
+  festivals: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .transform((val) => {
+      if (!val || val === "") return []
+      // Split by comma and clean up whitespace
+      return val
+        .split(",")
+        .map((festival) => festival.trim())
+        .filter(Boolean)
+    })
+    .pipe(z.array(z.string())),
+
   // Future relationships
   artifact_ids: z
     .string()
@@ -215,6 +247,18 @@ export function transformDeityFormInput(
       .split(",")
       .map((legend) => legend.trim().toUpperCase())
       .filter(Boolean),
+    temples: input.temples
+      ? input.temples
+          .split(",")
+          .map((temple) => temple.trim())
+          .filter(Boolean)
+      : [],
+    festivals: input.festivals
+      ? input.festivals
+          .split(",")
+          .map((festival) => festival.trim())
+          .filter(Boolean)
+      : [],
     artifact_ids: input.artifact_ids
       ? input.artifact_ids
           .split(",")

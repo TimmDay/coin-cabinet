@@ -129,8 +129,8 @@ export function useUpdateDeity() {
       updates: Partial<DeityFormData>
     }) => updateDeity(id, updates),
     onSuccess: () => {
-      // Invalidate and refetch deities list
-      void queryClient.invalidateQueries({ queryKey: ["deities"] })
+      // Force immediate refetch of deities list
+      void queryClient.refetchQueries({ queryKey: ["deities"] })
 
       // Invalidate all coin queries that might include deity data
       void queryClient.invalidateQueries({

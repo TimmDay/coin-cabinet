@@ -19,6 +19,8 @@ export type Deity = {
   god_of: string[] // ["sky", "thunder", "justice", "state"] - domains and responsibilities
   features_coinage: CoinageFeature[] // Detailed features on coins with names, alt names, and notes
   legends_coinage: string[] // ["IOM", "IOVI OPTIMO MAXIMO", "CONSERVATORI"] - common abbreviations and legends
+  temples: string[] // ["temple_001", "temple_042"] - IDs for joining to future places table
+  festivals: string[] // ["Ides of Mars", "Ludi Romani", "Saturnalia"] - associated festivals and celebrations
   artifact_ids: string[] // For joining to future artifacts table - museum pieces, statues, etc.
   created_at: string
   updated_at: string

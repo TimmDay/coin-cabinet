@@ -163,9 +163,9 @@ export async function PUT(request: Request) {
 
     // For updates, we allow partial data and don't require full validation
     // Remove system fields that shouldn't be updated
-    const systemFields = new Set(['id', 'user_id', 'created_at', 'updated_at'])
+    const systemFields = new Set(["id", "user_id", "created_at", "updated_at"])
     const updateData = Object.fromEntries(
-      Object.entries(updates).filter(([key]) => !systemFields.has(key))
+      Object.entries(updates).filter(([key]) => !systemFields.has(key)),
     )
 
     console.log(

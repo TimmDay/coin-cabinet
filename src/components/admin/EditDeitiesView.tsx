@@ -7,21 +7,13 @@ import type { Deity } from "~/database/schema-deities"
 import { EditDeityModal } from "./EditDeityModal"
 
 export function EditDeitiesView() {
-  const [items, setItems] = useState<Deity[]>([])
   const [message, setMessage] = useState<string | null>(null)
   const [nameFilter, setNameFilter] = useState("")
-  const [selectedDeity, setSelectedDeity] = useState<Deity | null>(null)
+  const [selectedDeityId, setSelectedDeityId] = useState<number | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const { data: deitiesData, isLoading: loading, error } = useDeities()
   const updateDeityMutation = useUpdateDeity()
-
-  // Transform data when it loads
-  useEffect(() => {
-    if (deitiesData) {
-      setItems(deitiesData)
-    }
-  }, [deitiesData])
 
   // Handle errors
   useEffect(() => {
@@ -30,15 +22,17 @@ export function EditDeitiesView() {
     }
   }, [error])
 
+  const items = deitiesData ?? []
+
   // Handle modal interactions
   const handleDeitySelect = (deity: Deity) => {
-    setSelectedDeity(deity)
+    setSelectedDeityId(deity.id)
     setIsModalOpen(true)
   }
 
   const handleModalClose = () => {
     setIsModalOpen(false)
-    setSelectedDeity(null)
+    setSelectedDeityId(null)
   }
 
   const handleModalSave = async (id: number, updates: Partial<Deity>) => {
@@ -189,13 +183,26 @@ export function EditDeitiesView() {
       )}
 
       {/* Edit Deity Modal */}
-      <EditDeityModal
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        deity={selectedDeity}
-        onSave={handleModalSave}
-        isSaving={updateDeityMutation.isPending}
-      />
+      {(() => {
+        const selectedDeity = selectedDeityId
+          ? (items.find((item) => item.id === selectedDeityId) ?? null)
+          : null
+
+        return (
+          <EditDeityModal
+            key={
+              selectedDeity
+                ? `deity-${selectedDeity.id}-${selectedDeity.updated_at}`
+                : "no-deity"
+            }
+            isOpen={isModalOpen}
+            onClose={handleModalClose}
+            deity={selectedDeity}
+            onSave={handleModalSave}
+            isSaving={updateDeityMutation.isPending}
+          />
+        )
+      })()}
     </div>
   )
 }

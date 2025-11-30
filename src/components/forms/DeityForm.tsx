@@ -223,6 +223,38 @@ Advanced JSON: [{"name": "eagle", "alt_name": "aquila", "notes": "Sacred bird, o
             </div>
 
             <div>
+              <label className={labelClass} htmlFor="temples">
+                Associated Temples
+              </label>
+              <input
+                {...register("temples")}
+                id="temples"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., temple_001, temple_042 (IDs for future places table)"
+              />
+              {errors.temples && (
+                <p className={errorClass}>{errors.temples.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="festivals">
+                Associated Festivals
+              </label>
+              <input
+                {...register("festivals")}
+                id="festivals"
+                type="text"
+                className={inputClass}
+                placeholder="e.g., Ides of Mars, Ludi Romani, Saturnalia (comma-separated)"
+              />
+              {errors.festivals && (
+                <p className={errorClass}>{errors.festivals.message}</p>
+              )}
+            </div>
+
+            <div>
               <label className={labelClass} htmlFor="artifact_ids">
                 Related Artifact IDs
               </label>

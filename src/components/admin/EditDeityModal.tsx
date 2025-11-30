@@ -1,7 +1,21 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
 import type { Deity } from "~/database/schema-deities"
+
+type FormData = {
+  name: string
+  subtitle: string
+  flavour_text: string
+  secondary_info: string
+  alt_names_raw: string
+  similar_gods_raw: string
+  god_of_raw: string
+  legends_coinage_raw: string
+  historical_sources_raw: string
+  temples_raw: string
+  festivals_raw: string
+}
 
 type EditDeityModalProps = {
   isOpen: boolean
@@ -18,24 +32,9 @@ export function EditDeityModal({
   onSave,
   isSaving = false,
 }: EditDeityModalProps) {
-  const [formData, setFormData] = useState({
-    name: "",
-    subtitle: "",
-    flavour_text: "",
-    secondary_info: "",
-    alt_names_raw: "",
-    similar_gods_raw: "",
-    god_of_raw: "",
-    legends_coinage_raw: "",
-    historical_sources_raw: "",
-  })
-  const [hasChanges, setHasChanges] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-
-  // Initialize form data when deity changes
-  useEffect(() => {
-    if (deity) {
-      const initialData = {
+  // Create form data from deity props
+  const defaultValues: FormData = deity
+    ? {
         name: deity.name,
         subtitle: deity.subtitle ?? "",
         flavour_text: deity.flavour_text ?? "",
@@ -45,17 +44,33 @@ export function EditDeityModal({
         god_of_raw: deity.god_of?.join(", ") ?? "",
         legends_coinage_raw: deity.legends_coinage?.join(", ") ?? "",
         historical_sources_raw: deity.historical_sources?.join(", ") ?? "",
+        temples_raw: deity.temples?.join(", ") ?? "",
+        festivals_raw: deity.festivals?.join(", ") ?? "",
       }
-      setFormData(initialData)
-      setHasChanges(false)
-      setErrorMessage(null)
-    }
-  }, [deity])
+    : {
+        name: "",
+        subtitle: "",
+        flavour_text: "",
+        secondary_info: "",
+        alt_names_raw: "",
+        similar_gods_raw: "",
+        god_of_raw: "",
+        legends_coinage_raw: "",
+        historical_sources_raw: "",
+        temples_raw: "",
+        festivals_raw: "",
+      }
 
-  const handleFieldChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-    setHasChanges(true)
-  }
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty, errors },
+    setError,
+    clearErrors,
+  } = useForm<FormData>({
+    // Automatically reset form when defaultValues change
+    values: defaultValues,
+  })
 
   const processArrayString = (arrayString: string): string[] => {
     if (!arrayString.trim()) return []
@@ -66,52 +81,53 @@ export function EditDeityModal({
       .filter(Boolean)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!deity || !hasChanges) return
+  const onSubmit = async (data: FormData) => {
+    if (!deity) return
 
-    // Clear any previous error message
-    setErrorMessage(null)
+    // Clear any previous error messages
+    clearErrors()
 
     const updates = {
-      name: formData.name.trim(),
-      subtitle: formData.subtitle.trim() || undefined,
-      flavour_text: formData.flavour_text.trim() || null,
-      secondary_info: formData.secondary_info.trim() || null,
-      alt_names: processArrayString(formData.alt_names_raw),
-      similar_gods: processArrayString(formData.similar_gods_raw),
-      god_of: processArrayString(formData.god_of_raw),
-      legends_coinage: processArrayString(formData.legends_coinage_raw),
-      historical_sources: processArrayString(formData.historical_sources_raw),
+      name: data.name.trim(),
+      subtitle: data.subtitle.trim() || undefined,
+      flavour_text: data.flavour_text.trim() || null,
+      secondary_info: data.secondary_info.trim() || null,
+      alt_names: processArrayString(data.alt_names_raw),
+      similar_gods: processArrayString(data.similar_gods_raw),
+      god_of: processArrayString(data.god_of_raw),
+      legends_coinage: processArrayString(data.legends_coinage_raw),
+      historical_sources: processArrayString(data.historical_sources_raw),
+      temples: processArrayString(data.temples_raw),
+      festivals: processArrayString(data.festivals_raw),
     }
 
     // Validate required fields
     if (!updates.name) {
-      setErrorMessage("Name is required")
+      setError("name", { message: "Name is required" })
       return
     }
 
     if (updates.god_of.length === 0) {
-      setErrorMessage("At least one domain (god of) is required")
+      setError("god_of_raw", { message: "At least one domain is required" })
       return
     }
 
     try {
       await onSave(deity.id, updates)
-      setHasChanges(false)
       onClose()
     } catch (error) {
       console.error("Failed to save deity:", error)
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Failed to save changes. Please try again.",
-      )
+      setError("root", {
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to save changes. Please try again.",
+      })
     }
   }
 
   const handleClose = () => {
-    if (hasChanges) {
+    if (isDirty) {
       if (
         confirm("You have unsaved changes. Are you sure you want to close?")
       ) {
@@ -152,10 +168,10 @@ export function EditDeityModal({
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 p-6">
-          {errorMessage && (
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-6">
+          {errors.root && (
             <div className="rounded-md bg-red-50 p-4">
-              <p className="text-sm text-red-800">{errorMessage}</p>
+              <p className="text-sm text-red-800">{errors.root.message}</p>
             </div>
           )}
 
@@ -166,12 +182,13 @@ export function EditDeityModal({
             </label>
             <input
               type="text"
-              value={formData.name}
-              onChange={(e) => handleFieldChange("name", e.target.value)}
+              {...register("name", { required: "Name is required" })}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
               placeholder="Jupiter, Mars, Victoria..."
-              required
             />
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+            )}
           </div>
 
           {/* Subtitle */}
@@ -181,8 +198,7 @@ export function EditDeityModal({
             </label>
             <input
               type="text"
-              value={formData.subtitle}
-              onChange={(e) => handleFieldChange("subtitle", e.target.value)}
+              {...register("subtitle")}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
               placeholder="King of the Gods, God of War..."
             />
@@ -195,12 +211,17 @@ export function EditDeityModal({
             </label>
             <input
               type="text"
-              value={formData.god_of_raw}
-              onChange={(e) => handleFieldChange("god_of_raw", e.target.value)}
+              {...register("god_of_raw", {
+                required: "At least one domain is required",
+              })}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
               placeholder="sky, thunder, justice, state..."
-              required
             />
+            {errors.god_of_raw && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.god_of_raw.message}
+              </p>
+            )}
             <p className="mt-1 text-xs text-gray-500">
               Separate multiple domains with commas
             </p>
@@ -213,10 +234,7 @@ export function EditDeityModal({
             </label>
             <input
               type="text"
-              value={formData.alt_names_raw}
-              onChange={(e) =>
-                handleFieldChange("alt_names_raw", e.target.value)
-              }
+              {...register("alt_names_raw")}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
               placeholder="Jove, Optimus Maximus..."
             />
@@ -232,10 +250,7 @@ export function EditDeityModal({
             </label>
             <input
               type="text"
-              value={formData.similar_gods_raw}
-              onChange={(e) =>
-                handleFieldChange("similar_gods_raw", e.target.value)
-              }
+              {...register("similar_gods_raw")}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
               placeholder="Zeus, Ammon..."
             />
@@ -251,10 +266,7 @@ export function EditDeityModal({
             </label>
             <input
               type="text"
-              value={formData.legends_coinage_raw}
-              onChange={(e) =>
-                handleFieldChange("legends_coinage_raw", e.target.value)
-              }
+              {...register("legends_coinage_raw")}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
               placeholder="IOM, IOVI OPTIMO MAXIMO, CONSERVATORI..."
             />
@@ -270,10 +282,7 @@ export function EditDeityModal({
             </label>
             <input
               type="text"
-              value={formData.historical_sources_raw}
-              onChange={(e) =>
-                handleFieldChange("historical_sources_raw", e.target.value)
-              }
+              {...register("historical_sources_raw")}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
               placeholder="Ovid Metamorphoses 1.163, Pliny Natural History 2.7..."
             />
@@ -288,10 +297,7 @@ export function EditDeityModal({
               Description
             </label>
             <textarea
-              value={formData.flavour_text}
-              onChange={(e) =>
-                handleFieldChange("flavour_text", e.target.value)
-              }
+              {...register("flavour_text")}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
               rows={4}
               placeholder="Rich description of the deity's role and significance..."
@@ -304,14 +310,43 @@ export function EditDeityModal({
               Secondary Information
             </label>
             <textarea
-              value={formData.secondary_info}
-              onChange={(e) =>
-                handleFieldChange("secondary_info", e.target.value)
-              }
+              {...register("secondary_info")}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
               rows={3}
               placeholder="Additional descriptive information, iconography, or coin-specific details..."
             />
+          </div>
+
+          {/* Temples */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Associated Temples
+            </label>
+            <input
+              type="text"
+              {...register("temples_raw")}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              placeholder="temple_001, temple_042 (IDs for future places table)..."
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Separate multiple temple IDs with commas
+            </p>
+          </div>
+
+          {/* Festivals */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Associated Festivals
+            </label>
+            <input
+              type="text"
+              {...register("festivals_raw")}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              placeholder="Ides of Mars, Ludi Romani, Saturnalia..."
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Separate multiple festivals with commas
+            </p>
           </div>
 
           {/* Action Buttons */}
@@ -326,8 +361,8 @@ export function EditDeityModal({
             </button>
             <button
               type="submit"
-              disabled={!hasChanges || isSaving}
-              className="rounded-md bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 focus:ring-2 focus:ring-amber-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-400"
+              disabled={!isDirty || isSaving}
+              className="rounded-md bg-amber-500 px-6 py-2 text-white hover:bg-amber-600 focus:ring-2 focus:ring-amber-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSaving ? "Saving..." : "Save Changes"}
             </button>
