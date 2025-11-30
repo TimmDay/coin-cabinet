@@ -1,4 +1,4 @@
-export type Place = {
+type Place = {
   lat: number
   lng: number
   place: string

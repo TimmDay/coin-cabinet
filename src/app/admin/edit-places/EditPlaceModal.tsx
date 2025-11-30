@@ -32,7 +32,7 @@ export function EditPlaceModal({
     values: {
       name: place.name ?? "",
       kind: place.kind ?? "",
-      alt_names: (place.alt_names as string[])?.join(", ") ?? "",
+      alt_names: place.alt_names?.join(", ") ?? "",
       lat: place.lat ?? 0,
       lng: place.lng ?? 0,
       location_description: place.location_description ?? "",

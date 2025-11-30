@@ -9,6 +9,10 @@ import { useAuth } from "~/components/providers/auth-provider"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { cn } from "~/lib/utils"
 import {
+  adminCollectionSubmenu,
+  adminDeitiesSubmenu,
+  adminMintsSubmenu,
+  adminPlacesSubmenu,
   adminSubmenu,
   articlesSubmenu,
   cabinetRomanSubmenu,
@@ -72,6 +76,14 @@ export function MobileNavigation() {
         return yearInCoinsSubmenu
       case "cabinetRoman":
         return cabinetRomanSubmenu
+      case "adminCollection":
+        return adminCollectionSubmenu
+      case "adminDeities":
+        return adminDeitiesSubmenu
+      case "adminPlaces":
+        return adminPlacesSubmenu
+      case "adminMints":
+        return adminMintsSubmenu
       default:
         return []
     }
@@ -83,6 +95,14 @@ export function MobileNavigation() {
         return "yearInCoins"
       case "Roman":
         return "cabinetRoman"
+      case "Collection":
+        return "adminCollection"
+      case "Deities":
+        return "adminDeities"
+      case "Places":
+        return "adminPlaces"
+      case "Mints":
+        return "adminMints"
       default:
         return null
     }

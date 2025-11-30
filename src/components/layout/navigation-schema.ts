@@ -12,18 +12,38 @@ export type SubmenuTypes =
   | "Articles"
   | "yearInCoins"
   | "cabinetRoman"
+  | "adminCollection"
+  | "adminDeities"
+  | "adminPlaces"
+  | "adminMints"
 
 export const adminSubmenu = [
-  { name: "Add Coin", href: "/admin/add-coin" },
-  { name: "Edit Somnus", href: "/admin/edit-somnus" },
-  { name: "Add Deity", href: "/admin/add-deity" },
-  { name: "Edit Deities", href: "/admin/edit-deities" },
-  { name: "Add Mint", href: "/admin/add-mint" },
-  { name: "Edit Mints", href: "/admin/edit-mints" },
-  { name: "Add Place", href: "/admin/add-place" },
-  { name: "Edit Places", href: "/admin/edit-places" },
+  { name: "Collection", href: "/admin/collection", hasSubmenu: true },
+  { name: "Deities", href: "/admin/deities", hasSubmenu: true },
+  { name: "Places", href: "/admin/places", hasSubmenu: true },
+  { name: "Mints", href: "/admin/mints", hasSubmenu: true },
   { name: "Edit Map", href: "/admin/edit-map" },
   { name: "Feature Flags", href: "/admin/feature-flags" },
+]
+
+export const adminCollectionSubmenu = [
+  { name: "Add Coin", href: "/admin/add-coin" },
+  { name: "Edit Somnus", href: "/admin/edit-somnus" },
+]
+
+export const adminDeitiesSubmenu = [
+  { name: "Add Deity", href: "/admin/add-deity" },
+  { name: "Edit Deities", href: "/admin/edit-deities" },
+]
+
+export const adminPlacesSubmenu = [
+  { name: "Add Place", href: "/admin/add-place" },
+  { name: "Edit Places", href: "/admin/edit-places" },
+]
+
+export const adminMintsSubmenu = [
+  { name: "Add Mint", href: "/admin/add-mint" },
+  { name: "Edit Mints", href: "/admin/edit-mints" },
 ]
 
 export const cabinetSubmenu = [

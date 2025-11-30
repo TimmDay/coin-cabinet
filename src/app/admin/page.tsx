@@ -62,26 +62,121 @@ export default function AdminPage() {
 
         <div className="mx-auto max-w-4xl">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <a
-              href="/admin/add-coin"
-              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
-            >
-              <h3 className="coin-title mb-4 text-xl">Add Coin</h3>
-              <p className="coin-description">
-                Add a new coin to your collection
+            {/* Collection Group */}
+            <div className="artemis-card p-6">
+              <h3 className="coin-title mb-4 text-center text-xl">
+                Collection
+              </h3>
+              <p className="coin-description mb-6 text-center">
+                Manage your coin collection
               </p>
-            </a>
+              <div className="space-y-3">
+                <a
+                  href="/admin/add-coin"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                >
+                  <div className="font-medium text-slate-200">Add Coin</div>
+                  <div className="text-sm text-slate-400">
+                    Add a new coin to your collection
+                  </div>
+                </a>
+                <a
+                  href="/admin/edit-somnus"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                >
+                  <div className="font-medium text-slate-200">Edit Somnus</div>
+                  <div className="text-sm text-slate-400">
+                    Edit existing coins in your collection
+                  </div>
+                </a>
+              </div>
+            </div>
 
-            <a
-              href="/admin/edit-somnus"
-              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
-            >
-              <h3 className="coin-title mb-4 text-xl">Edit Somnus</h3>
-              <p className="coin-description">
-                Edit existing coins in your Somnus collection
+            {/* Deities Group */}
+            <div className="artemis-card p-6">
+              <h3 className="coin-title mb-4 text-center text-xl">Deities</h3>
+              <p className="coin-description mb-6 text-center">
+                Manage deity information
               </p>
-            </a>
+              <div className="space-y-3">
+                <a
+                  href="/admin/add-deity"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                >
+                  <div className="font-medium text-slate-200">Add Deity</div>
+                  <div className="text-sm text-slate-400">
+                    Add a new deity to the database
+                  </div>
+                </a>
+                <a
+                  href="/admin/edit-deities"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                >
+                  <div className="font-medium text-slate-200">Edit Deities</div>
+                  <div className="text-sm text-slate-400">
+                    Edit existing deity information
+                  </div>
+                </a>
+              </div>
+            </div>
 
+            {/* Places Group */}
+            <div className="artemis-card p-6">
+              <h3 className="coin-title mb-4 text-center text-xl">Places</h3>
+              <p className="coin-description mb-6 text-center">
+                Manage historical places
+              </p>
+              <div className="space-y-3">
+                <a
+                  href="/admin/add-place"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                >
+                  <div className="font-medium text-slate-200">Add Place</div>
+                  <div className="text-sm text-slate-400">
+                    Add a new historical place to the database
+                  </div>
+                </a>
+                <a
+                  href="/admin/edit-places"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                >
+                  <div className="font-medium text-slate-200">Edit Places</div>
+                  <div className="text-sm text-slate-400">
+                    Manage historical places and locations
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            {/* Mints Group */}
+            <div className="artemis-card p-6">
+              <h3 className="coin-title mb-4 text-center text-xl">Mints</h3>
+              <p className="coin-description mb-6 text-center">
+                Manage mint locations
+              </p>
+              <div className="space-y-3">
+                <a
+                  href="/admin/add-mint"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                >
+                  <div className="font-medium text-slate-200">Add Mint</div>
+                  <div className="text-sm text-slate-400">
+                    Add a new mint location to the database
+                  </div>
+                </a>
+                <a
+                  href="/admin/edit-mints"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                >
+                  <div className="font-medium text-slate-200">Edit Mints</div>
+                  <div className="text-sm text-slate-400">
+                    Manage mint information and locations
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            {/* Other admin functions */}
             <a
               href="/admin/edit-map"
               className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
@@ -93,62 +188,12 @@ export default function AdminPage() {
             </a>
 
             <a
-              href="/admin/add-deity"
+              href="/admin/feature-flags"
               className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
             >
-              <h3 className="coin-title mb-4 text-xl">Add Deity</h3>
+              <h3 className="coin-title mb-4 text-xl">Feature Flags</h3>
               <p className="coin-description">
-                Add a new deity to the database
-              </p>
-            </a>
-
-            <a
-              href="/admin/edit-deities"
-              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
-            >
-              <h3 className="coin-title mb-4 text-xl">Edit Deities</h3>
-              <p className="coin-description">
-                Edit existing deity information
-              </p>
-            </a>
-
-            <a
-              href="/admin/add-mint"
-              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
-            >
-              <h3 className="coin-title mb-4 text-xl">Add Mint</h3>
-              <p className="coin-description">
-                Add a new mint location to the database
-              </p>
-            </a>
-
-            <a
-              href="/admin/edit-mints"
-              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
-            >
-              <h3 className="coin-title mb-4 text-xl">Edit Mints</h3>
-              <p className="coin-description">
-                Manage mint information and locations
-              </p>
-            </a>
-
-            <a
-              href="/admin/add-place"
-              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
-            >
-              <h3 className="coin-title mb-4 text-xl">Add Place</h3>
-              <p className="coin-description">
-                Add a new historical place to the database
-              </p>
-            </a>
-
-            <a
-              href="/admin/edit-places"
-              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
-            >
-              <h3 className="coin-title mb-4 text-xl">Edit Places</h3>
-              <p className="coin-description">
-                Manage historical places and locations
+                Manage feature flags and settings
               </p>
             </a>
           </div>

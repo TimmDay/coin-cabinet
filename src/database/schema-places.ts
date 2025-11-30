@@ -7,6 +7,7 @@ export type Place = {
   id: number
   kind: PlaceKind
   name: string
+  alt_names: string[]
   lat: number
   lng: number
   flavour_text?: string | null

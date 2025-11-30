@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server"
+import type { PostgrestSingleResponse } from "@supabase/supabase-js"
 import { createClient } from "~/database/supabase-server"
 import type { Place } from "~/database/schema-places"
 import type { PlaceFormData } from "~/lib/validations/place-form"
 
 export async function POST(request: Request) {
   try {
-    console.log("🚀 POST /api/places/admin - Adding new place")
-
     const supabase = await createClient()
 
     // Check if user is authenticated
@@ -49,11 +48,13 @@ export async function POST(request: Request) {
       user_id: user.id,
     }
 
-    const { data: place, error } = await supabase
+    const result: PostgrestSingleResponse<Place> = await supabase
       .from("places")
       .insert([placeData])
       .select()
       .single()
+
+    const { data, error } = result
 
     if (error) {
       console.error("Database error:", error)
@@ -67,6 +68,8 @@ export async function POST(request: Request) {
       )
     }
 
+    const place = data
+
     if (!place) {
       return NextResponse.json(
         {
@@ -76,8 +79,6 @@ export async function POST(request: Request) {
         { status: 500 },
       )
     }
-
-    console.log(`✅ Successfully added place: ${body.name}`)
 
     return NextResponse.json({
       success: true,
@@ -99,8 +100,6 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    console.log("🚀 PUT /api/places/admin - Updating place")
-
     const supabase = await createClient()
 
     // Check if user is authenticated
@@ -132,12 +131,14 @@ export async function PUT(request: Request) {
     // Updates are already validated and transformed on the client side
     // Just pass them through to Supabase
 
-    const { data: place, error } = await supabase
+    const result: PostgrestSingleResponse<Place> = await supabase
       .from("places")
       .update(updates)
       .eq("id", id)
       .select()
       .single()
+
+    const { data, error } = result
 
     if (error) {
       console.error("Database error:", error)
@@ -151,6 +152,8 @@ export async function PUT(request: Request) {
       )
     }
 
+    const place = data
+
     if (!place) {
       return NextResponse.json(
         {
@@ -160,8 +163,6 @@ export async function PUT(request: Request) {
         { status: 500 },
       )
     }
-
-    console.log(`✅ Successfully updated place with id: ${id}`)
 
     return NextResponse.json({
       success: true,
