@@ -11,6 +11,7 @@ import { MobileNavigation } from "./MobileNavigation"
 import {
   adminCollectionSubmenu,
   adminDeitiesSubmenu,
+  adminHistoricalFiguresSubmenu,
   adminMintsSubmenu,
   adminPlacesSubmenu,
   adminSubmenu,
@@ -160,6 +161,8 @@ export default function Navbar() {
         return adminPlacesSubmenu
       case "adminMints":
         return adminMintsSubmenu
+      case "adminHistoricalFigures":
+        return adminHistoricalFiguresSubmenu
       default:
         return []
     }
@@ -180,6 +183,8 @@ export default function Navbar() {
         return "adminPlaces"
       case "Mints":
         return "adminMints"
+      case "People":
+        return "adminHistoricalFigures"
       default:
         return null
     }

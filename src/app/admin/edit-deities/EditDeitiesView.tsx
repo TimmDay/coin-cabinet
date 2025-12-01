@@ -141,22 +141,22 @@ export function EditDeitiesView() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium text-white">
+                    <h3 className="text-lg font-medium text-white">
                       {item.name}
                       {item.subtitle && (
                         <span className="ml-2 text-sm text-gray-300">
-                          ({item.subtitle})
+                          {item.subtitle}
                         </span>
                       )}
                     </h3>
                     {item.god_of && item.god_of.length > 0 && (
                       <p className="text-sm text-gray-400">
-                        God of: {item.god_of.join(", ")}
+                        {item.god_of.join(", ")}
                       </p>
                     )}
                     {item.alt_names && item.alt_names.length > 0 && (
-                      <p className="text-xs text-gray-500">
-                        Also known as: {item.alt_names.join(", ")}
+                      <p className="mt-1 text-xs text-gray-400">
+                        {item.alt_names.join(", ")}
                       </p>
                     )}
                   </div>

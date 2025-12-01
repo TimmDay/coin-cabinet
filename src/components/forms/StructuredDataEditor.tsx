@@ -107,6 +107,25 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
     return (item[field.key] as string) ?? ""
   }
 
+  // Map colSpan numbers to actual Tailwind classes to ensure they're included in the build
+  const getColSpanClass = (span: number): string => {
+    const spanMap: Record<number, string> = {
+      1: "col-span-1",
+      2: "col-span-2",
+      3: "col-span-3",
+      4: "col-span-4",
+      5: "col-span-5",
+      6: "col-span-6",
+      7: "col-span-7",
+      8: "col-span-8",
+      9: "col-span-9",
+      10: "col-span-10",
+      11: "col-span-11",
+      12: "col-span-12",
+    }
+    return spanMap[span] ?? "col-span-1"
+  }
+
   const inputClass =
     "w-full px-2 py-1 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none transition-colors text-sm"
 
@@ -134,7 +153,7 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
             {/* Table Header */}
             <div className="grid grid-cols-12 gap-2 bg-slate-700/50 px-3 py-2 text-xs font-medium text-slate-300">
               {fields.map((field) => (
-                <div key={field.key} className={`col-span-${field.colSpan}`}>
+                <div key={field.key} className={getColSpanClass(field.colSpan)}>
                   {field.label}
                   {field.required && (
                     <span className="ml-1 text-red-400">*</span>
@@ -154,7 +173,7 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
                   {fields.map((field) => (
                     <div
                       key={field.key}
-                      className={`col-span-${field.colSpan}`}
+                      className={getColSpanClass(field.colSpan)}
                     >
                       <input
                         type="text"

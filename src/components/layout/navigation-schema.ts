@@ -16,12 +16,14 @@ export type SubmenuTypes =
   | "adminDeities"
   | "adminPlaces"
   | "adminMints"
+  | "adminHistoricalFigures"
 
 export const adminSubmenu = [
   { name: "Collection", href: "/admin/collection", hasSubmenu: true },
   { name: "Deities", href: "/admin/deities", hasSubmenu: true },
   { name: "Places", href: "/admin/places", hasSubmenu: true },
   { name: "Mints", href: "/admin/mints", hasSubmenu: true },
+  { name: "People", href: "/admin/historical-figures", hasSubmenu: true },
   { name: "Edit Map", href: "/admin/edit-map" },
   { name: "Feature Flags", href: "/admin/feature-flags" },
 ]
@@ -44,6 +46,11 @@ export const adminPlacesSubmenu = [
 export const adminMintsSubmenu = [
   { name: "Add Mint", href: "/admin/add-mint" },
   { name: "Edit Mints", href: "/admin/edit-mints" },
+]
+
+export const adminHistoricalFiguresSubmenu = [
+  { name: "Add Historical Figure", href: "/admin/add-historical-figure" },
+  { name: "Edit Historical Figures", href: "/admin/edit-historical-figures" },
 ]
 
 export const cabinetSubmenu = [

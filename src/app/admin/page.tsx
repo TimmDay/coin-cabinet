@@ -176,6 +176,40 @@ export default function AdminPage() {
               </div>
             </div>
 
+            {/* Historical Figures Group */}
+            <div className="artemis-card p-6">
+              <h3 className="coin-title mb-4 text-center text-xl">
+                Historical Figures
+              </h3>
+              <p className="coin-description mb-6 text-center">
+                Manage historical figures
+              </p>
+              <div className="space-y-3">
+                <a
+                  href="/admin/add-historical-figure"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                >
+                  <div className="font-medium text-slate-200">
+                    Add Historical Figure
+                  </div>
+                  <div className="text-sm text-slate-400">
+                    Add a new historical figure to the database
+                  </div>
+                </a>
+                <a
+                  href="/admin/edit-historical-figures"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                >
+                  <div className="font-medium text-slate-200">
+                    Edit Historical Figures
+                  </div>
+                  <div className="text-sm text-slate-400">
+                    Edit existing historical figure information
+                  </div>
+                </a>
+              </div>
+            </div>
+
             {/* Other admin functions */}
             <a
               href="/admin/edit-map"

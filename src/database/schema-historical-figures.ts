@@ -1,6 +1,11 @@
 // ============================================================================
 // HISTORICAL FIGURES - Emperors, empresses, and other historical figures
 // ============================================================================
+export type HistoricalSource = {
+  citation: string // "Suetonius, Lives of the Caesars, Augustus 28"
+  notes?: string // "describes the monetary reforms"
+}
+
 export type HistoricalFigure = {
   id: number
   name: string
@@ -13,7 +18,7 @@ export type HistoricalFigure = {
   death?: number | null
   dynasty?: string | null
   flavour_text?: string | null
-  historical_sources: string[] | null // Academic citations
+  historical_sources: HistoricalSource[] // Academic citations
 
   // Joins
   timeline_id?: number[] | null // join on timelines database

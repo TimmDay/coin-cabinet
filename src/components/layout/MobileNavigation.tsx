@@ -11,6 +11,7 @@ import { cn } from "~/lib/utils"
 import {
   adminCollectionSubmenu,
   adminDeitiesSubmenu,
+  adminHistoricalFiguresSubmenu,
   adminMintsSubmenu,
   adminPlacesSubmenu,
   adminSubmenu,
@@ -84,6 +85,8 @@ export function MobileNavigation() {
         return adminPlacesSubmenu
       case "adminMints":
         return adminMintsSubmenu
+      case "adminHistoricalFigures":
+        return adminHistoricalFiguresSubmenu
       default:
         return []
     }
@@ -103,6 +106,8 @@ export function MobileNavigation() {
         return "adminPlaces"
       case "Mints":
         return "adminMints"
+      case "People":
+        return "adminHistoricalFigures"
       default:
         return null
     }
