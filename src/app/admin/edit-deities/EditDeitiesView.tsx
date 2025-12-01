@@ -1,65 +1,29 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { useDeities, useUpdateDeity } from "~/api/deities"
-import { Loading } from "~/components/ui/Loading"
 import type { Deity } from "~/database/schema-deities"
+import { GenericEditView } from "~/components/admin/GenericEditView"
+import { useEditModal } from "~/hooks/useEditModal"
 import { EditDeityModal } from "./EditDeityModal"
 
 export function EditDeitiesView() {
-  const [message, setMessage] = useState<string | null>(null)
-  const [nameFilter, setNameFilter] = useState("")
-  const [selectedDeityId, setSelectedDeityId] = useState<number | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const dataQuery = useDeities()
+  const updateMutation = useUpdateDeity()
 
-  const { data: deitiesData, isLoading: loading, error } = useDeities()
-  const updateDeityMutation = useUpdateDeity()
-
-  // Handle errors
-  useEffect(() => {
-    if (error) {
-      setMessage("❌ Failed to load deities")
-    }
-  }, [error])
-
-  const items = deitiesData ?? []
-
-  // Handle modal interactions
-  const handleDeitySelect = (deity: Deity) => {
-    setSelectedDeityId(deity.id)
-    setIsModalOpen(true)
-  }
-
-  const handleModalClose = () => {
-    setIsModalOpen(false)
-    setSelectedDeityId(null)
-  }
-
-  const handleModalSave = async (id: number, updates: Partial<Deity>) => {
-    try {
-      const formUpdates = {
-        ...updates,
-        flavour_text:
-          updates.flavour_text === null ? undefined : updates.flavour_text,
-        secondary_info:
-          updates.secondary_info === null ? undefined : updates.secondary_info,
-      }
-
-      await updateDeityMutation.mutateAsync({ id, updates: formUpdates })
-      setMessage("✅ Deity updated successfully")
-      setTimeout(() => setMessage(null), 3000)
-    } catch (error) {
-      console.error("Error saving:", error)
-      setMessage("❌ Failed to save changes")
-      throw error // Re-throw so modal can handle it
-    }
-  }
+  const {
+    message,
+    selectedItemId,
+    isModalOpen,
+    handleItemSelect,
+    handleModalClose,
+    handleSuccess,
+  } = useEditModal<Deity>()
 
   // Filter deities based on name and god_of domains
-  const filteredItems = items.filter((item) => {
-    if (!nameFilter.trim()) return true
+  const filterFunction = (item: Deity, filterTerm: string) => {
+    if (!filterTerm.trim()) return true
 
-    const searchTerm = nameFilter.toLowerCase()
+    const searchTerm = filterTerm.toLowerCase()
 
     // Check name
     const nameMatch = item.name?.toLowerCase().includes(searchTerm) ?? false
@@ -77,132 +41,82 @@ export function EditDeitiesView() {
       ) ?? false
 
     return nameMatch || domainMatch || altNameMatch
-  })
-
-  if (loading) {
-    return <Loading variant="component" message="Loading deities..." />
   }
 
-  if (!items.length) {
-    return (
-      <div className="artemis-card p-8 text-center">
-        <h3 className="coin-title mb-4 text-xl">No Deities Found</h3>
-        <p className="coin-description">
-          The pantheon is empty. Add some deities first!
+  const renderListItem = (item: Deity) => (
+    <div>
+      <h3 className="text-lg font-medium text-white">
+        {item.name}
+        {item.subtitle && (
+          <span className="ml-2 text-sm text-gray-300">{item.subtitle}</span>
+        )}
+      </h3>
+      {item.god_of && item.god_of.length > 0 && (
+        <p className="text-sm text-gray-400">{item.god_of.join(", ")}</p>
+      )}
+      {item.alt_names && item.alt_names.length > 0 && (
+        <p className="mt-1 text-xs text-gray-400">
+          {item.alt_names.join(", ")}
         </p>
-      </div>
+      )}
+    </div>
+  )
+
+  const handleModalSave = async (id: number, updates: Partial<Deity>) => {
+    try {
+      const formUpdates = {
+        ...updates,
+        flavour_text:
+          updates.flavour_text === null ? undefined : updates.flavour_text,
+        secondary_info:
+          updates.secondary_info === null ? undefined : updates.secondary_info,
+      }
+
+      await updateMutation.mutateAsync({ id, updates: formUpdates })
+      handleSuccess("✅ Deity updated successfully")
+    } catch (error) {
+      console.error("Error saving:", error)
+      handleSuccess("❌ Failed to save changes")
+      throw error // Re-throw so modal can handle it
+    }
+  }
+
+  const renderModal = (selectedDeity: Deity | null) => {
+    return (
+      <EditDeityModal
+        key={
+          selectedDeity
+            ? `deity-${selectedDeity.id}-${selectedDeity.updated_at}`
+            : "no-deity"
+        }
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        deity={selectedDeity}
+        onSave={handleModalSave}
+        isSaving={updateMutation.isPending}
+      />
     )
   }
 
   return (
-    <div className="space-y-6">
-      {message && (
-        <div className="artemis-card p-4 text-center">
-          <p className="text-lg font-medium">{message}</p>
-        </div>
-      )}
-
-      {/* Filter Input */}
-      <div className="artemis-card p-4">
-        <label htmlFor="name-filter" className="mb-2 block text-sm font-medium">
-          Filter by Name, Domains, or Alternative Names
-        </label>
-        <input
-          id="name-filter"
-          type="text"
-          value={nameFilter}
-          onChange={(e) => setNameFilter(e.target.value)}
-          placeholder="Search by name, domain, or alternative name (e.g., Jupiter, thunder, Zeus)..."
-          className="w-full max-w-md rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none"
-        />
-        {nameFilter && (
-          <p className="mt-2 text-sm text-gray-600">
-            Showing {filteredItems.length} of {items.length} deities
-          </p>
-        )}
-      </div>
-
-      {filteredItems.length === 0 && nameFilter ? (
-        <div className="artemis-card p-8 text-center">
-          <h3 className="coin-title mb-4 text-xl">No Matching Deities</h3>
-          <p className="coin-description">
-            No deities found matching &ldquo;{nameFilter}&rdquo;
-          </p>
-        </div>
-      ) : (
-        // Clean list view for all viewport sizes
-        <div className="artemis-card p-6">
-          <div className="space-y-3">
-            {filteredItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleDeitySelect(item)}
-                className="w-full rounded-lg border border-gray-200 bg-slate-800 p-4 text-left transition-colors hover:bg-gray-600 hover:text-white"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-medium text-white">
-                      {item.name}
-                      {item.subtitle && (
-                        <span className="ml-2 text-sm text-gray-300">
-                          {item.subtitle}
-                        </span>
-                      )}
-                    </h3>
-                    {item.god_of && item.god_of.length > 0 && (
-                      <p className="text-sm text-gray-400">
-                        {item.god_of.join(", ")}
-                      </p>
-                    )}
-                    {item.alt_names && item.alt_names.length > 0 && (
-                      <p className="mt-1 text-xs text-gray-400">
-                        {item.alt_names.join(", ")}
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-gray-400">
-                    <svg
-                      className="h-5 w-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Edit Deity Modal */}
-      {(() => {
-        const selectedDeity = selectedDeityId
-          ? (items.find((item) => item.id === selectedDeityId) ?? null)
-          : null
-
-        return (
-          <EditDeityModal
-            key={
-              selectedDeity
-                ? `deity-${selectedDeity.id}-${selectedDeity.updated_at}`
-                : "no-deity"
-            }
-            isOpen={isModalOpen}
-            onClose={handleModalClose}
-            deity={selectedDeity}
-            onSave={handleModalSave}
-            isSaving={updateDeityMutation.isPending}
-          />
-        )
-      })()}
-    </div>
+    <GenericEditView
+      dataQuery={dataQuery}
+      cardClass="artemis-card"
+      itemColorScheme="slate"
+      filterLabel="Filter by Name, Domains, or Alternative Names"
+      filterPlaceholder="Search by name, domain, or alternative name (e.g., Jupiter, thunder, Zeus)..."
+      filterFunction={filterFunction}
+      renderListItem={renderListItem}
+      selectedItemId={selectedItemId}
+      onItemSelect={handleItemSelect}
+      renderModal={renderModal}
+      emptyStateConfig={{
+        title: "No Deities Found",
+        description: "The pantheon is empty. Add some deities first!",
+        showAddButton: false,
+      }}
+      message={message}
+      onSuccess={handleSuccess}
+    />
   )
 }

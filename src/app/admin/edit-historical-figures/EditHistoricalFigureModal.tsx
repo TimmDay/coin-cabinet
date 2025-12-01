@@ -3,7 +3,10 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import type { HistoricalFigure } from "~/database/schema-historical-figures"
+import type {
+  HistoricalFigure,
+  HistoricalSource,
+} from "~/database/schema-historical-figures"
 import { HistoricalSourcesEditor } from "~/components/forms/HistoricalSourcesEditor"
 import {
   FormErrorDisplay,
@@ -112,10 +115,14 @@ export function EditHistoricalFigureModal({
     return arr.length > 0 ? arr : null
   }
 
-  const parseHistoricalSources = (str: string) => {
+  const parseHistoricalSources = (str: string): HistoricalSource[] => {
     if (!str || str.trim() === "") return []
     try {
-      return JSON.parse(str)
+      const parsed = JSON.parse(str) as unknown
+      if (Array.isArray(parsed)) {
+        return parsed as HistoricalSource[]
+      }
+      return []
     } catch {
       return []
     }

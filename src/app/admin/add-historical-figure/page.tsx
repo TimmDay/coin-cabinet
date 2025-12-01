@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { AddHistoricalFigureView } from "./AddHistoricalFigureView"
 
 export const metadata: Metadata = {

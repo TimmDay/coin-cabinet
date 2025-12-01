@@ -4,8 +4,8 @@ import type { HistoricalFigure } from "~/database/schema-historical-figures"
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } },
-) {
+  context: { params: Promise<{ id: string }> },
+): Promise<NextResponse> {
   try {
     const supabase = await createClient()
 
@@ -21,6 +21,7 @@ export async function PATCH(
       )
     }
 
+    const params = await context.params
     const id = parseInt(params.id)
     if (isNaN(id)) {
       return NextResponse.json(
@@ -29,10 +30,13 @@ export async function PATCH(
       )
     }
 
-    const updates = (await request.json()) as Partial<
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const body = await request.json()
+    const updates = body as Partial<
       Omit<HistoricalFigure, "id" | "created_at" | "updated_at" | "user_id">
     >
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { data, error } = await supabase
       .from("historical_figures")
       .update(updates)
@@ -51,6 +55,7 @@ export async function PATCH(
 
     return NextResponse.json({
       success: true,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       data,
     })
   } catch (error) {
@@ -63,9 +68,9 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+  _request: Request,
+  context: { params: Promise<{ id: string }> },
+): Promise<NextResponse> {
   try {
     const supabase = await createClient()
 
@@ -81,6 +86,7 @@ export async function DELETE(
       )
     }
 
+    const params = await context.params
     const id = parseInt(params.id)
     if (isNaN(id)) {
       return NextResponse.json(

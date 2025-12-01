@@ -18,15 +18,18 @@ export async function POST(request: Request) {
       )
     }
 
-    const body = (await request.json()) as Omit<
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const body = await request.json()
+    const figureData = body as Omit<
       HistoricalFigure,
       "id" | "created_at" | "updated_at" | "user_id"
     >
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { data, error } = await supabase
       .from("historical_figures")
       .insert({
-        ...body,
+        ...figureData,
         user_id: session.user.id,
       })
       .select()
@@ -42,6 +45,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       data,
     })
   } catch (error) {
