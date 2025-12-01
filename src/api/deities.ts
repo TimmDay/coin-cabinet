@@ -111,8 +111,13 @@ export function useAddDeity() {
   return useMutation({
     mutationFn: addDeity,
     onSuccess: () => {
-      // Force immediate refetch of deities list
-      void queryClient.refetchQueries({ queryKey: ["deities"] })
+      // Invalidate and refetch deities list - this ensures all instances refresh
+      void queryClient.invalidateQueries({ queryKey: ["deities"] })
+
+      // Also invalidate any queries that might include deity data
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
     },
   })
 }
@@ -129,8 +134,8 @@ export function useUpdateDeity() {
       updates: Partial<DeityFormData>
     }) => updateDeity(id, updates),
     onSuccess: () => {
-      // Force immediate refetch of deities list
-      void queryClient.refetchQueries({ queryKey: ["deities"] })
+      // Invalidate and refetch deities list - consistent with add/delete
+      void queryClient.invalidateQueries({ queryKey: ["deities"] })
 
       // Invalidate all coin queries that might include deity data
       void queryClient.invalidateQueries({
@@ -139,9 +144,6 @@ export function useUpdateDeity() {
       void queryClient.invalidateQueries({ queryKey: ["coin"] })
       void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
       void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
-
-      // This ensures that any coin detail pages or edit forms will refetch
-      // the updated deity information when the cache is invalidated
     },
   })
 }
