@@ -8,6 +8,7 @@ import {
   ModalWrapper,
   processArray,
 } from "~/components/forms"
+import { CoinageFeaturesEditor } from "~/components/forms/CoinageFeaturesEditor"
 import { FestivalsEditor } from "~/components/forms/FestivalsEditor"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 import { usePlaceOptions } from "~/hooks/usePlaceOptions"
@@ -21,6 +22,7 @@ type FormData = {
   alt_names_raw: string
   similar_gods_raw: string
   god_of_raw: string
+  features_coinage_raw: string
   legends_coinage_raw: string
   historical_sources_raw: string
   place_ids: string[]
@@ -45,6 +47,16 @@ const createDeityFormData = (deity: Deity | null): FormData => {
     alt_names_raw: deity?.alt_names?.join(", ") ?? "",
     similar_gods_raw: deity?.similar_gods?.join(", ") ?? "",
     god_of_raw: deity?.god_of?.join(", ") ?? "",
+    features_coinage_raw: (() => {
+      if (!deity?.features_coinage) return ""
+      if (
+        Array.isArray(deity.features_coinage) &&
+        deity.features_coinage.length === 0
+      ) {
+        return ""
+      }
+      return JSON.stringify(deity.features_coinage)
+    })(),
     legends_coinage_raw: deity?.legends_coinage?.join(", ") ?? "",
     historical_sources_raw: deity?.historical_sources?.join(", ") ?? "",
     place_ids:
@@ -129,6 +141,23 @@ export function EditDeityModal({
       alt_names: processArray(data.alt_names_raw),
       similar_gods: processArray(data.similar_gods_raw),
       god_of: processArray(data.god_of_raw),
+      features_coinage: (() => {
+        if (!data.features_coinage_raw || data.features_coinage_raw === "")
+          return []
+        try {
+          const parsed = JSON.parse(data.features_coinage_raw) as unknown
+          if (Array.isArray(parsed)) {
+            return parsed as Array<{
+              name: string
+              alt_names?: string[]
+              notes?: string
+            }>
+          }
+          return []
+        } catch {
+          return []
+        }
+      })(),
       legends_coinage: processArray(data.legends_coinage_raw),
       historical_sources: processArray(data.historical_sources_raw),
       place_ids: (data.place_ids || []).map((id) => parseInt(id, 10)),
@@ -355,14 +384,24 @@ export function EditDeityModal({
               selectedValues={watch("place_ids") || []}
               onSelectionChange={(values) => setValue("place_ids", values)}
               placeholder="Select temples, shrines, sacred sites..."
-              className="w-full rounded-md border border-gray-300 bg-white text-slate-900"
             />
           </div>
 
+          {/* Coinage Features */}
+          <CoinageFeaturesEditor
+            value={watch("features_coinage_raw") ?? ""}
+            onChange={(value) =>
+              setValue("features_coinage_raw", value, { shouldDirty: true })
+            }
+            error={errors.features_coinage_raw?.message}
+          />
+
           {/* Festivals */}
           <FestivalsEditor
-            value={watch("festivals_raw")}
-            onChange={(value) => setValue("festivals_raw", value)}
+            value={watch("festivals_raw") ?? ""}
+            onChange={(value) =>
+              setValue("festivals_raw", value, { shouldDirty: true })
+            }
             error={errors.festivals_raw?.message}
           />
 

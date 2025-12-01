@@ -4,6 +4,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { CoinageFeaturesEditor } from "~/components/forms/CoinageFeaturesEditor"
 import { FestivalsEditor } from "~/components/forms/FestivalsEditor"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 import { usePlaceOptions } from "~/hooks/usePlaceOptions"
@@ -192,25 +193,13 @@ export function DeityForm({ onSubmit, isLoading }: DeityFormProps) {
           </div>
 
           <div className="space-y-4">
-            <div>
-              <label className={labelClass} htmlFor="features_coinage">
-                Common features found on coins
-              </label>
-              <textarea
-                {...register("features_coinage")}
-                id="features_coinage"
-                className={textareaClass}
-                placeholder='Simple: eagle, thunderbolt, scepter (comma-separated)
-Advanced JSON: [{"name": "eagle", "alt_name": "aquila", "notes": "Sacred bird, often perched on scepter"}]'
-              />
-              <p className="mt-1 text-sm text-slate-400">
-                Enter as comma-separated list or JSON array for detailed
-                features
-              </p>
-              {errors.features_coinage && (
-                <p className={errorClass}>{errors.features_coinage.message}</p>
-              )}
-            </div>
+            <CoinageFeaturesEditor
+              value={watch("features_coinage") ?? ""}
+              onChange={(value) =>
+                setValue("features_coinage", value, { shouldDirty: true })
+              }
+              error={errors.features_coinage?.message}
+            />
 
             <div>
               <label className={labelClass} htmlFor="legends_coinage">
@@ -235,7 +224,6 @@ Advanced JSON: [{"name": "eagle", "alt_name": "aquila", "notes": "Sacred bird, o
                 selectedValues={watch("place_ids") ?? []}
                 onSelectionChange={(values) => setValue("place_ids", values)}
                 placeholder="Select temples, shrines, sacred sites..."
-                className="w-full rounded-md border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400"
               />
               {errors.place_ids && (
                 <p className={errorClass}>{errors.place_ids.message}</p>
@@ -244,7 +232,9 @@ Advanced JSON: [{"name": "eagle", "alt_name": "aquila", "notes": "Sacred bird, o
 
             <FestivalsEditor
               value={watch("festivals")}
-              onChange={(value) => setValue("festivals", value)}
+              onChange={(value) =>
+                setValue("festivals", value, { shouldDirty: true })
+              }
               error={errors.festivals?.message}
             />
 

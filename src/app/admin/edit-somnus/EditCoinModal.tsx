@@ -278,7 +278,6 @@ export function EditCoinModal({
               setValue("deity_id", values, { shouldDirty: true })
             }
             placeholder="Select deities..."
-            className="w-full"
           />
         </div>
 

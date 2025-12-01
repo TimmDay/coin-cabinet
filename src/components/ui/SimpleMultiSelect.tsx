@@ -15,7 +15,7 @@ export function SimpleMultiSelect({
   options,
   selectedValues,
   onSelectionChange,
-  className = "rounded-md border border-slate-600 bg-slate-800/50 text-slate-200",
+  className = "w-full rounded-md border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400",
   placeholder = "Select options...",
   maxHeight = "max-h-60",
 }: SimpleMultiSelectProps) {

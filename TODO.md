@@ -2,10 +2,7 @@
 
 ## Next Thing
 
-- [ ] Add a places_id to the deities form top level. (we have temples already. rename this)
-- [ ] remove the concept of places from the festivals part - instead just make a 'note' single string where I can write about where it was celbrated or whatever.
-      -- update the table to make festivals jsonb
-      -- test with Venus
+- [x] redo festivals in deities db as jsonB instead of string
 
 - [ ] hand draw a logo I like
 - [ ] timeline - elagabalus
@@ -383,3 +380,7 @@ articles, guides
 - [x] DeepDive page: Mint info text box. Display above|below the map. style nicely.
 - [x] design it on paper for mobile/desktop
 - [x] order coin capsules to bulk up supply.
+- [x] Add a places_id to the deities form top level. (we have temples already. rename this)
+- [x] remove the concept of places from the festivals part - instead just make a 'note' single string where I can write about where it was celbrated or whatever.
+      -- update the table to make festivals jsonb
+      -- test with Venus

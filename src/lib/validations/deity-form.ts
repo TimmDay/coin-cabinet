@@ -3,7 +3,7 @@ import { z } from "zod"
 // Schema for individual coinage features
 const coinageFeatureSchema = z.object({
   name: z.string().min(1, "Feature name is required"),
-  alt_name: z.string().optional(),
+  alt_names: z.array(z.string()).optional(),
   notes: z.string().optional(),
 })
 
@@ -127,7 +127,7 @@ export const deityFormSchema = z.object({
           .split(",")
           .map((feature) => feature.trim())
           .filter(Boolean)
-          .map((name) => ({ name, alt_name: undefined, notes: undefined }))
+          .map((name) => ({ name, alt_names: [], notes: undefined }))
       }
     })
     .pipe(
@@ -241,17 +241,23 @@ export function transformDeityFormInput(
         // Try to parse as JSON first (for structured input)
         const parsed = JSON.parse(input.features_coinage) as unknown
         if (Array.isArray(parsed)) {
-          return parsed as { name: string; alt_name?: string; notes?: string }[]
+          return parsed as {
+            name: string
+            alt_names?: string[]
+            notes?: string
+          }[]
         }
         // If it's not an array, treat as single feature
-        return [parsed as { name: string; alt_name?: string; notes?: string }]
+        return [
+          parsed as { name: string; alt_names?: string[]; notes?: string },
+        ]
       } catch {
         // If JSON parsing fails, treat as comma-separated simple features
         return input.features_coinage
           .split(",")
           .map((feature) => feature.trim())
           .filter(Boolean)
-          .map((name) => ({ name, alt_name: undefined, notes: undefined }))
+          .map((name) => ({ name, alt_names: [], notes: undefined }))
       }
     })(),
     legends_coinage: input.legends_coinage
