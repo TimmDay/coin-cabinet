@@ -111,8 +111,15 @@ export function useAddMint() {
   return useMutation({
     mutationFn: addMint,
     onSuccess: () => {
-      // Force immediate refetch of mints list
+      // Force immediate refetch of active queries - ignores stale time
       void queryClient.refetchQueries({ queryKey: ["mints"] })
+      // ALSO mark as stale for future page loads
+      void queryClient.invalidateQueries({ queryKey: ["mints"] })
+
+      // Invalidate related queries
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
     },
   })
 }
@@ -129,10 +136,12 @@ export function useUpdateMint() {
       updates: Partial<MintFormData>
     }) => updateMint(id, updates),
     onSuccess: () => {
-      // Force immediate refetch of mints list
+      // Force immediate refetch of active queries - ignores stale time
       void queryClient.refetchQueries({ queryKey: ["mints"] })
+      // ALSO mark as stale for future page loads
+      void queryClient.invalidateQueries({ queryKey: ["mints"] })
 
-      // Invalidate coin queries that might include mint data
+      // Invalidate related queries
       void queryClient.invalidateQueries({ queryKey: ["coin"] })
       void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
       void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
@@ -146,8 +155,15 @@ export function useDeleteMint() {
   return useMutation({
     mutationFn: deleteMint,
     onSuccess: () => {
-      // Invalidate and refetch mints list
+      // Force immediate refetch of active queries - ignores stale time
+      void queryClient.refetchQueries({ queryKey: ["mints"] })
+      // ALSO mark as stale for future page loads
       void queryClient.invalidateQueries({ queryKey: ["mints"] })
+
+      // Invalidate related queries
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
     },
   })
 }

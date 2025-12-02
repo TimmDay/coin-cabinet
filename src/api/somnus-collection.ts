@@ -23,9 +23,15 @@ export function useAddSomnusCoin() {
   return useMutation({
     mutationFn: insertSomnusCoin,
     onSuccess: () => {
-      // Force immediate refetch of all somnus coin queries
+      // Force immediate refetch of active queries - ignores stale time
       void queryClient.refetchQueries({ queryKey: ["somnus-coins"] })
       void queryClient.refetchQueries({ queryKey: ["all-somnus-coins"] })
+      // ALSO mark as stale for future page loads
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
+
+      // Invalidate related queries
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
     },
     onError: (error) => {
       console.error("Error inserting somnus coin:", error)
@@ -39,11 +45,14 @@ export function useUpdateSomnusCoin() {
   return useMutation({
     mutationFn: updateSomnusCoin,
     onSuccess: () => {
-      // Force immediate refetch of somnus coin queries
+      // Force immediate refetch of active queries - ignores stale time
       void queryClient.refetchQueries({ queryKey: ["somnus-coins"] })
       void queryClient.refetchQueries({ queryKey: ["all-somnus-coins"] })
+      // ALSO mark as stale for future page loads
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
 
-      // Invalidate related coin queries
+      // Invalidate related queries
       void queryClient.invalidateQueries({ queryKey: ["coin"] })
     },
     onError: (error) => {
@@ -58,9 +67,15 @@ export function useDeleteSomnusCoin() {
   return useMutation({
     mutationFn: deleteSomnusCoin,
     onSuccess: () => {
-      // Invalidate and refetch all somnus coin queries after successful deletion
+      // Force immediate refetch of active queries - ignores stale time
+      void queryClient.refetchQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.refetchQueries({ queryKey: ["all-somnus-coins"] })
+      // ALSO mark as stale for future page loads
       void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
       void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
+
+      // Invalidate related queries
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
     },
     onError: (error) => {
       console.error("Error deleting somnus coin:", error)

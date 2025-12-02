@@ -109,9 +109,14 @@ export function useAddPlace() {
   return useMutation({
     mutationFn: addPlace,
     onSuccess: () => {
-      // Invalidate and immediately refetch places cache
-      void queryClient.invalidateQueries({ queryKey: ["places"] })
+      // Force immediate refetch of active queries - ignores stale time
       void queryClient.refetchQueries({ queryKey: ["places"] })
+      // ALSO mark as stale for future page loads
+      void queryClient.invalidateQueries({ queryKey: ["places"] })
+
+      // Invalidate related queries
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
     },
   })
 }
@@ -128,11 +133,12 @@ export function useUpdatePlace() {
       updates: Partial<PlaceFormData>
     }) => updatePlace(id, updates),
     onSuccess: () => {
-      // Invalidate and immediately refetch places cache
-      void queryClient.invalidateQueries({ queryKey: ["places"] })
+      // Force immediate refetch of active queries - ignores stale time
       void queryClient.refetchQueries({ queryKey: ["places"] })
+      // ALSO mark as stale for future page loads
+      void queryClient.invalidateQueries({ queryKey: ["places"] })
 
-      // Invalidate any related queries that might include place data
+      // Invalidate related queries
       void queryClient.invalidateQueries({ queryKey: ["coin"] })
       void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
     },
@@ -145,10 +151,12 @@ export function useDeletePlace() {
   return useMutation({
     mutationFn: deletePlace,
     onSuccess: () => {
-      // Invalidate places cache to ensure fresh data
+      // Force immediate refetch of active queries - ignores stale time
+      void queryClient.refetchQueries({ queryKey: ["places"] })
+      // ALSO mark as stale for future page loads
       void queryClient.invalidateQueries({ queryKey: ["places"] })
 
-      // Invalidate any related queries that might include place data
+      // Invalidate related queries
       void queryClient.invalidateQueries({ queryKey: ["coin"] })
       void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
     },

@@ -101,7 +101,7 @@ export function useDeities() {
   return useQuery({
     queryKey: ["deities"],
     queryFn: fetchDeities,
-    staleTime: 7 * 24 * 60 * 60 * 1000,
+    staleTime: 7 * 24 * 60 * 60 * 1000, // 7 days - deities rarely change
   })
 }
 
@@ -111,17 +111,18 @@ export function useAddDeity() {
   return useMutation({
     mutationFn: addDeity,
     onSuccess: () => {
-      // Invalidate and refetch deities list - this ensures all instances refresh
+      // Force immediate refetch of active deities queries - ignores stale time
+      void queryClient.refetchQueries({ queryKey: ["deities"] })
+      // ALSO mark as stale for future page loads
       void queryClient.invalidateQueries({ queryKey: ["deities"] })
 
-      // Also invalidate any queries that might include deity data
+      // Invalidate related queries (these can wait for next access)
       void queryClient.invalidateQueries({ queryKey: ["coin"] })
       void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
       void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
     },
   })
 }
-
 export function useUpdateDeity() {
   const queryClient = useQueryClient()
 
@@ -134,10 +135,12 @@ export function useUpdateDeity() {
       updates: Partial<DeityFormData>
     }) => updateDeity(id, updates),
     onSuccess: () => {
-      // Invalidate and refetch deities list - consistent with add/delete
+      // Force immediate refetch of active deities queries - ignores stale time
+      void queryClient.refetchQueries({ queryKey: ["deities"] })
+      // ALSO mark as stale for future page loads
       void queryClient.invalidateQueries({ queryKey: ["deities"] })
 
-      // Invalidate all coin queries that might include deity data
+      // Invalidate related queries (these can wait for next access)
       void queryClient.invalidateQueries({
         queryKey: ["specific-coin-with-deities"],
       })
@@ -154,8 +157,15 @@ export function useDeleteDeity() {
   return useMutation({
     mutationFn: deleteDeity,
     onSuccess: () => {
-      // Invalidate and refetch deities list
+      // Force immediate refetch of active deities queries - ignores stale time
+      void queryClient.refetchQueries({ queryKey: ["deities"] })
+      // ALSO mark as stale for future page loads
       void queryClient.invalidateQueries({ queryKey: ["deities"] })
+
+      // Invalidate related queries (these can wait for next access)
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
     },
   })
 }

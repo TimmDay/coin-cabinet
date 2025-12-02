@@ -101,7 +101,15 @@ export const useAddHistoricalFigure = () => {
   return useMutation({
     mutationFn: addHistoricalFigure,
     onSuccess: () => {
+      // Force immediate refetch of active queries - ignores stale time
+      void queryClient.refetchQueries({ queryKey: ["historical-figures"] })
+      // ALSO mark as stale for future page loads
       void queryClient.invalidateQueries({ queryKey: ["historical-figures"] })
+
+      // Invalidate related queries
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
     },
   })
 }
@@ -120,7 +128,15 @@ export const useUpdateHistoricalFigure = () => {
       >
     }) => updateHistoricalFigure(id, data),
     onSuccess: () => {
+      // Force immediate refetch of active queries - ignores stale time
+      void queryClient.refetchQueries({ queryKey: ["historical-figures"] })
+      // ALSO mark as stale for future page loads
       void queryClient.invalidateQueries({ queryKey: ["historical-figures"] })
+
+      // Invalidate related queries
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
     },
   })
 }
@@ -131,7 +147,15 @@ export const useDeleteHistoricalFigure = () => {
   return useMutation({
     mutationFn: deleteHistoricalFigure,
     onSuccess: () => {
+      // Force immediate refetch of active queries - ignores stale time
+      void queryClient.refetchQueries({ queryKey: ["historical-figures"] })
+      // ALSO mark as stale for future page loads
       void queryClient.invalidateQueries({ queryKey: ["historical-figures"] })
+
+      // Invalidate related queries
+      void queryClient.invalidateQueries({ queryKey: ["coin"] })
+      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
+      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
     },
   })
 }
