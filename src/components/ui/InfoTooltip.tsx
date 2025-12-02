@@ -33,7 +33,7 @@ export function InfoTooltip({
         }}
         className="cursor-pointer rounded-full border border-slate-600/50 bg-slate-700/50 p-2 text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
         aria-label="Show additional information"
-        aria-expanded={showTooltip ? "true" : "false"}
+        aria-expanded={showTooltip}
         aria-describedby={id}
       >
         <Info className="h-4 w-4" />

@@ -122,7 +122,7 @@ export function SimpleMultiSelect({
         onKeyDown={handleKeyDown}
         tabIndex={0}
         role="combobox"
-        aria-expanded={isOpen ? "true" : "false"}
+        aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-controls="simple-multiselect-listbox"
         aria-label="Multi-select dropdown"
@@ -205,7 +205,7 @@ export function SimpleMultiSelect({
                 }`}
                 onClick={() => toggleOption(option.value)}
                 role="option"
-                aria-selected={isSelected ? "true" : "false"}
+                aria-selected={isSelected}
               >
                 <div className="flex items-center justify-between">
                   <span>{option.label}</span>

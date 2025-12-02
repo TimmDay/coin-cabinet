@@ -127,7 +127,7 @@ export function MultiSelect({
         onKeyDown={handleKeyDown}
         tabIndex={0}
         role="combobox"
-        aria-expanded={isOpen ? "true" : "false"}
+        aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-controls="multiselect-listbox"
         aria-label="Select sets"
@@ -203,14 +203,14 @@ export function MultiSelect({
             return (
               <div
                 key={option.value}
-                className={`cursor-pointer px-3 py-2 transition-colors ${
-                  isFocused ? "bg-slate-600" : "hover:bg-slate-700"
+                className={`cursor-pointer bg-slate-800 px-3 py-2 transition-colors ${
+                  isFocused ? "!bg-slate-700" : "hover:!bg-slate-700/50"
                 } ${
-                  isSelected ? "bg-slate-700 text-amber-400" : "text-slate-200"
+                  isSelected ? "!bg-amber-600 text-white" : "text-slate-200"
                 }`}
                 onClick={() => toggleOption(option.value)}
                 role="option"
-                aria-selected={isSelected ? "true" : "false"}
+                aria-selected={isSelected}
               >
                 <div className="flex items-center justify-between">
                   <span>{option.label}</span>

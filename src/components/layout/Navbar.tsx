@@ -307,9 +307,7 @@ export default function Navbar() {
                         ? "border-transparent text-slate-500"
                         : "hover:border-primary/50 border-transparent text-slate-300 hover:text-slate-500",
                     )}
-                    aria-expanded={
-                      openMainDropdown === item.name ? "true" : "false"
-                    }
+                    aria-expanded={openMainDropdown === item.name}
                     aria-haspopup="menu"
                   >
                     {item.name}
@@ -325,7 +323,6 @@ export default function Navbar() {
                   {openMainDropdown === item.name && (
                     <div
                       className="somnus-card z-dropdown absolute top-full left-0 min-w-max shadow-lg"
-                      role="menu"
                       onMouseEnter={() => handleMainDropdownEnter(item.name)}
                       onMouseLeave={handleMainDropdownLeave}
                     >
@@ -334,8 +331,8 @@ export default function Navbar() {
                           <div key={submenuItem.name} className="relative">
                             {"hasSubmenu" in submenuItem &&
                             submenuItem.hasSubmenu ? (
-                              <div
-                                className="flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                              <button
+                                className="flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
                                 onMouseEnter={() => {
                                   const submenuType = getSubmenuType(
                                     submenuItem.name,
@@ -358,14 +355,10 @@ export default function Navbar() {
                                   setOpenMainDropdown(null)
                                   setOpenSubmenu(null)
                                 }}
-                                role="menuitem"
-                                tabIndex={0}
                                 aria-haspopup="menu"
                                 aria-expanded={
                                   openSubmenu ===
                                   getSubmenuType(submenuItem.name)
-                                    ? "true"
-                                    : "false"
                                 }
                               >
                                 <span>{submenuItem.name}</span>
@@ -373,10 +366,10 @@ export default function Navbar() {
                                   className="h-3 w-3 text-gray-400"
                                   aria-hidden="true"
                                 />
-                              </div>
+                              </button>
                             ) : (
-                              <div
-                                className="block cursor-pointer rounded-md px-3 py-2 text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                              <button
+                                className="block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
                                 onClick={() => {
                                   router.push(submenuItem.href)
                                   setOpenMainDropdown(null)
@@ -385,11 +378,9 @@ export default function Navbar() {
                                 onKeyDown={(e) =>
                                   handleSubmenuItemKeyDown(e, submenuItem.href)
                                 }
-                                role="menuitem"
-                                tabIndex={0}
                               >
                                 {submenuItem.name}
-                              </div>
+                              </button>
                             )}
 
                             {"hasSubmenu" in submenuItem &&
@@ -407,15 +398,14 @@ export default function Navbar() {
                                   }
                                 }}
                                 onMouseLeave={handleSubmenuLeave}
-                                role="menu"
                                 aria-label={`${submenuItem.name} submenu`}
                               >
                                 <div className="flex flex-col gap-1 p-4">
                                   {getNestedSubmenuItems(openSubmenu!).map(
                                     (nestedItem) => (
-                                      <div
+                                      <button
                                         key={nestedItem.name}
-                                        className="block cursor-pointer rounded-md px-3 py-2 text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                                        className="block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
                                         onClick={() => {
                                           router.push(nestedItem.href)
                                           setOpenMainDropdown(null)
@@ -427,11 +417,9 @@ export default function Navbar() {
                                             nestedItem.href,
                                           )
                                         }
-                                        role="menuitem"
-                                        tabIndex={0}
                                       >
                                         {nestedItem.name}
-                                      </div>
+                                      </button>
                                     ),
                                   )}
                                 </div>

@@ -60,7 +60,7 @@ export function DeepDiveCard({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="bg-muted/50 text-foreground hover:bg-muted mb-4 flex w-full items-center justify-center rounded text-sm font-medium transition-colors"
-        aria-expanded={isOpen ? "true" : "false"}
+        aria-expanded={isOpen}
         aria-label={isOpen ? "Collapse details" : "Expand details"}
       >
         <svg

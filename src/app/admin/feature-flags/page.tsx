@@ -121,7 +121,7 @@ export default function FeatureFlagsPage() {
                           : "focus:ring-primary bg-gray-200 dark:bg-gray-700"
                       }`}
                       role="switch"
-                      aria-checked={isEnabled ? "true" : "false"}
+                      aria-checked={isEnabled}
                       aria-label={`Toggle ${flag.displayName}`}
                       title={`${isEnabled ? "Disable" : "Enable"} ${flag.displayName}`}
                     >
