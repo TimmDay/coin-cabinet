@@ -20,9 +20,16 @@ export function SimpleMultiSelect({
   maxHeight = "max-h-60",
 }: SimpleMultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
   const [focusedIndex, setFocusedIndex] = useState(-1)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Filter options based on search term
+  const filteredOptions = options.filter((option) =>
+    option.label.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -32,6 +39,7 @@ export function SimpleMultiSelect({
       ) {
         setIsOpen(false)
         setFocusedIndex(-1)
+        setSearchTerm("")
       }
     }
 
@@ -42,19 +50,19 @@ export function SimpleMultiSelect({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     switch (e.key) {
       case "Enter":
-      case " ":
         e.preventDefault()
         if (!isOpen) {
           setIsOpen(true)
           setFocusedIndex(0)
-        } else if (focusedIndex >= 0) {
-          toggleOption(options[focusedIndex]?.value ?? "")
+        } else if (focusedIndex >= 0 && filteredOptions[focusedIndex]) {
+          toggleOption(filteredOptions[focusedIndex].value)
         }
         break
       case "Escape":
         e.preventDefault()
         setIsOpen(false)
         setFocusedIndex(-1)
+        setSearchTerm("")
         inputRef.current?.focus()
         break
       case "ArrowDown":
@@ -64,7 +72,7 @@ export function SimpleMultiSelect({
           setFocusedIndex(0)
         } else {
           const nextIndex =
-            focusedIndex < options.length - 1 ? focusedIndex + 1 : 0
+            focusedIndex < filteredOptions.length - 1 ? focusedIndex + 1 : 0
           setFocusedIndex(nextIndex)
         }
         break
@@ -72,10 +80,10 @@ export function SimpleMultiSelect({
         e.preventDefault()
         if (!isOpen) {
           setIsOpen(true)
-          setFocusedIndex(options.length - 1)
+          setFocusedIndex(filteredOptions.length - 1)
         } else {
           const prevIndex =
-            focusedIndex > 0 ? focusedIndex - 1 : options.length - 1
+            focusedIndex > 0 ? focusedIndex - 1 : filteredOptions.length - 1
           setFocusedIndex(prevIndex)
         }
         break
@@ -83,21 +91,28 @@ export function SimpleMultiSelect({
         if (isOpen) {
           setIsOpen(false)
           setFocusedIndex(-1)
+          setSearchTerm("")
         }
         break
     }
   }
 
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
+    setIsOpen(true)
+    setFocusedIndex(0) // Always focus first filtered item
+  }
+
   // Scroll focused item into view
   useEffect(() => {
-    if (isOpen && focusedIndex >= 0) {
+    if (isOpen && focusedIndex >= 0 && filteredOptions.length > 0) {
       const listbox = document.getElementById("simple-multiselect-listbox")
       const focusedItem = listbox?.children[focusedIndex] as HTMLElement
       if (focusedItem) {
         focusedItem.scrollIntoView({ block: "nearest" })
       }
     }
-  }, [focusedIndex, isOpen])
+  }, [focusedIndex, isOpen, filteredOptions.length])
 
   const toggleOption = (value: string) => {
     const newValues = selectedValues.includes(value)
@@ -116,16 +131,9 @@ export function SimpleMultiSelect({
     <div className="relative" ref={dropdownRef}>
       {/* Main input area */}
       <div
-        ref={inputRef}
-        className={`${className} flex min-h-[42px] cursor-pointer flex-wrap items-center gap-1 p-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none`}
-        onClick={() => setIsOpen(!isOpen)}
-        onKeyDown={handleKeyDown}
-        tabIndex={0}
-        role="combobox"
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-        aria-controls="simple-multiselect-listbox"
-        aria-label="Multi-select dropdown"
+        ref={containerRef}
+        className={`${className} flex min-h-[42px] cursor-text flex-wrap items-center gap-1 p-2 focus-within:border-purple-900 focus-within:ring-1 focus-within:ring-purple-900`}
+        onClick={() => inputRef.current?.focus()}
       >
         {/* Selected pills */}
         {selectedValues.map((value) => {
@@ -161,10 +169,17 @@ export function SimpleMultiSelect({
           )
         })}
 
-        {/* Placeholder text */}
-        {selectedValues.length === 0 && (
-          <span className="text-slate-400">{placeholder}</span>
-        )}
+        {/* Search input */}
+        <input
+          ref={inputRef}
+          type="text"
+          value={searchTerm}
+          onChange={handleSearchInputChange}
+          onKeyDown={handleKeyDown}
+          className="min-w-[120px] flex-1 bg-transparent text-slate-200 placeholder-slate-400 outline-none"
+          placeholder={selectedValues.length === 0 ? placeholder : "Search..."}
+          onFocus={() => setIsOpen(true)}
+        />
 
         {/* Dropdown arrow */}
         <div className="ml-auto">
@@ -192,40 +207,47 @@ export function SimpleMultiSelect({
           id="simple-multiselect-listbox"
           aria-label="Options"
         >
-          {options.map((option, index) => {
-            const isSelected = selectedValues.includes(option.value)
-            const isFocused = index === focusedIndex
-            return (
-              <div
-                key={option.value}
-                className={`cursor-pointer bg-slate-800 px-3 py-2 transition-colors ${
-                  isFocused ? "!bg-slate-700" : "hover:!bg-slate-700/50"
-                } ${
-                  isSelected ? "!bg-purple-900 text-white" : "text-slate-200"
-                }`}
-                onClick={() => toggleOption(option.value)}
-                role="option"
-                aria-selected={isSelected}
-              >
-                <div className="flex items-center justify-between">
-                  <span>{option.label}</span>
-                  {isSelected && (
-                    <svg
-                      className="h-4 w-4 text-purple-900"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  )}
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((option, index) => {
+              const isSelected = selectedValues.includes(option.value)
+              const isFocused = index === focusedIndex
+              return (
+                <div
+                  key={option.value}
+                  className={`cursor-pointer bg-slate-800 px-3 py-2 transition-colors ${
+                    isFocused
+                      ? "!bg-amber-600/20 text-amber-200"
+                      : isSelected
+                        ? "!bg-purple-900 text-white"
+                        : "text-slate-200 hover:!bg-slate-700/50"
+                  }`}
+                  onClick={() => toggleOption(option.value)}
+                  onMouseEnter={() => setFocusedIndex(index)}
+                  role="option"
+                  aria-selected={isSelected}
+                >
+                  <div className="flex items-center justify-between">
+                    <span>{option.label}</span>
+                    {isSelected && (
+                      <svg
+                        className="h-4 w-4 text-purple-300"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })
+          ) : (
+            <div className="px-3 py-2 text-slate-400">No options found</div>
+          )}
         </div>
       )}
     </div>
