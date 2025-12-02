@@ -84,11 +84,21 @@ export async function POST(request: Request) {
     // Handle validation errors
     if (error instanceof ZodError) {
       console.error("Validation error details:", error)
+
+      // Create user-friendly error messages
+      const errorMessages = error.issues
+        .map((issue) => {
+          const field = issue.path.join(".")
+          return `${field}: ${issue.message}`
+        })
+        .join("; ")
+
       return NextResponse.json(
         {
           success: false,
-          message: "Validation failed",
+          message: `Validation failed: ${errorMessages}`,
           error: error.message,
+          validationErrors: error.issues, // Include detailed errors for client-side handling
         },
         { status: 400 },
       )
@@ -219,11 +229,21 @@ export async function PUT(request: Request) {
     // Handle validation errors
     if (error instanceof ZodError) {
       console.error("Validation error details:", error)
+
+      // Create user-friendly error messages
+      const errorMessages = error.issues
+        .map((issue) => {
+          const field = issue.path.join(".")
+          return `${field}: ${issue.message}`
+        })
+        .join("; ")
+
       return NextResponse.json(
         {
           success: false,
-          message: "Validation failed",
+          message: `Validation failed: ${errorMessages}`,
           error: error.message,
+          validationErrors: error.issues,
         },
         { status: 400 },
       )

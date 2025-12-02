@@ -80,10 +80,16 @@ export async function POST(request: Request) {
     console.error("Error in POST /api/mints/admin:", error)
 
     if (error instanceof ZodError) {
+      const fieldErrors = error.errors
+        .map((err) => {
+          const field = err.path.join(".")
+          return `${field}: ${err.message}`
+        })
+        .join("; ")
       return NextResponse.json(
         {
           success: false,
-          message: "Validation error",
+          message: `Validation failed: ${fieldErrors}`,
           errors: error.errors,
         },
         { status: 400 },

@@ -103,10 +103,16 @@ export async function POST(request: Request) {
     // Handle validation errors
     if (error instanceof ZodError) {
       console.error("Validation error details:", error)
+      const fieldErrors = error.errors
+        .map((err) => {
+          const field = err.path.join(".")
+          return `${field}: ${err.message}`
+        })
+        .join("; ")
       return NextResponse.json(
         {
           success: false,
-          message: "Validation failed",
+          message: `Validation failed: ${fieldErrors}`,
           error: error.message,
         },
         { status: 400 },

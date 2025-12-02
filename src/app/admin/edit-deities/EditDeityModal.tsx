@@ -2,12 +2,7 @@
 
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
-import {
-  FormActions,
-  FormErrorDisplay,
-  ModalWrapper,
-  processArray,
-} from "~/components/forms"
+import { FormActions, FormErrorDisplay, ModalWrapper } from "~/components/forms"
 import { CoinageFeaturesEditor } from "~/components/forms/CoinageFeaturesEditor"
 import { FestivalsEditor } from "~/components/forms/FestivalsEditor"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
@@ -97,6 +92,16 @@ const createDeityFormData = (deity: Deity | null): FormData => {
   }
 
   return formData
+}
+
+// Helper function for processing comma-separated arrays
+const processArray = (str: string): string[] | undefined => {
+  if (!str || str.trim() === "") return undefined
+  const arr = str
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+  return arr.length > 0 ? arr : undefined
 }
 
 export function EditDeityModal({
@@ -189,7 +194,7 @@ export function EditDeityModal({
       return
     }
 
-    if (updates.god_of.length === 0) {
+    if (!updates.god_of || updates.god_of.length === 0) {
       setError("god_of_raw", { message: "At least one domain is required" })
       return
     }

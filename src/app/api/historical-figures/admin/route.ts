@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { ZodError } from "zod"
 import { createClient } from "~/database/supabase-server"
 import type { HistoricalFigure } from "~/database/schema-historical-figures"
 
@@ -50,6 +51,23 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     console.error("Unexpected error:", error)
+
+    if (error instanceof ZodError) {
+      const fieldErrors = error.errors
+        .map((err) => {
+          const field = err.path.join(".")
+          return `${field}: ${err.message}`
+        })
+        .join("; ")
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Validation failed: ${fieldErrors}`,
+        },
+        { status: 400 },
+      )
+    }
+
     return NextResponse.json(
       { success: false, message: "Internal server error" },
       { status: 500 },

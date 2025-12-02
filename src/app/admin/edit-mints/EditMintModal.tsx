@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useUpdateMint, useAddMint } from "~/api/mints"
 import { OperationPeriodsEditor } from "~/components/forms/OperationPeriodsEditor"
@@ -70,20 +71,29 @@ export function EditMintModal({
     setValue,
     watch,
   } = useForm<FormData>({
-    values: createFormData(isCreateMode ? null : mint),
+    defaultValues: createFormData(null),
   })
+
+  // Reset form when mint changes
+  useEffect(() => {
+    if (!isCreateMode && mint) {
+      const formData = createFormData(mint)
+      reset(formData)
+    }
+  }, [mint, isCreateMode])
 
   const updateMintMutation = useUpdateMint()
   const addMintMutation = useAddMint()
 
   // Helper function for processing arrays
-  const processArray = (str: string) =>
-    str.trim()
-      ? str
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : []
+  const processArray = (str: string) => {
+    if (!str || str.trim() === "") return undefined
+    const arr = str
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+    return arr.length > 0 ? arr : undefined
+  }
 
   const onSubmit = async (data: FormData) => {
     if (!isCreateMode && !mint) return
@@ -199,7 +209,8 @@ export function EditMintModal({
               type="number"
               step="any"
               {...register("lat", {
-                valueAsNumber: true,
+                setValueAs: (v) =>
+                  v === "" || v == null ? undefined : Number(v),
                 required: "Latitude is required",
                 min: { value: -90, message: "Latitude must be >= -90" },
                 max: { value: 90, message: "Latitude must be <= 90" },
@@ -220,7 +231,8 @@ export function EditMintModal({
               type="number"
               step="any"
               {...register("lng", {
-                valueAsNumber: true,
+                setValueAs: (v) =>
+                  v === "" || v == null ? undefined : Number(v),
                 required: "Longitude is required",
                 min: { value: -180, message: "Longitude must be >= -180" },
                 max: { value: 180, message: "Longitude must be <= 180" },

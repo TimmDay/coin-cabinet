@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import type { PostgrestSingleResponse } from "@supabase/supabase-js"
+import { ZodError } from "zod"
 import { createClient } from "~/database/supabase-server"
 import type { Place } from "~/database/schema-places"
 import type { PlaceFormData } from "~/lib/validations/place-form"
@@ -87,6 +88,24 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     console.error("Error in POST /api/places/admin:", error)
+
+    if (error instanceof ZodError) {
+      const fieldErrors = error.errors
+        .map((err) => {
+          const field = err.path.join(".")
+          return `${field}: ${err.message}`
+        })
+        .join("; ")
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Validation failed: ${fieldErrors}`,
+          error: error.message,
+        },
+        { status: 400 },
+      )
+    }
+
     return NextResponse.json(
       {
         success: false,
@@ -171,6 +190,24 @@ export async function PUT(request: Request) {
     })
   } catch (error) {
     console.error("Error in PUT /api/places/admin:", error)
+
+    if (error instanceof ZodError) {
+      const fieldErrors = error.errors
+        .map((err) => {
+          const field = err.path.join(".")
+          return `${field}: ${err.message}`
+        })
+        .join("; ")
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Validation failed: ${fieldErrors}`,
+          error: error.message,
+        },
+        { status: 400 },
+      )
+    }
+
     return NextResponse.json(
       {
         success: false,

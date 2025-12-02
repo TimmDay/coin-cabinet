@@ -143,7 +143,8 @@ export function EditPlaceModal({
               type="number"
               step="any"
               {...register("lat", {
-                valueAsNumber: true,
+                setValueAs: (v) =>
+                  v === "" || v == null ? undefined : Number(v),
                 required: "Latitude is required",
                 min: { value: -90, message: "Latitude must be >= -90" },
                 max: { value: 90, message: "Latitude must be <= 90" },
@@ -164,7 +165,8 @@ export function EditPlaceModal({
               type="number"
               step="any"
               {...register("lng", {
-                valueAsNumber: true,
+                setValueAs: (v) =>
+                  v === "" || v == null ? undefined : Number(v),
                 required: "Longitude is required",
                 min: { value: -180, message: "Longitude must be >= -180" },
                 max: { value: 180, message: "Longitude must be <= 180" },
@@ -201,7 +203,10 @@ export function EditPlaceModal({
           </label>
           <input
             type="number"
-            {...register("established_year", { valueAsNumber: true })}
+            {...register("established_year", {
+              setValueAs: (v) =>
+                v === "" || v == null ? undefined : Number(v),
+            })}
             className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="-753 (for 753 BC)"
           />

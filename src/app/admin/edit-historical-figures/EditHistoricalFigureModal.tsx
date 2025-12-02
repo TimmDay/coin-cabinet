@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -94,25 +95,33 @@ export function EditHistoricalFigureModal({
     watch,
   } = useForm<EditFormData>({
     resolver: zodResolver(editFormSchema),
-    values: createFigureFormData(figure),
+    defaultValues: createFigureFormData(null),
   })
 
+  // Reset form when figure changes
+  useEffect(() => {
+    if (figure) {
+      const formData = createFigureFormData(figure)
+      reset(formData)
+    }
+  }, [figure, reset])
+
   // Helper functions for parsing
-  const parseNumber = (str: string): number | null => {
-    if (!str || str.trim() === "") return null
+  const parseNumber = (str: string): number | undefined => {
+    if (!str || str.trim() === "") return undefined
     const num = parseInt(str, 10)
-    return isNaN(num) ? null : num
+    return isNaN(num) ? undefined : num
   }
 
-  const parseNumberArray = (str: string): number[] | null => {
-    if (!str || str.trim() === "") return null
+  const parseNumberArray = (str: string): number[] | undefined => {
+    if (!str || str.trim() === "") return undefined
     const arr = str
       .split(",")
       .map((s) => s.trim())
       .filter((s) => s !== "")
       .map((s) => parseInt(s, 10))
       .filter((n) => !isNaN(n))
-    return arr.length > 0 ? arr : null
+    return arr.length > 0 ? arr : undefined
   }
 
   const parseHistoricalSources = (str: string): HistoricalSource[] => {
@@ -240,7 +249,10 @@ export function EditHistoricalFigureModal({
             <label className={labelClass}>Birth Year</label>
             <input
               type="number"
-              {...register("birth")}
+              {...register("birth", {
+                setValueAs: (v) =>
+                  v === "" || v == null ? undefined : Number(v),
+              })}
               className={inputClass}
               placeholder="e.g., 63"
             />
@@ -250,7 +262,10 @@ export function EditHistoricalFigureModal({
             <label className={labelClass}>Death Year</label>
             <input
               type="number"
-              {...register("death")}
+              {...register("death", {
+                setValueAs: (v) =>
+                  v === "" || v == null ? undefined : Number(v),
+              })}
               className={inputClass}
               placeholder="e.g., 14"
             />
@@ -260,7 +275,10 @@ export function EditHistoricalFigureModal({
             <label className={labelClass}>Reign Start</label>
             <input
               type="number"
-              {...register("reign_start")}
+              {...register("reign_start", {
+                setValueAs: (v) =>
+                  v === "" || v == null ? undefined : Number(v),
+              })}
               className={inputClass}
               placeholder="e.g., 27"
             />
@@ -270,7 +288,10 @@ export function EditHistoricalFigureModal({
             <label className={labelClass}>Reign End</label>
             <input
               type="number"
-              {...register("reign_end")}
+              {...register("reign_end", {
+                setValueAs: (v) =>
+                  v === "" || v == null ? undefined : Number(v),
+              })}
               className={inputClass}
               placeholder="e.g., 14"
             />
