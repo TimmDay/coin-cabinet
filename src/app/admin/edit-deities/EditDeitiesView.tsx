@@ -153,10 +153,10 @@ export function EditDeitiesView() {
       selectedItemId={selectedItemId}
       onItemSelect={handleItemSelect}
       renderModal={renderModal}
-      addNewConfig={{
-        label: "Add New Deity",
-        href: "/admin/add-deity",
-      }}
+      // addNewConfig={{
+      //   label: "Add New Deity",
+      //   href: "/admin/add-deity", // TODO: Add create modal functionality
+      // }}
       emptyStateConfig={{
         title: "No Deities Found",
         description: "The pantheon is empty. Add some deities first!",

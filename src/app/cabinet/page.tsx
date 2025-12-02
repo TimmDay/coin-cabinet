@@ -1,6 +1,6 @@
 import { PageTitle } from "~/components/ui/PageTitle"
 import { SetPreviewCard } from "~/components/ui/SetPreviewCard"
-import { featuredSets } from "~/lib/constants/sets"
+import { featuredSets } from "~/data/sets"
 
 export default function CabinetPage() {
   return (

@@ -93,6 +93,7 @@ export function EditHistoricalFigureModal({
     clearErrors,
     setValue,
     watch,
+    reset,
   } = useForm<EditFormData>({
     resolver: zodResolver(editFormSchema),
     defaultValues: createFigureFormData(null),
@@ -104,7 +105,7 @@ export function EditHistoricalFigureModal({
       const formData = createFigureFormData(figure)
       reset(formData)
     }
-  }, [figure, reset])
+  }, [figure])
 
   // Helper functions for parsing
   const parseNumber = (str: string): number | undefined => {

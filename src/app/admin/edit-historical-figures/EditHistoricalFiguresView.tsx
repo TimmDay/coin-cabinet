@@ -153,10 +153,10 @@ export function EditHistoricalFiguresView() {
       selectedItemId={selectedItemId}
       onItemSelect={handleItemSelect}
       renderModal={renderModal}
-      addNewConfig={{
-        label: "Add New Historical Figure",
-        href: "/admin/add-historical-figure",
-      }}
+      // addNewConfig={{
+      //   label: "Add New Historical Figure",
+      //   href: "/admin/add-historical-figure", // TODO: Add create modal functionality
+      // }}
       emptyStateConfig={{
         title: "No Historical Figures Found",
         description: "No historical figures have been created yet.",

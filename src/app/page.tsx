@@ -5,7 +5,7 @@ import { useAllSomnusCoins } from "~/api/somnus-collection"
 import { FeaturedCoins } from "~/components/ui/FeaturedCoins"
 import { FeaturedSets } from "~/components/ui/FeaturedSets"
 import { PageTitle } from "~/components/ui/PageTitle"
-import { featuredSets } from "~/lib/constants/sets"
+import { featuredSets } from "~/data/sets"
 
 export default function HomePage() {
   const { data: allCoins, isLoading } = useAllSomnusCoins()

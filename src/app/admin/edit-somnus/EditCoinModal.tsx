@@ -1,6 +1,8 @@
 "use client"
 
+import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 import { Select } from "~/components/ui/Select"
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
@@ -18,7 +20,7 @@ import {
   civSpecificOptions,
   denominationOptions,
   dieAxisOptions,
-} from "../add-coin/constants"
+} from "./coin-form-options"
 
 // Extended CoinFormData with raw string fields for form inputs
 type EditCoinFormData = CoinFormData & {
@@ -48,18 +50,18 @@ const createCoinFormData = (
   metal: coin?.metal ?? "",
 
   // Optional fields - default to undefined
-  civ_specific: coin?.civ_specific,
-  reign_start: coin?.reign_start,
-  reign_end: coin?.reign_end,
-  diameter: coin?.diameter,
-  mass: coin?.mass,
-  die_axis: coin?.die_axis,
-  silver_content: coin?.silver_content,
-  mint: coin?.mint,
-  mint_year_earliest: coin?.mint_year_earliest,
-  mint_year_latest: coin?.mint_year_latest,
-  reference: coin?.reference,
-  reference_link: coin?.reference_link,
+  civ_specific: coin?.civ_specific ?? undefined,
+  reign_start: coin?.reign_start ?? undefined,
+  reign_end: coin?.reign_end ?? undefined,
+  diameter: coin?.diameter ?? undefined,
+  mass: coin?.mass ?? undefined,
+  die_axis: coin?.die_axis ?? undefined,
+  silver_content: coin?.silver_content ?? undefined,
+  mint: coin?.mint ?? undefined,
+  mint_year_earliest: coin?.mint_year_earliest ?? undefined,
+  mint_year_latest: coin?.mint_year_latest ?? undefined,
+  reference: coin?.reference ?? undefined,
+  reference_link: coin?.reference_link ?? undefined,
 
   // Text fields - default to empty string for better UX
   legend_o: coin?.legend_o ?? "",
@@ -73,10 +75,10 @@ const createCoinFormData = (
   flavour_text: coin?.flavour_text ?? "",
 
   // Arrays and special fields
-  deity_id: coin?.deity_id,
-  devices: coin?.devices,
-  sets: coin?.sets,
-  bpRoute: coin?.bpRoute,
+  deity_id: coin?.deity_id ?? undefined,
+  devices: coin?.devices ?? undefined,
+  sets: coin?.sets ?? undefined,
+  bpRoute: coin?.bpRoute ?? undefined,
   secondary_info: undefined,
 
   // Raw string fields for form inputs
@@ -92,31 +94,31 @@ const createCoinFormData = (
       | "gift"
       | "inheritance"
       | "other") ?? "other",
-  purchase_date: coin?.purchase_date,
-  price_aud: coin?.price_aud,
-  price_shipping_aud: coin?.price_shipping_aud,
-  purchase_vendor: coin?.purchase_vendor,
-  purchase_link: coin?.purchase_link,
-  vendor_grading_notes: coin?.vendor_grading_notes,
-  auction_name: coin?.auction_name,
-  auction_lot: coin?.auction_lot,
+  purchase_date: coin?.purchase_date ?? undefined,
+  price_aud: coin?.price_aud ?? undefined,
+  price_shipping_aud: coin?.price_shipping_aud ?? undefined,
+  purchase_vendor: coin?.purchase_vendor ?? undefined,
+  purchase_link: coin?.purchase_link ?? undefined,
+  vendor_grading_notes: coin?.vendor_grading_notes ?? undefined,
+  auction_name: coin?.auction_name ?? undefined,
+  auction_lot: coin?.auction_lot ?? undefined,
 
   // Image links
-  image_link_o: coin?.image_link_o,
-  image_link_r: coin?.image_link_r,
-  image_link_altlight_o: coin?.image_link_altlight_o,
-  image_link_altlight_r: coin?.image_link_altlight_r,
-  image_link_sketch_o: coin?.image_link_sketch_o,
-  image_link_sketch_r: coin?.image_link_sketch_r,
-  image_link_zoom_o: coin?.image_link_zoom_o,
-  image_link_zoom_r: coin?.image_link_zoom_r,
+  image_link_o: coin?.image_link_o ?? undefined,
+  image_link_r: coin?.image_link_r ?? undefined,
+  image_link_altlight_o: coin?.image_link_altlight_o ?? undefined,
+  image_link_altlight_r: coin?.image_link_altlight_r ?? undefined,
+  image_link_sketch_o: coin?.image_link_sketch_o ?? undefined,
+  image_link_sketch_r: coin?.image_link_sketch_r ?? undefined,
+  image_link_zoom_o: coin?.image_link_zoom_o ?? undefined,
+  image_link_zoom_r: coin?.image_link_zoom_r ?? undefined,
 
   // Additional fields
-  antiquities_register: coin?.antiquities_register,
-  provenance: coin?.provenance,
-  notes: coin?.notes,
-  notes_history: coin?.notes_history,
-  ex_collection: coin?.ex_collection,
+  antiquities_register: coin?.antiquities_register ?? undefined,
+  provenance: coin?.provenance ?? undefined,
+  notes: coin?.notes ?? undefined,
+  notes_history: coin?.notes_history ?? undefined,
+  ex_collection: coin?.ex_collection ?? undefined,
   bpRouteRaw: coin?.bpRoute?.join(", ") ?? "",
 })
 
@@ -129,6 +131,7 @@ export function EditCoinModal({
   mode,
 }: EditCoinModalProps) {
   const { options: deityOptions } = useDeityOptions()
+  const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false)
 
   const {
     register,
@@ -853,28 +856,51 @@ export function EditCoinModal({
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-purple-200">Image Links</h3>
 
+          {/* Tim took photos checkbox */}
+          <div className="mb-4">
+            <label className="flex items-center gap-2 text-sm text-slate-300">
+              <input
+                type="checkbox"
+                checked={timTookPhotos}
+                onChange={(e) => setTimTookPhotos(e.target.checked)}
+                className="rounded border-slate-600 bg-slate-800/50 text-purple-600 focus:ring-purple-500 focus:ring-offset-slate-800"
+              />
+              Tim took these photos
+            </label>
+          </div>
+
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
-                Obverse Image
+                Obverse Image ID
               </label>
               <input
-                type="url"
+                type="text"
                 {...register("image_link_o")}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
-                placeholder="e.g., https://example.com/obverse.jpg"
+                placeholder="e.g., marcus_aurelius_denarius_o"
+              />
+              <GeneratedImageIdHelper
+                watch={watch}
+                view="o"
+                timTookPhotos={timTookPhotos}
               />
             </div>
 
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
-                Reverse Image
+                Reverse Image ID
               </label>
               <input
-                type="url"
+                type="text"
                 {...register("image_link_r")}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
-                placeholder="e.g., https://example.com/reverse.jpg"
+                placeholder="e.g., marcus_aurelius_denarius_r"
+              />
+              <GeneratedImageIdHelper
+                watch={watch}
+                view="r"
+                timTookPhotos={timTookPhotos}
               />
             </div>
 
@@ -888,6 +914,11 @@ export function EditCoinModal({
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
                 placeholder="Alternative lighting obverse image"
               />
+              <GeneratedImageIdHelper
+                watch={watch}
+                view="altlight-o"
+                timTookPhotos={timTookPhotos}
+              />
             </div>
 
             <div>
@@ -899,6 +930,11 @@ export function EditCoinModal({
                 {...register("image_link_altlight_r")}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
                 placeholder="Alternative lighting reverse image"
+              />
+              <GeneratedImageIdHelper
+                watch={watch}
+                view="altlight-r"
+                timTookPhotos={timTookPhotos}
               />
             </div>
 
@@ -912,6 +948,11 @@ export function EditCoinModal({
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
                 placeholder="Sketch/drawing of obverse"
               />
+              <GeneratedImageIdHelper
+                watch={watch}
+                view="sketch-o"
+                timTookPhotos={timTookPhotos}
+              />
             </div>
 
             <div>
@@ -923,6 +964,11 @@ export function EditCoinModal({
                 {...register("image_link_sketch_r")}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
                 placeholder="Sketch/drawing of reverse"
+              />
+              <GeneratedImageIdHelper
+                watch={watch}
+                view="sketch-r"
+                timTookPhotos={timTookPhotos}
               />
             </div>
 
@@ -936,6 +982,11 @@ export function EditCoinModal({
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
                 placeholder="High-resolution zoom obverse"
               />
+              <GeneratedImageIdHelper
+                watch={watch}
+                view="zoom-o"
+                timTookPhotos={timTookPhotos}
+              />
             </div>
 
             <div>
@@ -947,6 +998,11 @@ export function EditCoinModal({
                 {...register("image_link_zoom_r")}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
                 placeholder="High-resolution zoom reverse"
+              />
+              <GeneratedImageIdHelper
+                watch={watch}
+                view="zoom-r"
+                timTookPhotos={timTookPhotos}
               />
             </div>
           </div>

@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { PageTitle } from "~/components/ui/PageTitle"
 import { SetPreviewCard } from "~/components/ui/SetPreviewCard"
-import { romanSets } from "~/lib/constants/sets"
+import { romanSets } from "~/data/sets"
 
 export default function RomanCabinetPage() {
   return (

@@ -9,11 +9,6 @@ import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { cn } from "~/lib/utils"
 import { MobileNavigation } from "./MobileNavigation"
 import {
-  adminCollectionSubmenu,
-  adminDeitiesSubmenu,
-  adminHistoricalFiguresSubmenu,
-  adminMintsSubmenu,
-  adminPlacesSubmenu,
   adminSubmenu,
   articlesSubmenu,
   cabinetRomanSubmenu,
@@ -153,16 +148,6 @@ export default function Navbar() {
         return yearInCoinsSubmenu
       case "cabinetRoman":
         return cabinetRomanSubmenu
-      case "adminCollection":
-        return adminCollectionSubmenu
-      case "adminDeities":
-        return adminDeitiesSubmenu
-      case "adminPlaces":
-        return adminPlacesSubmenu
-      case "adminMints":
-        return adminMintsSubmenu
-      case "adminHistoricalFigures":
-        return adminHistoricalFiguresSubmenu
       default:
         return []
     }
@@ -175,16 +160,6 @@ export default function Navbar() {
         return "yearInCoins"
       case "Roman":
         return "cabinetRoman"
-      case "Collection":
-        return "adminCollection"
-      case "Deities":
-        return "adminDeities"
-      case "Places":
-        return "adminPlaces"
-      case "Mints":
-        return "adminMints"
-      case "People":
-        return "adminHistoricalFigures"
       default:
         return null
     }

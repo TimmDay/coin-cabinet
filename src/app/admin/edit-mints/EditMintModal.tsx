@@ -70,6 +70,7 @@ export function EditMintModal({
     clearErrors,
     setValue,
     watch,
+    reset,
   } = useForm<FormData>({
     defaultValues: createFormData(null),
   })
@@ -102,17 +103,18 @@ export function EditMintModal({
 
     const mintData = {
       name: data.name.trim(),
-      alt_names: processArray(data.alt_names_raw),
+      alt_names: processArray(data.alt_names_raw) ?? [],
       lat: data.lat,
       lng: data.lng,
-      mint_marks: processArray(data.mint_marks_raw),
+      mint_marks: processArray(data.mint_marks_raw) ?? [],
       flavour_text: data.flavour_text.trim() || undefined,
-      historical_sources: processArray(data.historical_sources_raw),
+      historical_sources: processArray(data.historical_sources_raw) ?? [],
       opened_by: data.opened_by.trim() || undefined,
-      coinage_materials: processArray(data.coinage_materials_raw),
-      operation_periods: parseJSONSafe<Array<[number, number, string]>>(
-        data.operation_periods_raw,
-      ),
+      coinage_materials: processArray(data.coinage_materials_raw) ?? [],
+      operation_periods:
+        parseJSONSafe<Array<[number, number, string]>>(
+          data.operation_periods_raw,
+        ) ?? [],
     }
 
     // Validate required fields

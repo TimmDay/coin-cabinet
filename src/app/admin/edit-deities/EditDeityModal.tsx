@@ -180,11 +180,14 @@ export function EditDeityModal({
           return []
         } catch {
           // Fallback to comma-separated processing for backward compatibility
-          return processArray(data.festivals_raw).map((name) => ({
-            name,
-            date: undefined,
-            note: undefined,
-          }))
+          const processedArray = processArray(data.festivals_raw)
+          return processedArray
+            ? processedArray.map((name) => ({
+                name,
+                date: undefined,
+                note: undefined,
+              }))
+            : []
         }
       })(),
     }

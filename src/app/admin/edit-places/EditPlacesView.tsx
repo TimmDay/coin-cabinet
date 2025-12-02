@@ -128,10 +128,10 @@ export function EditPlacesView() {
       selectedItemId={selectedItemId}
       onItemSelect={handleItemSelect}
       renderModal={renderModal}
-      addNewConfig={{
-        label: "Add New Place",
-        href: "/admin/add-place",
-      }}
+      // addNewConfig={{
+      //   label: "Add New Place",
+      //   href: "/admin/add-place", // TODO: Add create modal functionality
+      // }}
       emptyStateConfig={{
         title: "No Places Yet",
         description: "Start by adding your first historical place.",
