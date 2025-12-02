@@ -39,14 +39,21 @@ export function EditSomnusView() {
   }
 
   const renderListItem = (item: SomnusCollection) => (
-    <div>
-      <h3 className="font-medium text-white">
-        {item.nickname || "Unnamed Coin"}
-      </h3>
-      {item.devices && item.devices.length > 0 && (
-        <p className="text-sm text-gray-400">
-          {`${item.denomination} • ${item.mint} • ${item.mint_year_earliest}`}
-        </p>
+    <div className="flex w-full items-center justify-between">
+      <div className="flex-1">
+        <h3 className="font-medium text-white">
+          {item.nickname || "Unnamed Coin"}
+        </h3>
+        {item.devices && item.devices.length > 0 && (
+          <p className="text-sm text-gray-400">
+            {`${item.denomination} • ${item.mint} • ${item.mint_year_earliest}`}
+          </p>
+        )}
+      </div>
+      {(!item.reference || item.reference.trim() === "") && (
+        <span className="mr-3 rounded-full bg-purple-500/20 px-2 py-1 text-xs text-purple-400">
+          needs reference
+        </span>
       )}
     </div>
   )
@@ -97,10 +104,14 @@ export function EditSomnusView() {
       selectedItemId={selectedItemId}
       onItemSelect={handleItemSelect}
       renderModal={renderModal}
+      addNewConfig={{
+        label: "Add New Coin",
+        href: "/admin/add-coin",
+      }}
       emptyStateConfig={{
         title: "No Items Found",
         description: "Your Somnus collection is empty.",
-        showAddButton: false,
+        showAddButton: true,
       }}
       message={message}
       onSuccess={handleSuccess}

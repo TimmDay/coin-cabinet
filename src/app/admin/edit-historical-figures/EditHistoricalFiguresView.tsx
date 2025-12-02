@@ -3,6 +3,7 @@
 import {
   useHistoricalFigures,
   useUpdateHistoricalFigure,
+  useDeleteHistoricalFigure,
 } from "~/api/historical-figures"
 import type { HistoricalFigure } from "~/database/schema-historical-figures"
 import { GenericEditView } from "~/components/admin/GenericEditView"
@@ -12,6 +13,7 @@ import { EditHistoricalFigureModal } from "./EditHistoricalFigureModal"
 export function EditHistoricalFiguresView() {
   const dataQuery = useHistoricalFigures()
   const updateMutation = useUpdateHistoricalFigure()
+  const deleteMutation = useDeleteHistoricalFigure()
 
   const {
     message,
@@ -21,6 +23,19 @@ export function EditHistoricalFiguresView() {
     handleModalClose,
     handleSuccess,
   } = useEditModal<HistoricalFigure>()
+
+  // Handle delete
+  const handleDelete = async (figure: HistoricalFigure) => {
+    if (!confirm(`Are you sure you want to delete ${figure.name}?`)) return
+
+    try {
+      await deleteMutation.mutateAsync(figure.id)
+      handleSuccess(`✅ ${figure.name} deleted successfully`)
+    } catch (error) {
+      console.error("Delete error:", error)
+      handleSuccess(`❌ Failed to delete ${figure.name}`)
+    }
+  }
 
   // Filter figures based on name, authority, and dynasty
   const filterFunction = (figure: HistoricalFigure, filterTerm: string) => {
@@ -41,24 +56,54 @@ export function EditHistoricalFiguresView() {
   }
 
   const renderListItem = (figure: HistoricalFigure) => (
-    <div>
-      <h3 className="font-medium text-white">
-        {figure.name}
-        {figure.full_name && figure.full_name !== figure.name && (
-          <span className="ml-2 text-sm text-gray-400">
-            ({figure.full_name})
-          </span>
-        )}
-      </h3>
-      <div className="flex gap-4 text-sm text-gray-400">
-        <span>{figure.authority}</span>
-        {figure.dynasty && <span>• {figure.dynasty}</span>}
-        {figure.reign_start && figure.reign_end && (
-          <span>
-            • {figure.reign_start}-{figure.reign_end} CE
-          </span>
-        )}
+    <div className="flex w-full items-center justify-between">
+      <div className="flex-1">
+        <h3 className="font-medium text-white">
+          {figure.name}
+          {figure.full_name && figure.full_name !== figure.name && (
+            <span className="ml-2 text-sm text-gray-400">
+              ({figure.full_name})
+            </span>
+          )}
+        </h3>
+        <div className="flex gap-4 text-sm text-gray-400">
+          <span>{figure.authority}</span>
+          {figure.dynasty && <span>• {figure.dynasty}</span>}
+          {figure.reign_start && figure.reign_end && (
+            <span>
+              • {figure.reign_start}-{figure.reign_end} CE
+            </span>
+          )}
+        </div>
       </div>
+      {(!figure.historical_sources ||
+        figure.historical_sources.length === 0) && (
+        <span className="mr-3 rounded-full bg-purple-500/20 px-2 py-1 text-xs text-purple-400">
+          needs sources
+        </span>
+      )}
+      <button
+        onClick={(e) => {
+          e.stopPropagation()
+          void handleDelete(figure)
+        }}
+        className="mr-3 rounded p-1 text-gray-400 transition-colors hover:bg-red-500/20 hover:text-red-300"
+        title={`Delete ${figure.name}`}
+      >
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          />
+        </svg>
+      </button>
     </div>
   )
 
@@ -108,10 +153,14 @@ export function EditHistoricalFiguresView() {
       selectedItemId={selectedItemId}
       onItemSelect={handleItemSelect}
       renderModal={renderModal}
+      addNewConfig={{
+        label: "Add New Historical Figure",
+        href: "/admin/add-historical-figure",
+      }}
       emptyStateConfig={{
         title: "No Historical Figures Found",
         description: "No historical figures have been created yet.",
-        showAddButton: false,
+        showAddButton: true,
       }}
       message={message}
       onSuccess={handleSuccess}

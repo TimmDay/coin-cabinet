@@ -168,7 +168,7 @@ export function EditHistoricalFigureModal({
   if (!isOpen || !figure) return null
 
   const inputClass =
-    "w-full rounded-md border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none px-3 py-2 transition-colors"
+    "w-full rounded-md border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none px-3 py-2 transition-colors"
   const textareaClass = `${inputClass} min-h-[100px] resize-y`
   const labelClass = "mb-2 block text-sm font-medium text-slate-300"
 

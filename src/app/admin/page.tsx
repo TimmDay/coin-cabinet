@@ -73,7 +73,7 @@ export default function AdminPage() {
               <div className="space-y-3">
                 <a
                   href="/admin/add-coin"
-                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-purple-900/10"
                 >
                   <div className="font-medium text-slate-200">Add Coin</div>
                   <div className="text-sm text-slate-400">
@@ -82,7 +82,7 @@ export default function AdminPage() {
                 </a>
                 <a
                   href="/admin/edit-somnus"
-                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-purple-900/10"
                 >
                   <div className="font-medium text-slate-200">Edit Somnus</div>
                   <div className="text-sm text-slate-400">
@@ -101,7 +101,7 @@ export default function AdminPage() {
               <div className="space-y-3">
                 <a
                   href="/admin/add-deity"
-                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-purple-900/10"
                 >
                   <div className="font-medium text-slate-200">Add Deity</div>
                   <div className="text-sm text-slate-400">
@@ -110,7 +110,7 @@ export default function AdminPage() {
                 </a>
                 <a
                   href="/admin/edit-deities"
-                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-purple-900/10"
                 >
                   <div className="font-medium text-slate-200">Edit Deities</div>
                   <div className="text-sm text-slate-400">
@@ -129,7 +129,7 @@ export default function AdminPage() {
               <div className="space-y-3">
                 <a
                   href="/admin/add-place"
-                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-purple-900/10"
                 >
                   <div className="font-medium text-slate-200">Add Place</div>
                   <div className="text-sm text-slate-400">
@@ -138,7 +138,7 @@ export default function AdminPage() {
                 </a>
                 <a
                   href="/admin/edit-places"
-                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-purple-900/10"
                 >
                   <div className="font-medium text-slate-200">Edit Places</div>
                   <div className="text-sm text-slate-400">
@@ -157,7 +157,7 @@ export default function AdminPage() {
               <div className="space-y-3">
                 <a
                   href="/admin/add-mint"
-                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-purple-900/10"
                 >
                   <div className="font-medium text-slate-200">Add Mint</div>
                   <div className="text-sm text-slate-400">
@@ -166,7 +166,7 @@ export default function AdminPage() {
                 </a>
                 <a
                   href="/admin/edit-mints"
-                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-purple-900/10"
                 >
                   <div className="font-medium text-slate-200">Edit Mints</div>
                   <div className="text-sm text-slate-400">
@@ -187,7 +187,7 @@ export default function AdminPage() {
               <div className="space-y-3">
                 <a
                   href="/admin/add-historical-figure"
-                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-purple-900/10"
                 >
                   <div className="font-medium text-slate-200">
                     Add Historical Figure
@@ -198,7 +198,7 @@ export default function AdminPage() {
                 </a>
                 <a
                   href="/admin/edit-historical-figures"
-                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-amber-500/10"
+                  className="block rounded-lg border border-slate-600 p-3 text-center transition-colors hover:bg-purple-900/10"
                 >
                   <div className="font-medium text-slate-200">
                     Edit Historical Figures
@@ -213,7 +213,7 @@ export default function AdminPage() {
             {/* Other admin functions */}
             <a
               href="/admin/edit-map"
-              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
+              className="artemis-card p-6 text-center transition-colors hover:bg-purple-900/5"
             >
               <h3 className="coin-title mb-4 text-xl">Edit Map</h3>
               <p className="coin-description">
@@ -223,7 +223,7 @@ export default function AdminPage() {
 
             <a
               href="/admin/feature-flags"
-              className="artemis-card p-6 text-center transition-colors hover:bg-amber-500/5"
+              className="artemis-card p-6 text-center transition-colors hover:bg-purple-900/5"
             >
               <h3 className="coin-title mb-4 text-xl">Feature Flags</h3>
               <p className="coin-description">

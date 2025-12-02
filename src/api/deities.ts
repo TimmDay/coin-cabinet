@@ -156,6 +156,29 @@ export function useDeleteDeity() {
 
   return useMutation({
     mutationFn: deleteDeity,
+    onMutate: async (deletedId) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["deities"] })
+
+      // Snapshot the previous value
+      const previousDeities = queryClient.getQueryData<Deity[]>(["deities"])
+
+      // Optimistically update to the new value
+      if (previousDeities) {
+        queryClient.setQueryData<Deity[]>(
+          ["deities"],
+          (old) => old?.filter((deity) => deity.id !== deletedId) ?? [],
+        )
+      }
+
+      return { previousDeities }
+    },
+    onError: (err, deletedId, context) => {
+      // Roll back on error
+      if (context?.previousDeities) {
+        queryClient.setQueryData(["deities"], context.previousDeities)
+      }
+    },
     onSuccess: () => {
       // Force immediate refetch of active deities queries - ignores stale time
       void queryClient.refetchQueries({ queryKey: ["deities"] })

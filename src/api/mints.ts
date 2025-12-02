@@ -154,6 +154,30 @@ export function useDeleteMint() {
 
   return useMutation({
     mutationFn: deleteMint,
+    onMutate: async (deletedId) => {
+      // Cancel any outgoing refetches so they don't overwrite our optimistic update
+      await queryClient.cancelQueries({ queryKey: ["mints"] })
+
+      // Snapshot the previous value
+      const previousMints = queryClient.getQueryData<Mint[]>(["mints"])
+
+      // Optimistically update to the new value
+      if (previousMints) {
+        queryClient.setQueryData<Mint[]>(
+          ["mints"],
+          (old) => old?.filter((mint) => mint.id !== deletedId) ?? [],
+        )
+      }
+
+      // Return a context object with the snapshotted value
+      return { previousMints }
+    },
+    onError: (err, deletedId, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousMints) {
+        queryClient.setQueryData(["mints"], context.previousMints)
+      }
+    },
     onSuccess: () => {
       // Force immediate refetch of active queries - ignores stale time
       void queryClient.refetchQueries({ queryKey: ["mints"] })

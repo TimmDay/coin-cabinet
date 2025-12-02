@@ -138,7 +138,7 @@ export function EditCoinModal({
           <input
             type="text"
             {...register("nickname", { required: "Nickname is required" })}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Enter nickname"
           />
           {errors.nickname && (
@@ -156,7 +156,7 @@ export function EditCoinModal({
           <input
             type="text"
             {...register("legend_o")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Enter obverse legend"
           />
         </div>
@@ -169,7 +169,7 @@ export function EditCoinModal({
           <textarea
             {...register("legend_o_expanded")}
             rows={2}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Enter expanded obverse legend"
           />
         </div>
@@ -182,7 +182,7 @@ export function EditCoinModal({
           <textarea
             {...register("legend_o_translation")}
             rows={2}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Enter obverse legend translation"
           />
         </div>
@@ -195,7 +195,7 @@ export function EditCoinModal({
           <textarea
             {...register("desc_o")}
             rows={3}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Describe what appears on the obverse"
           />
         </div>
@@ -208,7 +208,7 @@ export function EditCoinModal({
           <input
             type="text"
             {...register("legend_r")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Enter reverse legend"
           />
         </div>
@@ -221,7 +221,7 @@ export function EditCoinModal({
           <textarea
             {...register("legend_r_expanded")}
             rows={2}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Enter expanded reverse legend"
           />
         </div>
@@ -234,7 +234,7 @@ export function EditCoinModal({
           <textarea
             {...register("legend_r_translation")}
             rows={2}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Enter reverse legend translation"
           />
         </div>
@@ -247,7 +247,7 @@ export function EditCoinModal({
           <textarea
             {...register("desc_r")}
             rows={3}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Describe what appears on the reverse"
           />
         </div>
@@ -260,7 +260,7 @@ export function EditCoinModal({
           <textarea
             {...register("flavour_text")}
             rows={3}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Additional context or notes"
           />
         </div>
@@ -289,7 +289,7 @@ export function EditCoinModal({
           <input
             type="text"
             {...register("devicesRaw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="e.g., eagle, wreath, jupiter (comma separated)"
           />
           <p className="mt-1 text-sm text-gray-400">
@@ -305,7 +305,7 @@ export function EditCoinModal({
           <input
             type="text"
             {...register("setsRaw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="e.g., Roman Imperial, Severan Dynasty (comma separated)"
           />
           <p className="mt-1 text-sm text-gray-400">

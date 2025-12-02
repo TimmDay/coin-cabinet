@@ -23,7 +23,8 @@ export type GenericEditViewProps<T extends EditableItem> = {
   renderModal: (selectedItem: T | null) => ReactNode
   addNewConfig?: {
     label: string
-    href: string
+    href?: string
+    onClick?: () => void
   }
   emptyStateConfig: {
     title: string
@@ -108,7 +109,7 @@ export function GenericEditView<T extends EditableItem>({
               value={filterTerm}
               onChange={(e) => setFilterTerm(e.target.value)}
               placeholder={filterPlaceholder}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-900 focus:ring-purple-900 focus:outline-none"
             />
             {filterTerm && (
               <p className="mt-2 text-sm text-gray-600">
@@ -118,11 +119,22 @@ export function GenericEditView<T extends EditableItem>({
           </div>
 
           {addNewConfig && (
-            <Link href={addNewConfig.href}>
-              <button className="rounded-md bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                {addNewConfig.label}
-              </button>
-            </Link>
+            <>
+              {addNewConfig.href ? (
+                <Link href={addNewConfig.href}>
+                  <button className="rounded-md bg-purple-900 px-4 py-2 text-white hover:bg-purple-900 focus:ring-2 focus:ring-purple-900 focus:outline-none">
+                    {addNewConfig.label}
+                  </button>
+                </Link>
+              ) : (
+                <button
+                  onClick={addNewConfig.onClick}
+                  className="rounded-md bg-purple-900 px-4 py-2 text-white hover:bg-purple-900 focus:ring-2 focus:ring-purple-900 focus:outline-none"
+                >
+                  {addNewConfig.label}
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -178,11 +190,22 @@ export function GenericEditView<T extends EditableItem>({
                 {emptyStateConfig.description}
               </p>
               {emptyStateConfig.showAddButton && addNewConfig && (
-                <Link href={addNewConfig.href}>
-                  <button className="rounded-md bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                    {addNewConfig.label}
-                  </button>
-                </Link>
+                <>
+                  {addNewConfig.href ? (
+                    <Link href={addNewConfig.href}>
+                      <button className="rounded-md bg-purple-900 px-4 py-2 text-white hover:bg-purple-900 focus:ring-2 focus:ring-purple-900 focus:outline-none">
+                        {addNewConfig.label}
+                      </button>
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={addNewConfig.onClick}
+                      className="rounded-md bg-purple-900 px-4 py-2 text-white hover:bg-purple-900 focus:ring-2 focus:ring-purple-900 focus:outline-none"
+                    >
+                      {addNewConfig.label}
+                    </button>
+                  )}
+                </>
               )}
             </div>
           )}

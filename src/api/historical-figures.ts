@@ -146,6 +146,34 @@ export const useDeleteHistoricalFigure = () => {
 
   return useMutation({
     mutationFn: deleteHistoricalFigure,
+    onMutate: async (deletedId) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["historical-figures"] })
+
+      // Snapshot the previous value
+      const previousFigures = queryClient.getQueryData<HistoricalFigure[]>([
+        "historical-figures",
+      ])
+
+      // Optimistically update to the new value
+      if (previousFigures) {
+        queryClient.setQueryData<HistoricalFigure[]>(
+          ["historical-figures"],
+          (old) => old?.filter((figure) => figure.id !== deletedId) ?? [],
+        )
+      }
+
+      return { previousFigures }
+    },
+    onError: (err, deletedId, context) => {
+      // Roll back on error
+      if (context?.previousFigures) {
+        queryClient.setQueryData(
+          ["historical-figures"],
+          context.previousFigures,
+        )
+      }
+    },
     onSuccess: () => {
       // Force immediate refetch of active queries - ignores stale time
       void queryClient.refetchQueries({ queryKey: ["historical-figures"] })

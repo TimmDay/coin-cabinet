@@ -26,7 +26,7 @@ export function FormActions({
       <button
         type="submit"
         disabled={!isDirty || isSaving}
-        className="rounded-md bg-amber-500 px-6 py-2 text-white hover:bg-amber-600 focus:ring-2 focus:ring-amber-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-md bg-purple-900 px-6 py-2 text-white hover:bg-purple-900 focus:ring-2 focus:ring-purple-900 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSaving ? "Saving..." : saveLabel}
       </button>

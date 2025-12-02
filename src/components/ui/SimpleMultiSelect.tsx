@@ -15,7 +15,7 @@ export function SimpleMultiSelect({
   options,
   selectedValues,
   onSelectionChange,
-  className = "w-full rounded-md border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400",
+  className = "w-full rounded-md border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-purple-900 focus:ring-1 focus:ring-purple-900",
   placeholder = "Select options...",
   maxHeight = "max-h-60",
 }: SimpleMultiSelectProps) {
@@ -117,7 +117,7 @@ export function SimpleMultiSelect({
       {/* Main input area */}
       <div
         ref={inputRef}
-        className={`${className} flex min-h-[42px] cursor-pointer flex-wrap items-center gap-1 p-2 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none`}
+        className={`${className} flex min-h-[42px] cursor-pointer flex-wrap items-center gap-1 p-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none`}
         onClick={() => setIsOpen(!isOpen)}
         onKeyDown={handleKeyDown}
         tabIndex={0}
@@ -133,7 +133,7 @@ export function SimpleMultiSelect({
           return (
             <span
               key={value}
-              className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-1 text-sm text-amber-800"
+              className="inline-flex items-center gap-1 rounded-full bg-purple-100 px-2 py-1 text-sm text-purple-900"
             >
               {option?.label ?? value}
               <button
@@ -142,7 +142,7 @@ export function SimpleMultiSelect({
                   e.stopPropagation()
                   removeValue(value)
                 }}
-                className="rounded-full p-0.5 transition-colors hover:bg-amber-200"
+                className="rounded-full p-0.5 transition-colors hover:bg-purple-200"
                 aria-label={`Remove ${option?.label ?? value}`}
               >
                 <svg
@@ -201,7 +201,7 @@ export function SimpleMultiSelect({
                 className={`cursor-pointer bg-slate-800 px-3 py-2 transition-colors ${
                   isFocused ? "!bg-slate-700" : "hover:!bg-slate-700/50"
                 } ${
-                  isSelected ? "!bg-amber-600 text-white" : "text-slate-200"
+                  isSelected ? "!bg-purple-900 text-white" : "text-slate-200"
                 }`}
                 onClick={() => toggleOption(option.value)}
                 role="option"
@@ -211,7 +211,7 @@ export function SimpleMultiSelect({
                   <span>{option.label}</span>
                   {isSelected && (
                     <svg
-                      className="h-4 w-4 text-amber-600"
+                      className="h-4 w-4 text-purple-900"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >

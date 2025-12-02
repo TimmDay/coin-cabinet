@@ -754,7 +754,7 @@ export const Map: React.FC<MapProps> = ({
                               : "",
                             description: mint.flavour_text ?? "",
                             className: isHighlighted
-                              ? "text-purple-800"
+                              ? "text-purple-900"
                               : "text-blue-800",
                           },
                         })

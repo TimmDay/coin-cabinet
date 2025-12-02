@@ -150,6 +150,29 @@ export function useDeletePlace() {
 
   return useMutation({
     mutationFn: deletePlace,
+    onMutate: async (deletedId) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["places"] })
+
+      // Snapshot the previous value
+      const previousPlaces = queryClient.getQueryData<Place[]>(["places"])
+
+      // Optimistically update to the new value
+      if (previousPlaces) {
+        queryClient.setQueryData<Place[]>(
+          ["places"],
+          (old) => old?.filter((place) => place.id !== deletedId) ?? [],
+        )
+      }
+
+      return { previousPlaces }
+    },
+    onError: (err, deletedId, context) => {
+      // Roll back on error
+      if (context?.previousPlaces) {
+        queryClient.setQueryData(["places"], context.previousPlaces)
+      }
+    },
     onSuccess: () => {
       // Force immediate refetch of active queries - ignores stale time
       void queryClient.refetchQueries({ queryKey: ["places"] })

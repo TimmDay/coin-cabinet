@@ -30,7 +30,7 @@ export function MintPin({ size = 24, className = "", label }: MintPinProps) {
               cy="12"
               r="10"
               fill="#a78bfa" // Light purple (purple-300)
-              stroke="#7c3aed" // Darker purple outline (purple-600)
+              stroke="#7c3aed" // Darker purple outline (purple-900)
               strokeWidth="2"
             />
 
@@ -50,7 +50,7 @@ export function MintPin({ size = 24, className = "", label }: MintPinProps) {
 
       {/* Optional label */}
       {label && (
-        <div className="mt-1 text-center text-xs font-bold whitespace-nowrap text-purple-800">
+        <div className="mt-1 text-center text-xs font-bold whitespace-nowrap text-purple-900">
           {label.toUpperCase()}
         </div>
       )}

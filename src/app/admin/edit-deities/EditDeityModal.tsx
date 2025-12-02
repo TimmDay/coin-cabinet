@@ -240,7 +240,7 @@ export function EditDeityModal({
             <input
               type="text"
               {...register("name", { required: "Name is required" })}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="Jupiter, Mars, Victoria..."
             />
             {errors.name && (
@@ -256,7 +256,7 @@ export function EditDeityModal({
             <input
               type="text"
               {...register("subtitle")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="King of the Gods, God of War..."
             />
           </div>
@@ -271,7 +271,7 @@ export function EditDeityModal({
               {...register("god_of_raw", {
                 required: "At least one domain is required",
               })}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="sky, thunder, justice, state..."
             />
             {errors.god_of_raw && (
@@ -292,7 +292,7 @@ export function EditDeityModal({
             <input
               type="text"
               {...register("alt_names_raw")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="Jove, Optimus Maximus..."
             />
             <p className="mt-1 text-xs text-gray-500">
@@ -308,7 +308,7 @@ export function EditDeityModal({
             <input
               type="text"
               {...register("similar_gods_raw")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="Zeus, Ammon..."
             />
             <p className="mt-1 text-xs text-gray-500">
@@ -324,7 +324,7 @@ export function EditDeityModal({
             <input
               type="text"
               {...register("legends_coinage_raw")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="IOM, IOVI OPTIMO MAXIMO, CONSERVATORI..."
             />
             <p className="mt-1 text-xs text-gray-500">
@@ -340,7 +340,7 @@ export function EditDeityModal({
             <input
               type="text"
               {...register("historical_sources_raw")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="Ovid Metamorphoses 1.163, Pliny Natural History 2.7..."
             />
             <p className="mt-1 text-xs text-gray-500">
@@ -355,7 +355,7 @@ export function EditDeityModal({
             </label>
             <textarea
               {...register("flavour_text")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               rows={4}
               placeholder="Rich description of the deity's role and significance..."
             />
@@ -368,7 +368,7 @@ export function EditDeityModal({
             </label>
             <textarea
               {...register("secondary_info")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               rows={3}
               placeholder="Additional descriptive information, iconography, or coin-specific details..."
             />

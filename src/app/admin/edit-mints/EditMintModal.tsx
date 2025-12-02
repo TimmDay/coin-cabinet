@@ -1,7 +1,7 @@
 "use client"
 
 import { useForm } from "react-hook-form"
-import { useUpdateMint } from "~/api/mints"
+import { useUpdateMint, useAddMint } from "~/api/mints"
 import { OperationPeriodsEditor } from "~/components/forms/OperationPeriodsEditor"
 import type { Mint } from "~/database/schema-mints"
 import { FormActions } from "../../../components/forms/FormActions"
@@ -32,6 +32,7 @@ type EditMintModalProps = {
   onClose: () => void
   onSuccess?: (message: string) => void
   isSaving?: boolean
+  mode?: "create" | "edit"
 }
 
 // Helper function to transform mint data for form
@@ -56,7 +57,10 @@ export function EditMintModal({
   onClose,
   onSuccess,
   isSaving = false,
+  mode = "edit",
 }: EditMintModalProps) {
+  const isCreateMode = mode === "create"
+
   const {
     register,
     handleSubmit,
@@ -66,10 +70,11 @@ export function EditMintModal({
     setValue,
     watch,
   } = useForm<FormData>({
-    values: createFormData(mint),
+    values: createFormData(isCreateMode ? null : mint),
   })
 
   const updateMintMutation = useUpdateMint()
+  const addMintMutation = useAddMint()
 
   // Helper function for processing arrays
   const processArray = (str: string) =>
@@ -81,11 +86,11 @@ export function EditMintModal({
       : []
 
   const onSubmit = async (data: FormData) => {
-    if (!mint) return
+    if (!isCreateMode && !mint) return
 
     clearErrors()
 
-    const updates = {
+    const mintData = {
       name: data.name.trim(),
       alt_names: processArray(data.alt_names_raw),
       lat: data.lat,
@@ -101,27 +106,32 @@ export function EditMintModal({
     }
 
     // Validate required fields
-    if (!updates.name) {
+    if (!mintData.name) {
       setError("name", { message: "Name is required" })
       return
     }
 
-    if (updates.lat < -90 || updates.lat > 90) {
+    if (mintData.lat < -90 || mintData.lat > 90) {
       setError("lat", { message: "Latitude must be between -90 and 90" })
       return
     }
 
-    if (updates.lng < -180 || updates.lng > 180) {
+    if (mintData.lng < -180 || mintData.lng > 180) {
       setError("lng", { message: "Longitude must be between -180 and 180" })
       return
     }
 
     try {
-      await updateMintMutation.mutateAsync({
-        id: mint.id,
-        updates,
-      })
-      onSuccess?.("✅ Mint updated successfully")
+      if (isCreateMode) {
+        await addMintMutation.mutateAsync(mintData)
+        onSuccess?.("✅ Mint created successfully")
+      } else {
+        await updateMintMutation.mutateAsync({
+          id: mint!.id,
+          updates: mintData,
+        })
+        onSuccess?.("✅ Mint updated successfully")
+      }
       onClose()
     } catch (error) {
       console.error("Failed to save mint:", error)
@@ -136,14 +146,14 @@ export function EditMintModal({
 
   const handleClose = () => handleUnsavedChanges(isDirty, onClose)
 
-  if (!isOpen || !mint) return null
+  if (!isOpen || (!isCreateMode && !mint)) return null
+
+  const modalTitle = isCreateMode
+    ? "Add New Mint"
+    : `Edit Mint: ${mint?.name ?? "Unknown"}`
 
   return (
-    <ModalWrapper
-      isOpen={isOpen}
-      onClose={handleClose}
-      title={`Edit Mint: ${mint?.name || "Unknown"}`}
-    >
+    <ModalWrapper isOpen={isOpen} onClose={handleClose} title={modalTitle}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-6">
         <FormErrorDisplay errors={errors} />
 
@@ -155,7 +165,7 @@ export function EditMintModal({
           <input
             type="text"
             {...register("name", { required: "Name is required" })}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Rome, Alexandria, Antioch..."
           />
           {errors.name && (
@@ -171,7 +181,7 @@ export function EditMintModal({
           <input
             type="text"
             {...register("alt_names_raw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Roma, Ῥώμη (comma separated)"
           />
           <p className="mt-1 text-xs text-gray-500">
@@ -194,7 +204,7 @@ export function EditMintModal({
                 min: { value: -90, message: "Latitude must be >= -90" },
                 max: { value: 90, message: "Latitude must be <= 90" },
               })}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="41.9028"
             />
             {errors.lat && (
@@ -215,7 +225,7 @@ export function EditMintModal({
                 min: { value: -180, message: "Longitude must be >= -180" },
                 max: { value: 180, message: "Longitude must be <= 180" },
               })}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="12.4964"
             />
             {errors.lng && (
@@ -232,7 +242,7 @@ export function EditMintModal({
           <input
             type="text"
             {...register("mint_marks_raw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="ROMA, R, ROM (comma separated)"
           />
           <p className="mt-1 text-xs text-gray-500">
@@ -248,7 +258,7 @@ export function EditMintModal({
           <input
             type="text"
             {...register("opened_by")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Augustus, Roman Republic, etc."
           />
         </div>
@@ -261,7 +271,7 @@ export function EditMintModal({
           <input
             type="text"
             {...register("coinage_materials_raw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="bronze, silver, gold (comma separated)"
           />
           <p className="mt-1 text-xs text-gray-500">
@@ -277,7 +287,7 @@ export function EditMintModal({
           <input
             type="text"
             {...register("historical_sources_raw")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Pliny, Tacitus, Archaeological evidence (comma separated)"
           />
           <p className="mt-1 text-xs text-gray-500">
@@ -298,7 +308,7 @@ export function EditMintModal({
           </label>
           <textarea
             {...register("flavour_text")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             rows={4}
             placeholder="Historical context, significance, and interesting details..."
           />

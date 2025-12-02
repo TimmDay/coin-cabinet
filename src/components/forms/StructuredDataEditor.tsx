@@ -127,7 +127,7 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
   }
 
   const inputClass =
-    "w-full px-2 py-1 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none transition-colors text-sm"
+    "w-full px-2 py-1 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none transition-colors text-sm"
 
   return (
     <div className={className}>
@@ -140,7 +140,7 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
           <button
             type="button"
             onClick={addItem}
-            className="flex items-center gap-1 rounded bg-purple-500/30 px-2 py-1 text-xs text-purple-200 transition-colors hover:bg-purple-500/50"
+            className="flex items-center gap-1 rounded bg-purple-900/50 px-2 py-1 text-xs text-purple-200 transition-colors hover:bg-purple-900/70"
           >
             <Plus size={12} />
             {addButtonText}
@@ -219,7 +219,7 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
             <button
               type="button"
               onClick={addItem}
-              className="text-sm text-purple-400/60 transition-colors hover:text-purple-400/80"
+              className="text-sm text-purple-900/60 transition-colors hover:text-purple-900/80"
             >
               + Add first {title.toLowerCase().slice(0, -1)}
             </button>

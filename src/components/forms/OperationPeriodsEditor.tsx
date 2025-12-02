@@ -78,7 +78,7 @@ export function OperationPeriodsEditor({
   }
 
   const inputClass =
-    "w-full px-2 py-1 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 focus:outline-none transition-colors text-sm"
+    "w-full px-2 py-1 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none transition-colors text-sm"
 
   return (
     <div className={className}>
@@ -91,7 +91,7 @@ export function OperationPeriodsEditor({
           <button
             type="button"
             onClick={addPeriod}
-            className="flex items-center gap-1 rounded bg-amber-500 px-2 py-1 text-xs text-white transition-colors hover:bg-amber-600"
+            className="flex items-center gap-1 rounded bg-purple-900 px-2 py-1 text-xs text-white transition-colors hover:bg-purple-900"
           >
             <Plus size={12} />
             Add Period
@@ -189,7 +189,7 @@ export function OperationPeriodsEditor({
             <button
               type="button"
               onClick={addPeriod}
-              className="text-sm text-amber-500 transition-colors hover:text-amber-400"
+              className="text-sm text-purple-900 transition-colors hover:text-purple-900"
             >
               + Add first period
             </button>

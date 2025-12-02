@@ -93,7 +93,7 @@ export function EditPlaceModal({
           <input
             type="text"
             {...register("name", { required: "Name is required" })}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Rome, Temple of Jupiter..."
           />
           {errors.name && (
@@ -109,7 +109,7 @@ export function EditPlaceModal({
           <Select
             {...register("kind", { required: "Place kind is required" })}
             options={placeKindOptions}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             error={errors.kind?.message}
           />
           {errors.kind && (
@@ -125,7 +125,7 @@ export function EditPlaceModal({
           <input
             type="text"
             {...register("alt_names")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Roma, Urbs Aeterna (comma-separated)"
           />
           <p className="mt-1 text-xs text-gray-500">
@@ -148,7 +148,7 @@ export function EditPlaceModal({
                 min: { value: -90, message: "Latitude must be >= -90" },
                 max: { value: 90, message: "Latitude must be <= 90" },
               })}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="41.9028"
             />
             {errors.lat && (
@@ -169,7 +169,7 @@ export function EditPlaceModal({
                 min: { value: -180, message: "Longitude must be >= -180" },
                 max: { value: 180, message: "Longitude must be <= 180" },
               })}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="12.4964"
             />
             {errors.lng && (
@@ -186,7 +186,7 @@ export function EditPlaceModal({
           <input
             type="text"
             {...register("location_description")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="North face of the hill, grove of trees..."
           />
           <p className="mt-1 text-xs text-gray-500">
@@ -202,7 +202,7 @@ export function EditPlaceModal({
           <input
             type="number"
             {...register("established_year", { valueAsNumber: true })}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="-753 (for 753 BC)"
           />
           <p className="mt-1 text-xs text-gray-500">
@@ -218,7 +218,7 @@ export function EditPlaceModal({
           <input
             type="text"
             {...register("host_to")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Battle of Actium, Olympic Games (comma-separated)"
           />
           <p className="mt-1 text-xs text-gray-500">
@@ -234,7 +234,7 @@ export function EditPlaceModal({
           <input
             type="text"
             {...register("artifact_ids")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="coin_001, statue_042 (comma-separated)"
           />
           <p className="mt-1 text-xs text-gray-500">
@@ -250,7 +250,7 @@ export function EditPlaceModal({
           <input
             type="text"
             {...register("historical_sources")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Livy Ab Urbe Condita 1.7, Plutarch Romulus 11 (comma-separated)"
           />
           <p className="mt-1 text-xs text-gray-500">
@@ -265,7 +265,7 @@ export function EditPlaceModal({
           </label>
           <textarea
             {...register("flavour_text")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             rows={4}
             placeholder="Rich description of the place's historical significance..."
           />
