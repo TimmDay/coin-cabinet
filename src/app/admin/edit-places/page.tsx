@@ -23,7 +23,7 @@ export default function EditPlacesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-900">
+    <main className="min-h-screen">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <PageTitle authPage className="mb-6">

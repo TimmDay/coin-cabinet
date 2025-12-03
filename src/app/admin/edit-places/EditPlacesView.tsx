@@ -1,6 +1,7 @@
 "use client"
 
-import { usePlaces, useDeletePlace } from "~/api/places"
+import { useState } from "react"
+import { usePlaces, useDeletePlace, useAddPlace } from "~/api/places"
 import { EditPlaceModal } from "~/app/admin/edit-places/EditPlaceModal"
 import type { Place } from "~/database/schema-places"
 import { GenericEditView } from "~/components/admin/GenericEditView"
@@ -10,6 +11,11 @@ import { Trash2 } from "lucide-react"
 export function EditPlacesView() {
   const dataQuery = usePlaces()
   const deleteMutation = useDeletePlace()
+  const addMutation = useAddPlace()
+
+  // State for create modal
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [createMessage, setCreateMessage] = useState("")
 
   const {
     message,
@@ -19,6 +25,17 @@ export function EditPlacesView() {
     handleModalClose,
     handleSuccess,
   } = useEditModal<Place>()
+
+  // Handle create modal
+  const handleCreateModalOpen = () => setIsCreateModalOpen(true)
+  const handleCreateModalClose = () => {
+    setIsCreateModalOpen(false)
+    setCreateMessage("")
+  }
+  const handleCreateSuccess = (message: string) => {
+    setCreateMessage(message)
+    setTimeout(() => setCreateMessage(""), 3000)
+  }
 
   // Handle delete
   const handleDelete = async (place: Place) => {
@@ -105,40 +122,71 @@ export function EditPlacesView() {
     handleSuccess("✅ Place updated successfully")
   }
 
-  const renderModal = (selectedPlace: Place | null) => {
-    return selectedPlace ? (
-      <EditPlaceModal
-        key={`place-${selectedPlace.id}-${selectedPlace.updated_at}`}
-        isOpen={isModalOpen}
-        onClose={handleModalCloseWithSuccess}
-        place={selectedPlace}
-      />
-    ) : null
+  const handleCreateSave = async (data: any) => {
+    try {
+      await addMutation.mutateAsync(data)
+      handleCreateSuccess("✅ Place added successfully")
+    } catch (error) {
+      console.error("Error adding place:", error)
+      throw error // Re-throw so modal can handle it
+    }
   }
 
-  return (
-    <GenericEditView
-      dataQuery={dataQuery}
-      cardClass="somnus-card"
-      itemColorScheme="slate"
-      filterLabel="Filter by Name, Kind, or Location"
-      filterPlaceholder="Search by name, kind, or location (e.g., Rome, temple, Palatine Hill)..."
-      filterFunction={filterFunction}
-      renderListItem={renderListItem}
-      selectedItemId={selectedItemId}
-      onItemSelect={handleItemSelect}
-      renderModal={renderModal}
-      // addNewConfig={{
-      //   label: "Add New Place",
-      //   href: "/admin/add-place", // TODO: Add create modal functionality
-      // }}
-      emptyStateConfig={{
-        title: "No Places Yet",
-        description: "Start by adding your first historical place.",
-        showAddButton: true,
-      }}
-      message={message}
-      onSuccess={handleSuccess}
+  const renderModal = (selectedPlace: Place | null) => {
+    return (
+      <>
+        {/* Edit Modal */}
+        {selectedPlace && (
+          <EditPlaceModal
+            key={`place-${selectedPlace.id}-${selectedPlace.updated_at}`}
+            isOpen={isModalOpen}
+            onClose={handleModalCloseWithSuccess}
+            place={selectedPlace}
+            mode="edit"
+          />
+        )}
+      </>
+    )
+  }
+
+  // Render create modal separately - always available
+  const CreateModal = () => (
+    <EditPlaceModal
+      isOpen={isCreateModalOpen}
+      onClose={handleCreateModalClose}
+      place={null}
+      onSave={handleCreateSave}
+      isSaving={addMutation.isPending}
+      mode="create"
     />
+  )
+
+  return (
+    <>
+      <GenericEditView
+        dataQuery={dataQuery}
+        cardClass="artemis-card"
+        itemColorScheme="slate"
+        filterLabel="Filter by Name, Kind, or Location"
+        filterPlaceholder="Search by name, kind, or location (e.g., Rome, temple, Palatine Hill)..."
+        filterFunction={filterFunction}
+        renderListItem={renderListItem}
+        selectedItemId={selectedItemId}
+        onItemSelect={handleItemSelect}
+        renderModal={renderModal}
+        addNewConfig={{
+          label: "Add New Place",
+          onClick: handleCreateModalOpen,
+        }}
+        emptyStateConfig={{
+          title: "No Places Yet",
+          description: "Start by adding your first historical place.",
+          showAddButton: true,
+        }}
+        message={createMessage || message}
+        onSuccess={handleSuccess}
+      />
+      <CreateModal />
+    </>
   )
 }

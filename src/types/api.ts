@@ -2,7 +2,10 @@
  * Shared API types for consistent data structures across the application
  */
 
-import type { SomnusCollection } from "~/database/schema-somnus-collection"
+import type {
+  SomnusCollection,
+  NotableFeature,
+} from "~/database/schema-somnus-collection"
 
 /**
  * Enhanced coin data with optional joined deity information
@@ -52,6 +55,6 @@ export type CoinUpdateData = {
   desc_r?: string | null
   flavour_text?: string | null
   deity_id?: string[] | null
-  devices?: string[] | null
   sets?: string[] | null
+  notable_features?: NotableFeature[] | null
 }

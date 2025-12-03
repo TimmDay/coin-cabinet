@@ -23,6 +23,7 @@ export type HistoricalFigure = {
   // Joins
   timeline_id?: number[] | null // join on timelines database
   artifacts_id?: number[] | null // join on artifacts database
+  places_id?: number[] | null // join on places database
 
   created_at: string
   updated_at: string

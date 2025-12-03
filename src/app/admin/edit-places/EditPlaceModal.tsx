@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { FormActions } from "~/components/forms/FormActions"
@@ -15,34 +16,74 @@ import {
 } from "~/lib/validations/place-form"
 
 type EditPlaceModalProps = {
-  place: Place
+  place: Place | null
   isOpen: boolean
   onClose: () => void
+  mode?: "create" | "edit"
+  onSave?: (data: PlaceFormInputData) => Promise<void>
+  isSaving?: boolean
 }
 
 export function EditPlaceModal({
   place,
   isOpen,
   onClose,
+  mode = "edit",
+  onSave,
+  isSaving = false,
 }: EditPlaceModalProps) {
-  const mutation = useUpdatePlace()
+  const updateMutation = useUpdatePlace()
+  const isCreateMode = mode === "create"
 
   const form = useForm<PlaceFormInputData>({
     resolver: zodResolver(placeFormInputSchema),
-    values: {
-      name: place.name ?? "",
-      kind: place.kind ?? "",
-      alt_names: place.alt_names?.join(", ") ?? "",
-      lat: place.lat ?? 0,
-      lng: place.lng ?? 0,
-      location_description: place.location_description ?? "",
-      established_year: place.established_year ?? undefined,
-      host_to: place.host_to?.join(", ") ?? "",
-      artifact_ids: place.artifact_ids?.join(", ") ?? "",
-      historical_sources: place.historical_sources ?? "",
-      flavour_text: place.flavour_text ?? "",
+    defaultValues: {
+      name: "",
+      kind: "",
+      alt_names: "",
+      lat: 0,
+      lng: 0,
+      location_description: "",
+      established_year: undefined,
+      host_to: "",
+      artifact_ids: "",
+      historical_sources: "",
+      flavour_text: "",
     },
   })
+
+  // Update form when place changes
+  useEffect(() => {
+    if (place) {
+      form.reset({
+        name: place.name ?? "",
+        kind: place.kind ?? "",
+        alt_names: place.alt_names?.join(", ") ?? "",
+        lat: place.lat ?? 0,
+        lng: place.lng ?? 0,
+        location_description: place.location_description ?? "",
+        established_year: place.established_year ?? undefined,
+        host_to: place.host_to?.join(", ") ?? "",
+        artifact_ids: place.artifact_ids?.join(", ") ?? "",
+        historical_sources: place.historical_sources ?? "",
+        flavour_text: place.flavour_text ?? "",
+      })
+    } else if (isCreateMode) {
+      form.reset({
+        name: "",
+        kind: "",
+        alt_names: "",
+        lat: 0,
+        lng: 0,
+        location_description: "",
+        established_year: undefined,
+        host_to: "",
+        artifact_ids: "",
+        historical_sources: "",
+        flavour_text: "",
+      })
+    }
+  }, [place, isCreateMode, form])
 
   const {
     register,
@@ -52,15 +93,20 @@ export function EditPlaceModal({
 
   const onSubmit = async (data: PlaceFormInputData) => {
     try {
-      const transformedData = placeFormSchema.parse(data)
-      await mutation.mutateAsync({
-        id: place.id,
-        updates: transformedData,
-      })
+      if (isCreateMode && onSave) {
+        const transformedData = placeFormSchema.parse(data)
+        await onSave(transformedData)
+      } else if (place) {
+        const transformedData = placeFormSchema.parse(data)
+        await updateMutation.mutateAsync({
+          id: place.id,
+          updates: transformedData,
+        })
+      }
       reset()
       onClose()
     } catch (error) {
-      console.error("Failed to update place:", error)
+      console.error("Failed to save place:", error)
     }
   }
 
@@ -73,14 +119,14 @@ export function EditPlaceModal({
     <ModalWrapper
       isOpen={isOpen}
       onClose={onClose}
-      title={`Edit Place: ${place.name}`}
+      title={isCreateMode ? "Add New Place" : `Edit Place: ${place?.name}`}
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-6">
         {/* Error Display */}
-        {mutation.isError && (
+        {updateMutation.isError && (
           <div className="rounded-md bg-red-900/50 p-4">
             <p className="text-sm text-red-300">
-              {mutation.error?.message ?? "Failed to update place"}
+              {updateMutation.error?.message ?? "Failed to save place"}
             </p>
           </div>
         )}
@@ -282,7 +328,7 @@ export function EditPlaceModal({
         <FormActions
           onCancel={handleCancel}
           isDirty={isDirty}
-          isSaving={mutation.isPending}
+          isSaving={isSaving || updateMutation.isPending}
           saveLabel="Save Changes"
         />
       </form>

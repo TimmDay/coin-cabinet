@@ -240,7 +240,7 @@ export const coinFormSchema = z
         z.number().int().min(0, "Lot number cannot be negative").optional(),
       ),
 
-    // Image links
+    // Image slugs
     image_link_o: z
       .string()
       .optional()
@@ -291,24 +291,19 @@ export const coinFormSchema = z
       .pipe(z.string().optional()),
 
     // Additional information
-    devices: z
-      .string()
-      .optional()
-      .or(z.literal(""))
-      .transform((val) => {
-        if (!val || val === "") return undefined
-        // Split by comma, clean up whitespace, and replace spaces with hyphens
-        return val
-          .split(",")
-          .map(
-            (device) => device.trim().toLowerCase().replace(/\s+/g, "-"), // Replace one or more whitespace characters with a single hyphen
-          )
-          .filter(Boolean)
-      })
-      .pipe(z.array(z.string()).optional()),
     flavour_text: z.string().optional(),
     secondary_info: z.string().optional(),
+    notable_features: z
+      .array(
+        z.object({
+          name: z.string().min(1, "Feature name is required"),
+          subtitle: z.string().optional(),
+          description: z.string().optional(),
+        }),
+      )
+      .optional(),
     deity_id: z.array(z.string()).optional(),
+    historical_figures_id: z.array(z.string()).optional(),
     bpRoute: z
       .string()
       .optional()

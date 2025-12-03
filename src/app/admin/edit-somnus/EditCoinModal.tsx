@@ -9,6 +9,8 @@ import type { SomnusCollection } from "~/database/schema-somnus-collection"
 import type { CoinFormData } from "~/lib/validations/coin-form"
 
 import { useDeityOptions } from "~/hooks/useDeityOptions"
+import { useHistoricalFigureOptions } from "~/hooks/useHistoricalFigureOptions"
+import { NotableFeaturesEditor } from "~/components/forms/NotableFeaturesEditor"
 import {
   FormErrorDisplay,
   handleUnsavedChanges,
@@ -24,7 +26,6 @@ import {
 
 // Extended CoinFormData with raw string fields for form inputs
 type EditCoinFormData = CoinFormData & {
-  devicesRaw: string
   setsRaw: string
   bpRouteRaw?: string | null
 }
@@ -76,13 +77,13 @@ const createCoinFormData = (
 
   // Arrays and special fields
   deity_id: coin?.deity_id ?? undefined,
-  devices: coin?.devices ?? undefined,
+  historical_figures_id: undefined, // Will be populated from server data when available
   sets: coin?.sets ?? undefined,
+  notable_features: coin?.notable_features ?? undefined,
   bpRoute: coin?.bpRoute ?? undefined,
   secondary_info: undefined,
 
   // Raw string fields for form inputs
-  devicesRaw: coin?.devices?.join(", ") ?? "",
   setsRaw: coin?.sets?.join(", ") ?? "",
   // Purchase info
   purchase_type:
@@ -131,6 +132,7 @@ export function EditCoinModal({
   mode,
 }: EditCoinModalProps) {
   const { options: deityOptions } = useDeityOptions()
+  const { options: historicalFigureOptions } = useHistoricalFigureOptions()
   const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false)
 
   const {
@@ -192,8 +194,15 @@ export function EditCoinModal({
       flavour_text: data.flavour_text,
       deity_id:
         data.deity_id && data.deity_id.length > 0 ? data.deity_id : undefined,
-      devices: processArray(data.devicesRaw, true), // Convert to lowercase
+      historical_figures_id:
+        data.historical_figures_id && data.historical_figures_id.length > 0
+          ? data.historical_figures_id
+          : undefined,
       sets: processArray(data.setsRaw, false), // Keep original case for sets
+      notable_features:
+        data.notable_features && data.notable_features.length > 0
+          ? data.notable_features
+          : undefined,
       purchase_type: data.purchase_type,
       purchase_date: data.purchase_date,
       price_aud: data.price_aud,
@@ -283,6 +292,7 @@ export function EditCoinModal({
               </label>
               <Select
                 {...register("authority")}
+                value={watch("authority")}
                 options={authorityOptions}
                 placeholder="Select authority"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
@@ -295,6 +305,7 @@ export function EditCoinModal({
               </label>
               <Select
                 {...register("civ")}
+                value={watch("civ")}
                 options={civilizationOptions}
                 placeholder="Select Civilization"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
@@ -307,6 +318,7 @@ export function EditCoinModal({
               </label>
               <Select
                 {...register("civ_specific")}
+                value={watch("civ_specific")}
                 options={
                   watch("civ") &&
                   civSpecificOptions[
@@ -360,17 +372,50 @@ export function EditCoinModal({
             </div>
           </div>
 
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Denomination *
-            </label>
-            <Select
-              {...register("denomination")}
-              options={denominationOptions}
-              placeholder="Select denomination"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
-            />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300">
+                Historical Figures
+              </label>
+              <SimpleMultiSelect
+                options={historicalFigureOptions}
+                selectedValues={watch("historical_figures_id") ?? []}
+                onSelectionChange={(values) =>
+                  setValue("historical_figures_id", values, {
+                    shouldDirty: true,
+                  })
+                }
+                placeholder="Select historical figures..."
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300">
+                Denomination *
+              </label>
+              <Select
+                {...register("denomination")}
+                value={watch("denomination")}
+                options={denominationOptions}
+                placeholder="Select denomination"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+              />
+            </div>
           </div>
+        </div>
+
+        {/* Notable Features Section */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-purple-200">
+            Notable Features
+          </h3>
+
+          <NotableFeaturesEditor
+            value={watch("notable_features") ?? []}
+            onChange={(features) =>
+              setValue("notable_features", features, { shouldDirty: true })
+            }
+          />
         </div>
 
         {/* Coin Details Section */}
@@ -413,6 +458,7 @@ export function EditCoinModal({
               </label>
               <Select
                 {...register("die_axis")}
+                value={watch("die_axis")}
                 options={dieAxisOptions}
                 placeholder="Select axis"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
@@ -427,6 +473,7 @@ export function EditCoinModal({
               </label>
               <Select
                 {...register("metal")}
+                value={watch("metal")}
                 options={[
                   { value: "Silver", label: "Silver" },
                   { value: "Bronze", label: "Bronze" },
@@ -646,36 +693,19 @@ export function EditCoinModal({
             />
           </div>
 
-          {/* God Name and Devices */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300">
-                God/Deity
-              </label>
-              <SimpleMultiSelect
-                options={deityOptions}
-                selectedValues={watch("deity_id") ?? []}
-                onSelectionChange={(values) =>
-                  setValue("deity_id", values, { shouldDirty: true })
-                }
-                placeholder="Select deities..."
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300">
-                Devices
-              </label>
-              <input
-                type="text"
-                {...register("devicesRaw")}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
-                placeholder="e.g., eagle, wreath, jupiter (comma separated)"
-              />
-              <p className="mt-1 text-sm text-gray-400">
-                Enter devices separated by commas. Will be saved in lowercase.
-              </p>
-            </div>
+          {/* God Name */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              God/Deity
+            </label>
+            <SimpleMultiSelect
+              options={deityOptions}
+              selectedValues={watch("deity_id") ?? []}
+              onSelectionChange={(values) =>
+                setValue("deity_id", values, { shouldDirty: true })
+              }
+              placeholder="Select deities..."
+            />
           </div>
 
           {/* Sets */}
@@ -711,6 +741,7 @@ export function EditCoinModal({
                   required:
                     mode === "create" ? "Purchase type is required" : false,
                 })}
+                value={watch("purchase_type")}
                 options={[
                   { value: "auction", label: "Auction" },
                   {
@@ -854,7 +885,7 @@ export function EditCoinModal({
 
         {/* Images Section */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-purple-200">Image Links</h3>
+          <h3 className="text-lg font-semibold text-purple-200">Image slugs</h3>
 
           {/* Tim took photos checkbox */}
           <div className="mb-4">
@@ -909,7 +940,7 @@ export function EditCoinModal({
                 Obverse Alt Light
               </label>
               <input
-                type="url"
+                type="text"
                 {...register("image_link_altlight_o")}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
                 placeholder="Alternative lighting obverse image"
@@ -926,7 +957,7 @@ export function EditCoinModal({
                 Reverse Alt Light
               </label>
               <input
-                type="url"
+                type="text"
                 {...register("image_link_altlight_r")}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
                 placeholder="Alternative lighting reverse image"
@@ -943,7 +974,7 @@ export function EditCoinModal({
                 Obverse Sketch
               </label>
               <input
-                type="url"
+                type="text"
                 {...register("image_link_sketch_o")}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
                 placeholder="Sketch/drawing of obverse"
@@ -960,7 +991,7 @@ export function EditCoinModal({
                 Reverse Sketch
               </label>
               <input
-                type="url"
+                type="text"
                 {...register("image_link_sketch_r")}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
                 placeholder="Sketch/drawing of reverse"
@@ -977,7 +1008,7 @@ export function EditCoinModal({
                 Obverse Zoom
               </label>
               <input
-                type="url"
+                type="text"
                 {...register("image_link_zoom_o")}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
                 placeholder="High-resolution zoom obverse"
@@ -994,7 +1025,7 @@ export function EditCoinModal({
                 Reverse Zoom
               </label>
               <input
-                type="url"
+                type="text"
                 {...register("image_link_zoom_r")}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
                 placeholder="High-resolution zoom reverse"
@@ -1109,7 +1140,7 @@ export function EditCoinModal({
           <button
             type="submit"
             disabled={!isDirty || isSaving}
-            className="flex-1 rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1 rounded-md bg-purple-600 px-4 py-2 text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSaving
               ? "Saving..."

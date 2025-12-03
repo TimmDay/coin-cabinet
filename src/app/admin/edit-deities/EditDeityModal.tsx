@@ -134,9 +134,9 @@ export function EditDeityModal({
   }, [deity, reset])
 
   const onSubmit = async (data: FormData) => {
-    if (!deity) return
-
     clearErrors()
+
+    const isCreateMode = !deity
 
     const updates = {
       name: data.name.trim(),
@@ -203,7 +203,11 @@ export function EditDeityModal({
     }
 
     try {
-      await onSave(deity.id, updates)
+      if (isCreateMode) {
+        await onSave(0, updates) // Use 0 as dummy id for create
+      } else {
+        await onSave(deity.id, updates)
+      }
       onClose()
     } catch (error) {
       console.error("Failed to save deity:", error)
@@ -228,13 +232,13 @@ export function EditDeityModal({
     }
   }
 
-  if (!deity) return null
+  if (!isOpen) return null
 
   return (
     <ModalWrapper
       isOpen={isOpen}
       onClose={handleClose}
-      title={`Edit Deity: ${deity.name}`}
+      title={deity ? `Edit Deity: ${deity.name}` : "Add New Deity"}
     >
       <div className="p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

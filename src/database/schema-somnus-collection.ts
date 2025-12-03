@@ -76,11 +76,12 @@ export type SomnusCollection = {
 
   // Set classifications
   sets?: string[] | null
-  devices?: string[] | null
+  notable_features?: NotableFeature[] | null
 
   // Collection status
   ex_collection?: boolean | null
 
   // joins
   deity_id?: string[] | null
+  historical_figures_id?: string[] | null
 }

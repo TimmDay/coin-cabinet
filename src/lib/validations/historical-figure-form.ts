@@ -19,6 +19,7 @@ export const historicalFigureFormInputSchema = z.object({
   historical_sources: z.string().optional(),
   timeline_id: z.string().optional(),
   artifacts_id: z.string().optional(),
+  places_id: z.string().optional(),
 })
 
 export const historicalFigureFormSchema =
@@ -42,6 +43,12 @@ export const historicalFigureFormSchema =
       : null,
     artifacts_id: data.artifacts_id
       ? data.artifacts_id
+          .split(",")
+          .map((s) => parseInt(s.trim()))
+          .filter((n) => !isNaN(n))
+      : null,
+    places_id: data.places_id
+      ? data.places_id
           .split(",")
           .map((s) => parseInt(s.trim()))
           .filter((n) => !isNaN(n))

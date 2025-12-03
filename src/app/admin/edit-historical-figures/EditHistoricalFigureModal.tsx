@@ -14,6 +14,8 @@ import {
   handleUnsavedChanges,
   ModalWrapper,
 } from "~/components/forms"
+import { usePlaceOptions } from "~/hooks/usePlaceOptions"
+import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 
 // Form data type for editing
 type EditFormData = {
@@ -30,6 +32,7 @@ type EditFormData = {
   historical_sources_raw: string
   timeline_id: string
   artifacts_id: string
+  places_id: string[]
 }
 
 type EditHistoricalFigureModalProps = {
@@ -55,6 +58,7 @@ const editFormSchema = z.object({
   historical_sources_raw: z.string(),
   timeline_id: z.string(),
   artifacts_id: z.string(),
+  places_id: z.array(z.string()).default([]),
 })
 
 // Helper function to transform figure data for form
@@ -76,6 +80,7 @@ const createFigureFormData = (
     : "",
   timeline_id: figure?.timeline_id?.join(", ") ?? "",
   artifacts_id: figure?.artifacts_id?.join(", ") ?? "",
+  places_id: figure?.places_id?.map((id) => id.toString()) ?? [],
 })
 
 export function EditHistoricalFigureModal({
@@ -85,6 +90,8 @@ export function EditHistoricalFigureModal({
   onSave,
   isSaving = false,
 }: EditHistoricalFigureModalProps) {
+  const { options: placeOptions } = usePlaceOptions()
+
   const {
     register,
     handleSubmit,
@@ -139,9 +146,9 @@ export function EditHistoricalFigureModal({
   }
 
   const onSubmit = async (data: EditFormData) => {
-    if (!figure) return
-
     clearErrors()
+
+    const isCreateMode = !figure
 
     const updates: Partial<HistoricalFigure> = {
       name: data.name,
@@ -157,10 +164,18 @@ export function EditHistoricalFigureModal({
       historical_sources: parseHistoricalSources(data.historical_sources_raw),
       timeline_id: parseNumberArray(data.timeline_id),
       artifacts_id: parseNumberArray(data.artifacts_id),
+      places_id:
+        data.places_id && data.places_id.length > 0
+          ? data.places_id.map((id) => parseInt(id)).filter((n) => !isNaN(n))
+          : null,
     }
 
     try {
-      await onSave(figure.id, updates)
+      if (isCreateMode) {
+        await onSave(0, updates) // Use 0 as dummy id for create
+      } else {
+        await onSave(figure.id, updates)
+      }
       onClose() // Close modal after successful save
     } catch (error) {
       console.error("Failed to save figure:", error)
@@ -175,7 +190,7 @@ export function EditHistoricalFigureModal({
 
   const handleClose = () => handleUnsavedChanges(isDirty, onClose)
 
-  if (!isOpen || !figure) return null
+  if (!isOpen) return null
 
   const inputClass =
     "w-full rounded-md border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none px-3 py-2 transition-colors"
@@ -186,7 +201,11 @@ export function EditHistoricalFigureModal({
     <ModalWrapper
       isOpen={isOpen}
       onClose={handleClose}
-      title={`Edit Historical Figure: ${figure.name}`}
+      title={
+        figure
+          ? `Edit Historical Figure: ${figure.name}`
+          : "Add New Historical Figure"
+      }
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-6">
         <FormErrorDisplay errors={errors} />
@@ -327,6 +346,19 @@ export function EditHistoricalFigureModal({
           }
           error={errors.historical_sources_raw?.message}
         />
+
+        {/* Places */}
+        <div>
+          <label className={labelClass}>Places</label>
+          <SimpleMultiSelect
+            options={placeOptions}
+            selectedValues={watch("places_id") ?? []}
+            onSelectionChange={(values) =>
+              setValue("places_id", values, { shouldDirty: true })
+            }
+            placeholder="Select places..."
+          />
+        </div>
 
         {/* IDs */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

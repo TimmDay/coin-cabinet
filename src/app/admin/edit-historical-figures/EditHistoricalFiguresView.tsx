@@ -1,9 +1,11 @@
 "use client"
 
+import { useState } from "react"
 import {
   useHistoricalFigures,
   useUpdateHistoricalFigure,
   useDeleteHistoricalFigure,
+  useAddHistoricalFigure,
 } from "~/api/historical-figures"
 import type { HistoricalFigure } from "~/database/schema-historical-figures"
 import { GenericEditView } from "~/components/admin/GenericEditView"
@@ -14,6 +16,11 @@ export function EditHistoricalFiguresView() {
   const dataQuery = useHistoricalFigures()
   const updateMutation = useUpdateHistoricalFigure()
   const deleteMutation = useDeleteHistoricalFigure()
+  const addMutation = useAddHistoricalFigure()
+
+  // State for create modal
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [createMessage, setCreateMessage] = useState("")
 
   const {
     message,
@@ -23,6 +30,17 @@ export function EditHistoricalFiguresView() {
     handleModalClose,
     handleSuccess,
   } = useEditModal<HistoricalFigure>()
+
+  // Handle create modal
+  const handleCreateModalOpen = () => setIsCreateModalOpen(true)
+  const handleCreateModalClose = () => {
+    setIsCreateModalOpen(false)
+    setCreateMessage("")
+  }
+  const handleCreateSuccess = (message: string) => {
+    setCreateMessage(message)
+    setTimeout(() => setCreateMessage(""), 3000)
+  }
 
   // Handle delete
   const handleDelete = async (figure: HistoricalFigure) => {
@@ -124,46 +142,86 @@ export function EditHistoricalFiguresView() {
     }
   }
 
+  const handleCreateSave = async (
+    id: number,
+    data: Partial<HistoricalFigure>,
+  ) => {
+    try {
+      await addMutation.mutateAsync(
+        data as Omit<
+          HistoricalFigure,
+          "id" | "created_at" | "updated_at" | "user_id"
+        >,
+      )
+      handleCreateSuccess("✅ Historical figure added successfully")
+    } catch (error) {
+      console.error("Error adding historical figure:", error)
+      throw error // Re-throw so modal can handle it
+    }
+  }
+
   const renderModal = (selectedFigure: HistoricalFigure | null) => {
     return (
-      <EditHistoricalFigureModal
-        key={
-          selectedFigure
-            ? `historical-figure-${selectedFigure.id}-${selectedFigure.created_at}`
-            : "no-figure"
-        }
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        figure={selectedFigure}
-        onSave={handleModalSave}
-        isSaving={updateMutation.isPending}
-      />
+      <>
+        {/* Edit Modal */}
+        {selectedFigure && (
+          <EditHistoricalFigureModal
+            key={
+              selectedFigure
+                ? `historical-figure-${selectedFigure.id}-${selectedFigure.created_at}`
+                : "no-figure"
+            }
+            isOpen={isModalOpen}
+            onClose={handleModalClose}
+            figure={selectedFigure}
+            onSave={handleModalSave}
+            isSaving={updateMutation.isPending}
+          />
+        )}
+      </>
     )
   }
 
-  return (
-    <GenericEditView
-      dataQuery={dataQuery}
-      cardClass="artemis-card"
-      itemColorScheme="slate"
-      filterLabel="Filter by Name, Authority, or Dynasty"
-      filterPlaceholder="Search by name, authority, dynasty..."
-      filterFunction={filterFunction}
-      renderListItem={renderListItem}
-      selectedItemId={selectedItemId}
-      onItemSelect={handleItemSelect}
-      renderModal={renderModal}
-      // addNewConfig={{
-      //   label: "Add New Historical Figure",
-      //   href: "/admin/add-historical-figure", // TODO: Add create modal functionality
-      // }}
-      emptyStateConfig={{
-        title: "No Historical Figures Found",
-        description: "No historical figures have been created yet.",
-        showAddButton: true,
-      }}
-      message={message}
-      onSuccess={handleSuccess}
+  // Render create modal separately - always available
+  const CreateModal = () => (
+    <EditHistoricalFigureModal
+      isOpen={isCreateModalOpen}
+      onClose={handleCreateModalClose}
+      figure={null}
+      onSave={handleCreateSave}
+      isSaving={addMutation.isPending}
     />
+  )
+
+  // Show create message if available, otherwise show edit message
+  const displayMessage = createMessage || message
+
+  return (
+    <>
+      <GenericEditView
+        dataQuery={dataQuery}
+        cardClass="artemis-card"
+        itemColorScheme="slate"
+        filterLabel="Filter by Name, Authority, or Dynasty"
+        filterPlaceholder="Search by name, authority, dynasty..."
+        filterFunction={filterFunction}
+        renderListItem={renderListItem}
+        selectedItemId={selectedItemId}
+        onItemSelect={handleItemSelect}
+        renderModal={renderModal}
+        addNewConfig={{
+          label: "Add New Historical Figure",
+          onClick: handleCreateModalOpen,
+        }}
+        emptyStateConfig={{
+          title: "No Historical Figures Found",
+          description: "No historical figures have been created yet.",
+          showAddButton: true,
+        }}
+        message={displayMessage}
+        onSuccess={handleSuccess}
+      />
+      <CreateModal />
+    </>
   )
 }

@@ -1,6 +1,12 @@
 "use client"
 
-import { useDeities, useUpdateDeity, useDeleteDeity } from "~/api/deities"
+import { useState } from "react"
+import {
+  useDeities,
+  useUpdateDeity,
+  useDeleteDeity,
+  useAddDeity,
+} from "~/api/deities"
 import type { Deity } from "~/database/schema-deities"
 import { GenericEditView } from "~/components/admin/GenericEditView"
 import { useEditModal } from "~/hooks/useEditModal"
@@ -10,6 +16,11 @@ export function EditDeitiesView() {
   const dataQuery = useDeities()
   const updateMutation = useUpdateDeity()
   const deleteMutation = useDeleteDeity()
+  const addMutation = useAddDeity()
+
+  // State for create modal
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [createMessage, setCreateMessage] = useState("")
 
   const {
     message,
@@ -19,6 +30,17 @@ export function EditDeitiesView() {
     handleModalClose,
     handleSuccess,
   } = useEditModal<Deity>()
+
+  // Handle create modal
+  const handleCreateModalOpen = () => setIsCreateModalOpen(true)
+  const handleCreateModalClose = () => {
+    setIsCreateModalOpen(false)
+    setCreateMessage("")
+  }
+  const handleCreateSuccess = (message: string) => {
+    setCreateMessage(message)
+    setTimeout(() => setCreateMessage(""), 3000)
+  }
 
   // Handle delete
   const handleDelete = async (deity: Deity) => {
@@ -126,44 +148,79 @@ export function EditDeitiesView() {
 
   const renderModal = (selectedDeity: Deity | null) => {
     return (
-      <EditDeityModal
-        key={
-          selectedDeity
-            ? `deity-${selectedDeity.id}-${selectedDeity.updated_at}`
-            : "no-deity"
-        }
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        deity={selectedDeity}
-        onSave={handleModalSave}
-        isSaving={updateMutation.isPending}
-      />
+      <>
+        {/* Edit Modal */}
+        {selectedDeity && (
+          <EditDeityModal
+            key={
+              selectedDeity
+                ? `deity-${selectedDeity.id}-${selectedDeity.updated_at}`
+                : "no-deity"
+            }
+            isOpen={isModalOpen}
+            onClose={handleModalClose}
+            deity={selectedDeity}
+            onSave={handleModalSave}
+            isSaving={updateMutation.isPending}
+          />
+        )}
+      </>
     )
   }
 
-  return (
-    <GenericEditView
-      dataQuery={dataQuery}
-      cardClass="artemis-card"
-      itemColorScheme="slate"
-      filterLabel="Filter by Name, Domains, or Alternative Names"
-      filterPlaceholder="Search by name, domain, or alternative name (e.g., Jupiter, thunder, Zeus)..."
-      filterFunction={filterFunction}
-      renderListItem={renderListItem}
-      selectedItemId={selectedItemId}
-      onItemSelect={handleItemSelect}
-      renderModal={renderModal}
-      // addNewConfig={{
-      //   label: "Add New Deity",
-      //   href: "/admin/add-deity", // TODO: Add create modal functionality
-      // }}
-      emptyStateConfig={{
-        title: "No Deities Found",
-        description: "The pantheon is empty. Add some deities first!",
-        showAddButton: true,
-      }}
-      message={message}
-      onSuccess={handleSuccess}
+  // Handle create save
+  const handleCreateSave = async (id: number, data: Partial<Deity>) => {
+    try {
+      await addMutation.mutateAsync(
+        data as Omit<Deity, "id" | "created_at" | "updated_at" | "user_id">,
+      )
+      handleCreateSuccess("✅ Deity added successfully")
+    } catch (error) {
+      console.error("Error adding deity:", error)
+      throw error // Re-throw so modal can handle it
+    }
+  }
+
+  // Render create modal separately - always available
+  const CreateModal = () => (
+    <EditDeityModal
+      isOpen={isCreateModalOpen}
+      onClose={handleCreateModalClose}
+      deity={null}
+      onSave={handleCreateSave}
+      isSaving={addMutation.isPending}
     />
+  )
+
+  // Show create message if available, otherwise show edit message
+  const displayMessage = createMessage || message
+
+  return (
+    <>
+      <GenericEditView
+        dataQuery={dataQuery}
+        cardClass="artemis-card"
+        itemColorScheme="slate"
+        filterLabel="Filter by Name, Domains, or Alternative Names"
+        filterPlaceholder="Search by name, domain, or alternative name (e.g., Jupiter, thunder, Zeus)..."
+        filterFunction={filterFunction}
+        renderListItem={renderListItem}
+        selectedItemId={selectedItemId}
+        onItemSelect={handleItemSelect}
+        renderModal={renderModal}
+        addNewConfig={{
+          label: "Add New Deity",
+          onClick: handleCreateModalOpen,
+        }}
+        emptyStateConfig={{
+          title: "No Deities Found",
+          description: "The pantheon is empty. Add some deities first!",
+          showAddButton: true,
+        }}
+        message={displayMessage}
+        onSuccess={handleSuccess}
+      />
+      <CreateModal />
+    </>
   )
 }
