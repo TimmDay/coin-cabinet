@@ -1,10 +1,15 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { useSomnusCoins } from "~/api/somnus-collection"
 import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { BrowseCoinsModal } from "~/components/ui/BrowseCoinsModal"
-import { ViewModeControls } from "~/components/ui/ViewModeControls"
+import {
+  ViewModeControls,
+  type ClickMode,
+} from "~/components/ui/ViewModeControls"
+import { generateCoinUrl } from "~/lib/utils/url-helpers"
 
 type CoinGridProps = {
   filterSet?: string
@@ -12,6 +17,7 @@ type CoinGridProps = {
 }
 
 export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
+  const router = useRouter()
   const [modalState, setModalState] = useState<{
     isOpen: boolean
     currentIndex: number
@@ -21,6 +27,8 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
   const [viewMode, setViewMode] = useState<"obverse" | "reverse" | "both">(
     "obverse",
   )
+
+  const [clickMode, setClickMode] = useState<ClickMode>("dive")
 
   // Fetch coins from database (already filtered for obverse images at DB level)
   const { data: coins, isLoading, error } = useSomnusCoins()
@@ -102,6 +110,20 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
     })
 
   const coinsList = filteredCoins
+
+  const handleCoinClick = (index: number) => {
+    if (clickMode === "browse") {
+      // Open modal for browse mode
+      setModalState({ isOpen: true, currentIndex: index, focusTarget: null })
+    } else {
+      // Navigate to deep dive page for dive mode
+      const coin = coinsList[index]
+      if (coin?.id && coin?.nickname) {
+        const url = generateCoinUrl(coin.id, coin.nickname)
+        router.push(url)
+      }
+    }
+  }
 
   const openModal = (index: number) => {
     setModalState({ isOpen: true, currentIndex: index, focusTarget: null })
@@ -185,7 +207,12 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
 
   return (
     <>
-      <ViewModeControls viewMode={viewMode} onViewModeChange={setViewMode} />
+      <ViewModeControls
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        clickMode={clickMode}
+        onClickModeChange={setClickMode}
+      />
 
       <div
         className={`flex flex-wrap justify-center ${viewMode === "both" ? "gap-x-12" : ""}`}
@@ -202,7 +229,7 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
             reverseImageId={coin.image_link_r}
             diameter={coin.diameter}
             view={viewMode}
-            onClick={() => openModal(index)}
+            onClick={() => handleCoinClick(index)}
             index={index + 1}
           />
         ))}

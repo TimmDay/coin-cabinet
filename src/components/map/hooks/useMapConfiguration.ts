@@ -21,7 +21,7 @@ export const useMapConfiguration = (): MapConfiguration => {
       defaultCenter: [41.9028, 12.4964] as LatLngExpression, // Rome
       defaultZoom: 5,
       minZoom: 3,
-      maxZoom: 8,
+      maxZoom: 14,
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       tileLayerUrl: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
