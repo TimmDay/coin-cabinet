@@ -63,32 +63,15 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       )
     : null
 
-  // Transform database deity data to DeepDiveCard format matching UI card structure
-  const transformDbDeityToCard = (deity: {
-    id: number
-    name: string
-    subtitle?: string
-    flavour_text?: string | null
-    secondary_info?: string | null
-    features_coinage?: { name: string; alt_name?: string; notes?: string }[]
-  }) => {
-    const coinageFeatureNames =
-      deity.features_coinage?.map((f) => f.name).join(", ") ?? ""
-
-    const result = {
+  // Transform database deity data to DeepDiveCard format
+  const matchingDeities =
+    coin.deities?.map((deity) => ({
       title: deity.name,
       subtitle: deity.subtitle ?? "",
       primaryInfo: deity.flavour_text ?? "",
-      secondaryInfo: deity.secondary_info ?? "",
-      footer: coinageFeatureNames,
-    }
-
-    return result
-  }
-  // Use database deity information
-  const matchingDeities = coin.deities
-    ? coin.deities.map(transformDbDeityToCard)
-    : []
+      secondaryInfo: (deity.secondary_info as string) ?? undefined,
+      footer: deity.features_coinage?.map((f) => f.name).join(", ") ?? "",
+    })) ?? []
 
   return (
     <section className="space-y-8 md:space-y-12">
@@ -117,15 +100,15 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         />
       )}
 
-      {/* Map Section - show Timeline+Map if matching timeline, otherwise regular Map */}
+      {/* Map Section */}
       {isMapFeatureEnabled && (
         <div className="flex justify-center">
-          <div className="w-full max-w-none md:w-[calc(100%-150px)]">
+          <div className="w-full md:w-[calc(100%-150px)]">
             {matchingTimeline ? (
               <TimelineWithMap
                 timeline={matchingTimeline}
                 showHeaders={false}
-                initialCenter={coin.mint ? undefined : [41.9028, 12.4964]} // Let map center on mint if available
+                initialCenter={coin.mint ? undefined : [41.9028, 12.4964]}
                 eventZoomLevel={6}
                 mapProps={{
                   highlightMint: coin.mint ?? undefined,
@@ -135,7 +118,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             ) : (
               <Map
                 highlightMint={coin.mint ?? undefined}
-                hideControls={true}
+                hideControls
                 height="400px"
               />
             )}
@@ -143,17 +126,15 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         </div>
       )}
 
-      {/* DeepDive Cards Section - Side by Side Layout */}
+      {/* DeepDive Cards Section */}
       <div className="flex justify-center">
-        <div className="w-full max-w-none md:w-[calc(100%-150px)]">
-          {/* Cards in separate columns - mobile stacks, desktop 2 independent columns */}
-          <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
-            {/* Left Column - This Coin and Mint Information */}
-            <div className="flex flex-1 flex-col gap-2">
-              {/* This Coin Card - First */}
+        <div className="w-full md:w-[calc(100%-150px)]">
+          <div className="flex flex-wrap justify-center gap-4">
+            {/* This Coin Card */}
+            <CardWrapper>
               <DeepDiveCard
                 defaultOpen={false}
-                title={` This ${coin.denomination}`}
+                title={`This ${coin.denomination}`}
                 subtitle={
                   formatPhysicalCharacteristics(
                     {
@@ -177,24 +158,23 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                 }
                 secondaryInfo={coin.flavour_text ?? undefined}
                 footer={
-                  [
-                    coin.reference ? `${coin.reference}` : null,
-                    coin.provenance ? ` ${coin.provenance}` : null,
-                  ]
-                    .filter(Boolean)
-                    .join("") || undefined
+                  [coin.reference, coin.provenance].filter(Boolean).join(" ") ||
+                  undefined
                 }
               />
-              {/* Mint Information - Second */}
-              {coin.mint && <MintInfo mintName={coin.mint} />}
-            </div>
+            </CardWrapper>
 
-            {/* Right Column - Deity Cards */}
-            <div className="flex flex-1 flex-col gap-2">
-              {/* Deity Cards */}
-              {matchingDeities.map((deity, index) => (
+            {/* Mint Information */}
+            {coin.mint && (
+              <CardWrapper>
+                <MintInfo mintName={coin.mint} />
+              </CardWrapper>
+            )}
+
+            {/* Deity Cards */}
+            {matchingDeities.map((deity, index) => (
+              <CardWrapper key={index}>
                 <DeepDiveCard
-                  key={index}
                   defaultOpen={false}
                   title={deity.title}
                   subtitle={deity.subtitle}
@@ -202,8 +182,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                   secondaryInfo={deity.secondaryInfo}
                   footer={deity.footer}
                 />
-              ))}
-            </div>
+              </CardWrapper>
+            ))}
           </div>
         </div>
       </div>
@@ -211,6 +191,14 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       {/* Coin Details */}
       {coin.flavour_text && <FlavorFooter flavourText={coin.flavour_text} />}
     </section>
+  )
+}
+
+function CardWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="w-full min-w-[400px] md:min-w-[600px] lg:w-[calc(50%-8px)] lg:min-w-[500px]">
+      {children}
+    </div>
   )
 }
 

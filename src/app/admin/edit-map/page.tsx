@@ -1,10 +1,30 @@
 "use client"
 
+import { useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "~/components/providers/auth-provider"
 import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function EditMapPage() {
   const { user, loading } = useAuth()
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [message, setMessage] = useState("")
+  const queryClient = useQueryClient()
+
+  const handleRefreshCache = async () => {
+    setIsRefreshing(true)
+    try {
+      await queryClient.invalidateQueries()
+      setMessage("✅ Cache refreshed successfully")
+      setTimeout(() => setMessage(""), 3000)
+    } catch (error) {
+      console.error("Error refreshing cache:", error)
+      setMessage("❌ Failed to refresh cache")
+      setTimeout(() => setMessage(""), 3000)
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -66,6 +86,24 @@ export default function EditMapPage() {
             <p className="coin-description">
               Map editing functionality coming soon...
             </p>
+          </div>
+
+          {/* Message Display */}
+          {message && (
+            <div className="mt-4 text-center">
+              <p className="text-sm text-slate-300">{message}</p>
+            </div>
+          )}
+
+          {/* Refresh Cache Button */}
+          <div className="mt-8 text-center">
+            <button
+              onClick={handleRefreshCache}
+              disabled={isRefreshing}
+              className="rounded-md bg-purple-700 px-6 py-2 text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100 disabled:opacity-50"
+            >
+              {isRefreshing ? "Refreshing..." : "Refresh Cache"}
+            </button>
           </div>
         </div>
       </div>

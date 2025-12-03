@@ -144,13 +144,21 @@ export function SimpleMultiSelect({
               className="inline-flex items-center gap-1 rounded-full bg-purple-100 px-2 py-1 text-sm text-purple-900"
             >
               {option?.label ?? value}
-              <button
-                type="button"
+              <span
                 onClick={(e) => {
                   e.stopPropagation()
                   removeValue(value)
                 }}
-                className="rounded-full p-0.5 transition-colors hover:bg-purple-200"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    removeValue(value)
+                  }
+                }}
+                className="cursor-pointer rounded-full p-0.5 transition-colors hover:bg-purple-200"
+                role="button"
+                tabIndex={0}
                 aria-label={`Remove ${option?.label ?? value}`}
               >
                 <svg
@@ -164,7 +172,7 @@ export function SimpleMultiSelect({
                     clipRule="evenodd"
                   />
                 </svg>
-              </button>
+              </span>
             </span>
           )
         })}

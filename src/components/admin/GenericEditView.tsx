@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 import type { UseQueryResult } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 
 export type EditableItem = {
   id: number
@@ -52,6 +53,8 @@ export function GenericEditView<T extends EditableItem>({
   onSuccess,
 }: GenericEditViewProps<T>) {
   const [filterTerm, setFilterTerm] = useState("")
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const queryClient = useQueryClient()
 
   const { data: items = [], isLoading: loading, error } = dataQuery
 
@@ -60,6 +63,20 @@ export function GenericEditView<T extends EditableItem>({
       onSuccess("❌ Failed to load data")
     }
   }, [error, onSuccess])
+
+  const handleRefreshCache = async () => {
+    setIsRefreshing(true)
+    try {
+      // Invalidate all queries to force refetch
+      await queryClient.invalidateQueries()
+      onSuccess("✅ Cache refreshed successfully")
+    } catch (error) {
+      console.error("Error refreshing cache:", error)
+      onSuccess("❌ Failed to refresh cache")
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
 
   const filteredItems = items.filter((item) => filterFunction(item, filterTerm))
 
@@ -213,6 +230,17 @@ export function GenericEditView<T extends EditableItem>({
       )}
 
       {selectedItem && renderModal(selectedItem)}
+
+      {/* Refresh Cache Button */}
+      <div className="mt-8 text-center">
+        <button
+          onClick={handleRefreshCache}
+          disabled={isRefreshing}
+          className="rounded-md bg-purple-700 px-6 py-2 text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100 disabled:opacity-50"
+        >
+          {isRefreshing ? "Refreshing..." : "Refresh Cache"}
+        </button>
+      </div>
     </div>
   )
 }

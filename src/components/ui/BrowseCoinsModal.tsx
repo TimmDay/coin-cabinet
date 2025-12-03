@@ -12,7 +12,7 @@ import { generateCoinUrl } from "~/lib/utils/url-helpers"
 import { IconButton } from "./IconButton"
 import { InfoTooltip } from "./InfoTooltip"
 
-type CoinInfoModalProps = {
+type BrowseCoinsModalProps = {
   isOpen: boolean
   onClose: () => void
   imageSrc?: string
@@ -44,7 +44,7 @@ type CoinInfoModalProps = {
   nickname?: string
 }
 
-export function CoinInfoModal({
+export function BrowseCoinsModal({
   isOpen,
   onClose,
   imageSrc,
@@ -74,7 +74,7 @@ export function CoinInfoModal({
   focusTarget,
   coinId,
   nickname,
-}: CoinInfoModalProps) {
+}: BrowseCoinsModalProps) {
   const router = useRouter()
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(

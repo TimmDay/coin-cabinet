@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useSomnusCoins } from "~/api/somnus-collection"
 import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
-import { CoinInfoModal } from "~/components/ui/CoinInfoModal"
+import { BrowseCoinsModal } from "~/components/ui/BrowseCoinsModal"
 import { ViewModeControls } from "~/components/ui/ViewModeControls"
 
 type CoinGridProps = {
@@ -208,7 +208,7 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
         ))}
       </div>
 
-      <CoinInfoModal
+      <BrowseCoinsModal
         isOpen={modalState.isOpen}
         onClose={closeModal}
         imageSrc={currentCoin?.image_link_o ?? undefined}

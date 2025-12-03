@@ -42,11 +42,13 @@ export default function HomePage() {
         <PageTitle subtitle="to the Somnus Collection">Welcome</PageTitle>
 
         {/* Featured Coins Section */}
-        {!isLoading && featuredCoins.length === 3 && (
-          <div className="w-full max-w-4xl">
-            <FeaturedCoins title="" coins={featuredCoins} />
-          </div>
-        )}
+        <div className="w-full max-w-4xl">
+          <FeaturedCoins
+            title=""
+            coins={featuredCoins}
+            isLoading={isLoading || featuredCoins.length !== 3}
+          />
+        </div>
 
         <div className="text-center">
           <div className="mx-auto max-w-2xl">

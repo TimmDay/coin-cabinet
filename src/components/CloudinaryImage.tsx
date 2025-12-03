@@ -6,6 +6,7 @@ type Props = {
   width?: number
   height?: number
   alt?: string
+  onLoad?: () => void
 }
 
 // Utility function to prefetch Cloudinary images
@@ -35,13 +36,11 @@ export default function CloudinaryImage({
   width = 200,
   height = 200,
   alt = "",
+  onLoad,
 }: Props) {
   if (!src) {
     return (
-      <div
-        className="flex items-center justify-center rounded bg-slate-800/20"
-        style={{ width, height }}
-      >
+      <div className="flex h-[200px] w-[200px] items-center justify-center rounded bg-slate-800/20">
         <div className="text-xs text-slate-500">No Image</div>
       </div>
     )
@@ -60,6 +59,7 @@ export default function CloudinaryImage({
       alt={alt}
       sizes={`${width}px`}
       className="max-h-full max-w-full object-contain"
+      onLoad={onLoad}
     />
   )
 }

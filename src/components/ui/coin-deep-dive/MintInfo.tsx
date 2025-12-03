@@ -36,8 +36,8 @@ export function MintInfo({ mintName }: MintInfoProps) {
     return null
   }
 
-  // Format operation dates as separate lines
-  const operationDatesSubtitle =
+  // Format operation dates as separate lines, fallback to opened_by if no operation periods
+  const subtitle =
     mint.operation_periods && mint.operation_periods.length > 0
       ? mint.operation_periods
           .map(
@@ -45,7 +45,7 @@ export function MintInfo({ mintName }: MintInfoProps) {
               `${formatRomanDateRange(startYear, endYear)} (${emperor})`,
           )
           .join("\n")
-      : undefined
+      : (mint.opened_by ?? undefined)
 
   // Join mint marks as comma-separated footer
   const mintMarksFooter =
@@ -56,7 +56,7 @@ export function MintInfo({ mintName }: MintInfoProps) {
   return (
     <DeepDiveCard
       title={`${mint.name} Mint`}
-      subtitle={operationDatesSubtitle}
+      subtitle={subtitle}
       primaryInfo={mint.flavour_text}
       footer={mintMarksFooter}
       defaultOpen={false}
