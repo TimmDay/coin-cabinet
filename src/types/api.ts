@@ -6,7 +6,6 @@ import type {
   SomnusCollection,
   NotableFeature,
 } from "~/database/schema-somnus-collection"
-import type { HistoricalFigure } from "~/database/schema-historical-figures"
 
 /**
  * Enhanced coin data with optional joined deity information

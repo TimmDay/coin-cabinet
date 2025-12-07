@@ -4,6 +4,10 @@ import { useState } from "react"
 import { usePlaces, useDeletePlace, useAddPlace } from "~/api/places"
 import { EditPlaceModal } from "~/app/admin/edit-places/EditPlaceModal"
 import type { Place } from "~/database/schema-places"
+import {
+  placeFormSchema,
+  type PlaceFormInputData,
+} from "~/lib/validations/place-form"
 import { GenericEditView } from "~/components/admin/GenericEditView"
 import { useEditModal } from "~/hooks/useEditModal"
 import { Trash2 } from "lucide-react"
@@ -122,9 +126,11 @@ export function EditPlacesView() {
     handleSuccess("✅ Place updated successfully")
   }
 
-  const handleCreateSave = async (data: any) => {
+  const handleCreateSave = async (data: PlaceFormInputData) => {
     try {
-      await addMutation.mutateAsync(data)
+      // Transform the form data using the schema
+      const transformedData = placeFormSchema.parse(data)
+      await addMutation.mutateAsync(transformedData)
       handleCreateSuccess("✅ Place added successfully")
     } catch (error) {
       console.error("Error adding place:", error)

@@ -81,7 +81,7 @@ export function EditMintModal({
       const formData = createFormData(mint)
       reset(formData)
     }
-  }, [mint, isCreateMode])
+  }, [mint, isCreateMode, reset])
 
   const updateMintMutation = useUpdateMint()
   const addMintMutation = useAddMint()

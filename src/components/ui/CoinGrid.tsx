@@ -125,10 +125,6 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
     }
   }
 
-  const openModal = (index: number) => {
-    setModalState({ isOpen: true, currentIndex: index, focusTarget: null })
-  }
-
   const closeModal = () => {
     setModalState({ isOpen: false, currentIndex: 0, focusTarget: null })
   }

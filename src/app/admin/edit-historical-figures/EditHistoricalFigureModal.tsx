@@ -32,7 +32,7 @@ type EditFormData = {
   historical_sources_raw: string
   timeline_id: string
   artifacts_id: string
-  places_id: string[] | undefined
+  places_id: string[]
 }
 
 type EditHistoricalFigureModalProps = {
@@ -58,7 +58,7 @@ const editFormSchema = z.object({
   historical_sources_raw: z.string(),
   timeline_id: z.string(),
   artifacts_id: z.string(),
-  places_id: z.array(z.string()).default([]),
+  places_id: z.array(z.string()),
 })
 
 // Helper function to transform figure data for form
@@ -112,7 +112,7 @@ export function EditHistoricalFigureModal({
       const formData = createFigureFormData(figure)
       reset(formData)
     }
-  }, [figure])
+  }, [figure, reset])
 
   // Helper functions for parsing
   const parseNumber = (str: string): number | undefined => {
