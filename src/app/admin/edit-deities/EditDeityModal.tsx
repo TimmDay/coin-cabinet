@@ -8,6 +8,7 @@ import { FestivalsEditor } from "~/components/forms/FestivalsEditor"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 import { usePlaceOptions } from "~/hooks/usePlaceOptions"
 import type { Deity, Festival } from "~/database/schema-deities"
+import type { DeityFormData } from "~/lib/validations/deity-form"
 
 type FormData = {
   name: string
@@ -28,7 +29,7 @@ type EditDeityModalProps = {
   isOpen: boolean
   onClose: () => void
   deity: Deity | null
-  onSave: (id: number, updates: Partial<Deity>) => Promise<void>
+  onSave: (id: number, updates: Partial<Deity> | DeityFormData) => Promise<void>
   isSaving?: boolean
 }
 

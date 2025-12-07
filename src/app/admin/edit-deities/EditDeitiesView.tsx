@@ -8,6 +8,7 @@ import {
   useAddDeity,
 } from "~/api/deities"
 import type { Deity } from "~/database/schema-deities"
+import type { DeityFormData } from "~/lib/validations/deity-form"
 import { GenericEditView } from "~/components/admin/GenericEditView"
 import { useEditModal } from "~/hooks/useEditModal"
 import { EditDeityModal } from "./EditDeityModal"
@@ -169,11 +170,9 @@ export function EditDeitiesView() {
   }
 
   // Handle create save
-  const handleCreateSave = async (id: number, data: Partial<Deity>) => {
+  const handleCreateSave = async (id: number, data: DeityFormData) => {
     try {
-      await addMutation.mutateAsync(
-        data as Omit<Deity, "id" | "created_at" | "updated_at" | "user_id">,
-      )
+      await addMutation.mutateAsync(data)
       handleCreateSuccess("✅ Deity added successfully")
     } catch (error) {
       console.error("Error adding deity:", error)

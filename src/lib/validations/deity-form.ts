@@ -56,29 +56,30 @@ export const deityFormSchema = z.object({
     .optional()
     .or(z.literal(""))
     .transform((val) => {
-      if (!val || val === "") return []
+      if (!val || val === "") return undefined
       // Split by comma and clean up whitespace
-      return val
+      const result = val
         .split(",")
         .map((name) => name.trim())
         .filter(Boolean)
+      return result.length > 0 ? result : undefined
     })
-    .pipe(z.array(z.string()).default([])),
+    .pipe(z.array(z.string()).optional()),
 
   similar_gods: z
     .string()
     .optional()
     .or(z.literal(""))
     .transform((val) => {
-      if (!val || val === "") return []
+      if (!val || val === "") return undefined
       // Split by comma and clean up whitespace
-      return val
+      const result = val
         .split(",")
         .map((god) => god.trim())
         .filter(Boolean)
+      return result.length > 0 ? result : undefined
     })
-    .pipe(z.array(z.string()).default([])),
-
+    .pipe(z.array(z.string()).optional()),
 
   // Descriptive information
   flavour_text: z.string().optional(),
@@ -88,14 +89,15 @@ export const deityFormSchema = z.object({
     .optional()
     .or(z.literal(""))
     .transform((val) => {
-      if (!val || val === "") return []
+      if (!val || val === "") return undefined
       // Split by comma and clean up whitespace
-      return val
+      const result = val
         .split(",")
         .map((source) => source.trim())
         .filter(Boolean)
+      return result.length > 0 ? result : undefined
     })
-    .pipe(z.array(z.string()).default([])),
+    .pipe(z.array(z.string()).optional()),
 
   god_of: z
     .string()
@@ -196,15 +198,15 @@ export const deityFormSchema = z.object({
     .optional()
     .or(z.literal(""))
     .transform((val) => {
-      if (!val || val === "") return []
+      if (!val || val === "") return undefined
       // Split by comma and clean up whitespace
-      return val
+      const result = val
         .split(",")
         .map((id) => id.trim())
         .filter(Boolean)
+      return result.length > 0 ? result : undefined
     })
-    .pipe(z.array(z.string()).default([])),
-
+    .pipe(z.array(z.string()).optional()),
 })
 
 export type DeityFormInputData = z.infer<typeof deityFormInputSchema>
