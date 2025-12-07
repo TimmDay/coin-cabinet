@@ -1,6 +1,12 @@
 // ============================================================================
 // SOMNUS COLLECTION - Your coin collection (CURRENT schema - not yet normalized)
 // ============================================================================
+export type NotableFeature = {
+  name: string
+  subtitle?: string
+  description?: string
+}
+
 export type SomnusCollection = {
   // Primary key and metadata
   id: number

@@ -170,9 +170,12 @@ export function EditDeitiesView() {
   }
 
   // Handle create save
-  const handleCreateSave = async (id: number, data: DeityFormData) => {
+  const handleCreateSave = async (
+    id: number,
+    data: Partial<Deity> | DeityFormData,
+  ) => {
     try {
-      await addMutation.mutateAsync(data)
+      await addMutation.mutateAsync(data as DeityFormData)
       handleCreateSuccess("✅ Deity added successfully")
     } catch (error) {
       console.error("Error adding deity:", error)

@@ -6,6 +6,7 @@ import type {
   SomnusCollection,
   NotableFeature,
 } from "~/database/schema-somnus-collection"
+import type { HistoricalFigure } from "~/database/schema-historical-figures"
 
 /**
  * Enhanced coin data with optional joined deity information
@@ -22,6 +23,14 @@ export type CoinEnhanced = SomnusCollection & {
       alt_name?: string
       notes?: string
     }>
+  }>
+  historical_figures?: Array<{
+    id: number
+    name: string
+    birth_year?: number | null
+    death_year?: number | null
+    title?: string | null
+    description?: string | null
   }>
 }
 

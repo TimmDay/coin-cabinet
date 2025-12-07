@@ -39,7 +39,7 @@ export function EditPlaceModal({
     resolver: zodResolver(placeFormInputSchema),
     defaultValues: {
       name: "",
-      kind: "",
+      kind: "city" as const,
       alt_names: "",
       lat: 0,
       lng: 0,
@@ -71,7 +71,7 @@ export function EditPlaceModal({
     } else if (isCreateMode) {
       form.reset({
         name: "",
-        kind: "",
+        kind: "city" as const,
         alt_names: "",
         lat: 0,
         lng: 0,
@@ -95,7 +95,12 @@ export function EditPlaceModal({
     try {
       if (isCreateMode && onSave) {
         const transformedData = placeFormSchema.parse(data)
-        await onSave(transformedData)
+        await onSave({
+          ...transformedData,
+          alt_names: transformedData.alt_names.join(", "),
+          artifact_ids: transformedData.artifact_ids.join(", "),
+          host_to: transformedData.host_to.join(", "),
+        })
       } else if (place) {
         const transformedData = placeFormSchema.parse(data)
         await updateMutation.mutateAsync({

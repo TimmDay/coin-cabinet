@@ -32,7 +32,7 @@ type EditFormData = {
   historical_sources_raw: string
   timeline_id: string
   artifacts_id: string
-  places_id: string[]
+  places_id: string[] | undefined
 }
 
 type EditHistoricalFigureModalProps = {

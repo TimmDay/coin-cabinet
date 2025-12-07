@@ -69,7 +69,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       title: deity.name,
       subtitle: deity.subtitle ?? "",
       primaryInfo: deity.flavour_text ?? "",
-      secondaryInfo: (deity.secondary_info as string) ?? undefined,
+      secondaryInfo: undefined, // secondary_info not available in simplified deity type
       footer: deity.features_coinage?.map((f) => f.name).join(", ") ?? "",
     })) ?? []
 
