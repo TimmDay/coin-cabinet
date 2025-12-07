@@ -116,8 +116,10 @@ export function useAddDeity() {
       // ALSO mark as stale for future page loads
       void queryClient.invalidateQueries({ queryKey: ["deities"] })
 
-      // Invalidate related queries (these can wait for next access)
-      void queryClient.invalidateQueries({ queryKey: ["coin"] })
+      // Invalidate related coin queries that might include deities
+      void queryClient.invalidateQueries({
+        queryKey: ["specific-coin-with-deities"],
+      })
       void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
       void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
     },

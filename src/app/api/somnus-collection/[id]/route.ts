@@ -31,6 +31,9 @@ export async function GET(
     // Check if we should include deity data
     const url = new URL(request.url)
     const includeDeities = url.searchParams.get("include")?.includes("deities")
+    const includeHistoricalFigures = url.searchParams
+      .get("include")
+      ?.includes("historical-figures")
 
     const coinResult = await supabase
       .from("somnus_collection")
@@ -83,6 +86,39 @@ export async function GET(
           coinWithDeities = {
             ...coin,
             deities: deities || [],
+          }
+        }
+      }
+    }
+
+    // If historical figures are requested and coin has historical_figures_id array, fetch details
+    if (
+      includeHistoricalFigures &&
+      typedCoin.historical_figures_id &&
+      Array.isArray(typedCoin.historical_figures_id) &&
+      typedCoin.historical_figures_id.length > 0
+    ) {
+      // Convert string IDs to numbers for the query
+      const figureIds = typedCoin.historical_figures_id
+        .map((id: string) => parseInt(id))
+        .filter((id: number) => !isNaN(id))
+
+      if (figureIds.length > 0) {
+        const { data: figures, error: figuresError } = await supabase
+          .from("historical_figures")
+          .select("id, name, birth_year, death_year, title, description")
+          .in("id", figureIds)
+
+        if (figuresError) {
+          console.error(
+            "Supabase historical figures fetch error:",
+            figuresError,
+          )
+          // Don't fail the whole request if figures can't be fetched
+        } else {
+          coinWithDeities = {
+            ...coinWithDeities,
+            historical_figures: figures || [],
           }
         }
       }

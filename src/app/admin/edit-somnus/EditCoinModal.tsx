@@ -120,6 +120,7 @@ const createCoinFormData = (
   notes: coin?.notes ?? undefined,
   notes_history: coin?.notes_history ?? undefined,
   ex_collection: coin?.ex_collection ?? undefined,
+  isHidden: Boolean(coin?.isHidden),
   bpRouteRaw: coin?.bpRoute?.join(", ") ?? "",
 })
 
@@ -226,6 +227,7 @@ export function EditCoinModal({
       notes_history: data.notes_history,
       bpRoute: processArray(data.bpRouteRaw ?? "", false),
       ex_collection: data.ex_collection,
+      isHidden: data.isHidden,
     }
 
     try {
@@ -1105,6 +1107,25 @@ export function EditCoinModal({
             />
             <p className="mt-1 text-sm text-gray-400">
               Blog post routes this coin should appear in, separated by commas
+            </p>
+          </div>
+
+          {/* Hidden Checkbox */}
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="isHidden"
+              {...register("isHidden")}
+              className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+            />
+            <label
+              htmlFor="isHidden"
+              className="text-sm font-medium text-slate-300"
+            >
+              Hide from public display
+            </label>
+            <p className="text-sm text-gray-400">
+              (Hidden coins are only visible in admin interface)
             </p>
           </div>
         </div>

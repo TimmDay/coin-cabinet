@@ -80,6 +80,7 @@ export type SomnusCollection = {
 
   // Collection status
   ex_collection?: boolean | null
+  isHidden?: boolean | null
 
   // joins
   deity_id?: string[] | null

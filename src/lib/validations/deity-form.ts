@@ -63,7 +63,8 @@ export const deityFormSchema = z.object({
         .map((name) => name.trim())
         .filter(Boolean)
     })
-    .pipe(z.array(z.string())),
+    .pipe(z.array(z.string()).default([])),
+
   similar_gods: z
     .string()
     .optional()
@@ -76,7 +77,8 @@ export const deityFormSchema = z.object({
         .map((god) => god.trim())
         .filter(Boolean)
     })
-    .pipe(z.array(z.string())),
+    .pipe(z.array(z.string()).default([])),
+
 
   // Descriptive information
   flavour_text: z.string().optional(),
@@ -93,7 +95,8 @@ export const deityFormSchema = z.object({
         .map((source) => source.trim())
         .filter(Boolean)
     })
-    .pipe(z.array(z.string())),
+    .pipe(z.array(z.string()).default([])),
+
   god_of: z
     .string()
     .min(1, "At least one domain is required")
@@ -200,7 +203,8 @@ export const deityFormSchema = z.object({
         .map((id) => id.trim())
         .filter(Boolean)
     })
-    .pipe(z.array(z.string())),
+    .pipe(z.array(z.string()).default([])),
+
 })
 
 export type DeityFormInputData = z.infer<typeof deityFormInputSchema>

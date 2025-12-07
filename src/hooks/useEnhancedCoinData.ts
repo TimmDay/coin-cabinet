@@ -34,7 +34,7 @@ export function useSpecificCoinData(coinId: number | null): CoinEditData {
       if (!coinId) throw new Error("Coin ID is required")
 
       const response = await fetch(
-        `/api/somnus-collection/${coinId}?include=deities`,
+        `/api/somnus-collection/${coinId}?include=deities,historical-figures`,
       )
       if (!response.ok) {
         const errorText = await response.text()

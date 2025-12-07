@@ -3,6 +3,7 @@
 ## Next Thing
 
 - [x] redo festivals in deities db as jsonB instead of string
+- [ ] //TODO: reign_start, reign_end. join to get from historical figures schema, delete from somnus schema
 
 - [ ] hand draw a logo I like
 - [ ] timeline - elagabalus
@@ -12,18 +13,18 @@
 
 - [x] Mint Operation dates: work out how to display and edit the JSONB for mint operation dates
 - [x] Deity Festivals: implement table editor for Festival objects in JSONB format
-- [ ] likewise for the Deities JSONB fields. Use similar styles.
+- [x] likewise for the Deities JSONB fields. Use similar styles.
 
 - [ ] DB overkill.
   - [x] DB for deities,
   - [ ] DB for timelines,
   - [x] DB for mints.
-  - [ ] DB for historical figures (joins to coins)
+  - [x] DB for historical figures (joins to coins)
   - gives me practice for SQL joins etc.
   - [ ] make requests maximally DB efficient
   - [ ] eventually do up a lovely API layer that other sites can use
   - [ ] data collection page for deities, timelines, mints
-  - [ ] DB for Places: ruins, tourist spots, museums, temples
+  - [x] DB for Places: ruins, tourist spots, museums, temples
   - [ ] DB for artifacts. kind (statue, bust, coin, engraving, etc), location (Place), description, image links, historical_references
   - [ ] DB for timelines. Not sure how to impl this in add/edit UI yet - heavy JSONB. Also, how to tie it to coins (a [] field on the coin)
 

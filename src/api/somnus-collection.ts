@@ -7,6 +7,7 @@ export function useSomnusCoins() {
   return useQuery({
     queryKey: ["somnus-coins"],
     queryFn: fetchSomnusCoins,
+    staleTime: 7 * 24 * 60 * 60 * 1000,
   })
 }
 
@@ -14,6 +15,7 @@ export function useAllSomnusCoins() {
   return useQuery({
     queryKey: ["all-somnus-coins"],
     queryFn: fetchAllSomnusCoins,
+    staleTime: 7 * 24 * 60 * 60 * 1000, // 7 days - coins rarely change
   })
 }
 

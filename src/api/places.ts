@@ -99,7 +99,7 @@ export function usePlaces() {
   return useQuery({
     queryKey: ["places"],
     queryFn: fetchPlaces,
-    staleTime: 1000 * 60 * 5, // 5 minutes - reasonable for places data
+    staleTime: 7 * 24 * 60 * 60 * 1000,
   })
 }
 

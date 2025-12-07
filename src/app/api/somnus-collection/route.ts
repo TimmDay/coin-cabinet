@@ -18,7 +18,10 @@ export async function GET(request: Request) {
 
     // Only filter for coins with obverse images if not requesting all coins
     if (!includeAll) {
-      query = query.not("image_link_o", "is", null).neq("image_link_o", "")
+      query = query
+        .not("image_link_o", "is", null)
+        .neq("image_link_o", "")
+        .neq("isHidden", true)
     }
 
     const { data, error } = await query
