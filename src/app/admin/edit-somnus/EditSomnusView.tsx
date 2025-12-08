@@ -140,7 +140,7 @@ export function EditSomnusView() {
         {/* Edit Modal */}
         {selectedCoin && (
           <EditCoinModal
-            key={`somnus-coin-${selectedCoin.id}-${selectedCoin.updated_at}`}
+            key={`somnus-coin-${selectedCoin.id}-${selectedCoin.created_at}`}
             isOpen={isModalOpen}
             onClose={handleModalClose}
             coin={selectedCoin}
