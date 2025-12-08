@@ -16,9 +16,9 @@ type FeaturedCoinsWithDataProps = {
   className?: string
 }
 
-export function FeaturedCoinsWithData({ 
+export function FeaturedCoinsWithData({
   title = "Featured Coins from the Collection",
-  className = ""
+  className = "",
 }: FeaturedCoinsWithDataProps) {
   const { data: allCoins, isLoading } = useAllSomnusCoins()
 
@@ -92,13 +92,20 @@ type ImageGridProps = {
  *   after={{ src: "coin-reverse", alt: "Reverse", caption: "Victory goddess" }}
  * />
  */
-export function CoinComparison({ before, after, title, className = "" }: CoinComparisonProps) {
+export function CoinComparison({
+  before,
+  after,
+  title,
+  className = "",
+}: CoinComparisonProps) {
   return (
     <div className={`my-8 ${className}`}>
       {title && (
-        <h4 className="text-lg font-medium text-slate-300 mb-4 text-center">{title}</h4>
+        <h4 className="mb-4 text-center text-lg font-medium text-slate-300">
+          {title}
+        </h4>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
           <BPImage
             src={before.src}
@@ -132,11 +139,15 @@ export function CoinComparison({ before, after, title, className = "" }: CoinCom
  *   ]}
  * />
  */
-export function ImageGrid({ images, columns = 3, className = "" }: ImageGridProps) {
+export function ImageGrid({
+  images,
+  columns = 3,
+  className = "",
+}: ImageGridProps) {
   const gridCols = {
     2: "grid-cols-1 md:grid-cols-2",
-    3: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3", 
-    4: "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+    3: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+    4: "grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
   }
 
   return (
@@ -177,18 +188,18 @@ type ArticleImageProps = {
   className?: string
 }
 
-export function ArticleImage({ 
-  src, 
-  alt, 
-  caption, 
-  layout = "center", 
+export function ArticleImage({
+  src,
+  alt,
+  caption,
+  layout = "center",
   size = "medium",
-  className = "" 
+  className = "",
 }: ArticleImageProps) {
   const maxHeights = {
     small: 300,
     medium: 500,
-    large: 800
+    large: 800,
   }
 
   return (

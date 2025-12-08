@@ -20,7 +20,9 @@ export function getAllArticleMetadata(): Record<string, ArticleMetadata> {
   // Add articles here as you create them
   try {
     // Import the metadata from React components
-    const { metadata: caracallaMetadata } = require("../../app/articles/caracalla-and-geta/page")
+    const {
+      metadata: caracallaMetadata,
+    } = require("../../app/articles/caracalla-and-geta/page")
     if (caracallaMetadata) {
       articles["/articles/caracalla-and-geta"] = caracallaMetadata
     }

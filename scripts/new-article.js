@@ -2,18 +2,18 @@
 
 /**
  * Article Generator Script
- * 
+ *
  * Creates a new article with all the necessary boilerplate.
- * 
+ *
  * Usage:
  * npm run new-article "My Article Title"
  * or
  * node scripts/new-article.js "My Article Title"
  */
 
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import fs from "fs"
+import path from "path"
+import { fileURLToPath } from "url"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -25,9 +25,9 @@ const __dirname = path.dirname(__filename)
 function slugify(text) {
   return text
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
-    .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
+    .replace(/[^\w\s-]/g, "") // Remove special characters
+    .replace(/[\s_-]+/g, "-") // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, "") // Remove leading/trailing hyphens
 }
 
 /**
@@ -35,9 +35,9 @@ function slugify(text) {
  */
 function generateArticle(title) {
   const slug = slugify(title)
-  const articlesDir = path.join(__dirname, '../src/app/articles')
+  const articlesDir = path.join(__dirname, "../src/app/articles")
   const articleDir = path.join(articlesDir, slug)
-  
+
   // Check if article already exists
   if (fs.existsSync(articleDir)) {
     console.error(`❌ Article "${slug}" already exists!`)
@@ -58,7 +58,7 @@ export const metadata = {
   title: "${title}",
   subtitle: "Your article subtitle here",
   description: "A compelling description of your article for SEO and social sharing.",
-  date: "${new Date().toISOString().split('T')[0]}", // Today's date
+  date: "${new Date().toISOString().split("T")[0]}", // Today's date
   author: "Coin Cabinet",
   slug: "${slug}",
   image: "https://res.cloudinary.com/coin-cabinet/image/upload/v1234567890/blog/${slug}-header.jpg",
@@ -66,13 +66,13 @@ export const metadata = {
   keywords: [
     // Add relevant keywords here
     "Roman Empire",
-    "Ancient Coins", 
+    "Ancient Coins",
     "Numismatics",
     "History",
   ],
 }
 
-export default function ${title.replace(/[^\w]/g, '')}Article() {
+export default function ${title.replace(/[^\w]/g, "")}Article() {
   return (
     <article className="prose prose-lg prose-slate prose-invert max-w-none">
       {/* Hero image (optional) */}
@@ -90,13 +90,13 @@ export default function ${title.replace(/[^\w]/g, '')}Article() {
       </Lead>
 
       <H2>First Section</H2>
-      
+
       <P>
         Start writing your article content here. Use the imported components for consistent styling.
       </P>
 
       {/* Example components you can use: */}
-      
+
       {/* Quote example */}
       <Quote author="Historical Figure" source="Ancient Text">
         A relevant historical quote that adds context to your article.
@@ -108,7 +108,7 @@ export default function ${title.replace(/[^\w]/g, '')}Article() {
       </Callout>
 
       <H3>Subsection</H3>
-      
+
       <P>
         Continue your content with subsections as needed.
       </P>
@@ -117,7 +117,7 @@ export default function ${title.replace(/[^\w]/g, '')}Article() {
       <Timeline events={[
         {
           date: "Year 1",
-          title: "Event Title", 
+          title: "Event Title",
           description: "Description of what happened"
         },
         {
@@ -128,7 +128,7 @@ export default function ${title.replace(/[^\w]/g, '')}Article() {
       ]} />
 
       <H2>Another Section</H2>
-      
+
       {/* Coin comparison example */}
       <CoinComparison
         title="Obverse vs Reverse"
@@ -138,7 +138,7 @@ export default function ${title.replace(/[^\w]/g, '')}Article() {
           caption: "Emperor portrait side"
         }}
         after={{
-          src: "coin-reverse-id", 
+          src: "coin-reverse-id",
           alt: "Coin reverse",
           caption: "Reverse design"
         }}
@@ -152,7 +152,7 @@ export default function ${title.replace(/[^\w]/g, '')}Article() {
       <FeaturedCoinsWithData />
 
       <H2>Conclusion</H2>
-      
+
       <P>
         Wrap up your article with key takeaways and conclusions.
       </P>
@@ -168,8 +168,8 @@ export const { generateMetadata, default: Layout } = createArticleLayout(metadat
 export default Layout`
 
   // Write files
-  fs.writeFileSync(path.join(articleDir, 'page.tsx'), pageContent)
-  fs.writeFileSync(path.join(articleDir, 'layout.tsx'), layoutContent)
+  fs.writeFileSync(path.join(articleDir, "page.tsx"), pageContent)
+  fs.writeFileSync(path.join(articleDir, "layout.tsx"), layoutContent)
 
   console.log(`✅ Created new article: "${title}"`)
   console.log(`📁 Location: src/app/articles/${slug}/`)
@@ -185,7 +185,7 @@ export default Layout`
 const title = process.argv[2]
 
 if (!title) {
-  console.error('❌ Please provide an article title:')
+  console.error("❌ Please provide an article title:")
   console.log('Usage: npm run new-article "Your Article Title"')
   process.exit(1)
 }

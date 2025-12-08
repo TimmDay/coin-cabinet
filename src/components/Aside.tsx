@@ -22,7 +22,7 @@ export function Aside({
   }
 
   return (
-    <aside className="relative py-12 font-sans">
+    <aside className="relative my-12 font-sans">
       {/* Main content box with cut-out corner */}
       <div className="aside-cutout-box border-border rounded-xl border bg-gray-200 p-5 pl-12">
         <div className="mb-3">

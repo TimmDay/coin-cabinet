@@ -14,17 +14,17 @@ type ArticleMetadata = {
 
 /**
  * Generic Article Layout
- * 
+ *
  * This layout can be used by any article by:
  * 1. Importing the article's metadata from its page.tsx
  * 2. Generating Next.js metadata for SEO
  * 3. Creating JSON-LD structured data
- * 
+ *
  * Usage in article layout.tsx:
  * ```tsx
  * import { createArticleLayout } from "../ArticleLayout"
  * import { metadata } from "./page"
- * 
+ *
  * export const { generateMetadata, default: Layout } = createArticleLayout(metadata)
  * export default Layout
  * ```
