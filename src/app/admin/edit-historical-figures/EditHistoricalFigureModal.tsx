@@ -32,7 +32,7 @@ const createFigureFormData = (
   reign_note: figure?.reign_note ?? "",
   birth: figure?.birth?.toString() ?? "",
   death: figure?.death?.toString() ?? "",
-  dynasty: figure?.dynasty ?? "",
+  altNames: figure?.altNames?.join(", ") ?? "",
   flavour_text: figure?.flavour_text ?? "",
   historical_sources: figure?.historical_sources
     ? JSON.stringify(figure.historical_sources)
@@ -88,7 +88,7 @@ export function EditHistoricalFigureModal({
       reign_note: transformedData.reign_note ?? null,
       birth: transformedData.birth,
       death: transformedData.death,
-      dynasty: transformedData.dynasty ?? null,
+      altNames: transformedData.altNames as string[] | null,
       flavour_text: transformedData.flavour_text ?? null,
       historical_sources: transformedData.historical_sources,
       timeline_id: transformedData.timeline_id,
@@ -179,13 +179,16 @@ export function EditHistoricalFigureModal({
           </div>
 
           <div>
-            <label className={labelClass}>Dynasty</label>
+            <label className={labelClass}>Alternative Names</label>
             <input
               type="text"
-              {...register("dynasty")}
+              {...register("altNames")}
               className={inputClass}
-              placeholder="Julio-Claudian, Flavian..."
+              placeholder="Marcus Aurelius, Antoninus..."
             />
+            <p className="mt-1 text-xs text-slate-400">
+              Enter alternative names separated by commas
+            </p>
           </div>
         </div>
 

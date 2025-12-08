@@ -3,14 +3,20 @@
  * for Docker builds.
  */
 import "./src/env.js"
+import createMDX from "@next/mdx"
 
 /** @type {import("next").NextConfig} */
 const config = {
   pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
   outputFileTracingRoot: process.cwd(),
   experimental: {
-    mdxRs: true, // Use the Rust-based MDX compiler which works better with Turbopack
+    mdxRs: process.env.NODE_ENV === "development", // Use Rust MDX for Turbopack compatibility in dev
   },
 }
 
-export default config
+const withMDX = createMDX({
+  // Add markdown plugins here, as desired
+})
+
+// Wrap MDX and Next.js config together
+export default withMDX(config)

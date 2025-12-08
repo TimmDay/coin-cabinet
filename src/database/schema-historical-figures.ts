@@ -14,7 +14,7 @@ export type HistoricalFigure = {
   reign_note?: string | null // reigned twice (Maximian), interrupted by usurper, had a co-emperor...
   birth?: number | null
   death?: number | null
-  dynasty?: string | null
+  altNames?: string[] | null
   flavour_text?: string | null
   historical_sources: HistoricalSource[] // Academic citations
 

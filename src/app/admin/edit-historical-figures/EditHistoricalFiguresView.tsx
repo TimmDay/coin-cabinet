@@ -67,10 +67,12 @@ export function EditHistoricalFiguresView() {
       figure.full_name?.toLowerCase().includes(searchTerm) ?? false
     const authorityMatch =
       figure.authority?.toLowerCase().includes(searchTerm) ?? false
-    const dynastyMatch =
-      figure.dynasty?.toLowerCase().includes(searchTerm) ?? false
+    const altNamesMatch =
+      figure.altNames?.some((name) =>
+        name.toLowerCase().includes(searchTerm),
+      ) ?? false
 
-    return nameMatch || fullNameMatch || authorityMatch || dynastyMatch
+    return nameMatch || fullNameMatch || authorityMatch || altNamesMatch
   }
 
   const renderListItem = (figure: HistoricalFigure) => (
@@ -86,7 +88,9 @@ export function EditHistoricalFiguresView() {
         </h3>
         <div className="flex gap-4 text-sm text-gray-400">
           <span>{figure.authority}</span>
-          {figure.dynasty && <span>• {figure.dynasty}</span>}
+          {figure.altNames && figure.altNames.length > 0 && (
+            <span>• {figure.altNames.join(", ")}</span>
+          )}
           {figure.reign_start && figure.reign_end && (
             <span>
               • {figure.reign_start}-{figure.reign_end} CE
@@ -173,7 +177,7 @@ export function EditHistoricalFiguresView() {
             }
             isOpen={isModalOpen}
             onClose={handleModalClose}
-            figure={selectedFigure}
+            entity={selectedFigure}
             onSave={handleModalSave}
             isSaving={updateMutation.isPending}
           />
@@ -187,7 +191,7 @@ export function EditHistoricalFiguresView() {
     <EditHistoricalFigureModal
       isOpen={isCreateModalOpen}
       onClose={handleCreateModalClose}
-      figure={null}
+      entity={null}
       onSave={handleCreateSave}
       isSaving={addMutation.isPending}
     />
