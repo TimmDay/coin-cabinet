@@ -44,7 +44,7 @@ export function DeepDiveCard({
 
   return (
     <div
-      className={`bg-card w-full rounded-lg border border-gray-500 px-6 pt-6 ${className}`}
+      className={`bg-card w-full overflow-hidden rounded-lg border border-gray-500 px-6 pt-6 break-words ${className}`}
     >
       {/* Header Section */}
       <h3 className="heading-accent mb-4 text-center text-xl font-bold tracking-widest uppercase">

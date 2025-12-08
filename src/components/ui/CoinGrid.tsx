@@ -96,14 +96,14 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
         return yearA - yearB
       }
 
-      // Special sorting for "silver-emperors" set - order by reign start
-      if (filterSet === "silver-emperors") {
-        const yearA = a.reign_start ?? 0
-        const yearB = b.reign_start ?? 0
-        return yearA - yearB
-      }
-
-      // Default sorting for other sets: by mint_year_earliest (ascending order - oldest first)
+      // Default sorting for all sets: by mint_year_earliest (ascending order - oldest first)
+      // TODO: Implement proper historical_figures join for reign-based sorting
+      // // Special sorting for "silver-emperors" set - order by reign start
+      // if (filterSet === "silver-emperors") {
+      //   const yearA = a.reign_start ?? 0
+      //   const yearB = b.reign_start ?? 0
+      //   return yearA - yearB
+      // }
       const yearA = a.mint_year_earliest ?? 0
       const yearB = b.mint_year_earliest ?? 0
       return yearA - yearB

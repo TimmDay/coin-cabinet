@@ -106,7 +106,9 @@ export async function GET(
       if (figureIds.length > 0) {
         const { data: figures, error: figuresError } = await supabase
           .from("historical_figures")
-          .select("id, name, birth_year, death_year, title, description")
+          .select(
+            "id, name, full_name, authority, reign_start, reign_end, birth, death, altNames, flavour_text",
+          )
           .in("id", figureIds)
 
         if (figuresError) {

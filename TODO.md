@@ -2,18 +2,21 @@
 
 ## Next Thing
 
-- [x] redo festivals in deities db as jsonB instead of string
-- [ ] //TODO: reign_start, reign_end. join to get from historical figures schema, delete from somnus schema
-
 - [ ] hand draw a logo I like
 - [ ] timeline - elagabalus
 - [ ] photos - gordy tranquillina
 
-### features on deck
+- [ ] notable features track obv/rev and clockAxis, so that in the UI we can put an asterix around the coin that can be hovered/tapped to see popover with text about the feature.
+- [ ] make a timeline table in the db
+- [ ] add/ edit functionality on a edit-timeline page
 
-- [x] Mint Operation dates: work out how to display and edit the JSONB for mint operation dates
-- [x] Deity Festivals: implement table editor for Festival objects in JSONB format
-- [x] likewise for the Deities JSONB fields. Use similar styles.
+- [ ] timeline_id should be on the somnus coin itself. Then we can do a timeline view that shows all coins in that timeline. And timelines relevant to a coin are not necessarily relevant to a historical figure
+
+- [ ] go through all the historical figures and give them an entry with at least born/died/reign values
+
+- [ ] somnus coins get a mint_id col to join to the mints table
+
+### features on deck
 
 - [ ] DB overkill.
   - [x] DB for deities,
@@ -96,6 +99,7 @@ Map Page
 - [ ] get a proper domain name
 - [ ] if somnus table row has a bpLink, show a link to that blog post (labelled "learn more") at the base of the CoinDetail page... Is it possible to just embed the actual post there?
 - [ ] write an actual post / coin deep dive text.
+- [ ] remove reign start / end from somnus db table (in hist figs now)
 
 ### Mints Table
 
@@ -385,3 +389,8 @@ articles, guides
 - [x] remove the concept of places from the festivals part - instead just make a 'note' single string where I can write about where it was celbrated or whatever.
       -- update the table to make festivals jsonb
       -- test with Venus
+- [x] redo festivals in deities db as jsonB instead of string
+- [x] reign_end. join to get from historical figures schema, delete from somnus schema
+- [x] Mint Operation dates: work out how to display and edit the JSONB for mint operation dates
+- [x] Deity Festivals: implement table editor for Festival objects in JSONB format
+- [x] likewise for the Deities JSONB fields. Use similar styles.

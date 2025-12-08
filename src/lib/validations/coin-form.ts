@@ -20,32 +20,6 @@ export const coinFormSchema = z
       .min(1, "Civilization is required")
       .max(50, "Civilization is too long"),
     civ_specific: z.string().optional(),
-    reign_start: z
-      .number()
-      .or(z.nan())
-      .optional()
-      .transform((val) => (Number.isNaN(val) ? undefined : val))
-      .pipe(
-        z
-          .number()
-          .int()
-          .min(-1000, "Invalid start year")
-          .max(2100, "Invalid start year")
-          .optional(),
-      ),
-    reign_end: z
-      .number()
-      .or(z.nan())
-      .optional()
-      .transform((val) => (Number.isNaN(val) ? undefined : val))
-      .pipe(
-        z
-          .number()
-          .int()
-          .min(-1000, "Invalid end year")
-          .max(2100, "Invalid end year")
-          .optional(),
-      ),
 
     // Physical measurements
     diameter: z
@@ -329,11 +303,6 @@ export const coinFormSchema = z
     // Auto-populate end years with start years if not provided
     const transformed = { ...data }
 
-    // If reign_start is provided but reign_end is not, use reign_start as reign_end
-    if (data.reign_start && !data.reign_end) {
-      transformed.reign_end = data.reign_start
-    }
-
     // If mint_year_earliest is provided but mint_year_latest is not, use earliest as latest
     if (data.mint_year_earliest && !data.mint_year_latest) {
       transformed.mint_year_latest = data.mint_year_earliest
@@ -341,19 +310,6 @@ export const coinFormSchema = z
 
     return transformed
   })
-  .refine(
-    (data) => {
-      // Custom validation: reign_end should be >= reign_start if both are provided
-      if (data.reign_start && data.reign_end) {
-        return data.reign_end >= data.reign_start
-      }
-      return true
-    },
-    {
-      message: "Reign end year must be after or equal to start year",
-      path: ["reign_end"],
-    },
-  )
   .refine(
     (data) => {
       // Custom validation: mint_year_latest should be >= mint_year_earliest if both are provided

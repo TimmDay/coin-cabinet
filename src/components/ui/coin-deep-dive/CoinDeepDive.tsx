@@ -42,15 +42,101 @@ type CoinDeepDiveProps = {
   coin: CoinEnhanced
 }
 
-export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
-  const isMapFeatureEnabled = useTypedFeatureFlag("map-feature")
-  const { data: mints } = useMints()
+// Data transformation helpers
+function transformDeitiesToCards(deities: CoinEnhanced["deities"]) {
+  return (
+    deities?.map((deity) => ({
+      title: deity.name,
+      subtitle: deity.subtitle ?? "",
+      primaryInfo: deity.flavour_text ?? "",
+      secondaryInfo: undefined,
+      footer: deity.features_coinage?.map((f) => f.name).join(", ") ?? "",
+    })) ?? []
+  )
+}
 
-  // Check if there's a matching timeline for this coin
+function transformHistoricalFiguresToCards(
+  figures: CoinEnhanced["historical_figures"],
+) {
+  return (
+    figures?.map((figure: unknown) => {
+      const figureAny = figure as Record<string, unknown>
+
+      // Extract and validate numeric fields
+      const birth = typeof figureAny.birth === "number" ? figureAny.birth : null
+      const death = typeof figureAny.death === "number" ? figureAny.death : null
+      const reignStart =
+        typeof figureAny.reign_start === "number" ? figureAny.reign_start : null
+      const reignEnd =
+        typeof figureAny.reign_end === "number" ? figureAny.reign_end : null
+
+      // Format year ranges
+      const livedYears = formatYearRange(birth, death)
+      const reignYears = formatYearRange(reignStart, reignEnd)
+
+      // Build subtitle components
+      const authorityText =
+        (typeof figureAny.authority === "string" ? figureAny.authority : "") ??
+        ""
+      const lifeInfo = livedYears
+        ? `lived ${livedYears.replace(/[()]/g, "")}`
+        : ""
+      const reignInfo = reignYears
+        ? `reigned ${reignYears.replace(/[()]/g, "")}`
+        : ""
+      const subtitle = [authorityText, lifeInfo, reignInfo]
+        .filter(Boolean)
+        .join(", ")
+
+      // Build footer from altNames or full_name
+      const altNames = Array.isArray(figureAny.altNames)
+        ? figureAny.altNames
+        : []
+      const fullName =
+        typeof figureAny.full_name === "string" ? figureAny.full_name : ""
+      const footerText = altNames.length > 0 ? altNames.join(", ") : fullName
+
+      return {
+        title: typeof figureAny.name === "string" ? figureAny.name : "",
+        subtitle,
+        primaryInfo:
+          (typeof figureAny.flavour_text === "string"
+            ? figureAny.flavour_text
+            : "") ?? "",
+        secondaryInfo: undefined,
+        footer: footerText,
+      }
+    }) ?? []
+  )
+}
+
+function createCoinCard(coin: CoinEnhanced) {
+  return {
+    title: `This ${coin.denomination}`,
+    subtitle:
+      formatPhysicalCharacteristics(
+        { diameter: coin.diameter, mass: coin.mass, dieAxis: coin.die_axis },
+        { style: "compact" },
+      ) ?? "",
+    primaryInfo:
+      [
+        coin.mint,
+        formatYearRange(coin.mint_year_earliest, coin.mint_year_latest),
+      ]
+        .filter(Boolean)
+        .join(" ") || undefined,
+    secondaryInfo: coin.flavour_text ?? undefined,
+    footer:
+      [coin.reference, coin.provenance].filter(Boolean).join(" ") || undefined,
+  }
+}
+
+function buildTimelineForCoin(
+  coin: CoinEnhanced,
+  mints: ReturnType<typeof useMints>["data"],
+) {
   const baseTimeline = matchTimelineToNickname(coin.nickname, TIMELINES)
-
-  // Add coin minting event to timeline if we have one
-  const matchingTimeline = baseTimeline
+  return baseTimeline
     ? addCoinMintingEventToTimeline(
         baseTimeline,
         {
@@ -62,19 +148,67 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         mints,
       )
     : null
+}
 
-  // Transform database deity data to DeepDiveCard format
-  const matchingDeities =
-    coin.deities?.map((deity) => ({
-      title: deity.name,
-      subtitle: deity.subtitle ?? "",
-      primaryInfo: deity.flavour_text ?? "",
-      secondaryInfo: undefined, // secondary_info not available in simplified deity type
-      footer: deity.features_coinage?.map((f) => f.name).join(", ") ?? "",
-    })) ?? []
+export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
+  const isMapFeatureEnabled = useTypedFeatureFlag("map-feature")
+  const { data: mints } = useMints()
+
+  // Helper function to check if mint has actual data
+  const getMintData = (mintName: string) => {
+    if (!mints || !mintName?.trim()) return null
+    const mint = mints.find(
+      (m) =>
+        m.alt_names?.some(
+          (name) => name.toLowerCase() === mintName.toLowerCase(),
+        ) ?? m.name.toLowerCase() === mintName.toLowerCase(),
+    )
+    return mint?.flavour_text ? mint : null
+  }
+
+  // Process data using helper functions
+  const matchingTimeline = buildTimelineForCoin(coin, mints)
+  const matchingDeities = transformDeitiesToCards(coin.deities)
+  const matchingHistoricalFigures = transformHistoricalFiguresToCards(
+    coin.historical_figures,
+  )
+
+  // Helper to create a DeepDive card
+  const createCard = (
+    id: string,
+    props: React.ComponentProps<typeof DeepDiveCard>,
+  ) => ({
+    id,
+    component: <DeepDiveCard defaultOpen={false} {...props} />,
+  })
+
+  // Helper to create a mint card
+  const createMintCard = (mintName: string) => ({
+    id: "mint",
+    component: <MintInfo mintName={mintName} />,
+  })
+
+  // Build cards array with only cards that have content
+  const cardsToRender = [
+    // This Coin Card (always shown)
+    createCard("coin", createCoinCard(coin)),
+
+    // Mint card (only if has data)
+    ...(getMintData(coin.mint ?? "") ? [createMintCard(coin.mint!)] : []),
+
+    // Deity cards
+    ...matchingDeities
+      .filter((deity) => deity.title?.trim())
+      .map((deity, index) => createCard(`deity-${index}`, deity)),
+
+    // Historical figure cards
+    ...matchingHistoricalFigures
+      .filter((figure) => figure.title?.trim())
+      .map((figure, index) => createCard(`figure-${index}`, figure)),
+  ]
 
   return (
-    <section className="space-y-8 md:space-y-12">
+    <section className="w-full space-y-8 overflow-x-hidden md:space-y-12">
       {/* Coin Row Components */}
       {coin.image_link_o && (
         <CoinRow
@@ -85,6 +219,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
           legendExpanded={coin.legend_o_expanded}
           legendTranslation={coin.legend_o_translation}
           description={coin.desc_o}
+          priority={true}
         />
       )}
 
@@ -102,8 +237,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
 
       {/* Map Section */}
       {isMapFeatureEnabled && (
-        <div className="flex justify-center">
-          <div className="w-full md:w-[calc(100%-150px)]">
+        <div className="mx-auto w-full max-w-6xl px-4">
+          <div className="w-full">
             {matchingTimeline ? (
               <TimelineWithMap
                 timeline={matchingTimeline}
@@ -127,78 +262,22 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       )}
 
       {/* DeepDive Cards Section */}
-      <div className="flex justify-center">
-        <div className="w-full md:w-[calc(100%-150px)]">
-          <div className="flex flex-wrap justify-center gap-4">
-            {/* This Coin Card */}
-            <CardWrapper>
-              <DeepDiveCard
-                defaultOpen={false}
-                title={`This ${coin.denomination}`}
-                subtitle={
-                  formatPhysicalCharacteristics(
-                    {
-                      diameter: coin.diameter,
-                      mass: coin.mass,
-                      dieAxis: coin.die_axis,
-                    },
-                    { style: "compact" },
-                  ) ?? ""
-                }
-                primaryInfo={
-                  [
-                    coin.mint,
-                    formatYearRange(
-                      coin.mint_year_earliest,
-                      coin.mint_year_latest,
-                    ),
-                  ]
-                    .filter(Boolean)
-                    .join(" ") || undefined
-                }
-                secondaryInfo={coin.flavour_text ?? undefined}
-                footer={
-                  [coin.reference, coin.provenance].filter(Boolean).join(" ") ||
-                  undefined
-                }
-              />
-            </CardWrapper>
-
-            {/* Mint Information */}
-            {coin.mint && (
-              <CardWrapper>
-                <MintInfo mintName={coin.mint} />
-              </CardWrapper>
-            )}
-
-            {/* Deity Cards */}
-            {matchingDeities.map((deity, index) => (
-              <CardWrapper key={index}>
-                <DeepDiveCard
-                  defaultOpen={false}
-                  title={deity.title}
-                  subtitle={deity.subtitle}
-                  primaryInfo={deity.primaryInfo}
-                  secondaryInfo={deity.secondaryInfo}
-                  footer={deity.footer}
-                />
-              </CardWrapper>
-            ))}
-          </div>
+      <div className="mx-auto w-full max-w-6xl px-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap">
+          {cardsToRender.map((card) => (
+            <div
+              key={card.id}
+              className="w-full lg:w-[calc(50%-0.5rem)] lg:flex-shrink-0"
+            >
+              {card.component}
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Coin Details */}
       {coin.flavour_text && <FlavorFooter flavourText={coin.flavour_text} />}
     </section>
-  )
-}
-
-function CardWrapper({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="w-full min-w-[400px] md:min-w-[600px] lg:w-[calc(50%-8px)] lg:min-w-[500px]">
-      {children}
-    </div>
   )
 }
 

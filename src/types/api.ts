@@ -26,10 +26,14 @@ export type CoinEnhanced = SomnusCollection & {
   historical_figures?: Array<{
     id: number
     name: string
-    birth_year?: number | null
-    death_year?: number | null
-    title?: string | null
-    description?: string | null
+    full_name?: string | null
+    authority?: string | null
+    reign_start?: number | null
+    reign_end?: number | null
+    birth?: number | null
+    death?: number | null
+    altNames?: string[] | null
+    flavour_text?: string | null
   }>
 }
 

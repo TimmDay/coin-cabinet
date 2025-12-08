@@ -198,10 +198,7 @@ export function EditHistoricalFigureModal({
             <label className={labelClass}>Birth Year</label>
             <input
               type="number"
-              {...register("birth", {
-                setValueAs: (v) =>
-                  v === "" || v == null ? undefined : Number(v),
-              })}
+              {...register("birth")}
               className={inputClass}
               placeholder="e.g., 63"
             />
@@ -211,10 +208,7 @@ export function EditHistoricalFigureModal({
             <label className={labelClass}>Death Year</label>
             <input
               type="number"
-              {...register("death", {
-                setValueAs: (v) =>
-                  v === "" || v == null ? undefined : Number(v),
-              })}
+              {...register("death")}
               className={inputClass}
               placeholder="e.g., 14"
             />
@@ -224,10 +218,7 @@ export function EditHistoricalFigureModal({
             <label className={labelClass}>Reign Start</label>
             <input
               type="number"
-              {...register("reign_start", {
-                setValueAs: (v) =>
-                  v === "" || v == null ? undefined : Number(v),
-              })}
+              {...register("reign_start")}
               className={inputClass}
               placeholder="e.g., 27"
             />
@@ -237,10 +228,7 @@ export function EditHistoricalFigureModal({
             <label className={labelClass}>Reign End</label>
             <input
               type="number"
-              {...register("reign_end", {
-                setValueAs: (v) =>
-                  v === "" || v == null ? undefined : Number(v),
-              })}
+              {...register("reign_end")}
               className={inputClass}
               placeholder="e.g., 14"
             />

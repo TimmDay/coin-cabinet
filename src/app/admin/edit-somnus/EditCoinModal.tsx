@@ -52,8 +52,6 @@ const createCoinFormData = (
 
   // Optional fields - default to undefined
   civ_specific: coin?.civ_specific ?? undefined,
-  reign_start: coin?.reign_start ?? undefined,
-  reign_end: coin?.reign_end ?? undefined,
   diameter: coin?.diameter ?? undefined,
   mass: coin?.mass ?? undefined,
   die_axis: coin?.die_axis ?? undefined,
@@ -172,8 +170,6 @@ export function EditCoinModal({
       denomination: data.denomination,
       civ: data.civ,
       civ_specific: data.civ_specific,
-      reign_start: data.reign_start,
-      reign_end: data.reign_end,
       diameter: data.diameter,
       mass: data.mass,
       die_axis: data.die_axis,
@@ -348,30 +344,6 @@ export function EditCoinModal({
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               />
             </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300">
-                Reign Start Year
-              </label>
-              <input
-                type="number"
-                {...register("reign_start", { valueAsNumber: true })}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
-                placeholder="e.g., 161"
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300">
-                Reign End Year
-              </label>
-              <input
-                type="number"
-                {...register("reign_end", { valueAsNumber: true })}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
-                placeholder="e.g., 180"
-              />
-            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -404,23 +376,6 @@ export function EditCoinModal({
               />
             </div>
           </div>
-        </div>
-
-        {/* Notable Features Section */}
-        <div className="space-y-4">
-          <h3 className="m-0 text-lg font-semibold text-purple-200">
-            Notable Features
-          </h3>
-          <p className="mb-2 text-sm text-slate-400">
-            Particular elements on this coin that are worth pointing out
-          </p>
-
-          <NotableFeaturesEditor
-            value={watch("notable_features") ?? []}
-            onChange={(features) =>
-              setValue("notable_features", features, { shouldDirty: true })
-            }
-          />
         </div>
 
         {/* Coin Details Section */}
@@ -467,40 +422,6 @@ export function EditCoinModal({
                 options={dieAxisOptions}
                 placeholder="Select axis"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300">
-                Metal *
-              </label>
-              <Select
-                {...register("metal")}
-                value={watch("metal")}
-                options={[
-                  { value: "Silver", label: "Silver" },
-                  { value: "Bronze", label: "Bronze" },
-                  { value: "Billon", label: "Billon" },
-                  { value: "Gold", label: "Gold" },
-                  { value: "Copper", label: "Copper" },
-                  { value: "Electrum", label: "Electrum" },
-                ]}
-                placeholder="Select metal"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300">
-                Silver Content
-              </label>
-              <input
-                type="text"
-                {...register("silver_content")}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
-                placeholder="e.g., 93.1-98"
               />
             </div>
           </div>
@@ -570,6 +491,54 @@ export function EditCoinModal({
               />
             </div>
           </div>
+
+          {/* Notable Features Section */}
+          <div className="space-y-4">
+            <p className="mb-2 text-sm text-slate-400">
+              Particular elements on this coin that are worth pointing out
+            </p>
+
+            <NotableFeaturesEditor
+              value={watch("notable_features") ?? []}
+              onChange={(features) =>
+                setValue("notable_features", features, { shouldDirty: true })
+              }
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300">
+                Metal *
+              </label>
+              <Select
+                {...register("metal")}
+                value={watch("metal")}
+                options={[
+                  { value: "Silver", label: "Silver" },
+                  { value: "Bronze", label: "Bronze" },
+                  { value: "Billon", label: "Billon" },
+                  { value: "Gold", label: "Gold" },
+                  { value: "Copper", label: "Copper" },
+                  { value: "Electrum", label: "Electrum" },
+                ]}
+                placeholder="Select metal"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300">
+                Silver Content
+              </label>
+              <input
+                type="text"
+                {...register("silver_content")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+                placeholder="e.g., 93.1-98"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Obverse and Reverse Details */}
@@ -580,8 +549,6 @@ export function EditCoinModal({
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Obverse Column */}
             <div className="space-y-4">
-              <h4 className="font-medium text-purple-200">Obverse Details</h4>
-
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-300">
                   Obverse Legend
@@ -633,8 +600,6 @@ export function EditCoinModal({
 
             {/* Reverse Column */}
             <div className="space-y-4">
-              <h4 className="font-medium text-purple-200">Reverse Details</h4>
-
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-300">
                   Reverse Legend

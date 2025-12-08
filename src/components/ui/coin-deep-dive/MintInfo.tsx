@@ -10,14 +10,7 @@ export function MintInfo({ mintName }: MintInfoProps) {
   const { data: mints, isLoading, error } = useMints()
 
   if (isLoading) {
-    return (
-      <DeepDiveCard
-        title="Mint Information"
-        subtitle="Loading mint data..."
-        primaryInfo=""
-        defaultOpen={false}
-      />
-    )
+    return null // Don't show loading card, just wait for data
   }
 
   if (error || !mints) {

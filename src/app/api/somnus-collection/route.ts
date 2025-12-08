@@ -25,10 +25,7 @@ export async function GET(request: Request) {
     }
 
     const { data, error } = await query
-      .order("reign_start", {
-        ascending: true,
-        nullsFirst: false,
-      })
+      // TODO: pull reign start from historical figures table and use that
       .order("mint_year_earliest", {
         ascending: true,
         nullsFirst: false,

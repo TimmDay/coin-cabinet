@@ -88,9 +88,6 @@ export function EditHistoricalFiguresView() {
         </h3>
         <div className="flex gap-4 text-sm text-gray-400">
           <span>{figure.authority}</span>
-          {figure.altNames && figure.altNames.length > 0 && (
-            <span>• {figure.altNames.join(", ")}</span>
-          )}
           {figure.reign_start && figure.reign_end && (
             <span>
               • {figure.reign_start}-{figure.reign_end} CE

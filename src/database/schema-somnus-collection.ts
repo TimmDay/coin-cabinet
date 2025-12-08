@@ -19,8 +19,6 @@ export type SomnusCollection = {
   denomination: string
   civ: string
   civ_specific?: string | null
-  reign_start?: number | null
-  reign_end?: number | null
 
   // Physical measurements
   diameter?: number | null

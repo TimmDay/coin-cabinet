@@ -13,6 +13,7 @@ type CoinRowProps = {
   legendExpanded?: string | null
   legendTranslation?: string | null
   description?: string | null
+  priority?: boolean
 }
 
 export function CoinRow({
@@ -23,6 +24,7 @@ export function CoinRow({
   legendExpanded,
   legendTranslation,
   description,
+  priority = false,
 }: CoinRowProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalImageUrl, setModalImageUrl] = useState<string>("")
@@ -87,6 +89,7 @@ export function CoinRow({
                     alt={availableImages[currentMobileImageIndex].alt}
                     width={400}
                     height={400}
+                    priority={priority && currentMobileImageIndex === 0}
                   />
                 )}
               </div>
@@ -181,6 +184,7 @@ export function CoinRow({
                         alt={`${side} of coin`}
                         width={400}
                         height={400}
+                        priority={priority}
                       />
                     </div>
                   </div>
@@ -274,6 +278,7 @@ export function CoinRow({
                   alt={`${side} of coin`}
                   width={320}
                   height={320}
+                  priority={priority}
                 />
               </div>
             </div>

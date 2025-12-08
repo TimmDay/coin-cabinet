@@ -7,6 +7,7 @@ type Props = {
   height?: number
   alt?: string
   onLoad?: () => void
+  priority?: boolean
 }
 
 // Utility function to prefetch Cloudinary images
@@ -37,6 +38,7 @@ export default function CloudinaryImage({
   height = 200,
   alt = "",
   onLoad,
+  priority = false,
 }: Props) {
   if (!src) {
     return (
@@ -60,6 +62,7 @@ export default function CloudinaryImage({
       sizes={`${width}px`}
       className="max-h-full max-w-full object-contain"
       onLoad={onLoad}
+      priority={priority}
     />
   )
 }

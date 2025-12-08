@@ -27,8 +27,8 @@ export const historicalFigureFormInputSchema = z.object({
   places_id: optionalStringField,
 })
 
-export const historicalFigureFormSchema =
-  historicalFigureFormInputSchema.transform((data) => ({
+export const historicalFigureFormSchema = historicalFigureFormInputSchema
+  .transform((data) => ({
     ...data,
     reign_start: data.reign_start ? parseInt(data.reign_start) : null,
     reign_end: data.reign_end ? parseInt(data.reign_end) : null,
@@ -69,6 +69,19 @@ export const historicalFigureFormSchema =
             .filter((num) => !isNaN(num))
         : null,
   }))
+  .refine(
+    (data) => {
+      // Custom validation: reign_end should be >= reign_start if both are provided
+      if (data.reign_start && data.reign_end) {
+        return data.reign_end >= data.reign_start
+      }
+      return true
+    },
+    {
+      message: "Reign end year must be after or equal to start year",
+      path: ["reign_end"],
+    },
+  )
 
 export type HistoricalFigureFormInputData = z.infer<
   typeof historicalFigureFormInputSchema
