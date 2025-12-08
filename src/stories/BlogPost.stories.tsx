@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs"
 import { TableOfContents } from "~/components/blog/TableOfContents"
-import { MockMDXFeaturedCoins } from "./MockMDXFeaturedCoins"
+import { FeaturedCoins } from "../components/ui/FeaturedCoins"
 
 // Demo component that replicates the blog post layout
 function BlogPostDemo() {
@@ -66,7 +66,7 @@ function BlogPostDemo() {
               </p>
 
               <div className="my-8">
-                <MockMDXFeaturedCoins />
+                <FeaturedCoins />
               </div>
 
               <p className="mb-4 leading-relaxed text-slate-300">
@@ -169,7 +169,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "A complete blog post layout showcasing the Caracalla and Geta article with Table of Contents, MDX content, and embedded components. Uses mock data for the FeaturedCoins component.",
+          "A complete blog post layout showcasing the Caracalla and Geta article with Table of Contents and embedded components.",
       },
     },
   },
@@ -231,7 +231,7 @@ export const MobileLayout: Story = {
             </p>
 
             <div className="my-8">
-              <MockMDXFeaturedCoins />
+              <FeaturedCoins />
             </div>
 
             <h2 className="text-foreground mb-4 text-2xl font-semibold">

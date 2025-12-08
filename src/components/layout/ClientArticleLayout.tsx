@@ -13,7 +13,7 @@
  * WHY IT'S NECESSARY:
  * 1. Server/Client Boundary: Separates server-side metadata processing from client-side
  *    pathname detection (usePathname hook requires client component)
- * 2. Dynamic Titles: Shows article-specific titles from frontmatter instead of generic "Articles"
+ * 2. Dynamic Titles: Shows article-specific titles from metadata instead of generic "Articles"
  * 3. Conditional Layout: Manages Table of Contents visibility based on article type
  * 4. Responsive Design: Handles prose styling and sidebar positioning for different screen sizes
  *
