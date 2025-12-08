@@ -2,30 +2,21 @@
 
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useUpdateMint, useAddMint } from "~/api/mints"
 import { OperationPeriodsEditor } from "~/components/forms/OperationPeriodsEditor"
 import type { Mint } from "~/database/schema-mints"
+import {
+  mintFormInputSchema,
+  mintFormSchema,
+  type MintFormInputData,
+} from "~/lib/validations/mint-form"
 import { FormActions } from "../../../components/forms/FormActions"
 import { FormErrorDisplay } from "../../../components/forms/FormErrorDisplay"
 import { ModalWrapper } from "../../../components/forms/ModalWrapper"
+import { arrayToString } from "~/lib/types/form-patterns"
 
-import {
-  handleUnsavedChanges,
-  parseJSONSafe,
-} from "../../../components/forms/formUtils"
-
-type FormData = {
-  name: string
-  alt_names_raw: string
-  lat: number
-  lng: number
-  mint_marks_raw: string
-  flavour_text: string
-  historical_sources_raw: string
-  opened_by: string
-  coinage_materials_raw: string
-  operation_periods_raw: string
-}
+import { handleUnsavedChanges } from "../../../components/forms/formUtils"
 
 type EditMintModalProps = {
   mint: Mint | null
@@ -36,18 +27,18 @@ type EditMintModalProps = {
   mode?: "create" | "edit"
 }
 
-// Helper function to transform mint data for form
-const createFormData = (mint: Mint | null): FormData => ({
+// Helper function to transform mint data for form - using standardized utilities
+const createFormData = (mint: Mint | null): MintFormInputData => ({
   name: mint?.name ?? "",
-  alt_names_raw: mint?.alt_names?.join(", ") ?? "",
+  alt_names: arrayToString(mint?.alt_names),
   lat: mint?.lat ?? 0,
   lng: mint?.lng ?? 0,
-  mint_marks_raw: mint?.mint_marks?.join(", ") ?? "",
+  mint_marks: arrayToString(mint?.mint_marks),
   flavour_text: mint?.flavour_text ?? "",
-  historical_sources_raw: mint?.historical_sources?.join(", ") ?? "",
+  historical_sources: arrayToString(mint?.historical_sources),
   opened_by: mint?.opened_by ?? "",
-  coinage_materials_raw: mint?.coinage_materials?.join(", ") ?? "",
-  operation_periods_raw: mint?.operation_periods
+  coinage_materials: arrayToString(mint?.coinage_materials),
+  operation_periods: mint?.operation_periods
     ? JSON.stringify(mint.operation_periods)
     : "",
 })
@@ -71,7 +62,8 @@ export function EditMintModal({
     setValue,
     watch,
     reset,
-  } = useForm<FormData>({
+  } = useForm<MintFormInputData>({
+    resolver: zodResolver(mintFormInputSchema),
     defaultValues: createFormData(null),
   })
 
@@ -86,54 +78,15 @@ export function EditMintModal({
   const updateMintMutation = useUpdateMint()
   const addMintMutation = useAddMint()
 
-  // Helper function for processing arrays
-  const processArray = (str: string) => {
-    if (!str || str.trim() === "") return undefined
-    const arr = str
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean)
-    return arr.length > 0 ? arr : undefined
-  }
-
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: MintFormInputData) => {
     if (!isCreateMode && !mint) return
 
     clearErrors()
 
-    const mintData = {
-      name: data.name.trim(),
-      alt_names: processArray(data.alt_names_raw) ?? [],
-      lat: data.lat,
-      lng: data.lng,
-      mint_marks: processArray(data.mint_marks_raw) ?? [],
-      flavour_text: data.flavour_text.trim() || undefined,
-      historical_sources: processArray(data.historical_sources_raw) ?? [],
-      opened_by: data.opened_by.trim() || undefined,
-      coinage_materials: processArray(data.coinage_materials_raw) ?? [],
-      operation_periods:
-        parseJSONSafe<Array<[number, number, string]>>(
-          data.operation_periods_raw,
-        ) ?? [],
-    }
-
-    // Validate required fields
-    if (!mintData.name) {
-      setError("name", { message: "Name is required" })
-      return
-    }
-
-    if (mintData.lat < -90 || mintData.lat > 90) {
-      setError("lat", { message: "Latitude must be between -90 and 90" })
-      return
-    }
-
-    if (mintData.lng < -180 || mintData.lng > 180) {
-      setError("lng", { message: "Longitude must be between -180 and 180" })
-      return
-    }
-
     try {
+      // Use standardized Zod transformation instead of manual processing
+      const mintData = mintFormSchema.parse(data)
+
       if (isCreateMode) {
         await addMintMutation.mutateAsync(mintData)
         onSuccess?.("✅ Mint created successfully")
@@ -192,7 +145,7 @@ export function EditMintModal({
           </label>
           <input
             type="text"
-            {...register("alt_names_raw")}
+            {...register("alt_names")}
             className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Roma, Ῥώμη (comma separated)"
           />
@@ -255,7 +208,7 @@ export function EditMintModal({
           </label>
           <input
             type="text"
-            {...register("mint_marks_raw")}
+            {...register("mint_marks")}
             className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="ROMA, R, ROM (comma separated)"
           />
@@ -284,7 +237,7 @@ export function EditMintModal({
           </label>
           <input
             type="text"
-            {...register("coinage_materials_raw")}
+            {...register("coinage_materials")}
             className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="bronze, silver, gold (comma separated)"
           />
@@ -300,7 +253,7 @@ export function EditMintModal({
           </label>
           <input
             type="text"
-            {...register("historical_sources_raw")}
+            {...register("historical_sources")}
             className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             placeholder="Pliny, Tacitus, Archaeological evidence (comma separated)"
           />
@@ -311,8 +264,8 @@ export function EditMintModal({
 
         {/* Operation Periods */}
         <OperationPeriodsEditor
-          value={watch("operation_periods_raw")}
-          onChange={(value) => setValue("operation_periods_raw", value)}
+          value={watch("operation_periods")}
+          onChange={(value) => setValue("operation_periods", value)}
         />
 
         {/* Description */}

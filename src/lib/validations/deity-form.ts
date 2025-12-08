@@ -1,4 +1,9 @@
 import { z } from "zod"
+import {
+  csvStringField,
+  optionalStringField,
+  optionalCsvStringField,
+} from "~/lib/types/form-patterns"
 
 // Schema for individual coinage features
 const coinageFeatureSchema = z.object({
@@ -43,68 +48,30 @@ export const deityFormInputSchema = z.object({
   artifact_ids: z.string().optional(),
 })
 
-// Processed schema (for API)
+// Processed schema (for API) - using standardized field schemas
 export const deityFormSchema = z.object({
   // Basic identification
   name: z
     .string()
     .min(1, "Deity name is required")
     .max(255, "Name is too long"),
-  subtitle: z.string().optional(),
-  alt_names: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .transform((val) => {
-      if (!val || val === "") return undefined
-      // Split by comma and clean up whitespace
-      const result = val
-        .split(",")
-        .map((name) => name.trim())
-        .filter(Boolean)
-      return result.length > 0 ? result : undefined
-    })
-    .pipe(z.array(z.string()).optional()),
-
-  similar_gods: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .transform((val) => {
-      if (!val || val === "") return undefined
-      // Split by comma and clean up whitespace
-      const result = val
-        .split(",")
-        .map((god) => god.trim())
-        .filter(Boolean)
-      return result.length > 0 ? result : undefined
-    })
-    .pipe(z.array(z.string()).optional()),
+  subtitle: optionalStringField.pipe(
+    z.string().max(100, "Subtitle is too long").optional(),
+  ),
+  alt_names: optionalCsvStringField,
+  similar_gods: optionalCsvStringField,
 
   // Descriptive information
-  flavour_text: z.string().optional(),
-  secondary_info: z.string().optional(),
-  historical_sources: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .transform((val) => {
-      if (!val || val === "") return undefined
-      // Split by comma and clean up whitespace
-      const result = val
-        .split(",")
-        .map((source) => source.trim())
-        .filter(Boolean)
-      return result.length > 0 ? result : undefined
-    })
-    .pipe(z.array(z.string()).optional()),
+  flavour_text: optionalStringField,
+  secondary_info: optionalStringField,
+  historical_sources: optionalCsvStringField,
 
   god_of: z
     .string()
     .min(1, "At least one domain is required")
     .transform((val) => {
       if (!val || val === "") return []
-      // Split by comma and clean up whitespace
+      // Split by comma and clean up whitespace, convert to lowercase
       return val
         .split(",")
         .map((domain) => domain.trim().toLowerCase())

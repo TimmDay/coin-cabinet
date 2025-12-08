@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { optionalStringField, csvStringField } from "~/lib/types/form-patterns"
 
 export const historicalSourceSchema = z.object({
   citation: z.string().min(1, "Citation is required"),
@@ -7,19 +8,19 @@ export const historicalSourceSchema = z.object({
 
 export const historicalFigureFormInputSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  full_name: z.string().optional(),
+  full_name: optionalStringField,
   authority: z.string().min(1, "Authority is required"),
-  reign_start: z.string().optional(),
-  reign_end: z.string().optional(),
-  reign_note: z.string().optional(),
-  birth: z.string().optional(),
-  death: z.string().optional(),
-  dynasty: z.string().optional(),
-  flavour_text: z.string().optional(),
-  historical_sources: z.string().optional(),
-  timeline_id: z.string().optional(),
-  artifacts_id: z.string().optional(),
-  places_id: z.string().optional(),
+  reign_start: optionalStringField,
+  reign_end: optionalStringField,
+  reign_note: optionalStringField,
+  birth: optionalStringField,
+  death: optionalStringField,
+  dynasty: optionalStringField,
+  flavour_text: optionalStringField,
+  historical_sources: optionalStringField,
+  timeline_id: csvStringField,
+  artifacts_id: csvStringField,
+  places_id: csvStringField,
 })
 
 export const historicalFigureFormSchema =
@@ -35,24 +36,9 @@ export const historicalFigureFormSchema =
           notes?: string
         }[])
       : [],
-    timeline_id: data.timeline_id
-      ? data.timeline_id
-          .split(",")
-          .map((s) => parseInt(s.trim()))
-          .filter((n) => !isNaN(n))
-      : null,
-    artifacts_id: data.artifacts_id
-      ? data.artifacts_id
-          .split(",")
-          .map((s) => parseInt(s.trim()))
-          .filter((n) => !isNaN(n))
-      : null,
-    places_id: data.places_id
-      ? data.places_id
-          .split(",")
-          .map((s) => parseInt(s.trim()))
-          .filter((n) => !isNaN(n))
-      : null,
+    timeline_id: data.timeline_id || null,
+    artifacts_id: data.artifacts_id || null,
+    places_id: data.places_id || null,
   }))
 
 export type HistoricalFigureFormInputData = z.infer<

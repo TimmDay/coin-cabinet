@@ -3,68 +3,27 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import type {
-  HistoricalFigure,
-  HistoricalSource,
-} from "~/database/schema-historical-figures"
+import type { HistoricalFigure } from "~/database/schema-historical-figures"
 import { HistoricalSourcesEditor } from "~/components/forms/HistoricalSourcesEditor"
 import {
   FormErrorDisplay,
   handleUnsavedChanges,
   ModalWrapper,
 } from "~/components/forms"
-import { usePlaceOptions } from "~/hooks/usePlaceOptions"
-import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 
-// Form data type for editing
-type EditFormData = {
-  name: string
-  full_name: string
-  authority: string
-  reign_start: string
-  reign_end: string
-  reign_note: string
-  birth: string
-  death: string
-  dynasty: string
-  flavour_text: string
-  historical_sources_raw: string
-  timeline_id: string
-  artifacts_id: string
-  places_id: string[]
-}
+import {
+  historicalFigureFormInputSchema,
+  historicalFigureFormSchema,
+  type HistoricalFigureFormInputData,
+} from "~/lib/validations/historical-figure-form"
+import type { BaseEditModalProps } from "~/lib/types/form-patterns"
 
-type EditHistoricalFigureModalProps = {
-  isOpen: boolean
-  onClose: () => void
-  figure: HistoricalFigure | null
-  onSave: (id: number, updates: Partial<HistoricalFigure>) => Promise<void>
-  isSaving?: boolean
-}
-
-// Simple validation schema for editing
-const editFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  full_name: z.string(),
-  authority: z.string().min(1, "Authority is required"),
-  reign_start: z.string(),
-  reign_end: z.string(),
-  reign_note: z.string(),
-  birth: z.string(),
-  death: z.string(),
-  dynasty: z.string(),
-  flavour_text: z.string(),
-  historical_sources_raw: z.string(),
-  timeline_id: z.string(),
-  artifacts_id: z.string(),
-  places_id: z.array(z.string()),
-})
+type EditHistoricalFigureModalProps = BaseEditModalProps<HistoricalFigure>
 
 // Helper function to transform figure data for form
 const createFigureFormData = (
   figure: HistoricalFigure | null,
-): EditFormData => ({
+): HistoricalFigureFormInputData => ({
   name: figure?.name ?? "",
   full_name: figure?.full_name ?? "",
   authority: figure?.authority ?? "",
@@ -75,23 +34,21 @@ const createFigureFormData = (
   death: figure?.death?.toString() ?? "",
   dynasty: figure?.dynasty ?? "",
   flavour_text: figure?.flavour_text ?? "",
-  historical_sources_raw: figure?.historical_sources
+  historical_sources: figure?.historical_sources
     ? JSON.stringify(figure.historical_sources)
     : "",
   timeline_id: figure?.timeline_id?.join(", ") ?? "",
   artifacts_id: figure?.artifacts_id?.join(", ") ?? "",
-  places_id: figure?.places_id?.map((id) => id.toString()) ?? [],
+  places_id: figure?.places_id?.join(", ") ?? "",
 })
 
 export function EditHistoricalFigureModal({
   isOpen,
   onClose,
-  figure,
+  entity: figure,
   onSave,
   isSaving = false,
 }: EditHistoricalFigureModalProps) {
-  const { options: placeOptions } = usePlaceOptions()
-
   const {
     register,
     handleSubmit,
@@ -101,8 +58,8 @@ export function EditHistoricalFigureModal({
     setValue,
     watch,
     reset,
-  } = useForm<EditFormData>({
-    resolver: zodResolver(editFormSchema),
+  } = useForm<HistoricalFigureFormInputData>({
+    resolver: zodResolver(historicalFigureFormInputSchema),
     defaultValues: createFigureFormData(null),
   })
 
@@ -114,66 +71,35 @@ export function EditHistoricalFigureModal({
     }
   }, [figure, reset])
 
-  // Helper functions for parsing
-  const parseNumber = (str: string): number | undefined => {
-    if (!str || str.trim() === "") return undefined
-    const num = parseInt(str, 10)
-    return isNaN(num) ? undefined : num
-  }
-
-  const parseNumberArray = (str: string): number[] | undefined => {
-    if (!str || str.trim() === "") return undefined
-    const arr = str
-      .split(",")
-      .map((s) => s.trim())
-      .filter((s) => s !== "")
-      .map((s) => parseInt(s, 10))
-      .filter((n) => !isNaN(n))
-    return arr.length > 0 ? arr : undefined
-  }
-
-  const parseHistoricalSources = (str: string): HistoricalSource[] => {
-    if (!str || str.trim() === "") return []
-    try {
-      const parsed = JSON.parse(str) as unknown
-      if (Array.isArray(parsed)) {
-        return parsed as HistoricalSource[]
-      }
-      return []
-    } catch {
-      return []
-    }
-  }
-
-  const onSubmit = async (data: EditFormData) => {
+  const onSubmit = async (data: HistoricalFigureFormInputData) => {
     clearErrors()
 
     const isCreateMode = !figure
 
+    // Use the schema transformation to get properly parsed data
+    const transformedData = historicalFigureFormSchema.parse(data)
+
     const updates: Partial<HistoricalFigure> = {
-      name: data.name,
-      full_name: data.full_name || null,
-      authority: data.authority,
-      reign_start: parseNumber(data.reign_start),
-      reign_end: parseNumber(data.reign_end),
-      reign_note: data.reign_note || null,
-      birth: parseNumber(data.birth),
-      death: parseNumber(data.death),
-      dynasty: data.dynasty || null,
-      flavour_text: data.flavour_text || null,
-      historical_sources: parseHistoricalSources(data.historical_sources_raw),
-      timeline_id: parseNumberArray(data.timeline_id),
-      artifacts_id: parseNumberArray(data.artifacts_id),
-      places_id:
-        data.places_id && data.places_id.length > 0
-          ? data.places_id.map((id) => parseInt(id)).filter((n) => !isNaN(n))
-          : null,
+      name: transformedData.name,
+      full_name: transformedData.full_name ?? null,
+      authority: transformedData.authority,
+      reign_start: transformedData.reign_start,
+      reign_end: transformedData.reign_end,
+      reign_note: transformedData.reign_note ?? null,
+      birth: transformedData.birth,
+      death: transformedData.death,
+      dynasty: transformedData.dynasty ?? null,
+      flavour_text: transformedData.flavour_text ?? null,
+      historical_sources: transformedData.historical_sources,
+      timeline_id: transformedData.timeline_id,
+      artifacts_id: transformedData.artifacts_id,
+      places_id: transformedData.places_id,
     }
 
     try {
       if (isCreateMode) {
         await onSave(0, updates) // Use 0 as dummy id for create
-      } else {
+      } else if (figure) {
         await onSave(figure.id, updates)
       }
       onClose() // Close modal after successful save
@@ -202,7 +128,7 @@ export function EditHistoricalFigureModal({
       isOpen={isOpen}
       onClose={handleClose}
       title={
-        figure
+        figure?.name
           ? `Edit Historical Figure: ${figure.name}`
           : "Add New Historical Figure"
       }
@@ -340,23 +266,21 @@ export function EditHistoricalFigureModal({
 
         {/* Historical Sources */}
         <HistoricalSourcesEditor
-          value={watch("historical_sources_raw") ?? ""}
+          value={watch("historical_sources") ?? ""}
           onChange={(value) =>
-            setValue("historical_sources_raw", value, { shouldDirty: true })
+            setValue("historical_sources", value, { shouldDirty: true })
           }
-          error={errors.historical_sources_raw?.message}
+          error={errors.historical_sources?.message}
         />
 
         {/* Places */}
         <div>
           <label className={labelClass}>Places</label>
-          <SimpleMultiSelect
-            options={placeOptions}
-            selectedValues={watch("places_id") ?? []}
-            onSelectionChange={(values) =>
-              setValue("places_id", values, { shouldDirty: true })
-            }
-            placeholder="Select places..."
+          <input
+            type="text"
+            {...register("places_id")}
+            className={inputClass}
+            placeholder="1, 2, 3 (comma separated)"
           />
         </div>
 

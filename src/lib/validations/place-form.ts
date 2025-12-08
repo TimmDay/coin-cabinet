@@ -1,4 +1,10 @@
 import { z } from "zod"
+import {
+  coordinateSchema,
+  csvStringField,
+  optionalStringField,
+  yearSchema,
+} from "~/lib/types/form-patterns"
 
 // Place kind options
 export const placeKindOptions = [
@@ -21,56 +27,41 @@ export const placeFormInputSchema = z.object({
     required_error: "Place kind is required",
   }),
 
-  // Location
-  lat: z
-    .number()
-    .min(-90, "Latitude must be between -90 and 90")
-    .max(90, "Latitude must be between -90 and 90"),
-  lng: z
-    .number()
-    .min(-180, "Longitude must be between -180 and 180")
-    .max(180, "Longitude must be between -180 and 180"),
+  // Location - using standardized coordinate schema
+  ...coordinateSchema,
 
   // Details
   location_description: z.string().optional(),
-  established_year: z
-    .number()
-    .int()
-    .min(-3000, "Year too early")
-    .max(2100, "Year too late")
-    .optional()
-    .nullable(),
+  established_year: yearSchema,
   flavour_text: z.string().optional(),
   historical_sources: z.string().optional(),
   host_to: z.string().optional(), // comma-separated string
   artifact_ids: z.string().optional(), // comma-separated string
 })
 
-// Processed schema (for API)
-export const placeFormSchema = placeFormInputSchema.transform((data) => ({
-  ...data,
-  alt_names: data.alt_names
-    ? data.alt_names
-        .split(",")
-        .map((name) => name.trim())
-        .filter(Boolean)
-    : [],
-  location_description: data.location_description?.trim() ?? undefined,
-  flavour_text: data.flavour_text?.trim() ?? undefined,
-  historical_sources: data.historical_sources?.trim() ?? undefined,
-  host_to: data.host_to
-    ? data.host_to
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean)
-    : [],
-  artifact_ids: data.artifact_ids
-    ? data.artifact_ids
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean)
-    : [],
-}))
+// Processed schema (for API) - using standardized field schemas
+export const placeFormSchema = z.object({
+  // Basic identification
+  name: z
+    .string()
+    .min(1, "Place name is required")
+    .max(255, "Name is too long"),
+  alt_names: csvStringField,
+  kind: z.enum(["city", "temple", "ruin", "museum", "other"], {
+    required_error: "Place kind is required",
+  }),
+
+  // Location - using standardized coordinate schema
+  ...coordinateSchema,
+
+  // Details - using standardized field schemas
+  location_description: optionalStringField,
+  established_year: yearSchema,
+  flavour_text: optionalStringField,
+  historical_sources: optionalStringField,
+  host_to: csvStringField,
+  artifact_ids: csvStringField,
+})
 
 export type PlaceFormInputData = z.infer<typeof placeFormInputSchema>
 export type PlaceFormData = z.infer<typeof placeFormSchema>

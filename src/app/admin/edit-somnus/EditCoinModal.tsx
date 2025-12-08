@@ -408,9 +408,12 @@ export function EditCoinModal({
 
         {/* Notable Features Section */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-purple-200">
+          <h3 className="m-0 text-lg font-semibold text-purple-200">
             Notable Features
           </h3>
+          <p className="mb-2 text-sm text-slate-400">
+            Particular elements on this coin that are worth pointing out
+          </p>
 
           <NotableFeaturesEditor
             value={watch("notable_features") ?? []}

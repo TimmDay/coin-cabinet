@@ -1,7 +1,7 @@
 "use client"
 
 import { StructuredDataEditor } from "./StructuredDataEditor"
-import type { HistoricalSource } from "~/database/schema-historical-figures"
+import type { HistoricalSource } from "~/database/types"
 
 type HistoricalSourcesEditorProps = {
   value: string

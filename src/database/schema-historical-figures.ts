@@ -1,17 +1,15 @@
 // ============================================================================
 // HISTORICAL FIGURES - Emperors, empresses, and other historical figures
 // ============================================================================
-export type HistoricalSource = {
-  citation: string // "Suetonius, Lives of the Caesars, Augustus 28"
-  notes?: string // "describes the monetary reforms"
-}
+
+import type { HistoricalSource } from "./types.ts"
 
 export type HistoricalFigure = {
   id: number
   name: string
   full_name?: string | null // "Marcus Julius Philippus"
   authority: string // "Emperor", "Augusta", "Caesar"
-  reign_start?: number | null
+  reign_start?: number | null //relating to this authority
   reign_end?: number | null
   reign_note?: string | null // reigned twice (Maximian), interrupted by usurper, had a co-emperor...
   birth?: number | null

@@ -1,4 +1,9 @@
 import { z } from "zod"
+import {
+  coordinateSchema,
+  csvStringField,
+  optionalStringField,
+} from "~/lib/types/form-patterns"
 
 // Form input schema (strings that will be transformed)
 export const mintFormInputSchema = z.object({
@@ -6,15 +11,8 @@ export const mintFormInputSchema = z.object({
   name: z.string().min(1, "Mint name is required").max(255, "Name is too long"),
   alt_names: z.string().optional(),
 
-  // Location
-  lat: z
-    .number()
-    .min(-90, "Latitude must be between -90 and 90")
-    .max(90, "Latitude must be between -90 and 90"),
-  lng: z
-    .number()
-    .min(-180, "Longitude must be between -180 and 180")
-    .max(180, "Longitude must be between -180 and 180"),
+  // Location - using standardized coordinate schema
+  ...coordinateSchema,
 
   // Mint details
   mint_marks: z.string().optional(),
@@ -25,76 +23,26 @@ export const mintFormInputSchema = z.object({
   operation_periods: z.string().optional(),
 })
 
-// Processed schema (for API)
+// Processed schema (for API) - using standardized field schemas
 export const mintFormSchema = z.object({
   // Basic identification
   name: z.string().min(1, "Mint name is required").max(255, "Name is too long"),
-  alt_names: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .transform((val) => {
-      if (!val || val === "") return []
-      // Split by comma and clean up whitespace
-      return val
-        .split(",")
-        .map((name) => name.trim())
-        .filter(Boolean)
-    })
-    .pipe(z.array(z.string())),
+  alt_names: csvStringField,
 
-  // Location
-  lat: z.number(),
-  lng: z.number(),
+  // Location - using standardized coordinate schema
+  ...coordinateSchema,
 
-  // Mint details
-  mint_marks: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .transform((val) => {
-      if (!val || val === "") return []
-      return val
-        .split(",")
-        .map((mark) => mark.trim())
-        .filter(Boolean)
-    })
-    .pipe(z.array(z.string())),
+  // Mint details - using standardized field schemas where applicable
+  mint_marks: csvStringField,
+  flavour_text: optionalStringField,
+  historical_sources: csvStringField,
+  opened_by: optionalStringField,
+  coinage_materials: csvStringField,
 
-  flavour_text: z.string().optional(),
-
-  historical_sources: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .transform((val) => {
-      if (!val || val === "") return []
-      return val
-        .split(",")
-        .map((source) => source.trim())
-        .filter(Boolean)
-    })
-    .pipe(z.array(z.string())),
-
-  opened_by: z.string().optional(),
-
-  coinage_materials: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .transform((val) => {
-      if (!val || val === "") return []
-      return val
-        .split(",")
-        .map((material) => material.trim())
-        .filter(Boolean)
-    })
-    .pipe(z.array(z.string())),
-
+  // Custom operation periods field (complex JSON structure)
   operation_periods: z
     .string()
     .optional()
-    .or(z.literal(""))
     .transform((val) => {
       if (!val || val === "") return []
       try {
