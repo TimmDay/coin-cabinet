@@ -89,4 +89,5 @@ export type SomnusCollection = {
   // joins
   deity_id?: string[] | null
   historical_figures_id?: string[] | null
+  timelines_id?: number[] | null
 }

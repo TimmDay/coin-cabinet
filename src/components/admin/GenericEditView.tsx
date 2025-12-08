@@ -67,8 +67,23 @@ export function GenericEditView<T extends EditableItem>({
   const handleRefreshCache = async () => {
     setIsRefreshing(true)
     try {
-      // Invalidate all queries to force refetch
+      // Aggressive cache clearing for JSONB data and related queries
+      queryClient.removeQueries({ queryKey: ["timelines"] })
+      queryClient.removeQueries({ queryKey: ["coin"] })
+      queryClient.removeQueries({ queryKey: ["somnus-coins"] })
+      queryClient.removeQueries({ queryKey: ["all-somnus-coins"] })
+      queryClient.removeQueries({ queryKey: ["historical-figures"] })
+      queryClient.removeQueries({ queryKey: ["deities"] })
+
+      // Invalidate all other queries
       await queryClient.invalidateQueries()
+
+      // Force fresh data from server
+      await queryClient.refetchQueries({ queryKey: ["timelines"] })
+      await queryClient.refetchQueries({ queryKey: ["all-somnus-coins"] })
+      await queryClient.refetchQueries({ queryKey: ["historical-figures"] })
+      await queryClient.refetchQueries({ queryKey: ["deities"] })
+
       onSuccess("✅ Cache refreshed successfully")
     } catch (error) {
       console.error("Error refreshing cache:", error)

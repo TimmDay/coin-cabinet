@@ -1,4 +1,5 @@
 import type { Event as TimelineEvent } from "../../data/timelines/types"
+import { formatYear } from "~/lib/utils/date-formatting"
 
 export type MarkerProps = {
   year: number
@@ -87,7 +88,7 @@ export function NormalMarker({
             {processTextForSmartWrapping(event.name)}
           </div>
           <div className="font-mono text-xs whitespace-nowrap text-slate-400">
-            {year}
+            {formatYear(year)}
           </div>
         </div>
       </div>
@@ -95,7 +96,7 @@ export function NormalMarker({
       {/* Mobile-only year label - positioned directly above circle */}
       <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform md:hidden">
         <div className="text-center font-mono text-xs whitespace-nowrap text-slate-400">
-          {year}
+          {formatYear(year)}
         </div>
       </div>
 
@@ -154,7 +155,7 @@ export function InvertedMarker({
       <div className="absolute top-10 left-1/2 -translate-x-1/2 transform">
         <div className="space-y-1 text-center">
           <div className="font-mono text-xs whitespace-nowrap text-slate-400">
-            {year}
+            {formatYear(year)}
           </div>
           <div className="hidden text-xs font-medium text-slate-400 md:block">
             {processTextForSmartWrapping(event.name)}
@@ -179,7 +180,7 @@ export function StackedMarkers({
         style={{ top: `-${24 + (events.length - 1) * 32}px` }} // Dynamic top position
       >
         <div className="text-center font-mono text-xs text-slate-400">
-          {year}
+          {formatYear(year)}
         </div>
       </div>
 
@@ -248,7 +249,7 @@ export function InvertedStackedMarkers({
         style={{ top: `${8 + (events.length - 1) * 32 + 26}px` }} // Dynamic bottom position
       >
         <div className="text-center font-mono text-xs text-slate-400">
-          {year}
+          {formatYear(year)}
         </div>
       </div>
 
@@ -314,7 +315,7 @@ export function SideLineMarker({
             {processTextForSmartWrapping(event.name)}
           </div>
           <div className="font-mono text-xs whitespace-nowrap text-slate-400">
-            {event.year}
+            {formatYear(event.year)}
           </div>
         </div>
       </div>
@@ -322,7 +323,7 @@ export function SideLineMarker({
       {/* Mobile-only year label - positioned directly above circle */}
       <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform md:hidden">
         <div className="text-center font-mono text-xs whitespace-nowrap text-slate-400">
-          {event.year}
+          {formatYear(event.year)}
         </div>
       </div>
 

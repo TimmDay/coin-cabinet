@@ -2,12 +2,21 @@
 
 import { useState, useEffect } from "react"
 import { Trash2, Plus } from "lucide-react"
+import { Select } from "~/components/ui/Select"
+import type { Place } from "~/database/schema-places"
 
 type Field = {
   key: string
   label: string
   placeholder?: string
-  type?: "text" | "array"
+  type?:
+    | "text"
+    | "array"
+    | "number"
+    | "select"
+    | "searchable-select"
+    | "place-selector"
+  options?: string[] // For select fields
   required?: boolean
   colSpan: number
 }
@@ -22,6 +31,8 @@ type StructuredDataEditorProps<T> = {
   emptyItem: T
   helpText?: string
   addButtonText?: string
+  places?: Place[]
+  placesLoading?: boolean
 }
 
 export function StructuredDataEditor<T extends Record<string, unknown>>({
@@ -34,6 +45,8 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
   emptyItem,
   helpText,
   addButtonText = "Add Item",
+  places = [],
+  placesLoading = false,
 }: StructuredDataEditorProps<T>) {
   const [items, setItems] = useState<T[]>([])
 
@@ -85,24 +98,72 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
               .filter(Boolean)
           : [],
       }
+    } else if (field.endsWith("_number")) {
+      // Handle number fields
+      const actualField = field.replace("_number", "")
+      const numValue = newValue ? parseFloat(newValue) : undefined
+      newItems[index] = {
+        ...currentItem,
+        [actualField]: isNaN(numValue!) ? undefined : numValue,
+      }
     } else {
       newItems[index] = {
         ...currentItem,
-        [field]: newValue,
+        [field]: newValue || undefined,
+      }
+    }
+    updateFormValue(newItems)
+  }
+
+  // Handle place selection - populate place, lat, lng fields from selected place
+  const handlePlaceSelection = (index: number, placeId: string) => {
+    const newItems = [...items]
+    const currentItem = newItems[index]
+    if (!currentItem) return
+
+    if (placeId) {
+      const selectedPlace = places.find((p) => p.id.toString() === placeId)
+      if (selectedPlace) {
+        newItems[index] = {
+          ...currentItem,
+          place_id: placeId,
+          place: selectedPlace.name,
+          lat: selectedPlace.lat,
+          lng: selectedPlace.lng,
+        }
+      }
+    } else {
+      // Clear place selection - keep existing values but remove place_id
+      newItems[index] = {
+        ...currentItem,
+        place_id: undefined,
       }
     }
     updateFormValue(newItems)
   }
 
   const removeItem = (index: number) => {
-    const newItems = items.filter((_, i) => i !== index)
-    updateFormValue(newItems)
+    const itemName = title.toLowerCase().slice(0, -1)
+    const confirmed = window.confirm(
+      `Are you sure you want to delete this ${itemName}? This action cannot be undone.\n\nNote: You will need to save the form to persist this change to the database.`,
+    )
+    if (confirmed) {
+      const newItems = items.filter((_, i) => i !== index)
+      updateFormValue(newItems)
+    }
   }
 
   const getFieldValue = (item: T, field: Field): string => {
     if (field.type === "array") {
       const value = item[field.key] as string[] | undefined
       return value?.join(", ") ?? ""
+    }
+    if (field.type === "number") {
+      const value = item[field.key] as number | undefined
+      // Return empty string if value is undefined, null, or NaN
+      return value !== undefined && value !== null && !isNaN(value)
+        ? value.toString()
+        : ""
     }
     return (item[field.key] as string) ?? ""
   }
@@ -127,7 +188,7 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
   }
 
   const inputClass =
-    "w-full px-2 py-1 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none transition-colors text-sm"
+    "w-full px-3 py-2 rounded border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none transition-colors text-sm"
 
   return (
     <div className={className}>
@@ -137,76 +198,204 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
           <label className="block text-sm font-medium text-slate-300">
             {title}
           </label>
-          <button
-            type="button"
-            onClick={addItem}
-            className="flex items-center gap-1 rounded bg-purple-900/50 px-2 py-1 text-xs text-purple-200 transition-colors hover:bg-purple-900/70"
-          >
-            <Plus size={12} />
-            {addButtonText}
-          </button>
         </div>
 
-        {/* Table */}
+        {/* Events List */}
         {items.length > 0 && (
-          <div className="overflow-hidden rounded-md border border-slate-600">
-            {/* Table Header */}
-            <div className="grid grid-cols-12 gap-2 bg-slate-700/50 px-3 py-2 text-xs font-medium text-slate-300">
-              {fields.map((field) => (
-                <div key={field.key} className={getColSpanClass(field.colSpan)}>
-                  {field.label}
-                  {field.required && (
-                    <span className="ml-1 text-red-400">*</span>
-                  )}
-                </div>
-              ))}
-              <div className="col-span-1"></div>
-            </div>
+          <div className="space-y-4">
+            {items.map((item, index) => {
+              // Check if this is the location row (place_id, place, lat, lng)
+              const locationFields = ["place_id", "place", "lat", "lng"]
+              const isLocationField = (fieldKey: string) =>
+                locationFields.includes(fieldKey)
+              const nonLocationFields = fields.filter(
+                (f) => !isLocationField(f.key),
+              )
+              const locationOnlyFields = fields.filter((f) =>
+                isLocationField(f.key),
+              )
 
-            {/* Table Body */}
-            <div className="divide-y divide-slate-600">
-              {items.map((item, index) => (
+              return (
                 <div
                   key={index}
-                  className="relative grid grid-cols-12 gap-2 bg-slate-800/30 px-3 py-2"
+                  className="relative mb-4 bg-slate-800/30 px-4 py-4"
                 >
-                  {fields.map((field) => (
-                    <div
-                      key={field.key}
-                      className={getColSpanClass(field.colSpan)}
-                    >
-                      <input
-                        type="text"
-                        placeholder={field.placeholder}
-                        value={getFieldValue(item, field)}
-                        onChange={(e) =>
-                          updateItem(
-                            index,
-                            field.type === "array"
-                              ? `${field.key}_array`
-                              : field.key,
-                            e.target.value,
+                  {/* Non-location fields in grid */}
+                  <div className="mb-3 grid grid-cols-12 gap-3">
+                    {nonLocationFields.map((field) => (
+                      <div
+                        key={field.key}
+                        className={getColSpanClass(field.colSpan)}
+                      >
+                        {field.type === "place-selector" ? (
+                          <Select
+                            options={[
+                              { value: "", label: "Custom location..." },
+                              ...places.map((place) => ({
+                                value: place.id.toString(),
+                                label: `${place.name} (${place.kind})`,
+                              })),
+                            ]}
+                            value={getFieldValue(item, field)}
+                            onChange={(e) =>
+                              handlePlaceSelection(index, e.target.value)
+                            }
+                            className={inputClass}
+                            placeholder={
+                              placesLoading
+                                ? "Loading places..."
+                                : field.placeholder
+                            }
+                            disabled={placesLoading}
+                          />
+                        ) : (field.type === "select" ||
+                            field.type === "searchable-select") &&
+                          field.options ? (
+                          field.type === "searchable-select" ? (
+                            <Select
+                              options={field.options.map((opt) => ({
+                                value: opt,
+                                label: opt,
+                              }))}
+                              value={getFieldValue(item, field)}
+                              onChange={(e) =>
+                                updateItem(index, field.key, e.target.value)
+                              }
+                              className={inputClass}
+                              placeholder={field.placeholder}
+                            />
+                          ) : (
+                            <select
+                              value={getFieldValue(item, field)}
+                              onChange={(e) =>
+                                updateItem(index, field.key, e.target.value)
+                              }
+                              className={inputClass}
+                              aria-label={field.label}
+                            >
+                              <option value="">
+                                {field.placeholder || "Select..."}
+                              </option>
+                              {field.options.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </select>
                           )
-                        }
-                        className={inputClass}
-                      />
-                    </div>
-                  ))}
-
-                  {/* Delete Button */}
-                  <div className="col-span-1 flex justify-center">
-                    <button
-                      type="button"
-                      onClick={() => removeItem(index)}
-                      className="p-1 text-red-400 transition-colors hover:text-red-300"
-                      title={`Remove ${title.toLowerCase().slice(0, -1)}`}
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                        ) : (
+                          <input
+                            type={field.type === "number" ? "number" : "text"}
+                            step={field.type === "number" ? "any" : undefined}
+                            placeholder={field.placeholder}
+                            value={getFieldValue(item, field)}
+                            onChange={(e) =>
+                              updateItem(
+                                index,
+                                field.type === "array"
+                                  ? `${field.key}_array`
+                                  : field.type === "number"
+                                    ? `${field.key}_number`
+                                    : field.key,
+                                e.target.value,
+                              )
+                            }
+                            className={inputClass}
+                          />
+                        )}
+                      </div>
+                    ))}
                   </div>
+
+                  {/* Location fields on their own row */}
+                  <div className="grid grid-cols-12 gap-3">
+                    {locationOnlyFields.map((field) => {
+                      // Check if a place is selected to disable manual location input
+                      const hasSelectedPlace = Boolean(item.place_id)
+                      const isDisabled =
+                        hasSelectedPlace && field.key !== "place_id"
+
+                      return (
+                        <div
+                          key={field.key}
+                          className={getColSpanClass(field.colSpan)}
+                        >
+                          {field.type === "place-selector" ? (
+                            <Select
+                              options={[
+                                { value: "", label: "Custom location..." },
+                                ...places.map((place) => ({
+                                  value: place.id.toString(),
+                                  label: `${place.name} (${place.kind})`,
+                                })),
+                              ]}
+                              value={getFieldValue(item, field)}
+                              onChange={(e) =>
+                                handlePlaceSelection(index, e.target.value)
+                              }
+                              className={inputClass}
+                              placeholder={
+                                placesLoading
+                                  ? "Loading places..."
+                                  : field.placeholder
+                              }
+                              disabled={placesLoading}
+                            />
+                          ) : (
+                            <input
+                              type={field.type === "number" ? "number" : "text"}
+                              step={field.type === "number" ? "any" : undefined}
+                              placeholder={field.placeholder}
+                              value={getFieldValue(item, field)}
+                              onChange={(e) =>
+                                updateItem(
+                                  index,
+                                  field.type === "number"
+                                    ? `${field.key}_number`
+                                    : field.key,
+                                  e.target.value,
+                                )
+                              }
+                              className={`${inputClass} ${isDisabled ? "cursor-not-allowed bg-slate-700/50 opacity-50" : ""}`}
+                              disabled={isDisabled}
+                              title={
+                                isDisabled
+                                  ? "Disabled - using data from selected place"
+                                  : undefined
+                              }
+                            />
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Delete Button - Absolutely positioned bottom right */}
+                  <button
+                    type="button"
+                    onClick={() => removeItem(index)}
+                    className="absolute right-0 bottom-0 rounded p-1.5 text-red-400 transition-colors hover:bg-red-900/20 hover:text-red-300"
+                    title={`Remove ${title.toLowerCase().slice(0, -1)}`}
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
-              ))}
-            </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Add Button - After Events List */}
+        {items.length > 0 && (
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={addItem}
+              className="mx-auto flex items-center gap-2 rounded bg-purple-900/50 px-4 py-2 text-sm text-purple-200 transition-colors hover:bg-purple-900/70"
+            >
+              <Plus size={16} />
+              {addButtonText}
+            </button>
           </div>
         )}
 

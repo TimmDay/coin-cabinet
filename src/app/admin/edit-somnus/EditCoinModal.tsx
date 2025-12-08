@@ -10,6 +10,7 @@ import type { CoinFormData } from "~/lib/validations/coin-form"
 
 import { useDeityOptions } from "~/hooks/useDeityOptions"
 import { useHistoricalFigureOptions } from "~/hooks/useHistoricalFigureOptions"
+import { useTimelines } from "~/api/timelines"
 import { NotableFeaturesEditor } from "~/components/forms/NotableFeaturesEditor"
 import {
   FormErrorDisplay,
@@ -75,7 +76,8 @@ const createCoinFormData = (
 
   // Arrays and special fields
   deity_id: coin?.deity_id ?? undefined,
-  historical_figures_id: undefined, // Will be populated from server data when available
+  historical_figures_id: coin?.historical_figures_id ?? undefined,
+  timelines_id: coin?.timelines_id ?? undefined,
   sets: coin?.sets ?? undefined,
   notable_features: coin?.notable_features ?? undefined,
   bpRoute: coin?.bpRoute ?? undefined,
@@ -132,6 +134,13 @@ export function EditCoinModal({
 }: EditCoinModalProps) {
   const { options: deityOptions } = useDeityOptions()
   const { options: historicalFigureOptions } = useHistoricalFigureOptions()
+  const { data: allTimelines = [] } = useTimelines()
+
+  // Transform timeline data for MultiSelect
+  const timelineOptions = allTimelines.map((timeline) => ({
+    value: timeline.id.toString(),
+    label: timeline.name,
+  }))
   const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false)
 
   const {
@@ -194,6 +203,10 @@ export function EditCoinModal({
       historical_figures_id:
         data.historical_figures_id && data.historical_figures_id.length > 0
           ? data.historical_figures_id
+          : undefined,
+      timelines_id:
+        data.timelines_id && data.timelines_id.length > 0
+          ? data.timelines_id
           : undefined,
       sets: processArray(data.setsRaw, false), // Keep original case for sets
       notable_features:
@@ -349,6 +362,19 @@ export function EditCoinModal({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
+                Denomination *
+              </label>
+              <Select
+                {...register("denomination")}
+                value={watch("denomination")}
+                options={denominationOptions}
+                placeholder="Select denomination"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300">
                 Historical Figures
               </label>
               <SimpleMultiSelect
@@ -362,17 +388,41 @@ export function EditCoinModal({
                 placeholder="Select historical figures..."
               />
             </div>
+          </div>
+
+          {/* Timelines and Deities */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300">
+                Timelines
+              </label>
+              <SimpleMultiSelect
+                options={timelineOptions}
+                selectedValues={(watch("timelines_id") ?? []).map((id) =>
+                  id.toString(),
+                )}
+                onSelectionChange={(values) =>
+                  setValue(
+                    "timelines_id",
+                    values.map((id) => parseInt(id, 10)),
+                    { shouldDirty: true },
+                  )
+                }
+                placeholder="Select timelines..."
+              />
+            </div>
 
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
-                Denomination *
+                Deities
               </label>
-              <Select
-                {...register("denomination")}
-                value={watch("denomination")}
-                options={denominationOptions}
-                placeholder="Select denomination"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+              <SimpleMultiSelect
+                options={deityOptions}
+                selectedValues={watch("deity_id") ?? []}
+                onSelectionChange={(values) =>
+                  setValue("deity_id", values, { shouldDirty: true })
+                }
+                placeholder="Select deities..."
               />
             </div>
           </div>
@@ -660,21 +710,6 @@ export function EditCoinModal({
               rows={3}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="Additional context or notes"
-            />
-          </div>
-
-          {/* God Name */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              God/Deity
-            </label>
-            <SimpleMultiSelect
-              options={deityOptions}
-              selectedValues={watch("deity_id") ?? []}
-              onSelectionChange={(values) =>
-                setValue("deity_id", values, { shouldDirty: true })
-              }
-              placeholder="Select deities..."
             />
           </div>
 

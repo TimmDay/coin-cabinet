@@ -14,7 +14,18 @@ export default function EditMapPage() {
   const handleRefreshCache = async () => {
     setIsRefreshing(true)
     try {
+      console.log("🔄 Refresh cache button clicked (edit-map)")
+
+      // Aggressive cache clearing for JSONB data
+      queryClient.removeQueries({ queryKey: ["timelines"] })
+
+      // Invalidate all other queries
       await queryClient.invalidateQueries()
+
+      // Force fresh timeline data from server
+      await queryClient.refetchQueries({ queryKey: ["timelines"] })
+
+      console.log("✅ Cache refresh completed (edit-map)")
       setMessage("✅ Cache refreshed successfully")
       setTimeout(() => setMessage(""), 3000)
     } catch (error) {

@@ -98,7 +98,7 @@ export function TimelineWithMap({
       </div>
 
       {/* Map at bottom */}
-      <div className="">
+      <div className="mt-12">
         {showHeaders && (
           <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">Map</h2>
         )}

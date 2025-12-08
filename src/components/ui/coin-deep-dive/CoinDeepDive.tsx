@@ -2,13 +2,12 @@
 
 import dynamic from "next/dynamic"
 import { useMints } from "~/api/mints"
+import { useTimelines } from "~/api/timelines"
 import { MintInfo } from "~/components/ui"
-import { TIMELINES } from "~/data/timelines"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
 import { formatYearRange } from "~/lib/utils/date-formatting"
 import { formatPhysicalCharacteristics } from "~/lib/utils/physical-formatting"
-import { matchTimelineToNickname } from "~/lib/utils/timeline-matcher"
 import { DeepDiveCard } from "../DeepDiveCard"
 import { CoinRow } from "./CoinRow"
 import type { CoinEnhanced } from "~/types/api"
@@ -134,11 +133,16 @@ function createCoinCard(coin: CoinEnhanced) {
 function buildTimelineForCoin(
   coin: CoinEnhanced,
   mints: ReturnType<typeof useMints>["data"],
+  dbTimelines: ReturnType<typeof useTimelines>["data"],
 ) {
-  const baseTimeline = matchTimelineToNickname(coin.nickname, TIMELINES)
-  return baseTimeline
-    ? addCoinMintingEventToTimeline(
-        baseTimeline,
+  // Get timeline from database based on coin's timeline IDs
+  if (coin.timelines_id && coin.timelines_id.length > 0 && dbTimelines) {
+    const coinTimeline = dbTimelines.find((timeline) =>
+      coin.timelines_id!.includes(timeline.id),
+    )
+    if (coinTimeline) {
+      return addCoinMintingEventToTimeline(
+        coinTimeline.timeline,
         {
           denomination: coin.denomination,
           mint: coin.mint,
@@ -147,12 +151,17 @@ function buildTimelineForCoin(
         },
         mints,
       )
-    : null
+    }
+  }
+
+  // No timeline found
+  return null
 }
 
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const isMapFeatureEnabled = useTypedFeatureFlag("map-feature")
   const { data: mints } = useMints()
+  const { data: dbTimelines } = useTimelines()
 
   // Helper function to check if mint has actual data
   const getMintData = (mintName: string) => {
@@ -167,7 +176,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   }
 
   // Process data using helper functions
-  const matchingTimeline = buildTimelineForCoin(coin, mints)
+  const matchingTimeline = buildTimelineForCoin(coin, mints, dbTimelines)
   const matchingDeities = transformDeitiesToCards(coin.deities)
   const matchingHistoricalFigures = transformHistoricalFiguresToCards(
     coin.historical_figures,

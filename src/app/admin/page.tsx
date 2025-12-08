@@ -117,6 +117,17 @@ export default function AdminPage() {
               </p>
             </a>
 
+            {/* Manage Timelines */}
+            <a
+              href="/admin/edit-timelines"
+              className="artemis-card p-6 text-center transition-colors hover:bg-purple-900/5"
+            >
+              <h3 className="coin-title mb-4 text-xl">Manage Timelines</h3>
+              <p className="coin-description">
+                Add, edit, and manage historical timelines
+              </p>
+            </a>
+
             {/* Edit Map */}
             <a
               href="/admin/edit-map"

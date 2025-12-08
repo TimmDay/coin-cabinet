@@ -2,12 +2,16 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useDeities } from "~/api/deities"
+import { useTimelines } from "~/api/timelines"
+import type { Timeline } from "~/database/schema-timelines"
 import type { CoinApiResponse, CoinEnhanced } from "~/types/api"
 
 type CoinEditData = {
   coin: CoinEnhanced
   deityOptions: { value: string; label: string; subtitle?: string }[]
   selectedDeities: { id: number; name: string; subtitle?: string }[]
+  timelineOptions: { value: string; label: string }[]
+  selectedTimelines: Timeline[]
   isLoading: boolean
   error: Error | null
   invalidateCache: () => void
@@ -22,6 +26,13 @@ export function useSpecificCoinData(coinId: number | null): CoinEditData {
     isLoading: deitiesLoading,
     error: deitiesError,
   } = useDeities()
+
+  // Cache all timelines
+  const {
+    data: allTimelines,
+    isLoading: timelinesLoading,
+    error: timelinesError,
+  } = useTimelines()
 
   // Fetch specific coin data with joined deities
   const {
@@ -79,6 +90,24 @@ export function useSpecificCoinData(coinId: number | null): CoinEditData {
       .filter((deity): deity is NonNullable<typeof deity> => deity !== null) ??
     []
 
+  // Transform timeline data for component consumption
+  const timelineOptions =
+    allTimelines?.map((timeline) => ({
+      value: timeline.id.toString(),
+      label: timeline.name,
+    })) ?? []
+
+  const selectedTimelines =
+    coinData?.timelines_id
+      ?.map((id: number) => {
+        const timeline = allTimelines?.find((t) => t.id === id)
+        return timeline || null
+      })
+      .filter(
+        (timeline): timeline is NonNullable<typeof timeline> =>
+          timeline !== null,
+      ) ?? []
+
   // Cache invalidation function
   const invalidateCache = () => {
     void queryClient.invalidateQueries({
@@ -94,8 +123,10 @@ export function useSpecificCoinData(coinId: number | null): CoinEditData {
     coin: coinData!,
     deityOptions,
     selectedDeities,
-    isLoading: deitiesLoading || coinLoading,
-    error: deitiesError ?? coinError,
+    timelineOptions,
+    selectedTimelines,
+    isLoading: deitiesLoading || timelinesLoading || coinLoading,
+    error: deitiesError ?? timelinesError ?? coinError,
     invalidateCache,
   }
 }

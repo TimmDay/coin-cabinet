@@ -5,6 +5,7 @@ import type {
   Event as TimelineEvent,
   Timeline as TimelineType,
 } from "../../data/timelines/types"
+import { formatYear } from "~/lib/utils/date-formatting"
 import {
   InvertedMarker,
   InvertedStackedMarkers,
@@ -240,7 +241,7 @@ export function Timeline({
             )}
 
             <div className="mb-2 pr-8 text-sm font-semibold text-amber-400">
-              {hoveredEvent.name} ({hoveredEvent.year})
+              {hoveredEvent.name} ({formatYear(hoveredEvent.year)})
             </div>
             {hoveredEvent.description && (
               <div className="text-sm leading-relaxed text-slate-300">

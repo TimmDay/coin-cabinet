@@ -278,6 +278,7 @@ export const coinFormSchema = z
       .optional(),
     deity_id: z.array(z.string()).optional(),
     historical_figures_id: z.array(z.string()).optional(),
+    timelines_id: z.array(z.number()).optional(),
     bpRoute: z
       .string()
       .optional()

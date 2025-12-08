@@ -1,6 +1,39 @@
 import type { Meta, StoryObj } from "@storybook/nextjs"
 import { Timeline } from "~/components/ui/Timeline"
-import philipTimeline from "~/data/timelines/philipI"
+
+// Sample timeline data for stories
+const philipTimeline = [
+  {
+    kind: "birth" as const,
+    name: "Born",
+    year: 204,
+    description: "Born in Shahba, later renamed Philippopolis",
+    source: "",
+    place: "Shahba",
+    lat: 32.8167,
+    lng: 36.8167,
+  },
+  {
+    kind: "made-emperor" as const,
+    name: "Made Emperor",
+    year: 244,
+    description: "Proclaimed emperor by troops after Gordian III's death",
+    source: "",
+    place: "Mesopotamian frontier",
+    lat: 34.81,
+    lng: 41.19,
+  },
+  {
+    kind: "death" as const,
+    name: "Died in Battle",
+    year: 249,
+    description: "Killed in battle against Decius at Verona",
+    source: "",
+    place: "Verona",
+    lat: 45.4384,
+    lng: 10.9916,
+  },
+]
 
 const meta: Meta<typeof Timeline> = {
   title: "UI/Timeline",
@@ -10,7 +43,7 @@ const meta: Meta<typeof Timeline> = {
   },
   decorators: [
     (Story) => (
-      <div style={{ marginTop: "150px" }}>
+      <div className="mt-32">
         <Story />
       </div>
     ),

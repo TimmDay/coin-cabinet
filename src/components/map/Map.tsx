@@ -11,6 +11,7 @@ import {
   useMapEvents,
 } from "react-leaflet"
 import { useMints } from "~/api/mints"
+import { formatYear } from "~/lib/utils/date-formatting"
 import { ROMAN_PROVINCES } from "./constants/provinces"
 import {
   useEmpireLayerState,
@@ -774,7 +775,7 @@ export const Map: React.FC<MapProps> = ({
                       className: "timeline-event-marker",
                       html: `
                         <div class="timeline-event-marker-container">
-                          <div class="timeline-event-label">${timelineEventMarker.name} (${timelineEventMarker.year})</div>
+                          <div class="timeline-event-label">${timelineEventMarker.name} (${formatYear(timelineEventMarker.year)})</div>
                           <div class="timeline-event-circle"></div>
                           <div class="timeline-event-tail"></div>
                         </div>

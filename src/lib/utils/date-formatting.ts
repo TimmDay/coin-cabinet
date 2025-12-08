@@ -34,6 +34,19 @@ export function formatYearRange(
 }
 
 /**
+ * Format a single year with proper BCE/CE handling
+ * @param year - The year (negative for BCE, positive for CE)
+ * @returns Formatted year string, e.g., "27 CE" or "336 BCE"
+ */
+export function formatYear(year: number): string {
+  if (year < 0) {
+    return `${Math.abs(year)} BCE`
+  } else {
+    return `${year} CE`
+  }
+}
+
+/**
  * Format a Roman date range for display (without parentheses)
  * @param startYear - Start year (negative for BCE, positive for CE)
  * @param endYear - End year (negative for BCE, positive for CE)
@@ -43,14 +56,6 @@ export function formatRomanDateRange(
   startYear: number,
   endYear: number,
 ): string {
-  const formatYear = (year: number): string => {
-    if (year < 0) {
-      return `${Math.abs(year)} BCE`
-    } else {
-      return `${year} CE`
-    }
-  }
-
   if (startYear === endYear) {
     return formatYear(startYear)
   }

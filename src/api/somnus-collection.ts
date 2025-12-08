@@ -28,6 +28,8 @@ export function useAddSomnusCoin() {
       // Force immediate refetch of active queries - ignores stale time
       void queryClient.refetchQueries({ queryKey: ["somnus-coins"] })
       void queryClient.refetchQueries({ queryKey: ["all-somnus-coins"] })
+      void queryClient.refetchQueries({ queryKey: ["historical-figures"] })
+      void queryClient.refetchQueries({ queryKey: ["deities"] })
       // ALSO mark as stale for future page loads
       void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
       void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
@@ -47,12 +49,15 @@ export function useUpdateSomnusCoin() {
   return useMutation({
     mutationFn: updateSomnusCoin,
     onSuccess: () => {
-      // Force immediate refetch of active queries - ignores stale time
+      // Aggressive cache clearing for complete data consistency
+      queryClient.removeQueries({ queryKey: ["somnus-coins"] })
+      queryClient.removeQueries({ queryKey: ["all-somnus-coins"] })
+
+      // Force immediate refetch of active queries
       void queryClient.refetchQueries({ queryKey: ["somnus-coins"] })
       void queryClient.refetchQueries({ queryKey: ["all-somnus-coins"] })
-      // ALSO mark as stale for future page loads
-      void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
-      void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
+      void queryClient.refetchQueries({ queryKey: ["historical-figures"] })
+      void queryClient.refetchQueries({ queryKey: ["deities"] })
 
       // Invalidate related queries
       void queryClient.invalidateQueries({ queryKey: ["coin"] })
