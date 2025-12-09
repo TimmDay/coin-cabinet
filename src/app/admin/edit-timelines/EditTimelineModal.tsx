@@ -56,14 +56,31 @@ export function EditTimelineModal({
     defaultValues: createTimelineFormData(timeline),
   })
 
-  // Reset form when timeline updated_at changes (indicates JSONB data changed)
+  // Reset form when timeline data changes (enhanced for mobile JSONB updates)
   useEffect(() => {
     if (isOpen && timeline) {
       const formData = createTimelineFormData(timeline)
       reset(formData)
       setError(null)
+
+      // On mobile, ensure the form values are properly set with a small delay
+      if (
+        typeof window !== "undefined" &&
+        /Mobi|Android/i.test(navigator.userAgent)
+      ) {
+        setTimeout(() => {
+          reset(formData)
+        }, 50)
+      }
     }
-  }, [timeline?.updated_at, timeline?.id, isOpen, reset, timeline])
+  }, [
+    timeline?.updated_at,
+    timeline?.id,
+    timeline?.timeline,
+    isOpen,
+    reset,
+    timeline,
+  ])
 
   const onSubmit = async (data: FormData) => {
     setError(null)
@@ -74,6 +91,25 @@ export function EditTimelineModal({
       // Parse the timeline events if provided
       if (data.timeline_events?.trim()) {
         parsedTimeline = JSON.parse(data.timeline_events) as Event[]
+
+        // Validate that each event has coordinates
+        const eventsWithoutCoordinates = parsedTimeline.filter(
+          (event, index) => {
+            const hasLat = typeof event.lat === "number" && !isNaN(event.lat)
+            const hasLng = typeof event.lng === "number" && !isNaN(event.lng)
+            return !hasLat || !hasLng
+          },
+        )
+
+        if (eventsWithoutCoordinates.length > 0) {
+          const eventNames = eventsWithoutCoordinates
+            .map((e) => e.name || "Unnamed event")
+            .join(", ")
+          setError(
+            `All events must have valid coordinates (latitude and longitude). Missing coordinates for: ${eventNames}`,
+          )
+          return
+        }
 
         // Sort events chronologically by year
         parsedTimeline.sort((a, b) => {

@@ -121,7 +121,8 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
     const currentItem = newItems[index]
     if (!currentItem) return
 
-    if (placeId) {
+    if (placeId && placeId !== "custom") {
+      // Selected a real place - populate all fields from places DB
       const selectedPlace = places.find((p) => p.id.toString() === placeId)
       if (selectedPlace) {
         newItems[index] = {
@@ -133,7 +134,7 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
         }
       }
     } else {
-      // Clear place selection - keep existing values but remove place_id
+      // Selected "custom location" or empty - clear place_id but keep existing manual values
       newItems[index] = {
         ...currentItem,
         place_id: undefined,
@@ -185,9 +186,9 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
       11: "col-span-11",
       12: "col-span-12",
     }
-    
+
     const baseClass = spanMap[span] ?? "col-span-1"
-    
+
     // Special mobile responsive classes for timeline events
     if (fieldKey === "kind" && span === 3) {
       return "col-span-4 md:col-span-3" // 1/3 on mobile, original on desktop
@@ -201,13 +202,16 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
     if (fieldKey === "place_id" && span === 4) {
       return "col-span-12 md:col-span-4" // Full width on mobile, original on desktop
     }
-    if ((fieldKey === "place" || fieldKey === "lat" || fieldKey === "lng") && span === 4) {
+    if (
+      (fieldKey === "place" || fieldKey === "lat" || fieldKey === "lng") &&
+      span === 4
+    ) {
       return "col-span-4 md:col-span-4" // 1/3 on mobile, original on desktop
     }
     if ((fieldKey === "lat" || fieldKey === "lng") && span === 2) {
-      return "col-span-4 md:col-span-2" // 1/3 on mobile, original on desktop  
+      return "col-span-4 md:col-span-2" // 1/3 on mobile, original on desktop
     }
-    
+
     return baseClass
   }
 
@@ -331,28 +335,78 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
                     ))}
                   </div>
 
-                  {/* Location fields - place_id on its own row on mobile, others on second row */}
+                  {/* Location fields - responsive layout */}
                   <div className="space-y-3 md:space-y-0">
-                    {/* Place selector - full width on mobile */}
-                    {locationOnlyFields
-                      .filter((field) => field.key === "place_id")
-                      .map((field) => {
+                    {/* Mobile: place_id on own row, others on second row. Desktop: all on same row */}
+
+                    {/* Place selector - full width on mobile only */}
+                    <div className="grid grid-cols-12 gap-3 md:hidden">
+                      {locationOnlyFields
+                        .filter((field) => field.key === "place_id")
+                        .map((field) => (
+                          <div key={field.key} className="col-span-12">
+                            <Select
+                              options={[
+                                {
+                                  value: "custom",
+                                  label: "Custom location...",
+                                },
+                                ...places.map((place) => ({
+                                  value: place.id.toString(),
+                                  label: `${place.name} (${place.kind})`,
+                                })),
+                              ]}
+                              value={
+                                getFieldValue(
+                                  item,
+                                  locationOnlyFields.find(
+                                    (f) => f.key === "place_id",
+                                  )!,
+                                ) || "custom"
+                              }
+                              onChange={(e) =>
+                                handlePlaceSelection(index, e.target.value)
+                              }
+                              className={inputClass}
+                              placeholder={
+                                placesLoading
+                                  ? "Loading places..."
+                                  : field.placeholder
+                              }
+                              disabled={placesLoading}
+                            />
+                          </div>
+                        ))}
+                    </div>
+
+                    {/* All location fields together - desktop only (hidden on mobile) */}
+                    <div className="hidden grid-cols-12 gap-3 md:grid">
+                      {locationOnlyFields.map((field) => {
                         const hasSelectedPlace = Boolean(item.place_id)
                         const isDisabled =
                           hasSelectedPlace && field.key !== "place_id"
 
                         return (
-                          <div key={field.key} className="grid grid-cols-12 gap-3">
-                            <div className={getColSpanClass(field.colSpan, field.key)}>
+                          <div
+                            key={field.key}
+                            className={getColSpanClass(
+                              field.colSpan,
+                              field.key,
+                            )}
+                          >
+                            {field.type === "place-selector" ? (
                               <Select
                                 options={[
-                                  { value: "", label: "Custom location..." },
+                                  {
+                                    value: "custom",
+                                    label: "Custom location...",
+                                  },
                                   ...places.map((place) => ({
                                     value: place.id.toString(),
                                     label: `${place.name} (${place.kind})`,
                                   })),
                                 ]}
-                                value={getFieldValue(item, field)}
+                                value={getFieldValue(item, field) || "custom"}
                                 onChange={(e) =>
                                   handlePlaceSelection(index, e.target.value)
                                 }
@@ -364,13 +418,41 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
                                 }
                                 disabled={placesLoading}
                               />
-                            </div>
+                            ) : (
+                              <input
+                                type={
+                                  field.type === "number" ? "number" : "text"
+                                }
+                                step={
+                                  field.type === "number" ? "any" : undefined
+                                }
+                                placeholder={field.placeholder}
+                                value={getFieldValue(item, field)}
+                                onChange={(e) =>
+                                  updateItem(
+                                    index,
+                                    field.type === "number"
+                                      ? `${field.key}_number`
+                                      : field.key,
+                                    e.target.value,
+                                  )
+                                }
+                                className={`${inputClass} ${isDisabled ? "cursor-not-allowed bg-slate-700/50 opacity-50" : ""}`}
+                                disabled={isDisabled}
+                                title={
+                                  isDisabled
+                                    ? "Disabled - using data from selected place"
+                                    : undefined
+                                }
+                              />
+                            )}
                           </div>
                         )
                       })}
-                    
-                    {/* Other location fields - place, lat, lng on same row */}
-                    <div className="grid grid-cols-12 gap-3">
+                    </div>
+
+                    {/* Other location fields on mobile - place, lat, lng */}
+                    <div className="grid grid-cols-12 gap-3 md:hidden">
                       {locationOnlyFields
                         .filter((field) => field.key !== "place_id")
                         .map((field) => {
@@ -381,11 +463,18 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
                           return (
                             <div
                               key={field.key}
-                              className={getColSpanClass(field.colSpan, field.key)}
+                              className={getColSpanClass(
+                                field.colSpan,
+                                field.key,
+                              )}
                             >
                               <input
-                                type={field.type === "number" ? "number" : "text"}
-                                step={field.type === "number" ? "any" : undefined}
+                                type={
+                                  field.type === "number" ? "number" : "text"
+                                }
+                                step={
+                                  field.type === "number" ? "any" : undefined
+                                }
                                 placeholder={field.placeholder}
                                 value={getFieldValue(item, field)}
                                 onChange={(e) =>

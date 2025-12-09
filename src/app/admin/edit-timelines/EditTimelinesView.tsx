@@ -10,6 +10,7 @@ import {
 import type { Timeline } from "~/database/schema-timelines"
 import type { TimelineFormData } from "~/database/schema-timelines"
 import type { Event } from "~/data/timelines/types"
+import { formatYear } from "~/lib/utils/date-formatting"
 import { GenericEditView } from "~/components/admin/GenericEditView"
 import { useEditModal } from "~/hooks/useEditModal"
 import { EditTimelineModal } from "./EditTimelineModal"
@@ -34,10 +35,22 @@ export function EditTimelinesView() {
     handleSuccess,
   } = useEditModal<Timeline>()
 
-  // Force modal recreation when data changes
+  // Force modal recreation when data changes - enhanced for mobile
   useEffect(() => {
     setCacheRefreshKey(Date.now())
-  }, [dataQuery.data])
+
+    // On mobile, also force a state update after cache refresh
+    if (
+      typeof window !== "undefined" &&
+      /Mobi|Android/i.test(navigator.userAgent)
+    ) {
+      // Small delay to ensure React has processed the data change
+      const timer = setTimeout(() => {
+        setCacheRefreshKey(Date.now())
+      }, 50)
+      return () => clearTimeout(timer)
+    }
+  }, [dataQuery.data, dataQuery.dataUpdatedAt])
 
   // Handle create modal
   const handleCreateModalOpen = () => setIsCreateModalOpen(true)
@@ -82,12 +95,13 @@ export function EditTimelinesView() {
     const minYear = Math.min(...years)
     const maxYear = Math.max(...years)
     const yearRange =
-      minYear === maxYear ? `${minYear} CE` : `${minYear} - ${maxYear} CE`
+      minYear === maxYear
+        ? formatYear(minYear)
+        : `${formatYear(minYear)} - ${formatYear(maxYear)}`
 
     return {
       eventCount: events.length,
       yearRange: years.length > 0 ? yearRange : "No dates",
-      hasCoordinates: events.some((event: Event) => event.lat && event.lng),
     }
   }
 
@@ -100,7 +114,6 @@ export function EditTimelinesView() {
           <h3 className="text-lg font-medium text-white">{item.name}</h3>
           <p className="text-sm text-gray-400">
             {metadata.eventCount} events • {metadata.yearRange}
-            {metadata.hasCoordinates && " • Has coordinates"}
           </p>
         </div>
         <button
@@ -132,6 +145,21 @@ export function EditTimelinesView() {
   const handleModalSave = async (id: number, updates: Partial<Timeline>) => {
     try {
       await updateMutation.mutateAsync({ id, updates })
+
+      // Force immediate cache refresh key update for mobile
+      setCacheRefreshKey(Date.now())
+
+      // On mobile, force additional data refetch
+      if (
+        typeof window !== "undefined" &&
+        /Mobi|Android/i.test(navigator.userAgent)
+      ) {
+        setTimeout(() => {
+          void dataQuery.refetch()
+          setCacheRefreshKey(Date.now())
+        }, 100)
+      }
+
       handleSuccess("✅ Timeline updated successfully")
     } catch (error) {
       console.error("Error saving:", error)
@@ -146,7 +174,7 @@ export function EditTimelinesView() {
         {/* Edit Modal */}
         {selectedTimeline && (
           <EditTimelineModal
-            key={`timeline-${selectedTimeline.id}-${selectedTimeline.updated_at}-${cacheRefreshKey}`}
+            key={`timeline-${selectedTimeline.id}-${selectedTimeline.updated_at}-${cacheRefreshKey}-${dataQuery.dataUpdatedAt}`}
             isOpen={isModalOpen}
             onClose={handleModalClose}
             timeline={selectedTimeline}

@@ -129,18 +129,43 @@ export function useUpdateTimeline() {
       id: number
       updates: Partial<TimelineFormData>
     }) => updateTimeline(id, updates),
-    onSuccess: async (_updatedTimeline) => {
-      // Aggressive cache invalidation for JSONB changes
-      // 1. Clear the entire timeline cache
-      queryClient.removeQueries({ queryKey: ["timelines"] })
+    onSuccess: async (updatedTimeline) => {
+      // Extra aggressive cache invalidation for JSONB changes on mobile
+      // 1. Clear ALL queries first to force fresh data
+      queryClient.clear()
 
-      // 2. Force immediate refetch from server
-      await queryClient.refetchQueries({ queryKey: ["timelines"] })
+      // 2. Force immediate refetch of timelines from server
+      await queryClient.refetchQueries({
+        queryKey: ["timelines"],
+        type: "active",
+      })
 
-      // 3. Invalidate all related queries that might show timeline data
+      // 3. Set the updated timeline data directly in cache to ensure immediate UI update
+      queryClient.setQueryData(
+        ["timelines"],
+        (oldData: Timeline[] | undefined) => {
+          if (!oldData) return [updatedTimeline]
+          return oldData.map((t) =>
+            t.id === updatedTimeline.id ? updatedTimeline : t,
+          )
+        },
+      )
+
+      // 4. Invalidate all related queries that might show timeline data
       void queryClient.invalidateQueries({ queryKey: ["coin"] })
       void queryClient.invalidateQueries({ queryKey: ["somnus-coins"] })
       void queryClient.invalidateQueries({ queryKey: ["all-somnus-coins"] })
+
+      // 5. Force a hard refresh of the page data (mobile-specific)
+      if (
+        typeof window !== "undefined" &&
+        /Mobi|Android/i.test(navigator.userAgent)
+      ) {
+        // On mobile, also force a slight delay to ensure state propagates
+        setTimeout(() => {
+          void queryClient.refetchQueries({ queryKey: ["timelines"] })
+        }, 100)
+      }
     },
   })
 }
