@@ -169,7 +169,8 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
   }
 
   // Map colSpan numbers to actual Tailwind classes to ensure they're included in the build
-  const getColSpanClass = (span: number): string => {
+  // Also add mobile-specific responsive classes for timeline events editor
+  const getColSpanClass = (span: number, fieldKey?: string): string => {
     const spanMap: Record<number, string> = {
       1: "col-span-1",
       2: "col-span-2",
@@ -184,7 +185,30 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
       11: "col-span-11",
       12: "col-span-12",
     }
-    return spanMap[span] ?? "col-span-1"
+    
+    const baseClass = spanMap[span] ?? "col-span-1"
+    
+    // Special mobile responsive classes for timeline events
+    if (fieldKey === "kind" && span === 3) {
+      return "col-span-4 md:col-span-3" // 1/3 on mobile, original on desktop
+    }
+    if (fieldKey === "year" && span === 2) {
+      return "col-span-4 md:col-span-2" // 1/3 on mobile, original on desktop
+    }
+    if (fieldKey === "name" && span === 7) {
+      return "col-span-4 md:col-span-7" // 1/3 on mobile, original on desktop
+    }
+    if (fieldKey === "place_id" && span === 4) {
+      return "col-span-12 md:col-span-4" // Full width on mobile, original on desktop
+    }
+    if ((fieldKey === "place" || fieldKey === "lat" || fieldKey === "lng") && span === 4) {
+      return "col-span-4 md:col-span-4" // 1/3 on mobile, original on desktop
+    }
+    if ((fieldKey === "lat" || fieldKey === "lng") && span === 2) {
+      return "col-span-4 md:col-span-2" // 1/3 on mobile, original on desktop  
+    }
+    
+    return baseClass
   }
 
   const inputClass =
@@ -225,7 +249,7 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
                     {nonLocationFields.map((field) => (
                       <div
                         key={field.key}
-                        className={getColSpanClass(field.colSpan)}
+                        className={getColSpanClass(field.colSpan, field.key)}
                       >
                         {field.type === "place-selector" ? (
                           <Select
@@ -307,67 +331,84 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
                     ))}
                   </div>
 
-                  {/* Location fields on their own row */}
-                  <div className="grid grid-cols-12 gap-3">
-                    {locationOnlyFields.map((field) => {
-                      // Check if a place is selected to disable manual location input
-                      const hasSelectedPlace = Boolean(item.place_id)
-                      const isDisabled =
-                        hasSelectedPlace && field.key !== "place_id"
+                  {/* Location fields - place_id on its own row on mobile, others on second row */}
+                  <div className="space-y-3 md:space-y-0">
+                    {/* Place selector - full width on mobile */}
+                    {locationOnlyFields
+                      .filter((field) => field.key === "place_id")
+                      .map((field) => {
+                        const hasSelectedPlace = Boolean(item.place_id)
+                        const isDisabled =
+                          hasSelectedPlace && field.key !== "place_id"
 
-                      return (
-                        <div
-                          key={field.key}
-                          className={getColSpanClass(field.colSpan)}
-                        >
-                          {field.type === "place-selector" ? (
-                            <Select
-                              options={[
-                                { value: "", label: "Custom location..." },
-                                ...places.map((place) => ({
-                                  value: place.id.toString(),
-                                  label: `${place.name} (${place.kind})`,
-                                })),
-                              ]}
-                              value={getFieldValue(item, field)}
-                              onChange={(e) =>
-                                handlePlaceSelection(index, e.target.value)
-                              }
-                              className={inputClass}
-                              placeholder={
-                                placesLoading
-                                  ? "Loading places..."
-                                  : field.placeholder
-                              }
-                              disabled={placesLoading}
-                            />
-                          ) : (
-                            <input
-                              type={field.type === "number" ? "number" : "text"}
-                              step={field.type === "number" ? "any" : undefined}
-                              placeholder={field.placeholder}
-                              value={getFieldValue(item, field)}
-                              onChange={(e) =>
-                                updateItem(
-                                  index,
-                                  field.type === "number"
-                                    ? `${field.key}_number`
-                                    : field.key,
-                                  e.target.value,
-                                )
-                              }
-                              className={`${inputClass} ${isDisabled ? "cursor-not-allowed bg-slate-700/50 opacity-50" : ""}`}
-                              disabled={isDisabled}
-                              title={
-                                isDisabled
-                                  ? "Disabled - using data from selected place"
-                                  : undefined
-                              }
-                            />
-                          )}
-                        </div>
-                      )
-                    })}
+                        return (
+                          <div key={field.key} className="grid grid-cols-12 gap-3">
+                            <div className={getColSpanClass(field.colSpan, field.key)}>
+                              <Select
+                                options={[
+                                  { value: "", label: "Custom location..." },
+                                  ...places.map((place) => ({
+                                    value: place.id.toString(),
+                                    label: `${place.name} (${place.kind})`,
+                                  })),
+                                ]}
+                                value={getFieldValue(item, field)}
+                                onChange={(e) =>
+                                  handlePlaceSelection(index, e.target.value)
+                                }
+                                className={inputClass}
+                                placeholder={
+                                  placesLoading
+                                    ? "Loading places..."
+                                    : field.placeholder
+                                }
+                                disabled={placesLoading}
+                              />
+                            </div>
+                          </div>
+                        )
+                      })}
+                    
+                    {/* Other location fields - place, lat, lng on same row */}
+                    <div className="grid grid-cols-12 gap-3">
+                      {locationOnlyFields
+                        .filter((field) => field.key !== "place_id")
+                        .map((field) => {
+                          const hasSelectedPlace = Boolean(item.place_id)
+                          const isDisabled =
+                            hasSelectedPlace && field.key !== "place_id"
+
+                          return (
+                            <div
+                              key={field.key}
+                              className={getColSpanClass(field.colSpan, field.key)}
+                            >
+                              <input
+                                type={field.type === "number" ? "number" : "text"}
+                                step={field.type === "number" ? "any" : undefined}
+                                placeholder={field.placeholder}
+                                value={getFieldValue(item, field)}
+                                onChange={(e) =>
+                                  updateItem(
+                                    index,
+                                    field.type === "number"
+                                      ? `${field.key}_number`
+                                      : field.key,
+                                    e.target.value,
+                                  )
+                                }
+                                className={`${inputClass} ${isDisabled ? "cursor-not-allowed bg-slate-700/50 opacity-50" : ""}`}
+                                disabled={isDisabled}
+                                title={
+                                  isDisabled
+                                    ? "Disabled - using data from selected place"
+                                    : undefined
+                                }
+                              />
+                            </div>
+                          )
+                        })}
+                    </div>
                   </div>
 
                   {/* Delete Button - Absolutely positioned bottom right */}

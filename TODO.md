@@ -2,6 +2,14 @@
 
 ## Next Thing
 
+- [ ] work out how to fix the timeline / map gap - it should account for the height of the biggest event marker stack. Likewise for above the timeline. The container should not overflow, the container boundaries should respond to the content inside it.
+
+- [ ] improve timeline on mobile - make event marker groups that expand when tapped? make it look less busy somehow
+
+- [ ] make the artifacts table and admin page for it. artifact name, place (a Place can be an artifact ie Severen gate or a museum), location_note (ie where in museum, or how to get there tip), type (statue, coin, art, engraving, construction), description, image_link_1, image_link_2?
+
+- [ ] event marker popovers on mobile aren't great. maybe a drawer slide in from base or something instead, so that tapping the timeline doesnt obsfucate it. Drawer stay open while you scroll too, so you can scroll down to look at the map
+
 - [ ] hand draw a logo I like
 - [ ] timeline - elagabalus
 - [ ] photos - gordy tranquillina
