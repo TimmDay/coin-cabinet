@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
+import { Button } from "~/components/ui/Button"
 
 type RefreshCacheButtonProps = {
   onMessage?: (message: string) => void
@@ -149,19 +150,15 @@ export function RefreshCacheButton({
     }
   }
 
-  const sizeClasses = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2 text-sm",
-    lg: "px-6 py-3 text-base",
-  }
-
   return (
-    <button
+    <Button
       onClick={handleRefreshCache}
-      disabled={isRefreshing}
-      className={`rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${sizeClasses[size]} ${className}`}
+      isLoading={isRefreshing}
+      loadingText="Refreshing..."
+      size={size}
+      className={className}
     >
-      {isRefreshing ? "Refreshing..." : "Refresh Cache"}
-    </button>
+      Refresh Cache
+    </Button>
   )
 }

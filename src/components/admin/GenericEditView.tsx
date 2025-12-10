@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 import type { UseQueryResult } from "@tanstack/react-query"
 import { RefreshCacheButton } from "./RefreshCacheButton"
+import { Button } from "~/components/ui/Button"
 
 export type EditableItem = {
   id: number
@@ -123,14 +124,14 @@ export function GenericEditView<T extends EditableItem>({
             <>
               {addNewConfig.href ? (
                 <Link href={addNewConfig.href}>
-                  <button className="rounded-md bg-purple-900 px-4 py-2 text-white hover:bg-purple-900 focus:ring-2 focus:ring-purple-900 focus:outline-none">
+                  <button className="cursor-pointer rounded-lg bg-purple-700 px-4 py-2 text-sm text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none">
                     {addNewConfig.label}
                   </button>
                 </Link>
               ) : (
                 <button
                   onClick={addNewConfig.onClick}
-                  className="rounded-md bg-purple-900 px-4 py-2 text-white hover:bg-purple-900 focus:ring-2 focus:ring-purple-900 focus:outline-none"
+                  className="cursor-pointer rounded-lg bg-purple-700 px-4 py-2 text-sm text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
                 >
                   {addNewConfig.label}
                 </button>
@@ -194,14 +195,14 @@ export function GenericEditView<T extends EditableItem>({
                 <>
                   {addNewConfig.href ? (
                     <Link href={addNewConfig.href}>
-                      <button className="rounded-md bg-purple-900 px-4 py-2 text-white hover:bg-purple-900 focus:ring-2 focus:ring-purple-900 focus:outline-none">
+                      <button className="cursor-pointer rounded-lg bg-purple-700 px-4 py-2 text-sm text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none">
                         {addNewConfig.label}
                       </button>
                     </Link>
                   ) : (
                     <button
                       onClick={addNewConfig.onClick}
-                      className="rounded-md bg-purple-900 px-4 py-2 text-white hover:bg-purple-900 focus:ring-2 focus:ring-purple-900 focus:outline-none"
+                      className="cursor-pointer rounded-lg bg-purple-700 px-4 py-2 text-sm text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
                     >
                       {addNewConfig.label}
                     </button>
