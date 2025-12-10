@@ -27,11 +27,11 @@ export function ModalWrapper({
 
   return (
     <div
-      className="z-modal bg-opacity-50 fixed top-0 right-0 bottom-0 left-0 flex h-screen w-screen items-center justify-center bg-black p-4"
+      className="z-modal bg-opacity-50 fixed top-0 right-0 bottom-0 left-0 flex h-screen w-screen items-center justify-center bg-black p-0 sm:p-4"
       onClick={handleBackdropClick}
     >
       <div
-        className={`somnus-card max-h-[90vh] w-full max-w-2xl overflow-y-auto ${className}`}
+        className={`somnus-card h-full w-full overflow-y-auto sm:h-auto sm:max-h-[90vh] sm:max-w-2xl ${className}`}
       >
         <div className="sticky top-0 border-b border-gray-200 bg-slate-800 p-4">
           <div className="flex items-center justify-between">
