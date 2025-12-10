@@ -124,17 +124,12 @@ export function GenericEditView<T extends EditableItem>({
             <>
               {addNewConfig.href ? (
                 <Link href={addNewConfig.href}>
-                  <button className="cursor-pointer rounded-lg bg-purple-700 px-4 py-2 text-sm text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none">
-                    {addNewConfig.label}
-                  </button>
+                  <Button>{addNewConfig.label}</Button>
                 </Link>
               ) : (
-                <button
-                  onClick={addNewConfig.onClick}
-                  className="cursor-pointer rounded-lg bg-purple-700 px-4 py-2 text-sm text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
-                >
+                <Button onClick={addNewConfig.onClick}>
                   {addNewConfig.label}
-                </button>
+                </Button>
               )}
             </>
           )}
@@ -195,17 +190,12 @@ export function GenericEditView<T extends EditableItem>({
                 <>
                   {addNewConfig.href ? (
                     <Link href={addNewConfig.href}>
-                      <button className="cursor-pointer rounded-lg bg-purple-700 px-4 py-2 text-sm text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none">
-                        {addNewConfig.label}
-                      </button>
+                      <Button>{addNewConfig.label}</Button>
                     </Link>
                   ) : (
-                    <button
-                      onClick={addNewConfig.onClick}
-                      className="cursor-pointer rounded-lg bg-purple-700 px-4 py-2 text-sm text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
-                    >
+                    <Button onClick={addNewConfig.onClick}>
                       {addNewConfig.label}
-                    </button>
+                    </Button>
                   )}
                 </>
               )}
