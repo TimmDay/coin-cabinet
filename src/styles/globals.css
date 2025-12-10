@@ -410,3 +410,41 @@ main {
   color: hsl(var(--foreground)) !important;
   text-decoration: underline !important;
 }
+
+/* iOS Safe Area Support - ensure content doesn't get hidden behind iOS UI */
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .pb-safe-extra {
+    padding-bottom: max(1.5rem, calc(env(safe-area-inset-bottom) + 0.5rem));
+  }
+}
+
+/* Fallback for browsers that don't support env() */
+.pb-safe {
+  padding-bottom: 1rem;
+}
+
+.pb-safe-extra {
+  padding-bottom: 1.5rem;
+}
+
+/* Mobile form actions that extend beyond viewport to eliminate gaps */
+.mobile-form-actions {
+  bottom: -2rem;
+}
+
+.mobile-form-actions-padding {
+  padding-bottom: max(3rem, calc(env(safe-area-inset-bottom) + 2rem));
+}
+
+/* Fallback for browsers that don't support env() */
+.mobile-form-actions-padding {
+  padding-bottom: 3rem;
+}

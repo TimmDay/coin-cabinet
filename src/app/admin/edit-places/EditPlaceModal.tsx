@@ -8,6 +8,7 @@ import { ModalWrapper } from "~/components/forms/ModalWrapper"
 import { Select } from "~/components/ui/Select"
 import { type Place } from "~/database/schema-places"
 import { useUpdatePlace } from "~/api/places"
+import { useFormPersistence } from "~/hooks/useFormPersistence"
 import {
   placeFormInputSchema,
   placeFormSchema,
@@ -91,6 +92,13 @@ export function EditPlaceModal({
     reset,
   } = form
 
+  // Form persistence for mobile browser resilience
+  const { clearSavedData } = useFormPersistence({
+    key: isCreateMode ? "create-place" : `edit-place-${place?.id}`,
+    form,
+    enabled: isOpen,
+  })
+
   const onSubmit = async (data: PlaceFormInputData) => {
     try {
       if (isCreateMode && onSave) {
@@ -108,6 +116,8 @@ export function EditPlaceModal({
           updates: transformedData,
         })
       }
+      // Clear saved form data on successful save
+      clearSavedData()
       reset()
       onClose()
     } catch (error) {

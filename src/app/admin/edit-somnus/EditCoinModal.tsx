@@ -1159,28 +1159,12 @@ export function EditCoinModal({
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="flex gap-4 border-t border-gray-200 pt-6">
-          <button
-            type="submit"
-            disabled={!isDirty || isSaving}
-            className="flex-1 rounded-md bg-purple-600 px-4 py-2 text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isSaving
-              ? "Saving..."
-              : mode === "create"
-                ? "Add Coin"
-                : "Save Changes"}
-          </button>
-          <button
-            type="button"
-            onClick={handleClose}
-            disabled={isSaving}
-            className="flex-1 rounded-md bg-gray-600 px-4 py-2 text-white hover:bg-gray-700 disabled:opacity-50"
-          >
-            Cancel
-          </button>
-        </div>
+        <FormActions
+          onCancel={handleClose}
+          isDirty={isDirty}
+          isSaving={isSaving}
+          saveLabel={mode === "create" ? "Add Coin" : "Save Changes"}
+        />
       </form>
     </ModalWrapper>
   )

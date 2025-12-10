@@ -186,10 +186,10 @@ export function GenericEditView<T extends EditableItem>({
         <div className={`${cardClass} p-6`}>
           <div className="space-y-3">
             {filteredItems.map((item) => (
-              <button
+              <div
                 key={item.id}
                 onClick={() => onItemSelect(item)}
-                className={`w-full rounded-lg border border-gray-200 ${itemColors.bg} p-4 text-left transition-colors ${itemColors.hoverBg} hover:text-white`}
+                className={`w-full cursor-pointer rounded-lg border border-gray-200 ${itemColors.bg} p-4 text-left transition-colors ${itemColors.hoverBg} hover:text-white`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">{renderListItem(item)}</div>
@@ -209,7 +209,7 @@ export function GenericEditView<T extends EditableItem>({
                     </svg>
                   </div>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
 
