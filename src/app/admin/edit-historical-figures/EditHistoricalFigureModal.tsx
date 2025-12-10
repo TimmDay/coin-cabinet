@@ -7,6 +7,7 @@ import type { HistoricalFigure } from "~/database/schema-historical-figures"
 import { HistoricalSourcesEditor } from "~/components/forms/HistoricalSourcesEditor"
 import {
   FormErrorDisplay,
+  FormActions,
   handleUnsavedChanges,
   ModalWrapper,
 } from "~/components/forms"
