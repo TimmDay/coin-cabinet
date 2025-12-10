@@ -18,6 +18,29 @@ async function fetchTimelines(): Promise<Timeline[]> {
   return result.data
 }
 
+// Fetch timelines with cache busting for refresh operations
+async function fetchTimelinesFresh(): Promise<Timeline[]> {
+  const response = await fetch(`/api/timelines?t=${Date.now()}`, {
+    cache: "no-cache",
+    headers: {
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+    },
+  })
+
+  const result = (await response.json()) as {
+    success: boolean
+    data?: Timeline[]
+    message?: string
+  }
+
+  if (!result.success || !result.data) {
+    throw new Error(result.message ?? "Failed to fetch timelines")
+  }
+
+  return result.data
+}
+
 // Add a new timeline
 async function addTimeline(data: TimelineFormData): Promise<Timeline> {
   const response = await fetch("/api/timelines/admin", {

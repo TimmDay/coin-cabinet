@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 import type { UseQueryResult } from "@tanstack/react-query"
-import { useQueryClient } from "@tanstack/react-query"
+import { RefreshCacheButton } from "./RefreshCacheButton"
 
 export type EditableItem = {
   id: number
@@ -53,8 +53,6 @@ export function GenericEditView<T extends EditableItem>({
   onSuccess,
 }: GenericEditViewProps<T>) {
   const [filterTerm, setFilterTerm] = useState("")
-  const [isRefreshing, setIsRefreshing] = useState(false)
-  const queryClient = useQueryClient()
 
   const { data: items = [], isLoading: loading, error } = dataQuery
 
@@ -63,35 +61,6 @@ export function GenericEditView<T extends EditableItem>({
       onSuccess("❌ Failed to load data")
     }
   }, [error, onSuccess])
-
-  const handleRefreshCache = async () => {
-    setIsRefreshing(true)
-    try {
-      // Aggressive cache clearing for JSONB data and related queries
-      queryClient.removeQueries({ queryKey: ["timelines"] })
-      queryClient.removeQueries({ queryKey: ["coin"] })
-      queryClient.removeQueries({ queryKey: ["somnus-coins"] })
-      queryClient.removeQueries({ queryKey: ["all-somnus-coins"] })
-      queryClient.removeQueries({ queryKey: ["historical-figures"] })
-      queryClient.removeQueries({ queryKey: ["deities"] })
-
-      // Invalidate all other queries
-      await queryClient.invalidateQueries()
-
-      // Force fresh data from server
-      await queryClient.refetchQueries({ queryKey: ["timelines"] })
-      await queryClient.refetchQueries({ queryKey: ["all-somnus-coins"] })
-      await queryClient.refetchQueries({ queryKey: ["historical-figures"] })
-      await queryClient.refetchQueries({ queryKey: ["deities"] })
-
-      onSuccess("✅ Cache refreshed successfully")
-    } catch (error) {
-      console.error("Error refreshing cache:", error)
-      onSuccess("❌ Failed to refresh cache")
-    } finally {
-      setIsRefreshing(false)
-    }
-  }
 
   const filteredItems = items.filter((item) => filterFunction(item, filterTerm))
 
@@ -248,13 +217,10 @@ export function GenericEditView<T extends EditableItem>({
 
       {/* Refresh Cache Button */}
       <div className="mt-8 text-center">
-        <button
-          onClick={handleRefreshCache}
-          disabled={isRefreshing}
-          className="rounded-md bg-purple-700 px-6 py-2 text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100 disabled:opacity-50"
-        >
-          {isRefreshing ? "Refreshing..." : "Refresh Cache"}
-        </button>
+        <RefreshCacheButton
+          onMessage={onSuccess}
+          className="bg-purple-700 text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100"
+        />
       </div>
     </div>
   )
