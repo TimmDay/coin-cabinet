@@ -93,13 +93,11 @@ export function EditTimelineModal({
         parsedTimeline = JSON.parse(data.timeline_events) as Event[]
 
         // Validate that each event has coordinates
-        const eventsWithoutCoordinates = parsedTimeline.filter(
-          (event, index) => {
-            const hasLat = typeof event.lat === "number" && !isNaN(event.lat)
-            const hasLng = typeof event.lng === "number" && !isNaN(event.lng)
-            return !hasLat || !hasLng
-          },
-        )
+        const eventsWithoutCoordinates = parsedTimeline.filter((event) => {
+          const hasLat = typeof event.lat === "number" && !isNaN(event.lat)
+          const hasLng = typeof event.lng === "number" && !isNaN(event.lng)
+          return !hasLat || !hasLng
+        })
 
         if (eventsWithoutCoordinates.length > 0) {
           const eventNames = eventsWithoutCoordinates

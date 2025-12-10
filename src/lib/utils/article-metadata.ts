@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 export type ArticleMetadata = {
   title: string
   subtitle?: string
@@ -14,12 +16,14 @@ export type ArticleMetadata = {
  * Get all available article metadata
  * Maps pathname to metadata for client-side lookup
  */
+// TODO: a lot of ESLint dodging in here
 export function getAllArticleMetadata(): Record<string, ArticleMetadata> {
   const articles: Record<string, ArticleMetadata> = {}
 
   // Add articles here as you create them
   try {
     // Import the metadata from React components
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const {
       metadata: caracallaMetadata,
     } = require("../../app/articles/caracalla-and-geta/page")

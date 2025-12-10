@@ -1,19 +1,19 @@
 import { useEffect, useRef } from "react"
-import type { UseFormReturn } from "react-hook-form"
+import type { UseFormReturn, FieldValues } from "react-hook-form"
 
-type UseFormPersistenceOptions<T = Record<string, unknown>> = {
+type UseFormPersistenceOptions<T extends FieldValues = FieldValues> = {
   key: string
   form: UseFormReturn<T>
   enabled?: boolean
 }
 
-export function useFormPersistence<T = Record<string, unknown>>({
+export function useFormPersistence<T extends FieldValues = FieldValues>({
   key,
   form,
   enabled = true,
 }: UseFormPersistenceOptions<T>) {
   const formValues = form.watch()
-  const timeoutRef = useRef<NodeJS.Timeout>()
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Save form data to localStorage with debouncing
   useEffect(() => {

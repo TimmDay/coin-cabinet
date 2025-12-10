@@ -33,7 +33,6 @@ export function CoinRow({
   // State for mobile image switching
   const [currentMobileImageIndex, setCurrentMobileImageIndex] = useState(0)
 
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const hasAnyText = Boolean(legendExpanded || legendTranslation || description)
 
   // Available images array for mobile switching

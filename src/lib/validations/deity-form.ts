@@ -1,6 +1,5 @@
 import { z } from "zod"
 import {
-  csvStringField,
   optionalStringField,
   optionalCsvStringField,
 } from "~/lib/types/form-patterns"

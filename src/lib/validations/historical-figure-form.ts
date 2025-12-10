@@ -1,9 +1,5 @@
 import { z } from "zod"
-import {
-  optionalStringField,
-  csvStringField,
-  optionalCsvStringField,
-} from "~/lib/types/form-patterns"
+import { optionalStringField } from "~/lib/types/form-patterns"
 
 export const historicalSourceSchema = z.object({
   citation: z.string().min(1, "Citation is required"),

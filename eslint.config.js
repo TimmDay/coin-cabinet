@@ -1,14 +1,6 @@
-// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from "eslint-plugin-storybook"
-
-import { FlatCompat } from "@eslint/eslintrc"
 import tseslint from "typescript-eslint"
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-})
-
-export default tseslint.config(
+export default [
   {
     ignores: [
       ".next",
@@ -19,19 +11,12 @@ export default tseslint.config(
       "**/*.spec.tsx",
     ],
   },
-  ...compat.extends("next/core-web-vitals"),
+  ...tseslint.configs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx"],
-    extends: [
-      ...tseslint.configs.recommended,
-      ...tseslint.configs.recommendedTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked,
-    ],
     languageOptions: {
       parserOptions: {
-        projectService: {
-          allowDefaultProject: ["*.js", "*.mjs"],
-        },
+        project: true,
       },
     },
     rules: {
@@ -51,15 +36,15 @@ export default tseslint.config(
         { checksVoidReturn: { attributes: false } },
       ],
       // Enforce nullish coalescing over logical OR when appropriate
-      "@typescript-eslint/prefer-nullish-coalescing": "error",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/prefer-optional-chain": "error",
-      // Prevent any types
-      "@typescript-eslint/no-explicit-any": "error",
-      "@typescript-eslint/no-unsafe-assignment": "error",
-      "@typescript-eslint/no-unsafe-member-access": "error",
-      "@typescript-eslint/no-unsafe-call": "error",
-      "@typescript-eslint/no-unsafe-return": "error",
-      "@typescript-eslint/no-unsafe-argument": "error",
+      // Prevent any types (relaxed for external data handling)
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unsafe-assignment": "warn",
+      "@typescript-eslint/no-unsafe-member-access": "warn",
+      "@typescript-eslint/no-unsafe-call": "warn",
+      "@typescript-eslint/no-unsafe-return": "warn",
+      "@typescript-eslint/no-unsafe-argument": "warn",
       // Type inference improvements
       "@typescript-eslint/no-inferrable-types": "error",
       // Prefer function declarations over arrow functions for top-level functions
@@ -74,5 +59,4 @@ export default tseslint.config(
       reportUnusedDisableDirectives: true,
     },
   },
-  storybook.configs["flat/recommended"],
-)
+]

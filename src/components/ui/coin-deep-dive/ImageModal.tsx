@@ -247,7 +247,6 @@ export function ImageModal(props: ImageModalProps) {
             {isPairVariant ? (
               // Pair variant - show two images side by side
               <div className="flex max-h-[90vh] max-w-[95vw] items-center justify-center gap-2 sm:gap-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   ref={imageRef}
                   src={largeImageUrl1}
@@ -263,7 +262,6 @@ export function ImageModal(props: ImageModalProps) {
                   onError={() => setIsLoading(false)}
                 />
                 {largeImageUrl2 && (
-                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={largeImageUrl2}
                     alt={"alt2" in props && props.alt2 ? props.alt2 : ""}
@@ -283,7 +281,6 @@ export function ImageModal(props: ImageModalProps) {
               </div>
             ) : (
               // Single image variant
-              /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 ref={imageRef}
                 src={largeImageUrl}

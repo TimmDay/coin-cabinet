@@ -35,7 +35,7 @@ import { createHighlightedMintHtml } from "./MintMarkerSvg"
 
 // Helper function to safely get map container from Leaflet event
 function getMapContainer(event: L.LeafletMouseEvent): HTMLElement | null {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
   return (event.target as any)?._map?._container ?? null
 }
 
