@@ -13,15 +13,19 @@ export async function GET(request: Request) {
     // Check if we should include all coins (for admin purposes)
     const { searchParams } = new URL(request.url)
     const includeAll = searchParams.get("includeAll") === "true"
+    const showHidden = searchParams.get("showHidden") === "true"
 
     let query = supabase.from("somnus_collection").select("*")
 
     // Only filter for coins with obverse images if not requesting all coins
     if (!includeAll) {
-      query = query
-        .not("image_link_o", "is", null)
-        .neq("image_link_o", "")
-        .neq("isHidden", true)
+      query = query.not("image_link_o", "is", null).neq("image_link_o", "")
+
+      // Filter out hidden coins unless the feature flag is enabled
+      // We accept FALSE or NULL as "visible" to handle legacy/unmigrated data gracefully
+      if (!showHidden) {
+        query = query.or("is_hidden.eq.false,is_hidden.is.null")
+      }
     }
 
     const { data, error } = await query

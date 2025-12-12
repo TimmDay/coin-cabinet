@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useDeities } from "~/api/deities"
 import { useTimelines } from "~/api/timelines"
 import type { Timeline } from "~/database/schema-timelines"
+import { useFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import type { CoinApiResponse, CoinEnhanced } from "~/types/api"
 
 type CoinEditData = {
@@ -19,6 +20,7 @@ type CoinEditData = {
 
 export function useSpecificCoinData(coinId: number | null): CoinEditData {
   const queryClient = useQueryClient()
+  const showHidden = useFeatureFlag("show-hidden-coins")
 
   // Cache all deities with longer stale time (they rarely change)
   const {
@@ -45,7 +47,7 @@ export function useSpecificCoinData(coinId: number | null): CoinEditData {
       if (!coinId) throw new Error("Coin ID is required")
 
       const response = await fetch(
-        `/api/somnus-collection/${coinId}?include=deities,historical-figures`,
+        `/api/somnus-collection/${coinId}?include=deities,historical-figures${showHidden ? "&showHidden=true" : ""}`,
       )
       if (!response.ok) {
         const errorText = await response.text()

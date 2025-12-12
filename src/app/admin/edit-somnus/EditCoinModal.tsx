@@ -3,27 +3,27 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper"
-import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 import { Select } from "~/components/ui/Select"
+import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
 import type { CoinFormData } from "~/lib/validations/coin-form"
 
-import { useDeityOptions } from "~/hooks/useDeityOptions"
-import { useHistoricalFigureOptions } from "~/hooks/useHistoricalFigureOptions"
 import { useTimelines } from "~/api/timelines"
 import { NotableFeaturesEditor } from "~/components/forms/NotableFeaturesEditor"
+import { useDeityOptions } from "~/hooks/useDeityOptions"
+import { useHistoricalFigureOptions } from "~/hooks/useHistoricalFigureOptions"
 import {
-  FormActions,
-  FormErrorDisplay,
-  handleUnsavedChanges,
-  ModalWrapper,
+    FormActions,
+    FormErrorDisplay,
+    handleUnsavedChanges,
+    ModalWrapper,
 } from "../../../components/forms"
 import {
-  authorityOptions,
-  civilizationOptions,
-  civSpecificOptions,
-  denominationOptions,
-  dieAxisOptions,
+    authorityOptions,
+    civilizationOptions,
+    civSpecificOptions,
+    denominationOptions,
+    dieAxisOptions,
 } from "./coin-form-options"
 
 // Extended CoinFormData with raw string fields for form inputs
@@ -121,7 +121,7 @@ const createCoinFormData = (
   notes: coin?.notes ?? undefined,
   notes_history: coin?.notes_history ?? undefined,
   ex_collection: coin?.ex_collection ?? undefined,
-  isHidden: Boolean(coin?.isHidden),
+  is_hidden: Boolean(coin?.is_hidden),
   bpRouteRaw: coin?.bpRoute?.join(", ") ?? "",
 })
 
@@ -237,7 +237,7 @@ export function EditCoinModal({
       notes_history: data.notes_history,
       bpRoute: processArray(data.bpRouteRaw ?? "", false),
       ex_collection: data.ex_collection,
-      isHidden: data.isHidden,
+      is_hidden: data.is_hidden,
     }
 
     try {
@@ -1118,12 +1118,12 @@ export function EditCoinModal({
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
-              id="isHidden"
-              {...register("isHidden")}
+              id="is_hidden"
+              {...register("is_hidden")}
               className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
             />
             <label
-              htmlFor="isHidden"
+              htmlFor="is_hidden"
               className="text-sm font-medium text-slate-300"
             >
               Hide from public display

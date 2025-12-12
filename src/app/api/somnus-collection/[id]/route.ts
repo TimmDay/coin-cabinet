@@ -35,11 +35,18 @@ export async function GET(
       .get("include")
       ?.includes("historical-figures")
 
-    const coinResult = await supabase
+    const showHidden = url.searchParams.get("showHidden") === "true"
+
+    let query = supabase
       .from("somnus_collection")
       .select("*")
       .eq("id", parseInt(id))
-      .single<SomnusCollection>()
+
+    if (!showHidden) {
+      query = query.or("is_hidden.eq.false,is_hidden.is.null")
+    }
+
+    const coinResult = await query.single<SomnusCollection>()
 
     if (coinResult.error) {
       console.error("Supabase coin fetch error:", coinResult.error)

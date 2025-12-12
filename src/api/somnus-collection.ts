@@ -1,12 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
+import { useFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import type { CoinFormData } from "~/lib/validations/coin-form"
 
 // Custom React Query hooks for somnus collection
 export function useSomnusCoins() {
+  const showHidden = useFeatureFlag("show-hidden-coins")
+
   return useQuery({
-    queryKey: ["somnus-coins"],
-    queryFn: fetchSomnusCoins,
+    queryKey: ["somnus-coins", showHidden],
+    queryFn: () => fetchSomnusCoins(showHidden),
     staleTime: 7 * 24 * 60 * 60 * 1000,
   })
 }
@@ -91,8 +94,13 @@ export function useDeleteSomnusCoin() {
 }
 
 // API utility functions
-async function fetchSomnusCoins(): Promise<SomnusCollection[]> {
-  const response = await fetch("/api/somnus-collection")
+async function fetchSomnusCoins(
+  showHidden = false,
+): Promise<SomnusCollection[]> {
+  const params = new URLSearchParams()
+  if (showHidden) params.set("showHidden", "true")
+
+  const response = await fetch(`/api/somnus-collection?${params.toString()}`)
   const result = (await response.json()) as {
     success: boolean
     message?: string

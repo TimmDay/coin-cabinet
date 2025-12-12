@@ -1,23 +1,18 @@
 "use client"
 
 import { useMemo } from "react"
-import { useAllSomnusCoins } from "~/api/somnus-collection"
+import { useSomnusCoins } from "~/api/somnus-collection"
 import { FeaturedCoins } from "~/components/ui/FeaturedCoins"
 import { FeaturedSets } from "~/components/ui/FeaturedSets"
 import { PageTitle } from "~/components/ui/PageTitle"
 import { featuredSets } from "~/data/sets"
 
 export default function HomePage() {
-  const { data: allCoins, isLoading } = useAllSomnusCoins()
+  const { data: coinsWithImages, isLoading } = useSomnusCoins()
 
   // Randomly select 3 coins with images
   const featuredCoins = useMemo(() => {
-    if (!allCoins) return []
-
-    // Filter coins that have obverse images
-    const coinsWithImages = allCoins.filter(
-      (coin) => coin.image_link_o && coin.image_link_o.trim() !== "",
-    )
+    if (!coinsWithImages) return []
 
     if (coinsWithImages.length < 3) return []
 
@@ -34,7 +29,7 @@ export default function HomePage() {
       reverseImageId: coin.image_link_r,
       diameter: coin.diameter,
     }))
-  }, [allCoins])
+  }, [coinsWithImages])
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
@@ -46,7 +41,7 @@ export default function HomePage() {
           <FeaturedCoins
             title=""
             coins={featuredCoins}
-            isLoading={isLoading || featuredCoins.length !== 3}
+            isLoading={isLoading}
           />
         </div>
 

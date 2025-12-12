@@ -102,6 +102,11 @@ export function EditSomnusView() {
                 needs tim photo
               </span>
             )}
+          {item.is_hidden && (
+            <span className="text-lg" title="This coin is hidden from public view">
+              🕵️
+            </span>
+          )}
         </div>
       </div>
     )

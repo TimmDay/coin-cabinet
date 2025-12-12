@@ -298,7 +298,7 @@ export const coinFormSchema = z
     notes: z.string().optional(),
     notes_history: z.string().optional(),
     ex_collection: z.boolean().optional(),
-    isHidden: z.boolean().optional(),
+    is_hidden: z.boolean().optional(),
   })
   .transform((data) => {
     // Auto-populate end years with start years if not provided

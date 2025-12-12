@@ -11,6 +11,11 @@ export const FEATURE_FLAGS = {
     displayName: "Map Features",
     description: "Enables experimental map-related features and functionality",
   },
+  "show-hidden-coins": {
+    name: "show-hidden-coins",
+    displayName: "Show Hidden Coins",
+    description: "When enabled, coins marked as 'isHidden' will be visible in the collection.",
+  },
 } as const
 
 // Extract the available feature flag names as a union type
