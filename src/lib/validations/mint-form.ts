@@ -16,6 +16,7 @@ export const mintFormInputSchema = z.object({
 
   // Mint details
   mint_marks: z.string().optional(),
+  officina_marks: z.string().optional(),
   flavour_text: z.string().optional(),
   historical_sources: z.string().optional(),
   opened_by: z.string().optional(),
@@ -34,6 +35,7 @@ export const mintFormSchema = z.object({
 
   // Mint details - using standardized field schemas where applicable
   mint_marks: csvStringField,
+  officina_marks: csvStringField,
   flavour_text: optionalStringField,
   historical_sources: csvStringField,
   opened_by: optionalStringField,

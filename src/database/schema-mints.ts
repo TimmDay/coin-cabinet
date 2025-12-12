@@ -5,6 +5,7 @@ export type Mint = {
   lat: number
   lng: number
   mint_marks?: string[] // ["ROMA", "R", "ROM", "RM", "XXIR", "SMR"]
+  officina_marks?: string[] // ["A", "B", "Γ", "Δ", "E", "S", "T"]
   flavour_text?: string | null // Historical description
 
   historical_sources?: string[] // Academic citations

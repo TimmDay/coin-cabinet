@@ -2,6 +2,10 @@
 
 ## Next Thing
 
+- [ ] typography for body text. style up home page better.
+- [ ] update the mint card. Officina marks show in the dd
+- [ ] coin flavor text gets shown under the title summary info
+
 - [ ] work out how to fix the timeline / map gap - it should account for the height of the biggest event marker stack. Likewise for above the timeline. The container should not overflow, the container boundaries should respond to the content inside it.
 
 - [ ] improve timeline on mobile - make event marker groups that expand when tapped? make it look less busy somehow
@@ -28,32 +32,33 @@
 
 - [ ] DB overkill.
   - [x] DB for deities,
-  - [ ] DB for timelines,
+  - [x] DB for timelines,
   - [x] DB for mints.
   - [x] DB for historical figures (joins to coins)
   - gives me practice for SQL joins etc.
   - [ ] make requests maximally DB efficient
   - [ ] eventually do up a lovely API layer that other sites can use
-  - [ ] data collection page for deities, timelines, mints
+  - [x] data collection page for deities, timelines, mints
   - [x] DB for Places: ruins, tourist spots, museums, temples
   - [ ] DB for artifacts. kind (statue, bust, coin, engraving, etc), location (Place), description, image links, historical_references
-  - [ ] DB for timelines. Not sure how to impl this in add/edit UI yet - heavy JSONB. Also, how to tie it to coins (a [] field on the coin)
+  - [x] DB for timelines. Not sure how to impl this in add/edit UI yet - heavy JSONB. Also, how to tie it to coins (a [] field on the coin)
 
   - [ ] deep dive UI. How to display (menu?) multiple timelines.
 
 - [ ] wrap up the tables impls. delete all local static data in favour of the dbs
 - [ ] have the appropriate places get joined with the things that need them when req
 
-- logo
+- [ ] logo
 
 - Map component
 - [x] MVP. Mints data (hooking it up to the map)
 - [x] Mints data. is this better in a db?
-- [ ] Mint data: operation dates and flavour text for each mint I have coins from.
+- [x] Mint data: operation dates and flavour text for each mint I have coins from.
 - [ ] Province data: existence dates for each province.
 - [ ] Get geojson for the provinces I am missing
 - [ ] work out how to put geojson into a db table (postGIS)
 - [ ] Map page: make a slider to choose the year. Provinces and mints on the map update to only show those that are operational in that year (as far as we know).
+- [ ] make a map + timeline of all emperors / usurpers (in collection?). Map shows where they died/were proclaimed. This should visually demonstrate how crisis the third century was, and perhaps will show the shift of attention away from rome
 - budget photography post
 - new to coin cleaning post
   - [ ] photo slider component.
@@ -108,10 +113,6 @@ Map Page
 - [ ] if somnus table row has a bpLink, show a link to that blog post (labelled "learn more") at the base of the CoinDetail page... Is it possible to just embed the actual post there?
 - [ ] write an actual post / coin deep dive text.
 - [ ] remove reign start / end from somnus db table (in hist figs now)
-
-### Mints Table
-
-- [ ] make a mint db table. It will need mint_name, lat, lng, roman territory, country (modern), notes (historical info), year_open, year_close, second_year_open, second_year_close, secondary_name, list of known operators/procurators {name, year range, note}, founding emperor, reason close, notes. Make a form for adding to it and have this in the admin menu
 
 ### Roman Territories Table
 
@@ -402,3 +403,4 @@ articles, guides
 - [x] Mint Operation dates: work out how to display and edit the JSONB for mint operation dates
 - [x] Deity Festivals: implement table editor for Festival objects in JSONB format
 - [x] likewise for the Deities JSONB fields. Use similar styles.
+- [x] mints table gets an 'officina_marks' col as well. update the forms.

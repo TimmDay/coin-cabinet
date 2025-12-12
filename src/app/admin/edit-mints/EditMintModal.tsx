@@ -34,6 +34,7 @@ const createFormData = (mint: Mint | null): MintFormInputData => ({
   lat: mint?.lat ?? 0,
   lng: mint?.lng ?? 0,
   mint_marks: arrayToString(mint?.mint_marks),
+  officina_marks: arrayToString(mint?.officina_marks),
   flavour_text: mint?.flavour_text ?? "",
   historical_sources: arrayToString(mint?.historical_sources),
   opened_by: mint?.opened_by ?? "",
@@ -214,6 +215,22 @@ export function EditMintModal({
           />
           <p className="mt-1 text-xs text-gray-500">
             Separate multiple marks with commas
+          </p>
+        </div>
+
+        {/* Officina Marks */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Officina Marks
+          </label>
+          <input
+            type="text"
+            {...register("officina_marks")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+            placeholder="A, B, Γ, Δ, E, S, T (comma separated)"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Workshop/officina identifier marks, separate multiple marks with commas
           </p>
         </div>
 
