@@ -13,6 +13,7 @@ import {
   SideLineMarker,
   StackedMarkers,
 } from "./TimelineMarkers"
+import { MobileDrawer } from "./MobileDrawer"
 
 // TODO: icons for all timeline event types
 type TimelineProps = {
@@ -38,6 +39,8 @@ export function Timeline({
     y: 0,
     showBelow: false,
   })
+  const [drawerEvent, setDrawerEvent] = useState<TimelineEvent | null>(null)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   // Close popup on scroll
   useEffect(() => {
@@ -136,35 +139,10 @@ export function Timeline({
     clientX?: number,
     clientY?: number,
   ) => {
-    // On mobile, show popup on click since hover is disabled
-    if (
-      window.innerWidth < 768 &&
-      clientX !== undefined &&
-      clientY !== undefined
-    ) {
-      setHoveredEvent(event)
-
-      // Smart popup positioning for mobile clicks
-      const popupWidth = 320
-      const popupHeight = 150
-      const padding = 16
-      const viewportWidth = window.innerWidth
-
-      let x = clientX
-      if (x + popupWidth / 2 > viewportWidth - padding) {
-        x = viewportWidth - popupWidth / 2 - padding
-      } else if (x - popupWidth / 2 < padding) {
-        x = popupWidth / 2 + padding
-      }
-
-      let y = clientY - 10
-      let showBelow = false
-      if (y - popupHeight < padding) {
-        y = clientY + 40
-        showBelow = true
-      }
-
-      setPopupPosition({ x, y, showBelow })
+    // On mobile, show drawer on click instead of popup
+    if (window.innerWidth < 768) {
+      setDrawerEvent(event)
+      setIsDrawerOpen(true)
     }
 
     // Call the optional callback for click interactions (like scrolling and map panning)
@@ -175,6 +153,11 @@ export function Timeline({
 
   const handleEventLeave = () => {
     setHoveredEvent(null)
+  }
+
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false)
+    setDrawerEvent(null)
   }
 
   // Calculate padding needed above and below timeline to prevent overflow
@@ -328,6 +311,33 @@ export function Timeline({
           </div>
         </div>
       )}
+
+      {/* Mobile Drawer */}
+      <MobileDrawer
+        isOpen={isDrawerOpen}
+        onClose={handleDrawerClose}
+        icon={
+          drawerEvent
+            ? getEventIcon(drawerEvent.kind, "text-gray-500")
+            : undefined
+        }
+      >
+        {drawerEvent && (
+          <div className="relative">
+            {/* Event title with year */}
+            <div className="mb-3 text-lg font-semibold text-amber-400">
+              {drawerEvent.name} ({formatYear(drawerEvent.year)})
+            </div>
+
+            {/* Description - matching popup styling */}
+            {drawerEvent.description && (
+              <div className="text-base leading-relaxed text-slate-300">
+                {drawerEvent.description}
+              </div>
+            )}
+          </div>
+        )}
+      </MobileDrawer>
     </div>
   )
 }
