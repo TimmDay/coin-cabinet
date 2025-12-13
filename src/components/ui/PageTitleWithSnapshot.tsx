@@ -28,8 +28,7 @@ export function PageTitleWithSnapshot({
           {children}
         </PageTitle>
 
-        {/* Coin snapshot below title on mobile */}
-        <div className="mt-6 flex justify-center">{coinSnapshot}</div>
+        {/* Coin snapshot hidden on mobile */}
       </div>
 
       {/* Desktop: Title and snapshot side by side, centered */}

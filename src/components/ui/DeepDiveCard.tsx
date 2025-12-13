@@ -51,7 +51,7 @@ export function DeepDiveCard({
         {title}
       </h3>
       {subtitle && (
-        <p className="mb-4 text-center text-sm whitespace-pre-line text-gray-400 italic">
+        <p className="mb-4 text-center text-sm whitespace-pre-line text-gray-400">
           {subtitle}
         </p>
       )}

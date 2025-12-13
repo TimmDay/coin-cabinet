@@ -239,8 +239,8 @@ export default function Navbar() {
       role="navigation"
       aria-label="Main navigation"
     >
-      {/* Mobile navigation burger menu - top left */}
-      <div className="absolute top-4 left-4 sm:left-6 lg:hidden">
+      {/* Mobile navigation burger menu - vertically centered on mobile */}
+      <div className="absolute top-1/2 left-4 -translate-y-1/2 sm:left-6 lg:hidden">
         <MobileNavigation />
       </div>
 

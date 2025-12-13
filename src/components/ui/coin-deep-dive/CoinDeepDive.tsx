@@ -110,13 +110,25 @@ function transformHistoricalFiguresToCards(
 }
 
 function createCoinCard(coin: CoinEnhanced) {
+  // Build civilization text
+  const civText = coin.civ_specific
+    ? `${coin.civ.toUpperCase()}, ${coin.civ_specific}`
+    : coin.civ.toUpperCase()
+
+  // Build physical characteristics string
+  const physicalCharacteristics = formatPhysicalCharacteristics(
+    { diameter: coin.diameter, mass: coin.mass, dieAxis: coin.die_axis },
+    { style: "compact" },
+  )
+
+  // Build subtitle with physical characteristics and civText
+  const subtitle = physicalCharacteristics
+    ? `${physicalCharacteristics} | ${civText}`
+    : civText
+
   return {
     title: "COIN FLIP",
-    subtitle:
-      formatPhysicalCharacteristics(
-        { diameter: coin.diameter, mass: coin.mass, dieAxis: coin.die_axis },
-        { style: "compact" },
-      ) ?? "",
+    subtitle,
     primaryInfo:
       [
         coin.mint,
@@ -124,9 +136,10 @@ function createCoinCard(coin: CoinEnhanced) {
       ]
         .filter(Boolean)
         .join(" ") || undefined,
-    secondaryInfo: coin.flavour_text ?? undefined,
-    footer:
-      [coin.reference, coin.provenance].filter(Boolean).join(" ") || undefined,
+    secondaryInfo:
+      [coin.provenance, coin.flavour_text].filter(Boolean).join(" • ") ||
+      undefined,
+    footer: coin.reference ?? undefined,
   }
 }
 
