@@ -126,38 +126,51 @@ export function Timeline({
     setHoveredEvent(null)
   }
 
-  // Calculate the maximum downward extension of inverted stacked markers
-  const maxInvertedStackExtension = Object.entries(eventsByYear).reduce(
-    (maxExtension, [_year, yearEvents], yearIndex) => {
+  // Calculate padding needed above and below timeline to prevent overflow
+  const { topPadding, bottomPadding } = Object.entries(eventsByYear).reduce(
+    (acc, [_year, yearEvents], yearIndex) => {
       const isInverted = yearIndex % 2 === 1
-      if (isInverted && yearEvents.length > 1) {
-        // For inverted stacked markers:
-        // - They start 16px below timeline (top-4)
-        // - Each event takes 32px height
-        // - Year label is 26px below the last event
-        const stackHeight = yearEvents.length * 28
-        const totalExtension = 16 + stackHeight // top-4 + stack height
-        return Math.max(maxExtension, totalExtension)
-      }
-      return maxExtension
-    },
-    0,
-  )
 
-  // Add 8px spacing below the lowest inverted marker (only if there are inverted markers)
-  const timelineBottomPadding =
-    maxInvertedStackExtension > 0 ? maxInvertedStackExtension + 8 : 0
+      if (isInverted) {
+        // Inverted markers extend below timeline
+        if (yearEvents.length > 1) {
+          // Inverted stacked markers: 16px initial + 32px per event + 34px for year label
+          const stackExtension = 16 + yearEvents.length * 32 + 34
+          acc.bottomPadding = Math.max(acc.bottomPadding, stackExtension)
+        } else {
+          // Single inverted marker: 16px initial + 32px marker + 34px for labels
+          acc.bottomPadding = Math.max(acc.bottomPadding, 82)
+        }
+      } else {
+        // Normal markers extend above timeline
+        if (yearEvents.length > 1) {
+          // Stacked markers: 40px base + 32px per additional event + 24px for year label
+          const stackExtension = 40 + (yearEvents.length - 1) * 32 + 24
+          acc.topPadding = Math.max(acc.topPadding, stackExtension)
+        } else {
+          // Single normal marker: 40px base + 32px for potential text wrapping
+          acc.topPadding = Math.max(acc.topPadding, 72)
+        }
+      }
+
+      return acc
+    },
+    { topPadding: 64, bottomPadding: 48 }, // Minimum padding for basic timeline
+  )
 
   return (
     <div
       className={`relative w-full ${className}`}
-      style={{ paddingBottom: `${timelineBottomPadding}px` }}
+      style={{
+        paddingTop: `${topPadding}px`,
+        paddingBottom: `${bottomPadding}px`,
+      }}
     >
       {/* Side line event (if there's a large gap after first event, ie birth and then nothing for a while) */}
       {sideLineEvent && (
         <div
           className="absolute left-0 -translate-y-1/2"
-          style={{ top: "4px" }}
+          style={{ top: `${topPadding + 4}px` }}
         >
           <SideLineMarker
             event={sideLineEvent}
@@ -169,7 +182,15 @@ export function Timeline({
 
       {/* Timeline axis */}
       <div
-        className={`relative mt-16 mb-12 h-2 rounded-full bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 ${sideLineEvent ? "mr-0 ml-10" : "mx-0"}`}
+        className={`relative h-2 rounded-full bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 ${
+          className?.includes("timeline-in-map")
+            ? sideLineEvent
+              ? "mr-0 ml-10"
+              : "mx-0" // Left margin for sideline, no right margin in map context
+            : sideLineEvent
+              ? "mr-2 ml-10 md:mr-24"
+              : "mr-2 md:mr-24" // Normal margins for standalone
+        }`}
       >
         {/* Events */}
         {Object.entries(eventsByYear).map(([year, yearEvents], yearIndex) => {

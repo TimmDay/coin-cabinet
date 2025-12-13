@@ -83,9 +83,9 @@ export function TimelineWithMap({
   )
 
   return (
-    <div className={`mt-12 flex flex-col md:mt-8 ${className}`}>
+    <div className={`flex flex-col${className}`}>
       {/* Timeline at top */}
-      <div className="px-0">
+      <div className="pr-2">
         {showHeaders && (
           <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
             Timeline
@@ -94,11 +94,12 @@ export function TimelineWithMap({
         <Timeline
           timeline={timeline}
           onEventInteraction={handleEventInteraction}
+          className="timeline-in-map"
         />
       </div>
 
       {/* Map at bottom */}
-      <div className="mt-12">
+      <div>
         {showHeaders && (
           <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">Map</h2>
         )}
