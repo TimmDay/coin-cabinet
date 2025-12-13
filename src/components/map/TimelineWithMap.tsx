@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import type { Timeline as TimelineType } from "../../data/timelines/types"
 import { Timeline } from "../ui/Timeline"
 import { Map } from "./Map"
@@ -57,7 +57,10 @@ export function TimelineWithMap({
     description?: string
   } | null>(null)
 
-  // Handle timeline event interaction - pan map to event location and show marker
+  // Ref for timeline container to enable scrolling
+  const timelineContainerRef = useRef<HTMLDivElement>(null)
+
+  // Handle timeline event hover - just pan map to event location and show marker (no scroll)
   const handleEventInteraction = useCallback(
     (event: {
       lat?: number
@@ -82,10 +85,67 @@ export function TimelineWithMap({
     [eventZoomLevel],
   )
 
+  // Handle timeline event click - pan map to event location, show marker, and scroll on mobile
+  const handleEventClick = useCallback(
+    (event: {
+      lat?: number
+      lng?: number
+      name?: string
+      year?: number
+      description?: string
+    }) => {
+      // Auto-scroll timeline container to top of viewport on click (slower speed)
+      if (timelineContainerRef.current) {
+        // Use slower, more deliberate scroll timing
+        timelineContainerRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        })
+
+        // Override the default smooth behavior with custom timing
+        const startY = window.pageYOffset
+        const targetY = timelineContainerRef.current.offsetTop
+        const distance = targetY - startY
+        const duration = 800 // Slower: 800ms instead of default ~300ms
+        let start: number | null = null
+
+        const step = (timestamp: number) => {
+          if (!start) start = timestamp
+          const progress = Math.min((timestamp - start) / duration, 1)
+
+          // Ease-out function for smoother deceleration
+          const easeOut = 1 - Math.pow(1 - progress, 3)
+
+          window.scrollTo(0, startY + distance * easeOut)
+
+          if (progress < 1) {
+            requestAnimationFrame(step)
+          }
+        }
+
+        requestAnimationFrame(step)
+      }
+
+      // If the event has coordinates, fly the map to that location and show marker
+      if (event.lat !== undefined && event.lng !== undefined) {
+        setMapCenter([event.lat, event.lng])
+        setMapZoom(eventZoomLevel)
+        setActiveTimelineEvent({
+          lat: event.lat,
+          lng: event.lng,
+          name: event.name ?? "Timeline Event",
+          year: event.year ?? 0,
+          description: event.description,
+        })
+      }
+    },
+    [eventZoomLevel],
+  )
+
   return (
     <div className={`flex flex-col${className}`}>
       {/* Timeline at top */}
-      <div className="pr-2">
+      <div ref={timelineContainerRef} className="pr-2">
         {showHeaders && (
           <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
             Timeline
@@ -94,6 +154,7 @@ export function TimelineWithMap({
         <Timeline
           timeline={timeline}
           onEventInteraction={handleEventInteraction}
+          onEventClick={handleEventClick}
           className="timeline-in-map"
         />
       </div>

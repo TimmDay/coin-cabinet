@@ -19,12 +19,18 @@ type TimelineProps = {
   timeline: TimelineType
   className?: string
   onEventInteraction?: (event: TimelineEvent) => void
+  onEventClick?: (
+    event: TimelineEvent,
+    clientX?: number,
+    clientY?: number,
+  ) => void
 }
 
 export function Timeline({
   timeline,
   className = "",
   onEventInteraction,
+  onEventClick,
 }: TimelineProps) {
   const [hoveredEvent, setHoveredEvent] = useState<TimelineEvent | null>(null)
   const [popupPosition, setPopupPosition] = useState({
@@ -79,11 +85,14 @@ export function Timeline({
     return ((year - startYear) / totalYears) * 100
   }
 
-  const handleEventInteraction = (
+  const handleEventHover = (
     event: TimelineEvent,
     clientX: number,
     clientY: number,
   ) => {
+    // Only show hover popups on desktop (md breakpoint and above)
+    if (window.innerWidth < 768) return
+
     setHoveredEvent(event)
 
     // Smart popup positioning to keep it within viewport
@@ -119,6 +128,48 @@ export function Timeline({
     // Call the optional callback for external interactions (like map panning)
     if (onEventInteraction) {
       onEventInteraction(event)
+    }
+  }
+
+  const handleEventClick = (
+    event: TimelineEvent,
+    clientX?: number,
+    clientY?: number,
+  ) => {
+    // On mobile, show popup on click since hover is disabled
+    if (
+      window.innerWidth < 768 &&
+      clientX !== undefined &&
+      clientY !== undefined
+    ) {
+      setHoveredEvent(event)
+
+      // Smart popup positioning for mobile clicks
+      const popupWidth = 320
+      const popupHeight = 150
+      const padding = 16
+      const viewportWidth = window.innerWidth
+
+      let x = clientX
+      if (x + popupWidth / 2 > viewportWidth - padding) {
+        x = viewportWidth - popupWidth / 2 - padding
+      } else if (x - popupWidth / 2 < padding) {
+        x = popupWidth / 2 + padding
+      }
+
+      let y = clientY - 10
+      let showBelow = false
+      if (y - popupHeight < padding) {
+        y = clientY + 40
+        showBelow = true
+      }
+
+      setPopupPosition({ x, y, showBelow })
+    }
+
+    // Call the optional callback for click interactions (like scrolling and map panning)
+    if (onEventClick) {
+      onEventClick(event)
     }
   }
 
@@ -174,7 +225,8 @@ export function Timeline({
         >
           <SideLineMarker
             event={sideLineEvent}
-            onEventInteraction={handleEventInteraction}
+            onEventInteraction={handleEventHover}
+            onEventClick={handleEventClick}
             onEventLeave={handleEventLeave}
           />
         </div>
@@ -211,14 +263,16 @@ export function Timeline({
                   <InvertedStackedMarkers
                     year={Number(year)}
                     events={yearEvents}
-                    onEventInteraction={handleEventInteraction}
+                    onEventInteraction={handleEventHover}
+                    onEventClick={handleEventClick}
                     onEventLeave={handleEventLeave}
                   />
                 ) : (
                   <StackedMarkers
                     year={Number(year)}
                     events={yearEvents}
-                    onEventInteraction={handleEventInteraction}
+                    onEventInteraction={handleEventHover}
+                    onEventClick={handleEventClick}
                     onEventLeave={handleEventLeave}
                   />
                 )
@@ -226,14 +280,16 @@ export function Timeline({
                 <InvertedMarker
                   year={Number(year)}
                   event={yearEvents[0]!}
-                  onEventInteraction={handleEventInteraction}
+                  onEventInteraction={handleEventHover}
+                  onEventClick={handleEventClick}
                   onEventLeave={handleEventLeave}
                 />
               ) : (
                 <NormalMarker
                   year={Number(year)}
                   event={yearEvents[0]!}
-                  onEventInteraction={handleEventInteraction}
+                  onEventInteraction={handleEventHover}
+                  onEventClick={handleEventClick}
                   onEventLeave={handleEventLeave}
                 />
               )}

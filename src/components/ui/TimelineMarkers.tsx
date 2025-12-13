@@ -9,6 +9,11 @@ export type MarkerProps = {
     clientX: number,
     clientY: number,
   ) => void
+  onEventClick: (
+    event: TimelineEvent,
+    clientX?: number,
+    clientY?: number,
+  ) => void
   onEventLeave: () => void
 }
 
@@ -18,6 +23,11 @@ export type SideLineMarkerProps = {
     event: TimelineEvent,
     clientX: number,
     clientY: number,
+  ) => void
+  onEventClick: (
+    event: TimelineEvent,
+    clientX?: number,
+    clientY?: number,
   ) => void
   onEventLeave: () => void
 }
@@ -29,6 +39,11 @@ export type StackedMarkersProps = {
     event: TimelineEvent,
     clientX: number,
     clientY: number,
+  ) => void
+  onEventClick: (
+    event: TimelineEvent,
+    clientX?: number,
+    clientY?: number,
   ) => void
   onEventLeave: () => void
 }
@@ -73,6 +88,7 @@ export function NormalMarker({
   year,
   event,
   onEventInteraction,
+  onEventClick,
   onEventLeave,
 }: MarkerProps) {
   const hasWrapping = willTextWrap(event.name)
@@ -105,7 +121,7 @@ export function NormalMarker({
         className="relative transform cursor-pointer transition-all duration-200 hover:scale-110"
         onMouseEnter={(e) => onEventInteraction(event, e.clientX, e.clientY)}
         onMouseLeave={onEventLeave}
-        onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
+        onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
       >
         {/* Circle marker */}
         <div
@@ -127,6 +143,7 @@ export function InvertedMarker({
   year,
   event,
   onEventInteraction,
+  onEventClick,
   onEventLeave,
 }: MarkerProps) {
   return (
@@ -136,7 +153,7 @@ export function InvertedMarker({
         className="relative transform cursor-pointer transition-all duration-200 hover:scale-110"
         onMouseEnter={(e) => onEventInteraction(event, e.clientX, e.clientY)}
         onMouseLeave={onEventLeave}
-        onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
+        onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
       >
         {/* Circle marker */}
         <div
@@ -170,6 +187,7 @@ export function StackedMarkers({
   year,
   events,
   onEventInteraction,
+  onEventClick,
   onEventLeave,
 }: StackedMarkersProps) {
   return (
@@ -198,7 +216,7 @@ export function StackedMarkers({
               onEventInteraction(event, e.clientX, e.clientY)
             }
             onMouseLeave={onEventLeave}
-            onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
+            onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
           >
             {/* Circle marker */}
             <div
@@ -239,6 +257,7 @@ export function InvertedStackedMarkers({
   year,
   events,
   onEventInteraction,
+  onEventClick,
   onEventLeave,
 }: InvertedStackedMarkersProps) {
   return (
@@ -264,7 +283,7 @@ export function InvertedStackedMarkers({
               onEventInteraction(event, e.clientX, e.clientY)
             }
             onMouseLeave={onEventLeave}
-            onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
+            onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
           >
             {/* Circle marker */}
             <div
@@ -304,6 +323,7 @@ export function InvertedStackedMarkers({
 export function SideLineMarker({
   event,
   onEventInteraction,
+  onEventClick,
   onEventLeave,
 }: SideLineMarkerProps) {
   return (
@@ -332,7 +352,7 @@ export function SideLineMarker({
         className="relative transform cursor-pointer transition-all duration-200 hover:scale-110"
         onMouseEnter={(e) => onEventInteraction(event, e.clientX, e.clientY)}
         onMouseLeave={onEventLeave}
-        onClick={(e) => onEventInteraction(event, e.clientX, e.clientY)}
+        onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
       >
         {/* Circle marker - gray theme */}
         <div
