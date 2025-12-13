@@ -2,7 +2,7 @@
 
 @theme {
   --font-sans:
-    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+    var(--font-poppins), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
@@ -24,25 +24,25 @@
 /* Somnus Collection Inspired Color Palette */
 :root {
   /* Primary - Deep slate blue/navy inspired by Somnus */
-  --background: 218 23% 11%; /* Deep dark blue-gray */
-  --foreground: 210 15% 96%; /* Brighter warm off-white */
+  --background: 220 15% 8%; /* Much darker, closer to black */
+  --foreground: 210 12% 88%; /* Less bright, softer off-white */
 
   /* Cards and surfaces */
-  --card: 217 25% 14%; /* Slightly lighter than background */
+  --card: 215 20% 12%; /* Slightly lighter than background, more slate-like */
   --card-foreground: 210 15% 96%;
-  --popover: 217 25% 14%;
+  --popover: 215 20% 12%;
   --popover-foreground: 210 15% 96%;
 
   /* Primary accent - Warm bronze/gold inspired by ancient coins */
   --primary: 36 45% 50%; /* Rich bronze/gold */
   --primary-foreground: 217 25% 14%;
 
-  /* Secondary - Muted blue-gray */
-  --secondary: 216 20% 20%; /* Medium dark blue-gray */
+  /* Secondary - Muted slate */
+  --secondary: 215 18% 18%; /* Darker slate tone */
   --secondary-foreground: 210 15% 85%;
 
   /* Muted elements */
-  --muted: 216 18% 18%; /* Darker muted background */
+  --muted: 215 15% 15%; /* Adjusted for new darker background */
   --muted-foreground: 210 10% 65%; /* Muted text */
 
   /* Accent - Warm copper/amber tones */
@@ -58,8 +58,8 @@
   --destructive-foreground: 210 15% 96%;
 
   /* Borders and inputs */
-  --border: 216 15% 25%; /* Subtle border color */
-  --input: 216 15% 25%; /* Input background */
+  --border: 215 15% 22%; /* Subtle border color adjusted for darker bg */
+  --input: 215 15% 22%; /* Input background */
   --ring: 36 45% 50%; /* Focus ring matches primary */
 
   /* Map theming colors */
@@ -144,8 +144,9 @@ main {
 
 .body-text {
   font-size: 1rem;
-  line-height: 1.6;
-  color: hsl(var(--foreground));
+  line-height: 1.8;
+  letter-spacing: 0.015em;
+  color: hsl(var(--muted-foreground));
 }
 
 /* Elegant card styling */
@@ -349,7 +350,7 @@ main {
 /* Larger screens get full top padding and gap */
 @media (min-width: 768px) {
   .content-wrapper.home {
-    --padding-top: 6rem; /* 96px on md+ screens */
+    /* --padding-top: 6rem; 96px on md+ screens */
     gap: 5rem; /* 80px gap on larger screens */
   }
 }

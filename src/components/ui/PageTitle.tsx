@@ -19,11 +19,14 @@ export function PageTitle({
   const words = children.trim().split(" ")
   const lastWordIndex = words.length - 1
 
+  // If there's a subtitle, don't accent the main title - keep it all the same color
+  const shouldAccentLastWord = !subtitle
+
   return (
     <div className={`flex flex-col items-center text-center ${className}`}>
       <h1 className="text-3xl font-light tracking-wide text-slate-300 sm:text-4xl lg:text-5xl">
         {words.map((word, index) => {
-          if (index === lastWordIndex) {
+          if (index === lastWordIndex && shouldAccentLastWord) {
             return (
               <span
                 key={index}

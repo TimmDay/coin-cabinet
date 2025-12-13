@@ -3,6 +3,8 @@
 ## Next Thing
 
 - [ ] typography for body text. style up home page better.
+- [ ] all nav links, even dropdown ones, should be able to rclick to open in new tab
+
 - [ ] update the mint card. Officina marks show in the dd
 - [ ] coin flavor text gets shown under the title summary info
 

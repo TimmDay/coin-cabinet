@@ -13,6 +13,13 @@ export default async function CabinetSlugPage({ params }: PageProps) {
   if (isValidCoinSlug(slug)) {
     // This is a coin detail page
     const coinId = extractIdFromSlug(slug)
+
+    // If coinId is 0 or invalid, redirect to cabinet
+    if (!coinId || coinId <= 0) {
+      console.error("Invalid coin ID extracted from slug:", slug, "->", coinId)
+      redirect("/cabinet")
+    }
+
     return <CoinDetailPage coinId={coinId.toString()} />
   } else {
     // This is a set name that doesn't have its own page

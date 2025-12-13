@@ -46,24 +46,32 @@ export async function GET(
       query = query.or("is_hidden.eq.false,is_hidden.is.null")
     }
 
-    const coinResult = await query.single<SomnusCollection>()
+    const { data: coinData, error: coinError } = await query
 
-    if (coinResult.error) {
-      console.error("Supabase coin fetch error:", coinResult.error)
-      throw new Error(`Database fetch failed: ${coinResult.error.message}`)
+    if (coinError) {
+      console.error("Supabase coin fetch error:", coinError)
+      throw new Error(`Database fetch failed: ${coinError.message}`)
     }
 
-    const coin = coinResult.data
-
-    if (!coin) {
+    if (!coinData || coinData.length === 0) {
       return NextResponse.json(
         { success: false, message: "Coin not found" },
         { status: 404 },
       )
     }
 
+    const coin = coinData[0] as SomnusCollection
+
     // Use coin data directly (already properly typed)
     const typedCoin = coin
+
+    console.log(`Coin ${id} - Basic data:`, {
+      id: coin.id,
+      nickname: coin.nickname,
+      deity_id: coin.deity_id,
+      historical_figures_id: coin.historical_figures_id,
+      is_hidden: coin.is_hidden,
+    })
 
     // If deities are requested and coin has deity_id array, fetch deity details
     let coinWithDeities: CoinEnhanced = typedCoin
@@ -78,6 +86,8 @@ export async function GET(
         .map((id: string) => parseInt(id))
         .filter((id: number) => !isNaN(id))
 
+      console.log(`Coin ${id} - Fetching deities for IDs:`, deityIds)
+
       if (deityIds.length > 0) {
         const { data: deities, error: deitiesError } = await supabase
           .from("deities")
@@ -90,6 +100,7 @@ export async function GET(
           console.error("Supabase deities fetch error:", deitiesError)
           // Don't fail the whole request if deities can't be fetched
         } else {
+          console.log(`Coin ${id} - Found ${deities?.length || 0} deities`)
           coinWithDeities = {
             ...coin,
             deities: deities || [],
@@ -110,6 +121,11 @@ export async function GET(
         .map((id: string) => parseInt(id))
         .filter((id: number) => !isNaN(id))
 
+      console.log(
+        `Coin ${id} - Fetching historical figures for IDs:`,
+        figureIds,
+      )
+
       if (figureIds.length > 0) {
         const { data: figures, error: figuresError } = await supabase
           .from("historical_figures")
@@ -125,6 +141,9 @@ export async function GET(
           )
           // Don't fail the whole request if figures can't be fetched
         } else {
+          console.log(
+            `Coin ${id} - Found ${figures?.length || 0} historical figures`,
+          )
           coinWithDeities = {
             ...coinWithDeities,
             historical_figures: figures || [],

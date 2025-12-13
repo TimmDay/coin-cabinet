@@ -44,17 +44,34 @@ export function useSpecificCoinData(coinId: number | null): CoinEditData {
   } = useQuery({
     queryKey: ["specific-coin-with-deities", coinId],
     queryFn: async () => {
-      if (!coinId) throw new Error("Coin ID is required")
+      if (!coinId || coinId <= 0) {
+        throw new Error(`Invalid coin ID: ${coinId}`)
+      }
 
-      const response = await fetch(
-        `/api/somnus-collection/${coinId}?include=deities,historical-figures${showHidden ? "&showHidden=true" : ""}`,
-      )
+      const url = `/api/somnus-collection/${coinId}?include=deities,historical-figures${showHidden ? "&showHidden=true" : ""}`
+
+      const response = await fetch(url)
       if (!response.ok) {
         const errorText = await response.text()
+
+        if (response.status === 404) {
+          // Only log 404s in development for debugging with more context
+          if (process.env.NODE_ENV === "development") {
+            console.warn(
+              `[useSpecificCoinData] Coin not found: ID ${coinId} (URL: ${url})`,
+            )
+            console.trace("Call stack for 404 error:")
+          }
+          throw new Error(`Coin with ID ${coinId} not found`)
+        }
+
+        // Log other errors normally
         console.error(
           `Coin fetch failed: ${response.status} ${response.statusText}`,
+          `URL: ${url}`,
           errorText,
         )
+
         throw new Error(
           `Failed to fetch coin: ${response.status} ${response.statusText}`,
         )
@@ -63,7 +80,7 @@ export function useSpecificCoinData(coinId: number | null): CoinEditData {
       const result = (await response.json()) as CoinApiResponse
       return result.data
     },
-    enabled: !!coinId,
+    enabled: !!coinId && coinId > 0,
     staleTime: 2 * 60 * 1000, // 2 minutes for coin data
   })
 

@@ -47,7 +47,7 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
         <div className="content-wrapper">
           <NotFound404
             title="Coin not found"
-            message="The requested coin could not be found"
+            message="The requested coin could not be found. It may have been removed or is not currently visible."
             fullScreen={false}
           />
         </div>

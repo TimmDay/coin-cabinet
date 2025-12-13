@@ -32,6 +32,16 @@ Electing to go with the SSR site from vercel, and then the additional time for a
 
 [vercel](https://vercel.com/timmdays-projects/coin-cabinet/deployments)
 
+## What data does a coin need recorded to be displayed as "in" the collection?
+
+- all images taken
+  - obverse and reverse at minimum- main obv rev images
+  - either alt light, or sketch images (or both)
+- all physical properties confirmed
+- all places recorded
+- a timeline
+- mint info
+
 ## Image file naming guide
 
 Field delimiter is `__` (double underscore). Easy for regex splits.

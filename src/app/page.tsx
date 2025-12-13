@@ -38,16 +38,12 @@ export default function HomePage() {
 
         {/* Featured Coins Section */}
         <div className="w-full max-w-4xl">
-          <FeaturedCoins
-            title=""
-            coins={featuredCoins}
-            isLoading={isLoading}
-          />
+          <FeaturedCoins title="" coins={featuredCoins} isLoading={isLoading} />
         </div>
 
         <div className="text-center">
-          <div className="mx-auto max-w-2xl">
-            <p className="body-text mb-6 text-xl">
+          <div className="mx-auto max-w-3xl lg:max-w-4xl">
+            <p className="body-text mb-6 text-justify text-xl">
               This site is dedicated to my collection of ancient coins. I
               started it while on paternity leave with my first child, hence my
               appeal to the god of sleep (Cloacina would also have been
@@ -59,7 +55,7 @@ export default function HomePage() {
               forgive my errors (and do let me know if you spot something).
               Enjoy taking a look around and sharing in the curiosity!
             </p>
-            <p className="body-text mb-6 text-xl">
+            <p className="body-text mb-6 text-justify text-xl">
               A shoutout to the wonderful Artemis-Collection.com, which inspired
               this site.
             </p>
@@ -71,7 +67,7 @@ export default function HomePage() {
           <FeaturedSets sets={featuredSets} />
         </div>
         <div>
-          <p className="body-text text-xl">
+          <p className="body-text text-justify text-xl">
             Again I am a fan, not an expert, and I love learning new things. I
             appreciate any insights from enthusiasts!
           </p>

@@ -43,13 +43,17 @@ export function FeaturedSets({
             <div className="flex flex-col rounded-lg border border-slate-700/50 bg-slate-800/30 p-4 transition-colors hover:border-slate-600/70">
               <div className="mb-3 flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-700/20">
                 {set.image ? (
-                  <CldImage
-                    src={set.image}
-                    alt={`${set.name} collection preview`}
-                    width={200}
-                    height={200}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
+                  <div className="relative h-full w-full">
+                    <CldImage
+                      src={set.image}
+                      alt={`${set.name} collection preview`}
+                      width={200}
+                      height={200}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    {/* 40% dark overlay to dim the image */}
+                    <div className="absolute inset-0 bg-black/40" />
+                  </div>
                 ) : (
                   <div className="px-2 text-center text-sm font-medium text-amber-300/60">
                     {set.name}

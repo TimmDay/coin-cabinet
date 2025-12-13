@@ -230,7 +230,8 @@ export function EditMintModal({
             placeholder="A, B, Γ, Δ, E, S, T (comma separated)"
           />
           <p className="mt-1 text-xs text-gray-500">
-            Workshop/officina identifier marks, separate multiple marks with commas
+            Workshop/officina identifier marks, separate multiple marks with
+            commas
           </p>
         </div>
 

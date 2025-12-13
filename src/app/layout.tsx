@@ -1,5 +1,5 @@
 import { type Metadata } from "next"
-import { Geist } from "next/font/google"
+import { Poppins } from "next/font/google"
 import Navbar from "~/components/layout/Navbar"
 import { PageWrapper } from "~/components/layout/PageWrapper"
 import { AuthProvider } from "~/components/providers/auth-provider"
@@ -13,16 +13,17 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 }
 
-const geist = Geist({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
 })
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
+    <html lang="en" className={`${poppins.variable}`}>
       <body>
         <AuthProvider>
           <ReactQueryProvider>
