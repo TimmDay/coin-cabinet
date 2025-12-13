@@ -113,7 +113,7 @@ export function FeaturedCoins({
         </h2>
       )}
 
-      <div className="flex items-center justify-center gap-2 sm:gap-4 lg:gap-6">
+      <div className="-mx-2 flex items-center justify-center gap-2 px-2 sm:mx-0 sm:gap-4 sm:px-0 lg:gap-6">
         {shouldShowLoading
           ? Array.from({ length: 3 }, (_, i) => (
               <FeaturedCoinSkeleton key={i} />

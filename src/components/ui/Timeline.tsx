@@ -13,7 +13,7 @@ import {
   SideLineMarker,
   StackedMarkers,
 } from "./TimelineMarkers"
-import { MobileDrawer } from "./MobileDrawer"
+import { MobileDrawerTop } from "./MobileDrawerTop"
 
 // TODO: icons for all timeline event types
 type TimelineProps = {
@@ -313,7 +313,7 @@ export function Timeline({
       )}
 
       {/* Mobile Drawer */}
-      <MobileDrawer
+      <MobileDrawerTop
         isOpen={isDrawerOpen}
         onClose={handleDrawerClose}
         icon={
@@ -337,7 +337,7 @@ export function Timeline({
             )}
           </div>
         )}
-      </MobileDrawer>
+      </MobileDrawerTop>
     </div>
   )
 }

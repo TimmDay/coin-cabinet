@@ -111,7 +111,7 @@ function transformHistoricalFiguresToCards(
 
 function createCoinCard(coin: CoinEnhanced) {
   return {
-    title: `This ${coin.denomination}`,
+    title: "COIN FLIP",
     subtitle:
       formatPhysicalCharacteristics(
         { diameter: coin.diameter, mass: coin.mass, dieAxis: coin.die_axis },
@@ -217,7 +217,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   ]
 
   return (
-    <section className="w-full space-y-8 overflow-x-hidden md:space-y-12">
+    <section className="w-full space-y-8 md:space-y-12 md:overflow-x-hidden">
       {/* Coin Row Components */}
       {coin.image_link_o && (
         <CoinRow

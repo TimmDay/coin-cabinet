@@ -160,7 +160,7 @@ export function TimelineWithMap({
       </div>
 
       {/* Map at bottom */}
-      <div>
+      <div className="-mx-4 md:mx-0 md:px-0">
         {showHeaders && (
           <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">Map</h2>
         )}
