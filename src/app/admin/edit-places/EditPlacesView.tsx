@@ -85,8 +85,7 @@ export function EditPlacesView() {
         </h3>
         <div className="mt-1 space-y-1">
           <p className="text-sm text-slate-400">
-            {item.kind.charAt(0).toUpperCase() + item.kind.slice(1)} •{" "}
-            {item.lat.toFixed(4)}, {item.lng.toFixed(4)}
+            {item.kind.charAt(0).toUpperCase() + item.kind.slice(1)}
           </p>
           {item.location_description && (
             <p className="text-sm text-slate-500">
@@ -104,9 +103,14 @@ export function EditPlacesView() {
         </div>
       </div>
       {(!item.historical_sources || item.historical_sources.trim() === "") && (
-        <span className="mr-3 rounded-full bg-purple-500/20 px-2 py-1 text-xs text-purple-400">
-          needs sources
-        </span>
+        <>
+          <span className="mr-3 hidden rounded-full bg-purple-500/20 px-2 py-1 text-xs text-purple-400 sm:block">
+            needs sources
+          </span>
+          <span className="mr-3 flex items-center justify-center rounded-full bg-purple-500/20 px-2 py-1 text-xs text-purple-400 sm:hidden">
+            NS
+          </span>
+        </>
       )}
       <button
         onClick={(e) => {
