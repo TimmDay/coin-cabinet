@@ -53,9 +53,9 @@ export function EditPlaceModal({
     },
   })
 
-  // Update form when place changes
+  // Update form when place changes (but only for edit mode to avoid overriding persistence)
   useEffect(() => {
-    if (place) {
+    if (place && !isCreateMode) {
       form.reset({
         name: place.name ?? "",
         kind: place.kind ?? "",
@@ -69,21 +69,8 @@ export function EditPlaceModal({
         historical_sources: place.historical_sources ?? "",
         flavour_text: place.flavour_text ?? "",
       })
-    } else if (isCreateMode) {
-      form.reset({
-        name: "",
-        kind: "city" as const,
-        alt_names: "",
-        lat: 0,
-        lng: 0,
-        location_description: "",
-        established_year: undefined,
-        host_to: "",
-        artifact_ids: "",
-        historical_sources: "",
-        flavour_text: "",
-      })
     }
+    // Don't reset for create mode - let persistence handle it
   }, [place, isCreateMode, form])
 
   const {
@@ -98,6 +85,29 @@ export function EditPlaceModal({
     form,
     enabled: isOpen,
   })
+
+  // Initialize create mode with defaults only if no saved data exists
+  useEffect(() => {
+    if (isCreateMode && isOpen && typeof window !== "undefined") {
+      const savedData = localStorage.getItem("form_create-place")
+      if (!savedData) {
+        // Only set defaults if there's no saved data
+        form.reset({
+          name: "",
+          kind: "city" as const,
+          alt_names: "",
+          lat: 0,
+          lng: 0,
+          location_description: "",
+          established_year: undefined,
+          host_to: "",
+          artifact_ids: "",
+          historical_sources: "",
+          flavour_text: "",
+        })
+      }
+    }
+  }, [isCreateMode, isOpen, form])
 
   const onSubmit = async (data: PlaceFormInputData) => {
     try {
@@ -127,6 +137,10 @@ export function EditPlaceModal({
 
   const handleCancel = () => {
     reset()
+    // Clear saved form data when user cancels
+    if (isCreateMode) {
+      clearSavedData()
+    }
     onClose()
   }
 
