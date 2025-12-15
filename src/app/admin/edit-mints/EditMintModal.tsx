@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useFormPersistence } from "~/hooks/useFormPersistence"
 import { useUpdateMint, useAddMint } from "~/api/mints"
 import { OperationPeriodsEditor } from "~/components/forms/OperationPeriodsEditor"
 import type { Mint } from "~/database/schema-mints"
@@ -68,13 +69,32 @@ export function EditMintModal({
     defaultValues: createFormData(null),
   })
 
-  // Reset form when mint changes
+  // Form persistence for mobile browser resilience
+  const { clearSavedData } = useFormPersistence({
+    key: isCreateMode ? "create-mint" : `edit-mint-${mint?.id}`,
+    form: { watch, reset },
+    enabled: isOpen,
+  })
+
+  // Reset form when mint changes (but only for edit mode to avoid overriding persistence)
   useEffect(() => {
     if (!isCreateMode && mint) {
       const formData = createFormData(mint)
       reset(formData)
     }
+    // Don't reset for create mode - let persistence handle it
   }, [mint, isCreateMode, reset])
+
+  // Initialize create mode with defaults only if no saved data exists
+  useEffect(() => {
+    if (isCreateMode && isOpen && typeof window !== "undefined") {
+      const savedData = localStorage.getItem("form_create-mint")
+      if (!savedData) {
+        // Only set defaults if there's no saved data
+        reset(createFormData(null))
+      }
+    }
+  }, [isCreateMode, isOpen, reset])
 
   const updateMintMutation = useUpdateMint()
   const addMintMutation = useAddMint()
@@ -98,6 +118,8 @@ export function EditMintModal({
         })
         onSuccess?.("✅ Mint updated successfully")
       }
+      // Clear saved form data on successful save
+      clearSavedData()
       onClose()
     } catch (error) {
       console.error("Failed to save mint:", error)
@@ -110,7 +132,15 @@ export function EditMintModal({
     }
   }
 
-  const handleClose = () => handleUnsavedChanges(isDirty, onClose)
+  const handleClose = () => {
+    const closeWithCleanup = () => {
+      if (isCreateMode) {
+        clearSavedData()
+      }
+      onClose()
+    }
+    handleUnsavedChanges(isDirty, closeWithCleanup)
+  }
 
   if (!isOpen || (!isCreateMode && !mint)) return null
 

@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
+import { useFormPersistence } from "~/hooks/useFormPersistence"
 import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper"
 import { Select } from "~/components/ui/Select"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
@@ -13,17 +14,17 @@ import { NotableFeaturesEditor } from "~/components/forms/NotableFeaturesEditor"
 import { useDeityOptions } from "~/hooks/useDeityOptions"
 import { useHistoricalFigureOptions } from "~/hooks/useHistoricalFigureOptions"
 import {
-    FormActions,
-    FormErrorDisplay,
-    handleUnsavedChanges,
-    ModalWrapper,
+  FormActions,
+  FormErrorDisplay,
+  handleUnsavedChanges,
+  ModalWrapper,
 } from "../../../components/forms"
 import {
-    authorityOptions,
-    civilizationOptions,
-    civSpecificOptions,
-    denominationOptions,
-    dieAxisOptions,
+  authorityOptions,
+  civilizationOptions,
+  civSpecificOptions,
+  denominationOptions,
+  dieAxisOptions,
 } from "./coin-form-options"
 
 // Extended CoinFormData with raw string fields for form inputs
@@ -159,6 +160,26 @@ export function EditCoinModal({
       : { values: createCoinFormData(coin) }),
   })
 
+  const isCreateMode = mode === "create"
+
+  // Form persistence for mobile browser resilience
+  const { clearSavedData } = useFormPersistence({
+    key: isCreateMode ? "create-coin" : `edit-coin-${coin?.id}`,
+    form: { watch, reset },
+    enabled: isOpen,
+  })
+
+  // Initialize create mode with defaults only if no saved data exists
+  useEffect(() => {
+    if (isCreateMode && isOpen && typeof window !== "undefined") {
+      const savedData = localStorage.getItem("form_create-coin")
+      if (!savedData) {
+        // Only set defaults if there's no saved data
+        reset(createCoinFormData(null))
+      }
+    }
+  }, [isCreateMode, isOpen, reset])
+
   // Inline helper
   const processArray = (str: string, lower = false) => {
     const arr = str
@@ -248,6 +269,8 @@ export function EditCoinModal({
       } else {
         await onSave(coin!.id, updates as CoinFormData)
       }
+      // Clear saved form data on successful save
+      clearSavedData()
       onClose()
     } catch (error) {
       console.error("Failed to save coin:", error)
@@ -260,7 +283,15 @@ export function EditCoinModal({
     }
   }
 
-  const handleClose = () => handleUnsavedChanges(isDirty, onClose)
+  const handleClose = () => {
+    const closeWithCleanup = () => {
+      if (isCreateMode) {
+        clearSavedData()
+      }
+      onClose()
+    }
+    handleUnsavedChanges(isDirty, closeWithCleanup)
+  }
 
   if (!isOpen) return null
 

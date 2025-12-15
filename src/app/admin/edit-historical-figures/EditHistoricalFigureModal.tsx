@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useFormPersistence } from "~/hooks/useFormPersistence"
 import type { HistoricalFigure } from "~/database/schema-historical-figures"
 import { HistoricalSourcesEditor } from "~/components/forms/HistoricalSourcesEditor"
 import {
@@ -64,13 +65,36 @@ export function EditHistoricalFigureModal({
     defaultValues: createFigureFormData(null),
   })
 
-  // Reset form when figure changes
+  const isCreateMode = !figure
+
+  // Form persistence for mobile browser resilience
+  const { clearSavedData } = useFormPersistence({
+    key: isCreateMode
+      ? "create-historical-figure"
+      : `edit-historical-figure-${figure?.id}`,
+    form: { watch, reset },
+    enabled: isOpen,
+  })
+
+  // Reset form when figure changes (but only for edit mode to avoid overriding persistence)
   useEffect(() => {
-    if (figure) {
+    if (figure && !isCreateMode) {
       const formData = createFigureFormData(figure)
       reset(formData)
     }
-  }, [figure, reset])
+    // Don't reset for create mode - let persistence handle it
+  }, [figure, isCreateMode, reset])
+
+  // Initialize create mode with defaults only if no saved data exists
+  useEffect(() => {
+    if (isCreateMode && isOpen && typeof window !== "undefined") {
+      const savedData = localStorage.getItem("form_create-historical-figure")
+      if (!savedData) {
+        // Only set defaults if there's no saved data
+        reset(createFigureFormData(null))
+      }
+    }
+  }, [isCreateMode, isOpen, reset])
 
   const onSubmit = async (data: HistoricalFigureFormInputData) => {
     clearErrors()
@@ -103,6 +127,8 @@ export function EditHistoricalFigureModal({
       } else if (figure) {
         await onSave(figure.id, updates)
       }
+      // Clear saved form data on successful save
+      clearSavedData()
       onClose() // Close modal after successful save
     } catch (error) {
       console.error("Failed to save figure:", error)
@@ -115,7 +141,15 @@ export function EditHistoricalFigureModal({
     }
   }
 
-  const handleClose = () => handleUnsavedChanges(isDirty, onClose)
+  const handleClose = () => {
+    const closeWithCleanup = () => {
+      if (isCreateMode) {
+        clearSavedData()
+      }
+      onClose()
+    }
+    handleUnsavedChanges(isDirty, closeWithCleanup)
+  }
 
   if (!isOpen) return null
 

@@ -46,21 +46,12 @@ export function CoinSnapshot({
 
   return (
     <div className="space-y-1 text-sm">
-      {/* Line 1: Civilization */}
       <div className="font-semibold text-slate-400">{civText}</div>
-
-      {/* Line 2: Mint + Year */}
       {mintYearText && <div className="text-slate-400">{mintYearText}</div>}
-
-      {/* Line 3: Specifications */}
       {specs && <div className="text-slate-500">{specs}</div>}
-
-      {/* Line 4: Reference */}
       {reference && (
         <div className="font-mono text-xs text-slate-600">{reference}</div>
       )}
-
-      {/* Line 5: Provenance */}
       {provenance && (
         <div className="text-xs text-slate-600 italic">{provenance}</div>
       )}

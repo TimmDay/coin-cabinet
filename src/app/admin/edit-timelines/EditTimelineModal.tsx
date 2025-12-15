@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+import { useFormPersistence } from "~/hooks/useFormPersistence"
 import {
   FormActions,
   ModalWrapper,
@@ -53,12 +54,21 @@ export function EditTimelineModal({
     setValue,
     watch,
   } = useForm<FormData>({
-    defaultValues: createTimelineFormData(timeline),
+    defaultValues: createTimelineFormData(null),
+  })
+
+  const isCreateMode = !timeline
+
+  // Form persistence for mobile browser resilience
+  const { clearSavedData } = useFormPersistence({
+    key: isCreateMode ? "create-timeline" : `edit-timeline-${timeline?.id}`,
+    form: { watch, reset },
+    enabled: isOpen,
   })
 
   // Reset form when timeline data changes (enhanced for mobile JSONB updates)
   useEffect(() => {
-    if (isOpen && timeline) {
+    if (isOpen && timeline && !isCreateMode) {
       const formData = createTimelineFormData(timeline)
       reset(formData)
       setError(null)
@@ -73,6 +83,7 @@ export function EditTimelineModal({
         }, 50)
       }
     }
+    // Don't reset for create mode - let persistence handle it
   }, [
     timeline?.updated_at,
     timeline?.id,
@@ -80,7 +91,19 @@ export function EditTimelineModal({
     isOpen,
     reset,
     timeline,
+    isCreateMode,
   ])
+
+  // Initialize create mode with defaults only if no saved data exists
+  useEffect(() => {
+    if (isCreateMode && isOpen && typeof window !== "undefined") {
+      const savedData = localStorage.getItem("form_create-timeline")
+      if (!savedData) {
+        // Only set defaults if there's no saved data
+        reset(createTimelineFormData(null))
+      }
+    }
+  }, [isCreateMode, isOpen, reset])
 
   const onSubmit = async (data: FormData) => {
     setError(null)
@@ -133,6 +156,8 @@ export function EditTimelineModal({
         // The modal will be recreated with fresh data due to the key including updated_at
       }
 
+      // Clear saved form data on successful save
+      clearSavedData()
       onClose()
     } catch (err) {
       console.error("Save error:", err)
@@ -151,6 +176,10 @@ export function EditTimelineModal({
         "You have unsaved changes. Are you sure you want to close without saving? All changes will be lost.",
       )
       if (!confirmClose) return
+    }
+    // Clear saved form data when user confirms close or closes without changes
+    if (isCreateMode) {
+      clearSavedData()
     }
     onClose()
   }

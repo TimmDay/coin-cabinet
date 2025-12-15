@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { FormActions, FormErrorDisplay, ModalWrapper } from "~/components/forms"
+import { useFormPersistence } from "~/hooks/useFormPersistence"
 import { CoinageFeaturesEditor } from "~/components/forms/CoinageFeaturesEditor"
 import { FestivalsEditor } from "~/components/forms/FestivalsEditor"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
@@ -126,13 +127,34 @@ export function EditDeityModal({
     defaultValues: createDeityFormData(null),
   })
 
-  // Reset form when deity changes
+  const isCreateMode = !deity
+
+  // Form persistence for mobile browser resilience
+  const { clearSavedData } = useFormPersistence({
+    key: isCreateMode ? "create-deity" : `edit-deity-${deity?.id}`,
+    form: { watch, reset },
+    enabled: isOpen,
+  })
+
+  // Reset form when deity changes (but only for edit mode to avoid overriding persistence)
   useEffect(() => {
-    if (deity) {
+    if (deity && !isCreateMode) {
       const formData = createDeityFormData(deity)
       reset(formData)
     }
-  }, [deity, reset])
+    // Don't reset for create mode - let persistence handle it
+  }, [deity, isCreateMode, reset])
+
+  // Initialize create mode with defaults only if no saved data exists
+  useEffect(() => {
+    if (isCreateMode && isOpen && typeof window !== "undefined") {
+      const savedData = localStorage.getItem("form_create-deity")
+      if (!savedData) {
+        // Only set defaults if there's no saved data
+        reset(createDeityFormData(null))
+      }
+    }
+  }, [isCreateMode, isOpen, reset])
 
   const onSubmit = async (data: FormData) => {
     clearErrors()
@@ -209,6 +231,8 @@ export function EditDeityModal({
       } else {
         await onSave(deity.id, updates)
       }
+      // Clear saved form data on successful save
+      clearSavedData()
       onClose()
     } catch (error) {
       console.error("Failed to save deity:", error)
@@ -226,9 +250,17 @@ export function EditDeityModal({
       if (
         confirm("You have unsaved changes. Are you sure you want to close?")
       ) {
+        // Clear saved form data when user confirms close
+        if (isCreateMode) {
+          clearSavedData()
+        }
         onClose()
       }
     } else {
+      // Clear saved form data when closing without changes
+      if (isCreateMode) {
+        clearSavedData()
+      }
       onClose()
     }
   }
