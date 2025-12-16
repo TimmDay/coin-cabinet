@@ -114,6 +114,10 @@ export function EditDeityModal({
   isSaving = false,
 }: EditDeityModalProps) {
   const { options: placeOptions } = usePlaceOptions()
+  const form = useForm<FormData>({
+    defaultValues: createDeityFormData(null),
+  })
+
   const {
     register,
     handleSubmit,
@@ -123,16 +127,14 @@ export function EditDeityModal({
     setValue,
     watch,
     reset,
-  } = useForm<FormData>({
-    defaultValues: createDeityFormData(null),
-  })
+  } = form
 
   const isCreateMode = !deity
 
   // Form persistence for mobile browser resilience
   const { clearSavedData } = useFormPersistence({
     key: isCreateMode ? "create-deity" : `edit-deity-${deity?.id}`,
-    form: { watch, reset },
+    form,
     enabled: isOpen,
   })
 

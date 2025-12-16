@@ -145,6 +145,12 @@ export function EditCoinModal({
   }))
   const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false)
 
+  const form = useForm<EditCoinFormData>({
+    ...(mode === "create"
+      ? { defaultValues: createCoinFormData(null) }
+      : { values: createCoinFormData(coin) }),
+  })
+
   const {
     register,
     handleSubmit,
@@ -154,18 +160,14 @@ export function EditCoinModal({
     setValue,
     watch,
     reset,
-  } = useForm<EditCoinFormData>({
-    ...(mode === "create"
-      ? { defaultValues: createCoinFormData(null) }
-      : { values: createCoinFormData(coin) }),
-  })
+  } = form
 
   const isCreateMode = mode === "create"
 
   // Form persistence for mobile browser resilience
   const { clearSavedData } = useFormPersistence({
     key: isCreateMode ? "create-coin" : `edit-coin-${coin?.id}`,
-    form: { watch, reset },
+    form,
     enabled: isOpen,
   })
 

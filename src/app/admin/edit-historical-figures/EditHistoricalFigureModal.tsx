@@ -51,6 +51,11 @@ export function EditHistoricalFigureModal({
   onSave,
   isSaving = false,
 }: EditHistoricalFigureModalProps) {
+  const form = useForm<HistoricalFigureFormInputData>({
+    resolver: zodResolver(historicalFigureFormInputSchema),
+    defaultValues: createFigureFormData(null),
+  })
+
   const {
     register,
     handleSubmit,
@@ -60,10 +65,7 @@ export function EditHistoricalFigureModal({
     setValue,
     watch,
     reset,
-  } = useForm<HistoricalFigureFormInputData>({
-    resolver: zodResolver(historicalFigureFormInputSchema),
-    defaultValues: createFigureFormData(null),
-  })
+  } = form
 
   const isCreateMode = !figure
 
@@ -72,7 +74,7 @@ export function EditHistoricalFigureModal({
     key: isCreateMode
       ? "create-historical-figure"
       : `edit-historical-figure-${figure?.id}`,
-    form: { watch, reset },
+    form,
     enabled: isOpen,
   })
 

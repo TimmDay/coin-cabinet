@@ -46,6 +46,10 @@ export function EditTimelineModal({
 }: EditTimelineModalProps) {
   const [error, setError] = useState<string | null>(null)
 
+  const form = useForm<FormData>({
+    defaultValues: createTimelineFormData(null),
+  })
+
   const {
     register,
     handleSubmit,
@@ -53,16 +57,14 @@ export function EditTimelineModal({
     formState: { errors, isDirty },
     setValue,
     watch,
-  } = useForm<FormData>({
-    defaultValues: createTimelineFormData(null),
-  })
+  } = form
 
   const isCreateMode = !timeline
 
   // Form persistence for mobile browser resilience
   const { clearSavedData } = useFormPersistence({
     key: isCreateMode ? "create-timeline" : `edit-timeline-${timeline?.id}`,
-    form: { watch, reset },
+    form,
     enabled: isOpen,
   })
 

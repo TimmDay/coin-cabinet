@@ -55,6 +55,11 @@ export function EditMintModal({
 }: EditMintModalProps) {
   const isCreateMode = mode === "create"
 
+  const form = useForm<MintFormInputData>({
+    resolver: zodResolver(mintFormInputSchema),
+    defaultValues: createFormData(null),
+  })
+
   const {
     register,
     handleSubmit,
@@ -64,15 +69,12 @@ export function EditMintModal({
     setValue,
     watch,
     reset,
-  } = useForm<MintFormInputData>({
-    resolver: zodResolver(mintFormInputSchema),
-    defaultValues: createFormData(null),
-  })
+  } = form
 
   // Form persistence for mobile browser resilience
   const { clearSavedData } = useFormPersistence({
     key: isCreateMode ? "create-mint" : `edit-mint-${mint?.id}`,
-    form: { watch, reset },
+    form,
     enabled: isOpen,
   })
 
