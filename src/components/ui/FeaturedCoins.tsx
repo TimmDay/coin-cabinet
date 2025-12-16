@@ -7,9 +7,9 @@ import { generateCoinUrl } from "~/lib/utils/url-helpers"
 
 // Shared CSS classes
 const COIN_CONTAINER_CLASSES =
-  "group max-w-[150px] flex-1 sm:max-w-[180px] lg:max-w-[200px]"
+  "group max-w-[110px] flex-1 sm:max-w-[180px] lg:max-w-[200px]"
 const COIN_IMAGE_CONTAINER_CLASSES =
-  "flex aspect-square min-h-[120px] w-full items-center justify-center sm:min-h-[150px] lg:min-h-[180px]"
+  "flex aspect-square min-h-[100px] w-full items-center justify-center sm:min-h-[150px] lg:min-h-[180px]"
 const LOADING_DOTS_CLASSES = "text-xs text-slate-800"
 
 type FeaturedCoin = {
@@ -113,7 +113,7 @@ export function FeaturedCoins({
         </h2>
       )}
 
-      <div className="-mx-2 flex items-center justify-center gap-2 px-2 sm:mx-0 sm:gap-4 sm:px-0 lg:gap-6">
+      <div className="flex items-center justify-center gap-1 sm:gap-4 lg:gap-6">
         {shouldShowLoading
           ? Array.from({ length: 3 }, (_, i) => (
               <FeaturedCoinSkeleton key={i} />
