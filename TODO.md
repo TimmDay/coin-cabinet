@@ -2,6 +2,7 @@
 
 ## Next Thing
 
+- [ ] fix event marker logos - right size, design, transparent bg.
 - [ ] typography for body text. style up home page better.
 - [ ] all nav links, even dropdown ones, should be able to rclick to open in new tab
 
