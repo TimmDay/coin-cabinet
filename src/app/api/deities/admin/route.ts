@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 import { ZodError } from "zod"
 import type { Deity } from "~/database/schema-deities"
 import { createClient } from "~/database/supabase-server"
-import type { DeityFormData } from "~/lib/validations/deity-form"
+import { deityFormSchema } from "~/lib/validations/deity-form"
 
 export async function POST(request: Request) {
   try {
@@ -18,13 +18,6 @@ export async function POST(request: Request) {
       error: authError,
     } = await supabase.auth.getSession()
 
-    console.log("🔐 Auth check:", {
-      hasSession: !!session,
-      userId: session?.user?.id,
-      userEmail: session?.user?.email,
-      authError: authError?.message,
-    })
-
     if (!session) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },
@@ -34,40 +27,31 @@ export async function POST(request: Request) {
 
     // Parse and validate the request body
     const body: unknown = await request.json()
-    console.log(
-      "Received request body for deity:",
-      JSON.stringify(body, null, 2),
-    )
 
-    // Validate that we have the required fields (form has already processed the data)
-    const deityData = body as DeityFormData
-    if (!deityData.name || typeof deityData.name !== "string") {
+    // Validate the request body using Zod schema
+    const validationResult = deityFormSchema.safeParse(body)
+
+    if (!validationResult.success) {
+      console.error(
+        "❌ Validation failed for deity:",
+        validationResult.error.errors,
+      )
+      const fieldErrors = validationResult.error.errors
+        .map((err) => {
+          const field = err.path.join(".")
+          return `${field}: ${err.message}`
+        })
+        .join("; ")
       return NextResponse.json(
         {
           success: false,
-          message: "Validation failed: Name is required",
+          message: `Validation failed: ${fieldErrors}`,
         },
         { status: 400 },
       )
     }
 
-    if (
-      !deityData.god_of ||
-      !Array.isArray(deityData.god_of) ||
-      deityData.god_of.length === 0
-    ) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Validation failed: At least one domain is required",
-        },
-        { status: 400 },
-      )
-    }
-
-    console.log("Validated data for deity:", JSON.stringify(deityData, null, 2))
-
-    const validatedData = deityData
+    const validatedData = validationResult.data
 
     // Add user_id to the validated data
     const dataWithUserId = {
@@ -152,7 +136,7 @@ export async function PUT(request: Request) {
     // Parse request body
     const body = (await request.json()) as {
       id?: number
-      updates?: Partial<DeityFormData>
+      updates?: unknown
     }
     const { id, updates } = body
 
@@ -170,42 +154,35 @@ export async function PUT(request: Request) {
       )
     }
 
-    console.log(
-      `📝 Updating deity with id: ${id}`,
-      JSON.stringify(updates, null, 2),
-    )
+    // Validate the updates using the same Zod schema as POST
+    const validationResult = deityFormSchema.safeParse(updates)
 
-    // Validate required fields if being updated
-    if (
-      updates.name !== undefined &&
-      (!updates.name || typeof updates.name !== "string")
-    ) {
+    if (!validationResult.success) {
+      console.error(
+        "❌ Validation failed for deity update:",
+        validationResult.error.errors,
+      )
+      const fieldErrors = validationResult.error.errors
+        .map((err) => {
+          const field = err.path.join(".")
+          return `${field}: ${err.message}`
+        })
+        .join("; ")
       return NextResponse.json(
         {
           success: false,
-          message: "Validation failed: Name is required",
+          message: `Validation failed: ${fieldErrors}`,
         },
         { status: 400 },
       )
     }
 
-    if (
-      updates.god_of !== undefined &&
-      (!Array.isArray(updates.god_of) || updates.god_of.length === 0)
-    ) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Validation failed: At least one domain is required",
-        },
-        { status: 400 },
-      )
-    }
+    const validatedUpdates = validationResult.data
 
     // Update deity
     const result = await supabase
       .from("deities")
-      .update(updates)
+      .update(validatedUpdates)
       .eq("id", id)
       .select()
       .single()

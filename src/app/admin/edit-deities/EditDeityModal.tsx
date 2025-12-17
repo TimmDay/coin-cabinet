@@ -163,58 +163,21 @@ export function EditDeityModal({
 
     const isCreateMode = !deity
 
+    // Send raw input data to match deityFormSchema expectations
     const updates = {
       name: data.name.trim(),
-      subtitle: data.subtitle.trim() || undefined,
-      flavour_text: data.flavour_text.trim() || null,
-      secondary_info: data.secondary_info.trim() || null,
-      alt_names: processArray(data.alt_names_raw),
-      similar_gods: processArray(data.similar_gods_raw),
-      god_of: processArray(data.god_of_raw),
-      features_coinage: (() => {
-        if (!data.features_coinage_raw || data.features_coinage_raw === "")
-          return []
-        try {
-          const parsed = JSON.parse(data.features_coinage_raw) as unknown
-          if (Array.isArray(parsed)) {
-            return parsed as Array<{
-              name: string
-              alt_names?: string[]
-              notes?: string
-            }>
-          }
-          return []
-        } catch {
-          return []
-        }
-      })(),
-      legends_coinage: processArray(data.legends_coinage_raw),
-      historical_sources: processArray(data.historical_sources_raw),
-      place_ids: (data.place_ids || []).map((id) => parseInt(id, 10)),
-      festivals: (() => {
-        if (!data.festivals_raw || data.festivals_raw === "") return []
-        try {
-          const parsed = JSON.parse(data.festivals_raw) as unknown
-          if (Array.isArray(parsed)) {
-            return parsed as Array<{
-              name: string
-              date?: string
-              note?: string
-            }>
-          }
-          return []
-        } catch {
-          // Fallback to comma-separated processing for backward compatibility
-          const processedArray = processArray(data.festivals_raw)
-          return processedArray
-            ? processedArray.map((name) => ({
-                name,
-                date: undefined,
-                note: undefined,
-              }))
-            : []
-        }
-      })(),
+      subtitle: data.subtitle.trim() || "",
+      flavour_text: data.flavour_text.trim() || "",
+      secondary_info: data.secondary_info.trim() || "",
+      alt_names: data.alt_names_raw.trim() || "",
+      similar_gods: data.similar_gods_raw.trim() || "",
+      god_of: data.god_of_raw.trim(),
+      features_coinage: data.features_coinage_raw?.trim() || "",
+      legends_coinage: data.legends_coinage_raw?.trim() || "",
+      historical_sources: data.historical_sources_raw.trim() || "",
+      place_ids: data.place_ids || [],
+      festivals: data.festivals_raw?.trim() || "",
+      artifact_ids: "", // Default empty string for artifact_ids
     }
 
     if (!updates.name) {
