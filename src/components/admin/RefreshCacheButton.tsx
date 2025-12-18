@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "~/components/ui/Button"
+import { useFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 
 type RefreshCacheButtonProps = {
   onMessage?: (message: string) => void
@@ -32,8 +33,11 @@ async function fetchFreshTimelines() {
   return result.data
 }
 
-async function fetchFreshCoins() {
-  const response = await fetch(`/api/somnus-collection?t=${Date.now()}`, {
+async function fetchFreshCoins(showHidden = false) {
+  const params = new URLSearchParams({ t: Date.now().toString() })
+  if (showHidden) params.set("showHidden", "true")
+
+  const response = await fetch(`/api/somnus-collection?${params.toString()}`, {
     cache: "no-cache",
     headers: {
       "Cache-Control": "no-cache",
@@ -84,6 +88,7 @@ export function RefreshCacheButton({
 }: RefreshCacheButtonProps) {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const queryClient = useQueryClient()
+  const showHidden = useFeatureFlag("show-hidden-coins")
 
   const handleRefreshCache = async () => {
     setIsRefreshing(true)
@@ -111,8 +116,10 @@ export function RefreshCacheButton({
       }
 
       try {
-        const freshCoins = await fetchFreshCoins()
+        const freshCoins = await fetchFreshCoins(showHidden)
+        // Update both query keys to maintain consistency
         queryClient.setQueryData(["all-somnus-coins"], freshCoins)
+        queryClient.setQueryData(["somnus-coins", showHidden], freshCoins)
         console.log("✅ Coins refreshed")
       } catch (error) {
         console.warn("⚠️ Could not refresh coins:", error)

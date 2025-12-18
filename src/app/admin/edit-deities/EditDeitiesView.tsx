@@ -8,7 +8,7 @@ import {
   useAddDeity,
 } from "~/api/deities"
 import type { Deity } from "~/database/schema-deities"
-import type { DeityFormData } from "~/lib/validations/deity-form"
+import type { DeityFormInput } from "~/lib/validations/deity-form"
 import { GenericEditView } from "~/components/admin/GenericEditView"
 import { useEditModal } from "~/hooks/useEditModal"
 import { EditDeityModal } from "./EditDeityModal"
@@ -128,17 +128,9 @@ export function EditDeitiesView() {
     </div>
   )
 
-  const handleModalSave = async (id: number, updates: Partial<Deity>) => {
+  const handleModalSave = async (id: number, updates: DeityFormInput) => {
     try {
-      const formUpdates = {
-        ...updates,
-        flavour_text:
-          updates.flavour_text === null ? undefined : updates.flavour_text,
-        secondary_info:
-          updates.secondary_info === null ? undefined : updates.secondary_info,
-      }
-
-      await updateMutation.mutateAsync({ id, updates: formUpdates })
+      await updateMutation.mutateAsync({ id, updates })
       handleSuccess("✅ Deity updated successfully")
     } catch (error) {
       console.error("Error saving:", error)
@@ -170,12 +162,9 @@ export function EditDeitiesView() {
   }
 
   // Handle create save
-  const handleCreateSave = async (
-    id: number,
-    data: Partial<Deity> | DeityFormData,
-  ) => {
+  const handleCreateSave = async (id: number, data: DeityFormInput) => {
     try {
-      await addMutation.mutateAsync(data as DeityFormData)
+      await addMutation.mutateAsync(data)
       handleCreateSuccess("✅ Deity added successfully")
     } catch (error) {
       console.error("Error adding deity:", error)

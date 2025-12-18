@@ -1,5 +1,22 @@
 import { z } from "zod"
 
+// Raw form input type that matches what the API expects before Zod transformation
+export type DeityFormInput = {
+  name: string
+  subtitle: string
+  flavour_text: string
+  secondary_info: string
+  alt_names: string
+  similar_gods: string
+  god_of: string
+  features_coinage: string
+  legends_coinage: string
+  historical_sources: string
+  place_ids: string[]
+  festivals: string
+  artifact_ids: string
+}
+
 // Schema that properly handles database column types
 export const deityFormSchema = z.object({
   // Basic identification
@@ -8,12 +25,12 @@ export const deityFormSchema = z.object({
     .min(1, "Deity name is required")
     .max(255, "Name is too long"),
 
-  // String fields (text/varchar columns) - can be null or undefined
+  // String fields - match Deity type exactly
   subtitle: z
     .string()
     .optional()
     .or(z.literal(""))
-    .transform((val) => (val === "" ? null : val)),
+    .transform((val) => (val === "" ? undefined : val)),
   flavour_text: z
     .string()
     .optional()

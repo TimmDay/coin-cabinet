@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import type { Deity } from "~/database/schema-deities"
-import type { DeityFormData } from "~/lib/validations/deity-form"
+import type { DeityFormInput } from "~/lib/validations/deity-form"
 
 // Fetch all deities
 async function fetchDeities(): Promise<Deity[]> {
@@ -20,7 +20,7 @@ async function fetchDeities(): Promise<Deity[]> {
 }
 
 // Add a new deity
-async function addDeity(data: DeityFormData): Promise<Deity> {
+async function addDeity(data: DeityFormInput): Promise<Deity> {
   const response = await fetch("/api/deities/admin", {
     method: "POST",
     headers: {
@@ -49,7 +49,7 @@ async function addDeity(data: DeityFormData): Promise<Deity> {
 // Update a deity (admin only)
 async function updateDeity(
   id: number,
-  updates: Partial<DeityFormData>,
+  updates: DeityFormInput,
 ): Promise<Deity> {
   const response = await fetch("/api/deities/admin", {
     method: "PUT",
@@ -129,13 +129,8 @@ export function useUpdateDeity() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({
-      id,
-      updates,
-    }: {
-      id: number
-      updates: Partial<DeityFormData>
-    }) => updateDeity(id, updates),
+    mutationFn: ({ id, updates }: { id: number; updates: DeityFormInput }) =>
+      updateDeity(id, updates),
     onSuccess: () => {
       // Force immediate refetch of active deities queries - ignores stale time
       void queryClient.refetchQueries({ queryKey: ["deities"] })

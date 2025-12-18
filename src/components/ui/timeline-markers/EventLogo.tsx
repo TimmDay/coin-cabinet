@@ -9,7 +9,15 @@ type EventLogoProps = {
 }
 
 export function EventLogo({ event, size = 32, top, left }: EventLogoProps) {
-  const getIconConfig = (eventKind: string) => {
+  const getIconConfig = (
+    eventKind: string,
+  ): {
+    src: string
+    width: number
+    height: number
+    top?: number
+    left?: number
+  } | null => {
     switch (eventKind) {
       case "made-emperor":
         return {
