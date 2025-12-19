@@ -71,8 +71,8 @@ export function Timeline({
 
   // Function to get tab index for an event based on chronological order
   const getEventTabIndex = (event: TimelineEvent): number => {
-    const index = allEventsChronological.findIndex((e) => 
-      e.name === event.name && e.year === event.year
+    const index = allEventsChronological.findIndex(
+      (e) => e.name === event.name && e.year === event.year,
     )
     return index + 1 // Start from 1 for better accessibility
   }
@@ -168,10 +168,7 @@ export function Timeline({
     setHoveredEvent(null)
   }
 
-  const handleEventFocus = (
-    event: TimelineEvent,
-    element: HTMLElement,
-  ) => {
+  const handleEventFocus = (event: TimelineEvent, element: HTMLElement) => {
     // Only show focus popups on desktop (md breakpoint and above)
     if (window.innerWidth < 768) return
 
@@ -215,37 +212,42 @@ export function Timeline({
     setFocusedEvent(null)
   }
 
-  const handleEventKeyDown = (
-    event: TimelineEvent,
-    e: React.KeyboardEvent,
-  ) => {
+  const handleEventKeyDown = (event: TimelineEvent, e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault()
       // Trigger the same behavior as click
       handleEventClick(event)
     } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
       e.preventDefault()
-      
+
       // Find current event index in chronological order
-      const currentIndex = allEventsChronological.findIndex((evt) => 
-        evt.name === event.name && evt.year === event.year
+      const currentIndex = allEventsChronological.findIndex(
+        (evt) => evt.name === event.name && evt.year === event.year,
       )
-      
+
       if (currentIndex !== -1) {
         let nextIndex: number
-        
+
         if (e.key === "ArrowLeft") {
           // Move to previous event (or wrap to last)
-          nextIndex = currentIndex > 0 ? currentIndex - 1 : allEventsChronological.length - 1
+          nextIndex =
+            currentIndex > 0
+              ? currentIndex - 1
+              : allEventsChronological.length - 1
         } else {
           // Move to next event (or wrap to first)
-          nextIndex = currentIndex < allEventsChronological.length - 1 ? currentIndex + 1 : 0
+          nextIndex =
+            currentIndex < allEventsChronological.length - 1
+              ? currentIndex + 1
+              : 0
         }
-        
+
         const nextEvent = allEventsChronological[nextIndex]
         if (nextEvent) {
           // Find the element with the corresponding tabIndex and focus it
-          const targetElement = document.querySelector(`[tabindex="${nextIndex + 1}"]`) as HTMLElement
+          const targetElement = document.querySelector(
+            `[tabindex="${nextIndex + 1}"]`,
+          ) as HTMLElement
           if (targetElement) {
             targetElement.focus()
           }
@@ -413,14 +415,21 @@ export function Timeline({
         >
           <div className="relative">
             {/* Icon in top right corner */}
-            {getEventIcon((hoveredEvent || focusedEvent)!.kind, "text-gray-500") && (
+            {getEventIcon(
+              (hoveredEvent || focusedEvent)!.kind,
+              "text-gray-500",
+            ) && (
               <div className="absolute -top-1 -right-1">
-                {getEventIcon((hoveredEvent || focusedEvent)!.kind, "text-gray-500")}
+                {getEventIcon(
+                  (hoveredEvent || focusedEvent)!.kind,
+                  "text-gray-500",
+                )}
               </div>
             )}
 
             <div className="mb-2 pr-8 text-sm font-semibold text-amber-400">
-              {(hoveredEvent || focusedEvent)!.name} ({formatYear((hoveredEvent || focusedEvent)!.year)})
+              {(hoveredEvent || focusedEvent)!.name} (
+              {formatYear((hoveredEvent || focusedEvent)!.year)})
             </div>
             {(hoveredEvent || focusedEvent)!.description && (
               <div className="text-sm leading-relaxed text-slate-300">

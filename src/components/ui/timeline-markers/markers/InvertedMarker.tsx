@@ -22,7 +22,7 @@ export function InvertedMarker({
 
       {/* Event marker - below timeline */}
       <div
-        className="relative transform cursor-pointer transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 rounded-full"
+        className="relative transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-blue-400 focus:outline-none"
         onMouseEnter={(e) => onEventInteraction(event, e.clientX, e.clientY)}
         onMouseLeave={onEventLeave}
         onClick={(e) => onEventClick(event, e.clientX, e.clientY)}

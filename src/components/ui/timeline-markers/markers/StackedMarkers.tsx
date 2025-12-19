@@ -35,7 +35,7 @@ export function StackedMarkers({
 
           {/* Event marker */}
           <div
-            className="absolute -translate-x-1/2 transform cursor-pointer transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 rounded-full"
+            className="absolute -translate-x-1/2 transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-blue-400 focus:outline-none"
             style={{
               top: `${(events.length - 1 - eventIndex) * -32}px`,
               left: "50%",
