@@ -14,6 +14,10 @@ export type MarkerProps = {
     clientY?: number,
   ) => void
   onEventLeave: () => void
+  onEventFocus?: (event: TimelineEvent, element: HTMLElement) => void
+  onEventBlur?: () => void
+  onEventKeyDown?: (event: TimelineEvent, e: React.KeyboardEvent) => void
+  tabIndex?: number
 }
 
 export type SideLineMarkerProps = {
@@ -29,6 +33,10 @@ export type SideLineMarkerProps = {
     clientY?: number,
   ) => void
   onEventLeave: () => void
+  onEventFocus?: (event: TimelineEvent, element: HTMLElement) => void
+  onEventBlur?: () => void
+  onEventKeyDown?: (event: TimelineEvent, e: React.KeyboardEvent) => void
+  tabIndex?: number
 }
 
 export type StackedMarkersProps = {
@@ -45,6 +53,10 @@ export type StackedMarkersProps = {
     clientY?: number,
   ) => void
   onEventLeave: () => void
+  onEventFocus?: (event: TimelineEvent, element: HTMLElement) => void
+  onEventBlur?: () => void
+  onEventKeyDown?: (event: TimelineEvent, e: React.KeyboardEvent) => void
+  getEventTabIndex?: (event: TimelineEvent) => number
 }
 
 export type InvertedStackedMarkersProps = StackedMarkersProps

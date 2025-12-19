@@ -8,6 +8,10 @@ export function InvertedMarker({
   onEventInteraction,
   onEventClick,
   onEventLeave,
+  onEventFocus,
+  onEventBlur,
+  onEventKeyDown,
+  tabIndex,
 }: MarkerProps) {
   return (
     <div key={`${year}-0`}>
@@ -18,10 +22,16 @@ export function InvertedMarker({
 
       {/* Event marker - below timeline */}
       <div
-        className="relative transform cursor-pointer transition-all duration-200 hover:scale-110"
+        className="relative transform cursor-pointer transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 rounded-full"
         onMouseEnter={(e) => onEventInteraction(event, e.clientX, e.clientY)}
         onMouseLeave={onEventLeave}
         onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
+        onFocus={(e) => onEventFocus?.(event, e.currentTarget)}
+        onBlur={() => onEventBlur?.()}
+        onKeyDown={(e) => onEventKeyDown?.(event, e)}
+        tabIndex={tabIndex}
+        role="button"
+        aria-label={`${event.name} - ${formatYear(year)}`}
       >
         {/* Circle marker */}
         <div className="relative">

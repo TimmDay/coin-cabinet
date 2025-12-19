@@ -34,6 +34,7 @@ export function Timeline({
   onEventClick,
 }: TimelineProps) {
   const [hoveredEvent, setHoveredEvent] = useState<TimelineEvent | null>(null)
+  const [focusedEvent, setFocusedEvent] = useState<TimelineEvent | null>(null)
   const [popupPosition, setPopupPosition] = useState({
     x: 0,
     y: 0,
@@ -44,17 +45,18 @@ export function Timeline({
 
   // Close popup on scroll
   useEffect(() => {
-    if (!hoveredEvent) return
+    if (!hoveredEvent && !focusedEvent) return
 
     const handleScroll = () => {
       setHoveredEvent(null)
+      setFocusedEvent(null)
     }
 
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => {
       window.removeEventListener("scroll", handleScroll)
     }
-  }, [hoveredEvent])
+  }, [hoveredEvent, focusedEvent])
 
   const events = timeline.sort((a, b) => a.year - b.year)
 
@@ -63,6 +65,17 @@ export function Timeline({
     events.length >= 2 && events[1]!.year - events[0]!.year >= 18
   const sideLineEvent = hasLargeGap ? events[0] : null
   const timelineEvents = hasLargeGap ? events.slice(1) : events
+
+  // Create a chronologically ordered flat list of all events for keyboard navigation
+  const allEventsChronological = events.flatMap((event) => event)
+
+  // Function to get tab index for an event based on chronological order
+  const getEventTabIndex = (event: TimelineEvent): number => {
+    const index = allEventsChronological.findIndex((e) => 
+      e.name === event.name && e.year === event.year
+    )
+    return index + 1 // Start from 1 for better accessibility
+  }
 
   const firstEventYear = timelineEvents[0]?.year ?? 0
   const lastEventYear = timelineEvents[timelineEvents.length - 1]?.year ?? 0
@@ -155,6 +168,92 @@ export function Timeline({
     setHoveredEvent(null)
   }
 
+  const handleEventFocus = (
+    event: TimelineEvent,
+    element: HTMLElement,
+  ) => {
+    // Only show focus popups on desktop (md breakpoint and above)
+    if (window.innerWidth < 768) return
+
+    setFocusedEvent(event)
+
+    // Calculate position based on the focused element
+    const rect = element.getBoundingClientRect()
+    const clientX = rect.left + rect.width / 2
+    const clientY = rect.top + rect.height / 2
+
+    // Use the same popup positioning logic as hover
+    const popupWidth = 320
+    const popupHeight = 150
+    const padding = 16
+    const viewportWidth = window.innerWidth
+
+    let x = clientX
+    if (x + popupWidth / 2 > viewportWidth - padding) {
+      x = viewportWidth - popupWidth / 2 - padding
+    } else if (x - popupWidth / 2 < padding) {
+      x = popupWidth / 2 + padding
+    }
+
+    let y = clientY - 10
+    let showBelow = false
+
+    if (y - popupHeight < padding) {
+      y = clientY + 40
+      showBelow = true
+    }
+
+    setPopupPosition({ x, y, showBelow })
+
+    // Call the optional callback for external interactions (like map panning)
+    if (onEventInteraction) {
+      onEventInteraction(event)
+    }
+  }
+
+  const handleEventBlur = () => {
+    setFocusedEvent(null)
+  }
+
+  const handleEventKeyDown = (
+    event: TimelineEvent,
+    e: React.KeyboardEvent,
+  ) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault()
+      // Trigger the same behavior as click
+      handleEventClick(event)
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault()
+      
+      // Find current event index in chronological order
+      const currentIndex = allEventsChronological.findIndex((evt) => 
+        evt.name === event.name && evt.year === event.year
+      )
+      
+      if (currentIndex !== -1) {
+        let nextIndex: number
+        
+        if (e.key === "ArrowLeft") {
+          // Move to previous event (or wrap to last)
+          nextIndex = currentIndex > 0 ? currentIndex - 1 : allEventsChronological.length - 1
+        } else {
+          // Move to next event (or wrap to first)
+          nextIndex = currentIndex < allEventsChronological.length - 1 ? currentIndex + 1 : 0
+        }
+        
+        const nextEvent = allEventsChronological[nextIndex]
+        if (nextEvent) {
+          // Find the element with the corresponding tabIndex and focus it
+          const targetElement = document.querySelector(`[tabindex="${nextIndex + 1}"]`) as HTMLElement
+          if (targetElement) {
+            targetElement.focus()
+          }
+        }
+      }
+    }
+  }
+
   const handleDrawerClose = () => {
     setIsDrawerOpen(false)
     setDrawerEvent(null)
@@ -211,6 +310,10 @@ export function Timeline({
             onEventInteraction={handleEventHover}
             onEventClick={handleEventClick}
             onEventLeave={handleEventLeave}
+            onEventFocus={handleEventFocus}
+            onEventBlur={handleEventBlur}
+            onEventKeyDown={handleEventKeyDown}
+            tabIndex={getEventTabIndex(sideLineEvent)}
           />
         </div>
       )}
@@ -249,6 +352,10 @@ export function Timeline({
                     onEventInteraction={handleEventHover}
                     onEventClick={handleEventClick}
                     onEventLeave={handleEventLeave}
+                    onEventFocus={handleEventFocus}
+                    onEventBlur={handleEventBlur}
+                    onEventKeyDown={handleEventKeyDown}
+                    getEventTabIndex={getEventTabIndex}
                   />
                 ) : (
                   <StackedMarkers
@@ -257,6 +364,10 @@ export function Timeline({
                     onEventInteraction={handleEventHover}
                     onEventClick={handleEventClick}
                     onEventLeave={handleEventLeave}
+                    onEventFocus={handleEventFocus}
+                    onEventBlur={handleEventBlur}
+                    onEventKeyDown={handleEventKeyDown}
+                    getEventTabIndex={getEventTabIndex}
                   />
                 )
               ) : isInverted ? (
@@ -266,6 +377,10 @@ export function Timeline({
                   onEventInteraction={handleEventHover}
                   onEventClick={handleEventClick}
                   onEventLeave={handleEventLeave}
+                  onEventFocus={handleEventFocus}
+                  onEventBlur={handleEventBlur}
+                  onEventKeyDown={handleEventKeyDown}
+                  tabIndex={getEventTabIndex(yearEvents[0]!)}
                 />
               ) : (
                 <NormalMarker
@@ -274,6 +389,10 @@ export function Timeline({
                   onEventInteraction={handleEventHover}
                   onEventClick={handleEventClick}
                   onEventLeave={handleEventLeave}
+                  onEventFocus={handleEventFocus}
+                  onEventBlur={handleEventBlur}
+                  onEventKeyDown={handleEventKeyDown}
+                  tabIndex={getEventTabIndex(yearEvents[0]!)}
                 />
               )}
             </div>
@@ -282,7 +401,7 @@ export function Timeline({
       </div>
 
       {/* Info popup */}
-      {hoveredEvent && (
+      {(hoveredEvent || focusedEvent) && (
         <div
           className={`z-modal pointer-events-none fixed max-w-sm min-w-72 -translate-x-1/2 transform rounded-lg border border-slate-600 bg-slate-800 p-4 shadow-xl ${
             popupPosition.showBelow ? "translate-y-2" : "-translate-y-full"
@@ -294,18 +413,18 @@ export function Timeline({
         >
           <div className="relative">
             {/* Icon in top right corner */}
-            {getEventIcon(hoveredEvent.kind, "text-gray-500") && (
+            {getEventIcon((hoveredEvent || focusedEvent)!.kind, "text-gray-500") && (
               <div className="absolute -top-1 -right-1">
-                {getEventIcon(hoveredEvent.kind, "text-gray-500")}
+                {getEventIcon((hoveredEvent || focusedEvent)!.kind, "text-gray-500")}
               </div>
             )}
 
             <div className="mb-2 pr-8 text-sm font-semibold text-amber-400">
-              {hoveredEvent.name} ({formatYear(hoveredEvent.year)})
+              {(hoveredEvent || focusedEvent)!.name} ({formatYear((hoveredEvent || focusedEvent)!.year)})
             </div>
-            {hoveredEvent.description && (
+            {(hoveredEvent || focusedEvent)!.description && (
               <div className="text-sm leading-relaxed text-slate-300">
-                {hoveredEvent.description}
+                {(hoveredEvent || focusedEvent)!.description}
               </div>
             )}
           </div>

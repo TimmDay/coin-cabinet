@@ -8,6 +8,10 @@ export function InvertedStackedMarkers({
   onEventInteraction,
   onEventClick,
   onEventLeave,
+  onEventFocus,
+  onEventBlur,
+  onEventKeyDown,
+  getEventTabIndex,
 }: InvertedStackedMarkersProps) {
   return (
     <>
@@ -31,13 +35,19 @@ export function InvertedStackedMarkers({
 
           {/* Event marker */}
           <div
-            className="absolute -translate-x-1/2 transform cursor-pointer transition-all duration-200 hover:scale-110"
+            className="absolute -translate-x-1/2 transform cursor-pointer transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 rounded-full"
             style={{ top: `${eventIndex * 32}px`, left: "50%" }} // Stack vertically downward
             onMouseEnter={(e) =>
               onEventInteraction(event, e.clientX, e.clientY)
             }
             onMouseLeave={onEventLeave}
             onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
+            onFocus={(e) => onEventFocus?.(event, e.currentTarget)}
+            onBlur={() => onEventBlur?.()}
+            onKeyDown={(e) => onEventKeyDown?.(event, e)}
+            tabIndex={getEventTabIndex ? getEventTabIndex(event) : undefined}
+            role="button"
+            aria-label={`${event.name} - ${formatYear(year)}`}
           >
             {/* Circle marker */}
             <div className="relative">
