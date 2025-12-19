@@ -1,6 +1,7 @@
 "use client"
 
 import { ArrowLeft, ChevronRight, Menu, X } from "lucide-react"
+import NextLink from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { createPortal } from "react-dom"
@@ -296,22 +297,30 @@ export function MobileNavigation() {
                     const isActive = pathname === item.href
 
                     return (
-                      <button
+                      <NextLink
                         key={item.name}
-                        onClick={() => handleItemClick(item)}
+                        href={item.href}
+                        onClick={(e) => {
+                          if (e.button === 0) {
+                            e.preventDefault()
+                            handleItemClick(item)
+                          }
+                        }}
                         className={cn(
                           "flex w-full items-center justify-between rounded-lg p-3 text-left transition-colors duration-200",
                           isActive
                             ? "bg-amber-500/20 text-amber-300"
                             : "text-slate-300 hover:bg-slate-800 hover:text-slate-100",
                         )}
-                        disabled={isAnimating}
+                        style={{
+                          pointerEvents: isAnimating ? "none" : "auto",
+                        }}
                       >
                         <span className="font-medium">{item.name}</span>
                         {item.hasSubmenu && (
                           <ChevronRight className="h-4 w-4 text-slate-400" />
                         )}
-                      </button>
+                      </NextLink>
                     )
                   })}
                 </nav>

@@ -273,8 +273,15 @@ export default function Navbar() {
                   onMouseLeave={handleMainDropdownLeave}
                   data-dropdown={item.name.toLowerCase()}
                 >
-                  <button
-                    onClick={() => router.push(item.href)}
+                  <NextLink
+                    href={item.href}
+                    onClick={(e) => {
+                      // Only prevent default for left clicks to allow submenu behavior
+                      if (e.button === 0) {
+                        e.preventDefault()
+                        router.push(item.href)
+                      }
+                    }}
                     onKeyDown={(e) => handleKeyDown(e, item.name)}
                     className={cn(
                       "inline-flex items-center border-b-2 px-1 pt-1 text-base font-normal transition-colors duration-200",
@@ -293,7 +300,7 @@ export default function Navbar() {
                       )}
                       aria-hidden="true"
                     />
-                  </button>
+                  </NextLink>
 
                   {openMainDropdown === item.name && (
                     <div
@@ -306,7 +313,8 @@ export default function Navbar() {
                           <div key={submenuItem.name} className="relative">
                             {"hasSubmenu" in submenuItem &&
                             submenuItem.hasSubmenu ? (
-                              <button
+                              <NextLink
+                                href={submenuItem.href}
                                 className="flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
                                 onMouseEnter={() => {
                                   const submenuType = getSubmenuType(
@@ -325,10 +333,13 @@ export default function Navbar() {
                                     handleSubmenuKeyDown(e, submenuType)
                                   }
                                 }}
-                                onClick={() => {
-                                  router.push(submenuItem.href)
-                                  setOpenMainDropdown(null)
-                                  setOpenSubmenu(null)
+                                onClick={(e) => {
+                                  if (e.button === 0) {
+                                    e.preventDefault()
+                                    router.push(submenuItem.href)
+                                    setOpenMainDropdown(null)
+                                    setOpenSubmenu(null)
+                                  }
                                 }}
                                 aria-haspopup="menu"
                                 aria-expanded={
@@ -341,21 +352,25 @@ export default function Navbar() {
                                   className="h-3 w-3 text-gray-400"
                                   aria-hidden="true"
                                 />
-                              </button>
+                              </NextLink>
                             ) : (
-                              <button
+                              <NextLink
+                                href={submenuItem.href}
                                 className="block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
-                                onClick={() => {
-                                  router.push(submenuItem.href)
-                                  setOpenMainDropdown(null)
-                                  setOpenSubmenu(null)
+                                onClick={(e) => {
+                                  if (e.button === 0) {
+                                    e.preventDefault()
+                                    router.push(submenuItem.href)
+                                    setOpenMainDropdown(null)
+                                    setOpenSubmenu(null)
+                                  }
                                 }}
                                 onKeyDown={(e) =>
                                   handleSubmenuItemKeyDown(e, submenuItem.href)
                                 }
                               >
                                 {submenuItem.name}
-                              </button>
+                              </NextLink>
                             )}
 
                             {"hasSubmenu" in submenuItem &&
@@ -378,13 +393,17 @@ export default function Navbar() {
                                 <div className="flex flex-col gap-1 p-4">
                                   {getNestedSubmenuItems(openSubmenu!).map(
                                     (nestedItem) => (
-                                      <button
+                                      <NextLink
                                         key={nestedItem.name}
+                                        href={nestedItem.href}
                                         className="block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
-                                        onClick={() => {
-                                          router.push(nestedItem.href)
-                                          setOpenMainDropdown(null)
-                                          setOpenSubmenu(null)
+                                        onClick={(e) => {
+                                          if (e.button === 0) {
+                                            e.preventDefault()
+                                            router.push(nestedItem.href)
+                                            setOpenMainDropdown(null)
+                                            setOpenSubmenu(null)
+                                          }
                                         }}
                                         onKeyDown={(e) =>
                                           handleSubmenuItemKeyDown(
@@ -394,7 +413,7 @@ export default function Navbar() {
                                         }
                                       >
                                         {nestedItem.name}
-                                      </button>
+                                      </NextLink>
                                     ),
                                   )}
                                 </div>
