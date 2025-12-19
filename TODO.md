@@ -157,10 +157,6 @@ The goal of this is provide 'pins on the map'. Important events during the emper
 - leaflet. coins in collection displayed at mint. circle over mint in size proportional to number of coins in collection are from there.
 - [ ] full set of filters
 
-### About page
-
-- [ ] welcome to site
-- [ ] link to Services page.
 - [ ] state stance on ads
 - [ ] state stance on AI
 - [ ] why i love collecting ancients
@@ -366,7 +362,7 @@ articles, guides
 - [x] re-style the page titles. thinner, classier text. smaller. underline of small width at center of heading
 - [x] name all the images that I have
 - [x] upload all the coins to db
-- [x] rejig the navigation. Stuff on Main -> CoinGrid, Main -> About, delete the fruits stuff, make the admin page on the end. Hide the login UI stuff (user needs to know the route to login page)
+- [x] rejig the navigation. Stuff on Main -> CoinGrid, delete the fruits stuff, make the admin page on the end. Hide the login UI stuff (user needs to know the route to login page)
 - [x] style up the CoinGrid controls (radio group)
 - [x] add db column array type for sets. Array strings. The CoinForm will have a multi select dropdown for these.
 - [x] Sets pages 'Severan' filters the coins by the rows that have sets arrays that include 'severan'
