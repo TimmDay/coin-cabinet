@@ -19,6 +19,7 @@ export const adminSubmenu = [
   { name: "Manage Mints", href: "/admin/edit-mints" },
   { name: "Manage People", href: "/admin/edit-historical-figures" },
   { name: "Manage Timelines", href: "/admin/edit-timelines" },
+  { name: "Manage Artifacts", href: "/admin/edit-artifacts" },
   { name: "Feature Flags", href: "/admin/feature-flags" },
 ]
 

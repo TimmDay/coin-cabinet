@@ -8,7 +8,7 @@ import { RefreshCacheButton } from "./RefreshCacheButton"
 import { Button } from "~/components/ui/Button"
 
 export type EditableItem = {
-  id: number
+  id: number | string
   updated_at?: string
 }
 
@@ -20,7 +20,7 @@ export type GenericEditViewProps<T extends EditableItem> = {
   filterPlaceholder: string
   filterFunction: (item: T, filterTerm: string) => boolean
   renderListItem: (item: T) => ReactNode
-  selectedItemId: number | null
+  selectedItemId: number | string | null
   onItemSelect: (item: T) => void
   renderModal: (selectedItem: T | null) => ReactNode
   addNewConfig?: {

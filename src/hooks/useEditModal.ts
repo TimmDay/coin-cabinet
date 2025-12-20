@@ -1,8 +1,10 @@
 import { useState } from "react"
 
-export function useEditModal<T extends { id: number }>() {
+export function useEditModal<T extends { id: number | string }>() {
   const [message, setMessage] = useState<string | null>(null)
-  const [selectedItemId, setSelectedItemId] = useState<number | null>(null)
+  const [selectedItemId, setSelectedItemId] = useState<number | string | null>(
+    null,
+  )
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleItemSelect = (item: T) => {

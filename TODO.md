@@ -5,7 +5,9 @@
 - [ ] supabase home/dash perf suggestions
 - [ ] fix event marker logos - right size, design, transparent bg.
 - [ ] typography for body text. style up home page better.
-- [ ] all nav links, even dropdown ones, should be able to rclick to open in new tab
+- [ ] update relevant tables to have artifact_ids (people, deities, timelines)
+- [ ] update mobile timeline viewer. map is not darkened, info box has chevron to cycle through events. Is swipable. Make sure the mobile anddesktop versions are distinct - they are quite different UIs now.
+- [ ] mobile: coin snapshot still displays, but in a more compact format (single line summary). Goal is to get a full obverse image always above the fold, but still have this info handy.
 
 - [ ] update the mint card. Officina marks show in the dd
 - [ ] coin flavor text gets shown under the title summary info
@@ -404,3 +406,4 @@ articles, guides
 - [x] Deity Festivals: implement table editor for Festival objects in JSONB format
 - [x] likewise for the Deities JSONB fields. Use similar styles.
 - [x] mints table gets an 'officina_marks' col as well. update the forms.
+- [x] all nav links, even dropdown ones, should be able to rclick to open in new tab
