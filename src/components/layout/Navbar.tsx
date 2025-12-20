@@ -249,11 +249,15 @@ export default function Navbar() {
         <UserMenu />
       </div>
 
-      {/* Site Logo placeholder */}
-      <div className="flex justify-center lg:mt-6 lg:mb-6">
-        <NextLink href="/" className="transition-opacity hover:opacity-80">
-          <div className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-slate-400">
-            <span className="text-xs font-medium text-slate-600">LOGO</span>
+      {/* Site Logo */}
+      <div className="flex justify-center lg:absolute lg:top-12 lg:bottom-16 lg:left-1/2 lg:flex lg:-translate-x-1/2 lg:items-center">
+        <NextLink href="/" className="">
+          <div className="flex h-20 w-20 cursor-pointer items-center justify-center lg:h-30 lg:w-30">
+            <img
+              src="/assets/logo-white.svg"
+              alt="Coin Cabinet Logo"
+              className="h-full w-full object-contain"
+            />
           </div>
         </NextLink>
       </div>
