@@ -1,3 +1,5 @@
+"use client"
+
 import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
 import { useViewport } from "~/hooks/useViewport"
 
