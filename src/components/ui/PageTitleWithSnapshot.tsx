@@ -11,6 +11,12 @@ type PageTitleWithSnapshotProps = {
   authPage?: boolean
   /** Coin snapshot to display to the right of the title */
   coinSnapshot: React.ReactNode
+  /** Coin physical characteristics for mobile info display */
+  coinPhysicalInfo?: {
+    diameter?: number | null
+    mass?: number | null
+    dieAxis?: string | null
+  }
 }
 
 export function PageTitleWithSnapshot({
@@ -19,12 +25,17 @@ export function PageTitleWithSnapshot({
   className = "",
   authPage = false,
   coinSnapshot,
+  coinPhysicalInfo,
 }: PageTitleWithSnapshotProps) {
   return (
     <div className={`flex flex-col ${className}`}>
       {/* Mobile: Stacked layout */}
       <div className="lg:hidden">
-        <PageTitle subtitle={subtitle} authPage={authPage}>
+        <PageTitle
+          subtitle={subtitle}
+          authPage={authPage}
+          coinPhysicalInfo={coinPhysicalInfo}
+        >
           {children}
         </PageTitle>
 

@@ -76,6 +76,11 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
                 />
               }
               subtitle={coin.denomination}
+              coinPhysicalInfo={{
+                diameter: coin.diameter,
+                mass: coin.mass,
+                dieAxis: coin.die_axis,
+              }}
             >
               {coin.nickname ?? "Ancient Coin"}
             </PageTitleWithSnapshot>
