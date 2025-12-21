@@ -59,6 +59,8 @@ export function TimelineWithMap({
 
   // Ref for timeline container to enable scrolling
   const timelineContainerRef = useRef<HTMLDivElement>(null)
+  // Ref for map container to enable scrolling to bottom
+  const mapContainerRef = useRef<HTMLDivElement>(null)
 
   // Handle timeline event hover - just pan map to event location and show marker (no scroll)
   const handleEventInteraction = useCallback(
@@ -94,17 +96,17 @@ export function TimelineWithMap({
       year?: number
       description?: string
     }) => {
-      // Auto-scroll timeline container to top of viewport on click (slower speed)
-      if (timelineContainerRef.current) {
-        // Use slower, more deliberate scroll timing
-        timelineContainerRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        })
+      // Auto-scroll so the bottom of the map is at the bottom of viewport with padding
+      if (mapContainerRef.current) {
+        // Calculate target position - bottom of map should be at bottom of viewport minus padding
+        const mapRect = mapContainerRef.current.getBoundingClientRect()
+        const mapBottom = mapRect.bottom + window.pageYOffset
+        const viewportHeight = window.innerHeight
+        const padding = 32 // 2rem padding (double the original 16px)
+        const targetY = mapBottom - viewportHeight + padding
 
-        // Override the default smooth behavior with custom timing
+        // Use slower, more deliberate scroll timing
         const startY = window.pageYOffset
-        const targetY = timelineContainerRef.current.offsetTop
         const distance = targetY - startY
         const duration = 800 // Slower: 800ms instead of default ~300ms
         let start: number | null = null
@@ -160,14 +162,13 @@ export function TimelineWithMap({
       </div>
 
       {/* Map at bottom */}
-      <div className="-mx-4 md:mx-0 md:px-0">
+      <div ref={mapContainerRef} className="-mx-4 md:mx-0 md:px-0">
         {showHeaders && (
           <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">Map</h2>
         )}
         <Map
           center={mapCenter}
           zoom={mapZoom}
-          height="500px"
           width="100%"
           showProvinceLabels={showProvinceLabels}
           hideControls={true}

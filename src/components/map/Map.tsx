@@ -149,7 +149,7 @@ type MapProps = {
 export const Map: React.FC<MapProps> = ({
   center,
   zoom,
-  height = "400px",
+  height = "600px",
   width = "100%",
   className = "",
   layout = "default",
@@ -394,9 +394,9 @@ export const Map: React.FC<MapProps> = ({
 
   // Apply custom dimensions if provided, otherwise use Tailwind defaults
   const containerStyle =
-    height !== "400px" || width !== "100%"
+    height !== "600px" || width !== "100%"
       ? {
-          height: height === "400px" ? "400px" : height,
+          height: height === "600px" ? "600px" : height,
           width: width === "100%" ? "100%" : width,
         }
       : undefined
@@ -501,14 +501,14 @@ export const Map: React.FC<MapProps> = ({
           className={
             layout === "fullscreen"
               ? "order-1 flex-1"
-              : `relative ${height === "400px" ? "h-96" : ""} ${width === "100%" ? "w-full" : ""}`
+              : `relative ${height === "600px" ? "h-[600px]" : ""} ${width === "100%" ? "w-full" : ""}`
           }
         >
           <div
             className={
               layout === "fullscreen"
                 ? "relative h-full w-full"
-                : `relative ${height === "400px" ? "h-96" : ""} ${width === "100%" ? "w-full" : ""}`
+                : `relative ${height === "600px" ? "h-[600px]" : ""} ${width === "100%" ? "w-full" : ""}`
             }
             {...(containerStyle && { style: containerStyle })}
           >
