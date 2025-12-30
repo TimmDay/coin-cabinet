@@ -1,4 +1,4 @@
-import { formatYear } from "~/lib/utils/date-formatting"
+import { formatTimelineYear } from "~/lib/utils/date-formatting"
 import { EventLogo } from "../EventLogo"
 import type { MarkerProps } from "../types"
 
@@ -17,7 +17,7 @@ export function InvertedMarker({
     <div key={`${year}-0`}>
       {/* Screen reader only labels - accessible but visually hidden */}
       <span className="sr-only">
-        {event.name} - {formatYear(year)}
+        {event.name} - {formatTimelineYear(year)}
       </span>
 
       {/* Event marker - below timeline */}
@@ -31,7 +31,7 @@ export function InvertedMarker({
         onKeyDown={(e) => onEventKeyDown?.(event, e)}
         tabIndex={tabIndex}
         role="button"
-        aria-label={`${event.name} - ${formatYear(year)}`}
+        aria-label={`${event.name} - ${formatTimelineYear(year)}`}
       >
         {/* Circle marker */}
         <div className="relative">
@@ -55,7 +55,7 @@ export function InvertedMarker({
       {/* Year label only - visible */}
       <div className="absolute top-10 left-1/2 -translate-x-1/2 transform">
         <div className="text-center font-mono text-xs whitespace-nowrap text-slate-400">
-          {formatYear(year)}
+          {formatTimelineYear(year)}
         </div>
       </div>
     </div>

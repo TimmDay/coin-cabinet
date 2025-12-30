@@ -6,8 +6,13 @@
 - [ ] fix event marker logos - right size, design, transparent bg.
 - [ ] typography for body text. style up home page better.
 - [ ] update relevant tables to have artifact_ids (people, deities, timelines)
-- [ ] update mobile timeline viewer. map is not darkened, info box has chevron to cycle through events. Is swipable. Make sure the mobile anddesktop versions are distinct - they are quite different UIs now.
-- [ ] mobile: coin snapshot still displays, but in a more compact format (single line summary). Goal is to get a full obverse image always above the fold, but still have this info handy.
+- [ ] timeline events store place_id, as primary thing, with the string name/lat/lng as backups if id not Found
+
+- [ ] expandable info cards don't cut off too long tecxt
+      timeline on mobile: compress any 20 year spand into a squiggly
+- [ ] somnus_collection new col - flavour_headline a short flavor text about what draws me to this particular coni. ie :antoninus Pius before the Pius" "Hadrians travel series to my home state of Victoria Australia?"
+
+- [x] TImeline event markers drop the 'CE' from their labels to save space. BCE is ok to stay
 
 - [ ] update the mint card. Officina marks show in the dd
 - [ ] coin flavor text gets shown under the title summary info
@@ -36,22 +41,16 @@
 
 ### features on deck
 
-- [ ] DB overkill.
-  - [x] DB for deities,
-  - [x] DB for timelines,
-  - [x] DB for mints.
-  - [x] DB for historical figures (joins to coins)
-  - gives me practice for SQL joins etc.
-  - [ ] make requests maximally DB efficient
-  - [ ] eventually do up a lovely API layer that other sites can use
-  - [x] data collection page for deities, timelines, mints
-  - [x] DB for Places: ruins, tourist spots, museums, temples
-  - [ ] DB for artifacts. kind (statue, bust, coin, engraving, etc), location (Place), description, image links, historical_references
-  - [x] DB for timelines. Not sure how to impl this in add/edit UI yet - heavy JSONB. Also, how to tie it to coins (a [] field on the coin)
+- [ ] make requests maximally DB efficient
+- [ ] eventually do up a lovely API layer that other sites can use
+- [x] data collection page for deities, timelines, mints
+- [x] DB for Places: ruins, tourist spots, museums, temples
+- [x] DB for artifacts. kind (statue, bust, coin, engraving, etc), location (Place), description, image links, historical_references
+- [x] DB for timelines. Not sure how to impl this in add/edit UI yet - heavy JSONB. Also, how to tie it to coins (a [] field on the coin)
 
-  - [ ] deep dive UI. How to display (menu?) multiple timelines.
+- [ ] deep dive UI. How to display (menu?) multiple timelines.
 
-- [ ] wrap up the tables impls. delete all local static data in favour of the dbs
+- [x] wrap up the tables impls. delete all local static data in favour of the dbs
 - [ ] have the appropriate places get joined with the things that need them when req
 
 - [ ] logo
@@ -130,9 +129,6 @@ Map Page
 
 The goal of this is provide 'pins on the map'. Important events during the emperors life (ie birthplace, death place, campaigns), important locations (archaeology finds, constructions), and somnus-collection coin locations (mints, discovery locations). Also modern tourism locations (museums with choice pieces, ruins, sites available to the public).
 
-- [ ] make an emperors table.
-      emperor_name, reign_start_year, reign_end_year, birth_year, death_year, dynasty, notes, important_events {event_name, event_year, event_location: [lat,lng] or geojson[], event_description, event_reference, event_image_link?}
-
 ## MAP
 
 - [ ] perf improvements. Compress geojson?
@@ -175,8 +171,6 @@ The goal of this is provide 'pins on the map'. Important events during the emper
 
 CoinDetailPage
 
-- [ ] images, with space for sketch side-by-sides
-- [ ] space for a map with mint. zoom/pan
 - flavor text is displayed
 - all images can be blown up in a modal
 - image bar? like an in-page nav? sketches | ultra zoom | 3D coin
@@ -407,3 +401,15 @@ articles, guides
 - [x] likewise for the Deities JSONB fields. Use similar styles.
 - [x] mints table gets an 'officina_marks' col as well. update the forms.
 - [x] all nav links, even dropdown ones, should be able to rclick to open in new tab
+- [x] update mobile timeline viewer. map is not darkened, info box has chevron to cycle through events. Is swipable. Make sure the mobile anddesktop versions are distinct - they are quite different UIs now.
+- [x] mobile: coin snapshot still displays, but in a more compact format (single line summary). Goal is to get a full obverse image always above the fold, but still have this info handy.
+
+- [x] DB overkill.
+  - [x] DB for deities,
+  - [x] DB for timelines,
+  - [x] DB for mints.
+  - [x] DB for historical figures (joins to coins)
+- [x] make an emperors table.
+      emperor_name, reign_start_year, reign_end_year, birth_year, death_year, dynasty, notes, important_events {event_name, event_year, event_location: [lat,lng] or geojson[], event_description, event_reference, event_image_link?}
+- [x] images, with space for sketch side-by-sides
+- [x] space for a map with mint. zoom/pan

@@ -1,4 +1,4 @@
-import { formatYear } from "~/lib/utils/date-formatting"
+import { formatTimelineYear } from "~/lib/utils/date-formatting"
 import { EventLogo } from "../EventLogo"
 import type { SideLineMarkerProps } from "../types"
 
@@ -16,13 +16,13 @@ export function SideLineMarker({
     <div>
       {/* Screen reader only labels - accessible but visually hidden */}
       <span className="sr-only">
-        {event.name} - {formatYear(event.year)}
+        {event.name} - {formatTimelineYear(event.year)}
       </span>
 
       {/* Year label only - visible */}
       <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform">
         <div className="text-center font-mono text-xs whitespace-nowrap text-slate-400">
-          {formatYear(event.year)}
+          {formatTimelineYear(event.year)}
         </div>
       </div>
 
@@ -37,7 +37,7 @@ export function SideLineMarker({
         onKeyDown={(e) => onEventKeyDown?.(event, e)}
         tabIndex={tabIndex}
         role="button"
-        aria-label={`${event.name} - ${formatYear(event.year)}`}
+        aria-label={`${event.name} - ${formatTimelineYear(event.year)}`}
       >
         {/* Circle marker - gray theme */}
         <div className="relative">

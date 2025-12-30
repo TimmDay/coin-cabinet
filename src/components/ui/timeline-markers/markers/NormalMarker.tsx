@@ -1,4 +1,4 @@
-import { formatYear } from "~/lib/utils/date-formatting"
+import { formatTimelineYear } from "~/lib/utils/date-formatting"
 import { EventLogo } from "../EventLogo"
 import type { MarkerProps } from "../types"
 
@@ -17,13 +17,13 @@ export function NormalMarker({
     <div key={`${year}-0`}>
       {/* Screen reader only labels - accessible but visually hidden */}
       <span className="sr-only">
-        {event.name} - {formatYear(year)}
+        {event.name} - {formatTimelineYear(year)}
       </span>
 
       {/* Year label only - visible */}
       <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform">
         <div className="text-center font-mono text-xs whitespace-nowrap text-slate-400">
-          {formatYear(year)}
+          {formatTimelineYear(year)}
         </div>
       </div>
 
@@ -38,7 +38,7 @@ export function NormalMarker({
         onKeyDown={(e) => onEventKeyDown?.(event, e)}
         tabIndex={tabIndex}
         role="button"
-        aria-label={`${event.name} - ${formatYear(year)}`}
+        aria-label={`${event.name} - ${formatTimelineYear(year)}`}
       >
         {/* Circle marker */}
         <div className="relative">

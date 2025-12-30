@@ -47,6 +47,20 @@ export function formatYear(year: number): string {
 }
 
 /**
+ * Format a single year for timeline markers (no CE suffix for positive years).
+ * This saves space for clumped years. BCE ones are generally spread out enough to not matter.
+ * @param year - The year (negative for BCE, positive for CE)
+ * @returns Formatted year string, e.g., "27" or "336 BCE"
+ */
+export function formatTimelineYear(year: number): string {
+  if (year < 0) {
+    return `${Math.abs(year)} BCE`
+  } else {
+    return `${year}`
+  }
+}
+
+/**
  * Format a Roman date range for display (without parentheses)
  * @param startYear - Start year (negative for BCE, positive for CE)
  * @param endYear - End year (negative for BCE, positive for CE)

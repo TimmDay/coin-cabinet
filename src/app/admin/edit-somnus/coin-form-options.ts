@@ -40,6 +40,8 @@ export const civilizationOptions = [
   { value: "Persian", label: "Persian" },
   { value: "Parthian", label: "Parthian" },
   { value: "Sassanian", label: "Sassanian" },
+  { value: "Palmyrene Empire", label: "Palmyrene Empire" },
+  { value: "Gallic Empire", label: "Gallic Empire" },
 ]
 
 export const dieAxisOptions = [

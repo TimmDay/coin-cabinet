@@ -1,4 +1,4 @@
-import { formatYear } from "~/lib/utils/date-formatting"
+import { formatTimelineYear } from "~/lib/utils/date-formatting"
 import { EventLogo } from "../EventLogo"
 import type { StackedMarkersProps } from "../types"
 
@@ -21,7 +21,7 @@ export function StackedMarkers({
         style={{ top: `-${24 + (events.length - 1) * 32}px` }} // Dynamic top position
       >
         <div className="text-center font-mono text-xs text-slate-400">
-          {formatYear(year)}
+          {formatTimelineYear(year)}
         </div>
       </div>
 
@@ -30,7 +30,7 @@ export function StackedMarkers({
         <div key={`${year}-${eventIndex}`}>
           {/* Screen reader only labels - accessible but visually hidden */}
           <span className="sr-only">
-            {event.name} - {formatYear(year)}
+            {event.name} - {formatTimelineYear(year)}
           </span>
 
           {/* Event marker */}
@@ -50,7 +50,7 @@ export function StackedMarkers({
             onKeyDown={(e) => onEventKeyDown?.(event, e)}
             tabIndex={getEventTabIndex ? getEventTabIndex(event) : undefined}
             role="button"
-            aria-label={`${event.name} - ${formatYear(year)}`}
+            aria-label={`${event.name} - ${formatTimelineYear(year)}`}
           >
             {/* Circle marker */}
             <div className="relative">
