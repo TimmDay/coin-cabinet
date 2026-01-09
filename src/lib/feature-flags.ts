@@ -6,15 +6,11 @@ export const FEATURE_FLAGS = {
     description:
       "Enables development-only features like the Caracalla and Geta blog post",
   },
-  "map-feature": {
-    name: "map-feature",
-    displayName: "Map Features",
-    description: "Enables experimental map-related features and functionality",
-  },
   "show-hidden-coins": {
     name: "show-hidden-coins",
     displayName: "Show Hidden Coins",
-    description: "When enabled, coins marked as 'isHidden' will be visible in the collection.",
+    description:
+      "When enabled, coins marked as 'isHidden' will be visible in the collection.",
   },
 } as const
 

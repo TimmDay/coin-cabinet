@@ -4,7 +4,6 @@ import dynamic from "next/dynamic"
 import { useMints } from "~/api/mints"
 import { useTimelines } from "~/api/timelines"
 import { MintInfo } from "~/components/ui"
-import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
 import { formatYearRange } from "~/lib/utils/date-formatting"
 import { formatPhysicalCharacteristics } from "~/lib/utils/physical-formatting"
@@ -172,7 +171,6 @@ function buildTimelineForCoin(
 }
 
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
-  const isMapFeatureEnabled = useTypedFeatureFlag("map-feature")
   const { data: mints } = useMints()
   const { data: dbTimelines } = useTimelines()
 
@@ -279,7 +277,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       )}
 
       {/* Map Section */}
-      {isMapFeatureEnabled && shouldShowMap && (
+      {shouldShowMap && (
         <div className="mx-auto w-full max-w-6xl px-4">
           <div className="w-full">
             {matchingTimeline ? (

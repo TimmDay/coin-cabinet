@@ -25,7 +25,6 @@ export default function Navbar() {
   const router = useRouter()
   const { user } = useAuth()
   const isDevMode = useTypedFeatureFlag("dev")
-  const isMapEnabled = useTypedFeatureFlag("map-feature")
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null)
   const [openMainDropdown, setOpenMainDropdown] = useState<string | null>(null)
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -226,9 +225,9 @@ export default function Navbar() {
     if (item.name === "Admin") {
       return !!user
     }
-    // Only show "Map" when map feature flag is enabled
+    // Only show "Map" when dev feature flag is enabled
     if (item.name === "Map") {
-      return isMapEnabled
+      return isDevMode
     }
     return true
   })

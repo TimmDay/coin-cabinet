@@ -19,7 +19,7 @@ const Map = dynamic(
 )
 
 export default function MapPage() {
-  const isMapEnabled = useTypedFeatureFlag("map-feature")
+  const isDevMode = useTypedFeatureFlag("dev")
 
   // Map state
   const [showBC60, setShowBC60] = useState(false)
@@ -33,7 +33,7 @@ export default function MapPage() {
   const [showProvinceLabels, setShowProvinceLabels] = useState(true)
 
   // Show 404-like message if feature flag is not enabled
-  if (!isMapEnabled) {
+  if (!isDevMode) {
     return <NotFound404 />
   }
 

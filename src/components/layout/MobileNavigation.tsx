@@ -37,7 +37,6 @@ export function MobileNavigation() {
   const router = useRouter()
   const { user } = useAuth()
   const isDevMode = useTypedFeatureFlag("dev")
-  const isMapEnabled = useTypedFeatureFlag("map-feature")
 
   const [isOpen, setIsOpen] = useState(false)
   const [menuStack, setMenuStack] = useState<MenuLevel[]>([])
@@ -92,7 +91,7 @@ export function MobileNavigation() {
   // Filter navigation items based on authentication and feature flags
   const visibleNavItems = navigationItems.filter((item) => {
     if (item.name === "Admin") return !!user
-    if (item.name === "Map") return isMapEnabled
+    if (item.name === "Map") return isDevMode
     return true
   })
 

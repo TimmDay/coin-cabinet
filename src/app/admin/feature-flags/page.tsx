@@ -34,7 +34,7 @@ export default function FeatureFlagsPage() {
   }, [])
 
   const handleToggleFlag = (flagName: string, enabled: boolean) => {
-    setFeatureFlag(flagName as "dev" | "map-feature", enabled)
+    setFeatureFlag(flagName as "dev" | "show-hidden-coins", enabled)
     setEnabledFlags((prev) => ({
       ...prev,
       [flagName]: enabled,

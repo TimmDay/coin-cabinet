@@ -89,7 +89,6 @@ export function clearFeatureFlags() {
 /**
  * Convenience hook for checking feature flags with TypeScript autocomplete
  * Usage: const isDevMode = useTypedFeatureFlag('dev')
- * Usage: const isMapEnabled = useTypedFeatureFlag('map-feature')
  */
 export function useTypedFeatureFlag(flagName: FeatureFlagName) {
   return useFeatureFlag(flagName)
