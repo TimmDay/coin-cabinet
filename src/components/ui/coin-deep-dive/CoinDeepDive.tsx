@@ -181,11 +181,25 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
     if (!mints || !mintName?.trim()) return null
     const mint = mints.find(
       (m) =>
+        m.name.toLowerCase() === mintName.toLowerCase() ||
         m.alt_names?.some(
           (name) => name.toLowerCase() === mintName.toLowerCase(),
-        ) ?? m.name.toLowerCase() === mintName.toLowerCase(),
+        ),
     )
     return mint?.flavour_text ? mint : null
+  }
+
+  // Helper function to get mint coordinates
+  const getMintCoordinates = (mintName: string) => {
+    if (!mints || !mintName?.trim()) return null
+    const mint = mints.find(
+      (m) =>
+        m.name.toLowerCase() === mintName.toLowerCase() ||
+        m.alt_names?.some(
+          (name) => name.toLowerCase() === mintName.toLowerCase(),
+        ),
+    )
+    return mint ? ([mint.lat, mint.lng] as [number, number]) : null
   }
 
   // Process data using helper functions
@@ -194,6 +208,13 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const matchingHistoricalFigures = transformHistoricalFiguresToCards(
     coin.historical_figures,
   )
+
+  // Determine map display logic
+  const mintCoordinates = getMintCoordinates(coin.mint ?? "")
+  const shouldShowMap = matchingTimeline || mintCoordinates
+  const mapCenter = matchingTimeline
+    ? undefined // Use default for timeline (Rome)
+    : mintCoordinates || undefined
 
   // Helper to create a DeepDive card
   const createCard = (
@@ -258,14 +279,14 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       )}
 
       {/* Map Section */}
-      {isMapFeatureEnabled && (
+      {isMapFeatureEnabled && shouldShowMap && (
         <div className="mx-auto w-full max-w-6xl px-4">
           <div className="w-full">
             {matchingTimeline ? (
               <TimelineWithMap
                 timeline={matchingTimeline}
                 showHeaders={false}
-                initialCenter={coin.mint ? undefined : [41.9028, 12.4964]}
+                initialCenter={mapCenter}
                 eventZoomLevel={6}
                 mapProps={{
                   highlightMint: coin.mint ?? undefined,
@@ -274,6 +295,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
               />
             ) : (
               <Map
+                center={mapCenter}
                 highlightMint={coin.mint ?? undefined}
                 hideControls
                 height="400px"
