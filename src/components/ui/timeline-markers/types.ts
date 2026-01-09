@@ -22,6 +22,7 @@ export type MarkerProps = {
 
 export type SideLineMarkerProps = {
   event: TimelineEvent
+  position?: "start" | "end" // New prop to control positioning
   onEventInteraction: (
     event: TimelineEvent,
     clientX: number,

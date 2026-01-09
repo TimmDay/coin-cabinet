@@ -60,11 +60,20 @@ export function Timeline({
 
   const events = timeline.sort((a, b) => a.year - b.year)
 
-  // Check for large gap (18 years) between first and second event
+  // Check for large gap (12 years) between first and second event
   const hasLargeGap =
-    events.length >= 2 && events[1]!.year - events[0]!.year >= 18
+    events.length >= 2 && events[1]!.year - events[0]!.year >= 12
   const sideLineEvent = hasLargeGap ? events[0] : null
-  const timelineEvents = hasLargeGap ? events.slice(1) : events
+
+  // Check if the last event is a death event for sideline end marker
+  const lastEvent = events[events.length - 1]
+  const hasDeathAtEnd = lastEvent?.kind === "death"
+  const sideLineEndEvent = hasDeathAtEnd ? lastEvent : null
+
+  // Remove sideline events from main timeline
+  let timelineEvents = events
+  if (hasLargeGap) timelineEvents = timelineEvents.slice(1)
+  if (hasDeathAtEnd) timelineEvents = timelineEvents.slice(0, -1)
 
   // Create a chronologically ordered flat list of all events for keyboard navigation
   const allEventsChronological = events.flatMap((event) => event)
@@ -343,11 +352,19 @@ export function Timeline({
         className={`relative h-2 rounded-full bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 ${
           className?.includes("timeline-in-map")
             ? sideLineEvent
-              ? "mr-0 ml-10"
-              : "mx-0" // Left margin for sideline, no right margin in map context
+              ? sideLineEndEvent
+                ? "mx-10" // Both sideline markers
+                : "mr-0 ml-10" // Only start sideline
+              : sideLineEndEvent
+                ? "mr-10 ml-0" // Only end sideline
+                : "mx-0" // No sideline markers in map context
             : sideLineEvent
-              ? "mr-2 ml-10 md:mr-24"
-              : "mr-2 md:mr-24" // Normal margins for standalone
+              ? sideLineEndEvent
+                ? "mx-10 md:mx-24" // Both sideline markers
+                : "mr-2 ml-10 md:mr-24" // Only start sideline
+              : sideLineEndEvent
+                ? "mr-10 ml-2 md:ml-24" // Only end sideline
+                : "mr-2 md:mr-24" // Normal margins for standalone
         }`}
       >
         {/* Events */}
@@ -419,6 +436,26 @@ export function Timeline({
           )
         })}
       </div>
+
+      {/* Side line end event (if last event is death) */}
+      {sideLineEndEvent && (
+        <div
+          className="absolute right-0 -translate-y-1/2"
+          style={{ top: `${topPadding + 4}px` }}
+        >
+          <SideLineMarker
+            event={sideLineEndEvent}
+            position="end"
+            onEventInteraction={handleEventHover}
+            onEventClick={handleEventClick}
+            onEventLeave={handleEventLeave}
+            onEventFocus={handleEventFocus}
+            onEventBlur={handleEventBlur}
+            onEventKeyDown={handleEventKeyDown}
+            tabIndex={getEventTabIndex(sideLineEndEvent)}
+          />
+        </div>
+      )}
 
       {/* Info popup */}
       {(hoveredEvent || focusedEvent) && (

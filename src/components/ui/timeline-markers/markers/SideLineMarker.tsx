@@ -4,6 +4,7 @@ import type { SideLineMarkerProps } from "../types"
 
 export function SideLineMarker({
   event,
+  position = "start",
   onEventInteraction,
   onEventClick,
   onEventLeave,
@@ -54,8 +55,12 @@ export function SideLineMarker({
           />
         </div>
 
-        {/* Gray teardrop tail - pointing right toward timeline */}
-        <div className="absolute top-1/2 left-full h-0 w-0 -translate-y-1/2 transform border-t-4 border-b-4 border-l-8 border-t-transparent border-b-transparent border-l-gray-500"></div>
+        {/* Gray teardrop tail - pointing toward timeline */}
+        {position === "start" ? (
+          <div className="absolute top-1/2 left-full h-0 w-0 -translate-y-1/2 transform border-t-4 border-b-4 border-l-8 border-t-transparent border-b-transparent border-l-gray-500"></div>
+        ) : (
+          <div className="absolute top-1/2 right-full h-0 w-0 -translate-y-1/2 transform border-t-4 border-r-8 border-b-4 border-t-transparent border-r-gray-500 border-b-transparent"></div>
+        )}
       </div>
     </div>
   )
