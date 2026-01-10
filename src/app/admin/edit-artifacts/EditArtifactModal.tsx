@@ -2,12 +2,10 @@
 
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { FormActions, FormErrorDisplay, ModalWrapper } from "~/components/forms"
-import { useFormPersistence } from "~/hooks/useFormPersistence"
 import type { Artifact } from "~/database/schema-artifacts"
+import { useFormPersistence } from "~/hooks/useFormPersistence"
 import type { ArtifactFormData } from "~/lib/validations/artifact-form"
-import { artifactFormSchema } from "~/lib/validations/artifact-form"
 
 type FormData = {
   name: string

@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { Artifact } from "~/database/schema-artifacts"
-import type { ArtifactFormData } from "~/lib/validations/artifact-form"
+import { useState } from "react"
 import { GenericEditView } from "~/components/admin/GenericEditView"
+import type { Artifact } from "~/database/schema-artifacts"
 import { useEditModal } from "~/hooks/useEditModal"
+import type { ArtifactFormData } from "~/lib/validations/artifact-form"
 import { EditArtifactModal } from "./EditArtifactModal"
 
 // API functions
@@ -214,9 +214,6 @@ export function EditArtifactsView() {
       throw error
     }
   }
-
-  const selectedArtifact =
-    dataQuery.data?.find((item) => item.id === selectedItemId) ?? null
 
   const renderModal = (selectedItem: Artifact | null) => (
     <EditArtifactModal
