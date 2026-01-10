@@ -106,7 +106,7 @@ export const coinFormSchema = z
       ),
 
     // Minting information
-    mint: z.string().optional(),
+    mint_id: z.number().optional(),
     mint_year_earliest: z
       .number()
       .or(z.nan())

@@ -1,12 +1,11 @@
-"use client"
-
+import { useMints } from "~/api/mints"
 import { formatYearRange } from "~/lib/utils/date-formatting"
 import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
 
 type CoinSnapshotProps = {
   civ: string
   civSpecific?: string | null
-  mint?: string | null
+  mintId?: number | null
   mintYearEarliest?: number | null
   mintYearLatest?: number | null
   diameter?: number | null
@@ -19,7 +18,7 @@ type CoinSnapshotProps = {
 export function CoinSnapshot({
   civ,
   civSpecific,
-  mint,
+  mintId,
   mintYearEarliest,
   mintYearLatest,
   diameter,
@@ -28,6 +27,11 @@ export function CoinSnapshot({
   reference,
   provenance,
 }: CoinSnapshotProps) {
+  const { data: mints } = useMints()
+
+  // Get mint name from mint_id lookup
+  const mint =
+    mintId && mints ? mints.find((m) => m.id === mintId)?.name : undefined
   // Build civilization text
   const civText = civSpecific
     ? `${civ.toUpperCase()}, ${civSpecific}`

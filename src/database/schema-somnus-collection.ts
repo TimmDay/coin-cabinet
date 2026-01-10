@@ -28,7 +28,7 @@ export type SomnusCollection = {
   silver_content?: string | null
 
   // Minting information
-  mint?: string | null
+  mint_id?: number | null
   mint_year_earliest?: number | null
   mint_year_latest?: number | null
 

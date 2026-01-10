@@ -3,7 +3,7 @@ import type { Mint } from "~/database/schema-mints"
 
 type CoinData = {
   denomination: string
-  mint?: string | null
+  mint_id?: number | null
   mint_year_earliest?: number | null
   mint_year_latest?: number | null
 }
@@ -16,22 +16,15 @@ export function createCoinMintingEvent(coin: CoinData, mints?: Mint[]) {
     return null
   }
 
-  // Find the matching mint data for coordinates
+  // Find the matching mint data by ID
   const mintData =
-    coin.mint && mints
-      ? mints.find(
-          (m) =>
-            m.alt_names?.some(
-              (name) => name.toLowerCase() === coin.mint!.toLowerCase(),
-            ) ?? m.name.toLowerCase() === coin.mint!.toLowerCase(),
-        )
-      : undefined
+    coin.mint_id && mints ? mints.find((m) => m.id === coin.mint_id) : undefined
 
   // Build description
   let description = `This ${coin.denomination} was minted`
 
-  if (coin.mint) {
-    description += ` at ${coin.mint}`
+  if (mintData) {
+    description += ` at ${mintData.name}`
   }
 
   // Handle date range logic
@@ -53,7 +46,7 @@ export function createCoinMintingEvent(coin: CoinData, mints?: Mint[]) {
     year: coin.mint_year_earliest,
     description,
     source: "",
-    place: coin.mint ?? "Unknown mint",
+    place: mintData?.name ?? "Unknown mint",
     lat: mintData?.lat,
     lng: mintData?.lng,
   }

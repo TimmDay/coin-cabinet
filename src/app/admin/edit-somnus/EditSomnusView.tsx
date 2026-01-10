@@ -1,16 +1,17 @@
 "use client"
 
 import { useState } from "react"
+import { useMints } from "~/api/mints"
 import {
+  useAddSomnusCoin,
   useAllSomnusCoins,
   useUpdateSomnusCoin,
-  useAddSomnusCoin,
 } from "~/api/somnus-collection"
-import type { SomnusCollection } from "~/database/schema-somnus-collection"
-import type { CoinFormData } from "~/lib/validations/coin-form"
 import { GenericEditView } from "~/components/admin/GenericEditView"
-import { useEditModal } from "~/hooks/useEditModal"
+import type { SomnusCollection } from "~/database/schema-somnus-collection"
 import { useDeityOptions } from "~/hooks/useDeityOptions"
+import { useEditModal } from "~/hooks/useEditModal"
+import type { CoinFormData } from "~/lib/validations/coin-form"
 import { EditCoinModal } from "./EditCoinModal"
 
 export function EditSomnusView() {
@@ -18,6 +19,7 @@ export function EditSomnusView() {
   const updateMutation = useUpdateSomnusCoin()
   const addMutation = useAddSomnusCoin()
   const { options: deityOptions } = useDeityOptions()
+  const { data: mints } = useMints()
 
   // State for create modal
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -66,10 +68,15 @@ export function EditSomnusView() {
         })
         .filter(Boolean) ?? []
 
+    // Get mint name from mint_id
+    const mintName = item.mint_id
+      ? mints?.find((mint) => mint.id === item.mint_id)?.name
+      : null
+
     // Create subtitle parts array, filtering out empty/null values
     const subtitleParts = [
       item.denomination,
-      item.mint,
+      mintName,
       item.mint_year_earliest,
       deityNames.length > 0 ? deityNames.join(", ") : null,
     ].filter(Boolean)
@@ -103,7 +110,10 @@ export function EditSomnusView() {
               </span>
             )}
           {item.is_hidden && (
-            <span className="text-lg" title="This coin is hidden from public view">
+            <span
+              className="text-lg"
+              title="This coin is hidden from public view"
+            >
               🕵️
             </span>
           )}

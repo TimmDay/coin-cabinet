@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { useAllSomnusCoins } from "~/api/somnus-collection"
-import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { BrowseCoinsModal } from "~/components/ui/BrowseCoinsModal"
+import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { ViewModeControls } from "~/components/ui/ViewModeControls"
 
 type YearCoinGridProps = {
@@ -164,7 +164,7 @@ export function YearCoinGrid({ year }: YearCoinGridProps) {
         civ={currentCoin?.civ ?? undefined}
         civ_specific={currentCoin?.civ_specific ?? undefined}
         denomination={currentCoin?.denomination ?? undefined}
-        mint={currentCoin?.mint ?? undefined}
+        mint_id={currentCoin?.mint_id ?? undefined}
         mint_year_earliest={currentCoin?.mint_year_earliest ?? undefined}
         mint_year_latest={currentCoin?.mint_year_latest ?? undefined}
         diameter={currentCoin?.diameter ?? undefined}

@@ -1,5 +1,5 @@
 export { AuthRequiredPage } from "./AuthRequiredPage"
-export { MintInfo } from "./coin-deep-dive/MintInfo"
+export { MintDeepDiveCard } from "./coin-deep-dive/MintDeepDiveCard"
 export { DeepDiveCard } from "./DeepDiveCard"
 export { Loading } from "./Loading"
 export { MobileDrawer } from "./MobileDrawer"

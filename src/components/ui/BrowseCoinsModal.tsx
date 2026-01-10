@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { CldImage } from "next-cloudinary"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { useMints } from "~/api/mints"
 import { prefetchCloudinaryImage } from "~/components/CloudinaryImage"
 import { useViewport } from "~/hooks/useViewport"
 import { formatYearRange } from "~/lib/utils/date-formatting"
@@ -24,7 +25,7 @@ type BrowseCoinsModalProps = {
   civ?: string
   civ_specific?: string
   denomination?: string
-  mint?: string
+  mint_id?: number
   mint_year_earliest?: number
   mint_year_latest?: number
   diameter?: number
@@ -56,7 +57,7 @@ export function BrowseCoinsModal({
   civ,
   civ_specific,
   denomination,
-  mint,
+  mint_id,
   mint_year_earliest,
   mint_year_latest,
   diameter,
@@ -75,7 +76,12 @@ export function BrowseCoinsModal({
   coinId,
   nickname,
 }: BrowseCoinsModalProps) {
+  const { data: mints } = useMints()
   const router = useRouter()
+
+  // Get mint name from mint_id lookup
+  const mint =
+    mint_id && mints ? mints.find((m) => m.id === mint_id)?.name : undefined
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
     null,

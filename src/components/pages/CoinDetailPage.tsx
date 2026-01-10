@@ -65,7 +65,7 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
                 <CoinSnapshot
                   civ={coin.civ}
                   civSpecific={coin.civ_specific}
-                  mint={coin.mint}
+                  mintId={coin.mint_id}
                   mintYearEarliest={coin.mint_year_earliest}
                   mintYearLatest={coin.mint_year_latest}
                   diameter={coin.diameter}

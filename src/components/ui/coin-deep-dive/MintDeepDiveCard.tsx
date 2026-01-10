@@ -2,11 +2,11 @@ import { useMints } from "~/api/mints"
 import { formatRomanDateRange } from "~/lib/utils/date-formatting"
 import { DeepDiveCard } from "../DeepDiveCard"
 
-type MintInfoProps = {
-  mintName: string
+type MintDeepDiveCardProps = {
+  mintId: number
 }
 
-export function MintInfo({ mintName }: MintInfoProps) {
+export function MintDeepDiveCard({ mintId }: MintDeepDiveCardProps) {
   const { data: mints, isLoading, error } = useMints()
 
   if (isLoading) {
@@ -17,13 +17,8 @@ export function MintInfo({ mintName }: MintInfoProps) {
     return null
   }
 
-  // Find the mint data that matches the coin's mint
-  const mint = mints.find(
-    (m) =>
-      m.alt_names?.some(
-        (name) => name.toLowerCase() === mintName.toLowerCase(),
-      ) ?? m.name.toLowerCase() === mintName.toLowerCase(),
-  )
+  // Find the mint data by ID
+  const mint = mints.find((m) => m.id === mintId)
 
   if (!mint?.flavour_text) {
     return null

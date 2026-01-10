@@ -17,9 +17,9 @@ const meta = {
       control: "text",
       description: "Specific civilization variant",
     },
-    mint: {
-      control: "text",
-      description: "Mint location",
+    mintId: {
+      control: "number",
+      description: "Mint ID reference",
     },
     mintYearEarliest: {
       control: "number",
@@ -60,7 +60,7 @@ export const RomanRepublican: Story = {
   args: {
     civ: "roman republic",
     civSpecific: "Sicily",
-    mint: "Rome",
+    mintId: 1,
     mintYearEarliest: -102,
     mintYearLatest: -101,
     diameter: 19,
@@ -76,7 +76,7 @@ export const RomanImperial: Story = {
   args: {
     civ: "roman",
     civSpecific: "imperial",
-    mint: "Alexandria",
+    mintId: 2,
     mintYearEarliest: 98,
     mintYearLatest: 117,
     diameter: 25,
@@ -90,7 +90,7 @@ export const RomanImperial: Story = {
 export const Greek: Story = {
   args: {
     civ: "greek",
-    mint: "Athens",
+    mintId: 3,
     mintYearEarliest: -440,
     mintYearLatest: -430,
     diameter: 17,
@@ -105,7 +105,7 @@ export const Greek: Story = {
 export const Minimal: Story = {
   args: {
     civ: "celtic",
-    mint: "Uncertain",
+    mintId: null,
     mintYearEarliest: -50,
     mintYearLatest: -1,
     reference: "ABC 1234",
@@ -117,7 +117,7 @@ export const SingleYear: Story = {
   args: {
     civ: "roman",
     civSpecific: "imperial",
-    mint: "Rome",
+    mintId: 1,
     mintYearEarliest: 161,
     mintYearLatest: 161,
     diameter: 27,
@@ -132,7 +132,7 @@ export const SingleYear: Story = {
 export const NoSpecs: Story = {
   args: {
     civ: "byzantine",
-    mint: "Constantinople",
+    mintId: 4,
     mintYearEarliest: 1042,
     mintYearLatest: 1055,
     reference: "DOC 3",

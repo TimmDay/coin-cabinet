@@ -1,14 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { useFormPersistence } from "~/hooks/useFormPersistence"
 import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper"
 import { Select } from "~/components/ui/Select"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
+import { useFormPersistence } from "~/hooks/useFormPersistence"
 import type { CoinFormData } from "~/lib/validations/coin-form"
 
+import { useMints } from "~/api/mints"
 import { useTimelines } from "~/api/timelines"
 import { NotableFeaturesEditor } from "~/components/forms/NotableFeaturesEditor"
 import { useDeityOptions } from "~/hooks/useDeityOptions"
@@ -59,7 +60,7 @@ const createCoinFormData = (
   mass: coin?.mass ?? undefined,
   die_axis: coin?.die_axis ?? undefined,
   silver_content: coin?.silver_content ?? undefined,
-  mint: coin?.mint ?? undefined,
+  mint_id: coin?.mint_id ?? undefined,
   mint_year_earliest: coin?.mint_year_earliest ?? undefined,
   mint_year_latest: coin?.mint_year_latest ?? undefined,
   reference: coin?.reference ?? undefined,
@@ -137,11 +138,18 @@ export function EditCoinModal({
   const { options: deityOptions } = useDeityOptions()
   const { options: historicalFigureOptions } = useHistoricalFigureOptions()
   const { data: allTimelines = [] } = useTimelines()
+  const { data: allMints = [] } = useMints()
 
   // Transform timeline data for MultiSelect
   const timelineOptions = allTimelines.map((timeline) => ({
     value: timeline.id.toString(),
     label: timeline.name,
+  }))
+
+  // Transform mint data for Select
+  const mintOptions = allMints.map((mint) => ({
+    value: mint.id.toString(),
+    label: mint.name,
   }))
   const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false)
 
@@ -208,7 +216,7 @@ export function EditCoinModal({
       die_axis: data.die_axis,
       metal: data.metal,
       silver_content: data.silver_content,
-      mint: data.mint,
+      mint_id: data.mint_id,
       mint_year_earliest: data.mint_year_earliest,
       mint_year_latest: data.mint_year_latest,
       reference: data.reference,
@@ -516,11 +524,17 @@ export function EditCoinModal({
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Mint
               </label>
-              <input
-                type="text"
-                {...register("mint")}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
-                placeholder="e.g., Rome"
+              <Select
+                options={[
+                  { value: "", label: "Select a mint..." },
+                  ...mintOptions,
+                ]}
+                {...register("mint_id", {
+                  setValueAs: (value) =>
+                    value === "" ? undefined : parseInt(value),
+                })}
+                value={watch("mint_id")?.toString() || ""}
+                className="w-full"
               />
             </div>
 

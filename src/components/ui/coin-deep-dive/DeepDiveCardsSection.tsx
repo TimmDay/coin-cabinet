@@ -1,0 +1,192 @@
+import { useMints } from "~/api/mints"
+import { MintDeepDiveCard } from "~/components/ui"
+import { formatYearRange } from "~/lib/utils/date-formatting"
+import { formatPhysicalCharacteristics } from "~/lib/utils/physical-formatting"
+import type { CoinEnhanced } from "~/types/api"
+import { DeepDiveCard } from "../DeepDiveCard"
+
+type DeepDiveCardsSectionProps = {
+  coinData: CoinEnhanced
+  deities: CoinEnhanced["deities"]
+  historicalFigures: CoinEnhanced["historical_figures"]
+}
+
+function transformDeitiesToCards(deities: CoinEnhanced["deities"]) {
+  return (
+    deities?.map((deity) => ({
+      title: deity.name,
+      subtitle: deity.subtitle ?? "",
+      primaryInfo: deity.flavour_text ?? "",
+      footer: deity.features_coinage?.map((f) => f.name).join(", ") ?? "",
+    })) ?? []
+  )
+}
+
+function transformHistoricalFiguresToCards(
+  figures: CoinEnhanced["historical_figures"],
+) {
+  return (
+    figures?.map((figure: unknown) => {
+      const figureAny = figure as Record<string, unknown>
+
+      // Extract and validate numeric fields
+      const birth = typeof figureAny.birth === "number" ? figureAny.birth : null
+      const death = typeof figureAny.death === "number" ? figureAny.death : null
+      const reignStart =
+        typeof figureAny.reign_start === "number" ? figureAny.reign_start : null
+      const reignEnd =
+        typeof figureAny.reign_end === "number" ? figureAny.reign_end : null
+
+      // Format year ranges
+      const livedYears = formatYearRange(birth, death)
+      const reignYears = formatYearRange(reignStart, reignEnd)
+
+      // Build subtitle components
+      const authorityText =
+        (typeof figureAny.authority === "string" ? figureAny.authority : "") ??
+        ""
+      const lifeInfo = livedYears
+        ? `lived ${livedYears.replace(/[()]/g, "")}`
+        : ""
+      const reignInfo = reignYears
+        ? `reigned ${reignYears.replace(/[()]/g, "")}`
+        : ""
+      const subtitle = [authorityText, lifeInfo, reignInfo]
+        .filter(Boolean)
+        .join(", ")
+
+      // Build footer from altNames or full_name
+      const altNames = Array.isArray(figureAny.altNames)
+        ? figureAny.altNames
+        : []
+      const fullName =
+        typeof figureAny.full_name === "string" ? figureAny.full_name : ""
+      const footerText = altNames.length > 0 ? altNames.join(", ") : fullName
+
+      return {
+        title: typeof figureAny.name === "string" ? figureAny.name : "",
+        subtitle,
+        primaryInfo:
+          (typeof figureAny.flavour_text === "string"
+            ? figureAny.flavour_text
+            : "") ?? "",
+        secondaryInfo: undefined,
+        footer: footerText,
+      }
+    }) ?? []
+  )
+}
+
+function createCoinFlip(
+  coin: CoinEnhanced,
+  mints: ReturnType<typeof useMints>["data"],
+) {
+  // Build civilization text
+  const civText = coin.civ_specific
+    ? `${coin.civ.toUpperCase()}, ${coin.civ_specific}`
+    : coin.civ.toUpperCase()
+
+  // Build physical characteristics string
+  const physicalCharacteristics = formatPhysicalCharacteristics(
+    { diameter: coin.diameter, mass: coin.mass, dieAxis: coin.die_axis },
+    { style: "compact" },
+  )
+
+  // Build subtitle with physical characteristics and civText
+  const subtitle = physicalCharacteristics
+    ? `${physicalCharacteristics} | ${civText}`
+    : civText
+
+  // Get mint name from mint_id
+  const mint =
+    coin.mint_id && mints ? mints.find((m) => m.id === coin.mint_id) : null
+  const mintName = mint?.name
+
+  return {
+    title: "COIN FLIP",
+    subtitle,
+    primaryInfo:
+      [
+        mintName,
+        formatYearRange(coin.mint_year_earliest, coin.mint_year_latest),
+      ]
+        .filter(Boolean)
+        .join(" ") || undefined,
+    secondaryInfo:
+      [coin.provenance, coin.flavour_text].filter(Boolean).join(" • ") ||
+      undefined,
+    footer: coin.reference ?? undefined,
+  }
+}
+
+export function DeepDiveCardsSection({
+  coinData,
+  deities,
+  historicalFigures,
+}: DeepDiveCardsSectionProps) {
+  const { data: mints, isLoading: isLoadingMints } = useMints()
+
+  // Helper function to get mint by ID
+  const getMintById = (mintId: number | null | undefined) => {
+    if (!mints || !mintId) return null
+    return mints.find((m) => m.id === mintId) || null
+  }
+
+  // Transform data to cards format
+  const matchingDeities = transformDeitiesToCards(deities)
+  const matchingHistoricalFigures =
+    transformHistoricalFiguresToCards(historicalFigures)
+  // Helper to create a DeepDive card
+  const createCard = (
+    id: string,
+    props: React.ComponentProps<typeof DeepDiveCard>,
+  ) => ({
+    id,
+    component: <DeepDiveCard defaultOpen={false} {...props} />,
+  })
+
+  // Helper to create a mint card
+  const createMintCard = (mintId: number) => {
+    return {
+      id: "mint",
+      component: <MintDeepDiveCard mintId={mintId} />,
+    }
+  }
+
+  // Build cards array with only cards that have content
+  const mintId = coinData.mint_id
+  const mint = getMintById(mintId)
+
+  const cardsToRender = [
+    // This Coin Card (always shown)
+    createCard("coin", createCoinFlip(coinData, mints)),
+
+    // Deity cards
+    ...matchingDeities
+      .filter((deity) => deity.title?.trim())
+      .map((deity, index) => createCard(`deity-${index}`, deity)),
+
+    // Historical figure cards
+    ...matchingHistoricalFigures
+      .filter((figure) => figure.title?.trim())
+      .map((figure, index) => createCard(`figure-${index}`, figure)),
+
+    // Mint card (only if mint exists and has content)
+    ...(mint?.flavour_text ? [createMintCard(mintId!)] : []),
+  ]
+
+  return (
+    <div className="mx-auto w-full max-w-6xl px-4">
+      <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
+        {cardsToRender.map((card) => (
+          <div
+            key={card.id}
+            className="w-full md:w-[calc(50%-0.5rem)] md:flex-shrink-0"
+          >
+            {card.component}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
