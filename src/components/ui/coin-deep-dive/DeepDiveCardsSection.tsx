@@ -92,29 +92,23 @@ function createCoinFlip(
     { style: "compact" },
   )
 
-  // Build subtitle with physical characteristics and civText
-  const subtitle = physicalCharacteristics
-    ? `${physicalCharacteristics} | ${civText}`
-    : civText
-
   // Get mint name from mint_id
   const mint =
     coin.mint_id && mints ? mints.find((m) => m.id === coin.mint_id) : null
   const mintName = mint?.name
 
+  // Build mint info string
+  const mintYearRange = formatYearRange(
+    coin.mint_year_earliest,
+    coin.mint_year_latest,
+  )
+  const mintInfo = [mintName, mintYearRange].filter(Boolean).join(" ")
+
   return {
-    title: "COIN FLIP",
-    subtitle,
-    primaryInfo:
-      [
-        mintName,
-        formatYearRange(coin.mint_year_earliest, coin.mint_year_latest),
-      ]
-        .filter(Boolean)
-        .join(" ") || undefined,
-    secondaryInfo:
-      [coin.provenance, coin.flavour_text].filter(Boolean).join(" • ") ||
-      undefined,
+    title: mintInfo,
+    subtitle: physicalCharacteristics,
+    primaryInfo: [civText, coin.provenance].filter(Boolean).join(" • ") ?? "",
+    secondaryInfo: coin.flavour_text ?? "",
     footer: coin.reference ?? undefined,
   }
 }
@@ -124,7 +118,7 @@ export function DeepDiveCardsSection({
   deities,
   historicalFigures,
 }: DeepDiveCardsSectionProps) {
-  const { data: mints, isLoading: isLoadingMints } = useMints()
+  const { data: mints } = useMints()
 
   // Helper function to get mint by ID
   const getMintById = (mintId: number | null | undefined) => {

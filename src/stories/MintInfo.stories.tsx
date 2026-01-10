@@ -45,9 +45,9 @@ const meta = {
     ),
   ],
   argTypes: {
-    mintName: {
-      description: "The name of the Roman mint to display information for",
-      control: { type: "text" },
+    mintId: {
+      description: "The ID of the mint to display information for",
+      control: { type: "number" },
     },
   },
 } satisfies Meta<typeof MintDeepDiveCard>
@@ -57,7 +57,7 @@ type Story = StoryObj<typeof meta>
 
 export const Lugdunum: Story = {
   args: {
-    mintName: "Lugdunum",
+    mintId: 2,
   },
   parameters: {
     docs: {
@@ -71,7 +71,7 @@ export const Lugdunum: Story = {
 
 export const Rome: Story = {
   args: {
-    mintName: "Rome",
+    mintId: 1,
   },
   parameters: {
     docs: {
@@ -85,7 +85,7 @@ export const Rome: Story = {
 
 export const Alexandria: Story = {
   args: {
-    mintName: "Alexandria",
+    mintId: 3,
   },
   parameters: {
     docs: {
@@ -99,13 +99,13 @@ export const Alexandria: Story = {
 
 export const MultipleMints: Story = {
   args: {
-    mintName: "Rome",
+    mintId: 1,
   },
   render: () => (
     <div className="space-y-4">
-      <MintInfo mintName="Rome" />
-      <MintInfo mintName="Lugdunum" />
-      <MintInfo mintName="Alexandria" />
+      <MintDeepDiveCard mintId={1} />
+      <MintDeepDiveCard mintId={2} />
+      <MintDeepDiveCard mintId={3} />
     </div>
   ),
   parameters: {
@@ -120,7 +120,7 @@ export const MultipleMints: Story = {
 
 export const NonExistentMint: Story = {
   args: {
-    mintName: "NonExistentMint",
+    mintId: 999,
   },
   parameters: {
     docs: {
