@@ -106,9 +106,9 @@ function createCoinFlip(
 
   return {
     title: mintInfo,
-    subtitle: physicalCharacteristics,
-    primaryInfo: [civText, coin.provenance].filter(Boolean).join(" • ") ?? "",
-    secondaryInfo: coin.flavour_text ?? "",
+    subtitle: physicalCharacteristics ?? undefined,
+    primaryInfo: [civText, coin.provenance].filter(Boolean).join(" • ") || undefined,
+    secondaryInfo: coin.flavour_text ?? undefined,
     footer: coin.reference ?? undefined,
   }
 }
