@@ -97,20 +97,20 @@ function createCoinFlip(
     coin.mint_id && mints ? mints.find((m) => m.id === coin.mint_id) : null
   const mintName = mint?.name
 
-  // Build mint info string
   const mintYearRange = formatYearRange(
     coin.mint_year_earliest,
     coin.mint_year_latest,
   )
-  const mintInfo = [mintName, mintYearRange].filter(Boolean).join(" ")
+  const mintYearRangeClean = mintYearRange.replace(/[()]/g, "")
+  const mintInfo = [mintName, mintYearRangeClean].filter(Boolean).join(" ")
 
   return {
-    title: mintInfo,
+    title: coin.reference ?? "Unknown Reference",
     subtitle: physicalCharacteristics ?? undefined,
     primaryInfo:
       [civText, coin.provenance].filter(Boolean).join(" • ") || undefined,
     secondaryInfo: coin.flavour_text ?? undefined,
-    footer: coin.reference ?? undefined,
+    footer: mintInfo || undefined,
   }
 }
 
