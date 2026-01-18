@@ -104,7 +104,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
           imageLink={coin.image_link_o}
           imageLinkAltlight={coin.image_link_altlight_o}
           imageLinkSketch={coin.image_link_sketch_o}
-          legendExpanded={coin.legend_o_expanded}
+          legendExpanded={coin.legend_o_expanded ?? coin.legend_o}
           legendTranslation={coin.legend_o_translation}
           description={coin.desc_o}
           priority={true}
@@ -117,7 +117,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
           imageLink={coin.image_link_r}
           imageLinkAltlight={coin.image_link_altlight_r}
           imageLinkSketch={coin.image_link_sketch_r}
-          legendExpanded={coin.legend_r_expanded}
+          legendExpanded={coin.legend_r_expanded ?? coin.legend_r}
           legendTranslation={coin.legend_r_translation}
           description={coin.desc_r}
         />
