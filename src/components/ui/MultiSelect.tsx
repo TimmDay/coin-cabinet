@@ -6,7 +6,7 @@ type MultiSelectProps = {
   options: { value: string; label: string }[]
   setValue: UseFormSetValue<CoinFormData>
   watch: UseFormWatch<CoinFormData>
-  fieldName: "sets" | "deity_id"
+  fieldName: "sets" | "deity_id" | "flavour_img"
   className?: string
   placeholder?: string
   error?: string

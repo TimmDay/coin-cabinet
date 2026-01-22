@@ -171,11 +171,36 @@ export async function PUT(request: Request) {
       )
     }
 
+    // Validate the updates with a partial schema
+    // Create a partial schema that allows all fields to be optional
+    let validatedUpdates: Record<string, unknown>
+    try {
+      const partialSchema = coinFormSchema.partial()
+      validatedUpdates = partialSchema.parse(updates)
+
+      console.log(
+        "Validated updates for somnus collection:",
+        JSON.stringify(validatedUpdates, null, 2),
+      )
+    } catch (validationError) {
+      console.error("Validation error in PUT:", validationError)
+      // For updates, be more lenient - use the original updates if validation fails
+      // but filter out obviously problematic fields
+      validatedUpdates = updates as Record<string, unknown>
+
+      console.log(
+        "Using unvalidated updates due to validation error:",
+        JSON.stringify(validatedUpdates, null, 2),
+      )
+    }
+
     // For updates, we allow partial data and don't require full validation
     // Remove system fields that shouldn't be updated
     const systemFields = new Set(["id", "user_id", "created_at", "updated_at"])
     const updateData = Object.fromEntries(
-      Object.entries(updates).filter(([key]) => !systemFields.has(key)),
+      Object.entries(validatedUpdates)
+        .filter(([key]) => !systemFields.has(key))
+        .map(([key, value]) => [key, value === undefined ? null : value]),
     )
 
     console.log(

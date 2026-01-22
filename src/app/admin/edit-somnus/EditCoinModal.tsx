@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper"
+import { MultiSelect } from "~/components/ui/MultiSelect"
 import { Select } from "~/components/ui/Select"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
@@ -12,6 +13,7 @@ import type { CoinFormData } from "~/lib/validations/coin-form"
 import { useMints } from "~/api/mints"
 import { useTimelines } from "~/api/timelines"
 import { NotableFeaturesEditor } from "~/components/forms/NotableFeaturesEditor"
+import { useArtifactOptions } from "~/hooks/useArtifactOptions"
 import { useDeityOptions } from "~/hooks/useDeityOptions"
 import { useHistoricalFigureOptions } from "~/hooks/useHistoricalFigureOptions"
 import {
@@ -76,6 +78,8 @@ const createCoinFormData = (
   legend_r_translation: coin?.legend_r_translation ?? "",
   desc_r: coin?.desc_r ?? "",
   flavour_text: coin?.flavour_text ?? "",
+  flavour_desc: coin?.flavour_desc ?? "",
+  flavour_img: coin?.flavour_img ?? undefined,
 
   // Arrays and special fields
   deity_id: coin?.deity_id ?? undefined,
@@ -137,6 +141,7 @@ export function EditCoinModal({
 }: EditCoinModalProps) {
   const { options: deityOptions } = useDeityOptions()
   const { options: historicalFigureOptions } = useHistoricalFigureOptions()
+  const { options: artifactOptions } = useArtifactOptions()
   const { data: allTimelines = [] } = useTimelines()
   const { data: allMints = [] } = useMints()
 
@@ -230,6 +235,11 @@ export function EditCoinModal({
       legend_r_translation: data.legend_r_translation,
       desc_r: data.desc_r,
       flavour_text: data.flavour_text,
+      flavour_desc: data.flavour_desc,
+      flavour_img:
+        data.flavour_img && data.flavour_img.length > 0
+          ? data.flavour_img
+          : undefined,
       deity_id:
         data.deity_id && data.deity_id.length > 0 ? data.deity_id : undefined,
       historical_figures_id:
@@ -759,6 +769,37 @@ export function EditCoinModal({
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="Additional context or notes"
             />
+          </div>
+
+          {/* Flavour Description */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Flavour Description
+            </label>
+            <textarea
+              {...register("flavour_desc")}
+              rows={3}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+              placeholder="Detailed description for flavour content"
+            />
+          </div>
+
+          {/* Flavour Images */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Flavour Images
+            </label>
+            <MultiSelect
+              options={artifactOptions}
+              setValue={setValue}
+              watch={watch}
+              fieldName="flavour_img"
+              className="w-full rounded-md border border-gray-300 bg-white text-gray-900"
+              placeholder="Select artifacts..."
+            />
+            <p className="mt-1 text-sm text-gray-400">
+              Select artifacts to use as flavour images for this coin
+            </p>
           </div>
 
           {/* Sets */}

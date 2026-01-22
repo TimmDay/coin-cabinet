@@ -266,6 +266,8 @@ export const coinFormSchema = z
 
     // Additional information
     flavour_text: z.string().optional(),
+    flavour_desc: z.string().optional(),
+    flavour_img: z.array(z.string()).optional(),
     secondary_info: z.string().optional(),
     notable_features: z
       .array(

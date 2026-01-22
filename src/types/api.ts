@@ -3,8 +3,8 @@
  */
 
 import type {
-  SomnusCollection,
   NotableFeature,
+  SomnusCollection,
 } from "~/database/schema-somnus-collection"
 
 /**
@@ -66,6 +66,8 @@ export type CoinUpdateData = {
   legend_r_translation?: string | null
   desc_r?: string | null
   flavour_text?: string | null
+  flavour_desc?: string | null
+  flavour_img?: string[] | null
   deity_id?: string[] | null
   sets?: string[] | null
   notable_features?: NotableFeature[] | null

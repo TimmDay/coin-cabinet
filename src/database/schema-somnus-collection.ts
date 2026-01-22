@@ -72,6 +72,8 @@ export type SomnusCollection = {
 
   // Additional information
   flavour_text?: string | null
+  flavour_desc?: string | null
+  flavour_img?: string[] | null
   bpRoute?: string[] | null
   antiquities_register?: string | null
   provenance?: string | null
