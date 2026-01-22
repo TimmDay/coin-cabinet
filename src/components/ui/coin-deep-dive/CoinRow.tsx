@@ -141,7 +141,7 @@ export function CoinRow({
             )}
 
             {description && (
-              <p className="mt-2 text-sm leading-relaxed break-words text-slate-300 italic">
+              <p className="mt-2 text-sm leading-relaxed break-words text-slate-400 italic">
                 {description}
               </p>
             )}
@@ -253,7 +253,7 @@ export function CoinRow({
             )}
 
             {description && (
-              <p className="mt-2 text-sm leading-relaxed break-words text-slate-300 italic">
+              <p className="mt-2 text-sm leading-relaxed break-words text-slate-400 italic">
                 {description}
               </p>
             )}
@@ -341,7 +341,7 @@ export function CoinRow({
             )}
 
             {description && (
-              <p className="mt-2 text-sm leading-relaxed break-words text-slate-300 italic">
+              <p className="mt-2 text-sm leading-relaxed break-words text-slate-400 italic">
                 {description}
               </p>
             )}

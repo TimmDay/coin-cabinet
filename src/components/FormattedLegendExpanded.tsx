@@ -10,14 +10,14 @@ export function FormattedLegendExpanded({ text }: { text: string }) {
           // This is text within parentheses - remove the parentheses and apply special formatting
           const innerText = part.slice(1, -1) // Remove the parentheses
           return (
-            <span key={index} className="font-normal lowercase">
+            <span key={index} className="text-base font-normal lowercase">
               {innerText}
             </span>
           )
         } else {
-          // This is regular text - apply normal formatting (uppercase, bold)
+          // This is regular text - apply normal formatting (uppercase, bold) with larger font
           return (
-            <span key={index} className="font-bold uppercase">
+            <span key={index} className="text-2xl font-bold uppercase">
               {part}
             </span>
           )
