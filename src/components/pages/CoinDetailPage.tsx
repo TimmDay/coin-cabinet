@@ -2,9 +2,8 @@
 
 import { RelatedPosts } from "~/components/RelatedPosts"
 import { CoinDeepDive } from "~/components/ui/coin-deep-dive"
-import { CoinSnapshot } from "~/components/ui/coin-deep-dive/CoinSnapshot"
 import { NotFound404 } from "~/components/ui/NotFound404"
-import { PageTitleWithSnapshot } from "~/components/ui/PageTitleWithSnapshot"
+import { PageTitle } from "~/components/ui/PageTitle"
 import { useSpecificCoinData } from "~/hooks/useEnhancedCoinData"
 
 type CoinDetailPageProps = {
@@ -60,21 +59,7 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
       <div className="content-wrapper">
         <div>
           <header className="mb-8 md:mb-12">
-            <PageTitleWithSnapshot
-              coinSnapshot={
-                <CoinSnapshot
-                  civ={coin.civ}
-                  civSpecific={coin.civ_specific}
-                  mintId={coin.mint_id}
-                  mintYearEarliest={coin.mint_year_earliest}
-                  mintYearLatest={coin.mint_year_latest}
-                  diameter={coin.diameter}
-                  mass={coin.mass}
-                  dieAxis={coin.die_axis}
-                  reference={coin.reference}
-                  provenance={coin.provenance}
-                />
-              }
+            <PageTitle
               subtitle={coin.denomination}
               coinPhysicalInfo={{
                 diameter: coin.diameter,
@@ -83,7 +68,7 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
               }}
             >
               {coin.nickname ?? "Ancient Coin"}
-            </PageTitleWithSnapshot>
+            </PageTitle>
           </header>
 
           {/* Unified Layout: Everything in CoinDeepDive */}

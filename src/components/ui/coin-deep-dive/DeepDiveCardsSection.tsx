@@ -1,3 +1,4 @@
+import { useArtifacts } from "~/api/artifacts"
 import { useMints } from "~/api/mints"
 import { MintDeepDiveCard } from "~/components/ui"
 import { formatYearRange } from "~/lib/utils/date-formatting"
@@ -80,6 +81,7 @@ function transformHistoricalFiguresToCards(
 function createCoinFlip(
   coin: CoinEnhanced,
   mints: ReturnType<typeof useMints>["data"],
+  artifacts: ReturnType<typeof useArtifacts>["data"],
 ) {
   // Build civilization text
   const civText = coin.civ_specific
@@ -102,15 +104,23 @@ function createCoinFlip(
     coin.mint_year_latest,
   )
   const mintYearRangeClean = mintYearRange.replace(/[()]/g, "")
-  const mintInfo = [mintName, mintYearRangeClean].filter(Boolean).join(" ")
+  const mintInfo = [civText, mintName, mintYearRangeClean]
+    .filter(Boolean)
+    .join(" ")
+
+  // Look up artifact for flavour image
+  const artifactId = coin.flavour_img?.[0]
+  const artifact =
+    artifactId && artifacts ? artifacts.find((a) => a.id === artifactId) : null
 
   return {
     title: coin.reference ?? "Unknown Reference",
     subtitle: physicalCharacteristics ?? undefined,
-    primaryInfo:
-      [civText, coin.provenance].filter(Boolean).join(" • ") || undefined,
-    secondaryInfo: coin.flavour_text ?? undefined,
+    primaryInfo: [coin.provenance].filter(Boolean).join(" • ") || undefined,
+    secondaryInfo: coin.flavour_desc,
     footer: mintInfo || undefined,
+    image: artifact?.img_src || undefined,
+    altText: artifact?.flavour_text || undefined,
   }
 }
 
@@ -120,6 +130,7 @@ export function DeepDiveCardsSection({
   historicalFigures,
 }: DeepDiveCardsSectionProps) {
   const { data: mints } = useMints()
+  const { data: artifacts } = useArtifacts()
 
   // Helper function to get mint by ID
   const getMintById = (mintId: number | null | undefined) => {
@@ -154,7 +165,7 @@ export function DeepDiveCardsSection({
 
   const cardsToRender = [
     // This Coin Card (always shown)
-    createCard("coin", createCoinFlip(coinData, mints)),
+    createCard("coin", createCoinFlip(coinData, mints, artifacts)),
 
     // Deity cards
     ...matchingDeities

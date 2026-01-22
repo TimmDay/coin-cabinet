@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import CloudinaryImage from "~/components/CloudinaryImage"
 
 export type Source = {
   quote?: string
@@ -17,6 +18,10 @@ export type DeepDiveCardProps = {
   primaryInfo?: string
   /** Secondary information */
   secondaryInfo?: string
+  /** Image to display underneath secondary info */
+  image?: string
+  /** Alt text for the image */
+  altText?: string
   /** Footer text (usually styled greyish) */
   footer?: string
   sources?: Source[]
@@ -36,6 +41,8 @@ export function DeepDiveCard({
   subtitle,
   primaryInfo,
   secondaryInfo,
+  image,
+  altText,
   footer,
   className = "",
   defaultOpen = false,
@@ -83,21 +90,45 @@ export function DeepDiveCard({
       {/* Accordion Content - Info Area */}
       <div
         className={`space-y-4 overflow-hidden pb-4 transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          isOpen ? "max-h-[1500px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         {/* Primary Info */}
         {primaryInfo && (
-          <p className="text-muted-foreground text-center text-sm leading-relaxed">
+          <p className="text-center text-sm leading-relaxed text-gray-400">
             {primaryInfo}
           </p>
         )}
 
         {/* Secondary Info */}
         {secondaryInfo && (
-          <p className="text-muted-foreground text-center text-sm leading-relaxed">
+          <p className="text-center text-sm leading-relaxed text-gray-400">
             {secondaryInfo}
           </p>
+        )}
+
+        {/* Image */}
+        {image && (
+          <div className="mt-4">
+            <div className="group relative flex w-full items-center justify-center overflow-hidden rounded-lg shadow-sm">
+              <CloudinaryImage
+                src={image}
+                alt={altText || ""}
+                width={400}
+                height={400}
+              />
+              {/* Tooltip on hover */}
+              {altText && (
+                <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-xs -translate-x-1/2 rounded-lg bg-slate-900/95 px-3 py-2 text-xs text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100">
+                  <div className="text-center whitespace-pre-line">
+                    {altText}
+                  </div>
+                  {/* Arrow pointing down */}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900/95"></div>
+                </div>
+              )}
+            </div>
+          </div>
         )}
       </div>
 
