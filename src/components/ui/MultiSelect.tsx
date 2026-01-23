@@ -24,7 +24,7 @@ export function MultiSelect<T extends Record<string, any>>({
   const [focusedIndex, setFocusedIndex] = useState(-1)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLDivElement>(null)
-  const selectedValues = watch(fieldName as any) ?? []
+  const selectedValues = (watch(fieldName as any) as string[]) ?? []
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -102,18 +102,18 @@ export function MultiSelect<T extends Record<string, any>>({
   }, [focusedIndex, isOpen])
 
   const toggleOption = (value: string) => {
-    const currentValues = selectedValues || []
+    const currentValues = (selectedValues as string[]) || []
     const newValues = currentValues.includes(value)
-      ? currentValues.filter((v) => v !== value)
+      ? currentValues.filter((v: string) => v !== value)
       : [...currentValues, value]
 
-    setValue(fieldName as any, newValues, { shouldValidate: true })
+    setValue(fieldName as any, newValues as any, { shouldValidate: true })
   }
 
   const removeValue = (valueToRemove: string) => {
-    const currentValues = selectedValues || []
-    const newValues = currentValues.filter((v) => v !== valueToRemove)
-    setValue(fieldName as any, newValues, { shouldValidate: true })
+    const currentValues = (selectedValues as string[]) || []
+    const newValues = currentValues.filter((v: string) => v !== valueToRemove)
+    setValue(fieldName as any, newValues as any, { shouldValidate: true })
   }
 
   return (
@@ -132,7 +132,7 @@ export function MultiSelect<T extends Record<string, any>>({
         aria-label="Select sets"
       >
         {/* Selected pills */}
-        {selectedValues?.map((value) => {
+        {(selectedValues as string[])?.map((value: string) => {
           const option = options.find((opt) => opt.value === value)
           return (
             <span
@@ -166,7 +166,7 @@ export function MultiSelect<T extends Record<string, any>>({
         })}
 
         {/* Placeholder text */}
-        {(!selectedValues || selectedValues.length === 0) && (
+        {(!selectedValues || (selectedValues as string[]).length === 0) && (
           <span className="text-slate-400">{placeholder}</span>
         )}
 
@@ -197,7 +197,8 @@ export function MultiSelect<T extends Record<string, any>>({
           aria-label="Set options"
         >
           {options.map((option, index) => {
-            const isSelected = selectedValues?.includes(option.value) ?? false
+            const isSelected =
+              (selectedValues as string[])?.includes(option.value) ?? false
             const isFocused = index === focusedIndex
             return (
               <div

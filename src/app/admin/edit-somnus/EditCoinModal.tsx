@@ -17,17 +17,17 @@ import { useArtifactOptions } from "~/hooks/useArtifactOptions"
 import { useDeityOptions } from "~/hooks/useDeityOptions"
 import { useHistoricalFigureOptions } from "~/hooks/useHistoricalFigureOptions"
 import {
-    FormActions,
-    FormErrorDisplay,
-    handleUnsavedChanges,
-    ModalWrapper,
+  FormActions,
+  FormErrorDisplay,
+  handleUnsavedChanges,
+  ModalWrapper,
 } from "../../../components/forms"
 import {
-    authorityOptions,
-    civilizationOptions,
-    civSpecificOptions,
-    denominationOptions,
-    dieAxisOptions,
+  authorityOptions,
+  civilizationOptions,
+  civSpecificOptions,
+  denominationOptions,
+  dieAxisOptions,
 } from "./coin-form-options"
 
 type EditCoinModalProps = {
@@ -40,9 +40,7 @@ type EditCoinModalProps = {
 }
 
 // Helper function to transform coin data for form
-const createCoinFormData = (
-  coin: SomnusCollection | null,
-): CoinFormData => ({
+const createCoinFormData = (coin: SomnusCollection | null): CoinFormData => ({
   // Required fields - default to empty string
   nickname: coin?.nickname ?? "",
   authority: coin?.authority ?? "",
@@ -244,7 +242,7 @@ export function EditCoinModal({
         data.timelines_id && data.timelines_id.length > 0
           ? data.timelines_id
           : undefined,
-      sets: processArray(data.setsRaw, false), // Keep original case for sets
+      sets: processArray(data.setsRaw ?? "", false), // Keep original case for sets
       notable_features:
         data.notable_features && data.notable_features.length > 0
           ? data.notable_features

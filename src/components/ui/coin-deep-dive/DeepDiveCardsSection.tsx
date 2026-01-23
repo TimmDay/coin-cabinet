@@ -117,7 +117,7 @@ function createCoinFlip(
     title: coin.reference ?? "Unknown Reference",
     subtitle: physicalCharacteristics ?? undefined,
     primaryInfo: [coin.provenance].filter(Boolean).join(" • ") || undefined,
-    secondaryInfo: coin.flavour_desc,
+    secondaryInfo: coin.flavour_desc ?? undefined,
     footer: mintInfo || undefined,
     image: artifact?.img_src || undefined,
     altText: artifact?.flavour_text || undefined,
