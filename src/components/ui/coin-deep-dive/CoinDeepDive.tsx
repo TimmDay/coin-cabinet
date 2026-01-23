@@ -140,9 +140,6 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
               />
             ) : mintCoords ? (
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-slate-800">
-                  Mint Location: {mintName}
-                </h3>
                 <Map
                   center={mintCoords}
                   highlightMint={mintName}
