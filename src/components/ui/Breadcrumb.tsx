@@ -69,7 +69,7 @@ export function Breadcrumb({ className, items }: BreadcrumbProps) {
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn("text-base text-slate-400", className)}
+      className={cn("text-base text-slate-500", className)}
       data-breadcrumb
     >
       <div className="flex items-center">
@@ -78,16 +78,16 @@ export function Breadcrumb({ className, items }: BreadcrumbProps) {
 
           return (
             <span key={item.href} className="flex items-center">
-              {index > 0 && <span className="mx-1 text-slate-500">/</span>}
+              {index > 0 && <span className="mx-1 text-slate-600">/</span>}
 
               {isLast ? (
-                <span className="text-slate-300" aria-current="page">
+                <span className="text-slate-400" aria-current="page">
                   {item.label}
                 </span>
               ) : (
                 <Link
                   href={item.href}
-                  className="text-slate-400 transition-colors hover:[color:hsl(var(--primary))]"
+                  className="text-slate-500 transition-colors hover:[color:hsl(var(--primary))]"
                 >
                   {item.label}
                 </Link>

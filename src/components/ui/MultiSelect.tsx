@@ -1,18 +1,17 @@
 import { useEffect, useRef, useState } from "react"
 import type { UseFormSetValue, UseFormWatch } from "react-hook-form"
-import type { CoinFormData } from "~/lib/validations/coin-form"
 
-type MultiSelectProps = {
+type MultiSelectProps<T extends Record<string, any>> = {
   options: { value: string; label: string }[]
-  setValue: UseFormSetValue<CoinFormData>
-  watch: UseFormWatch<CoinFormData>
-  fieldName: "sets" | "deity_id" | "flavour_img"
+  setValue: UseFormSetValue<T>
+  watch: UseFormWatch<T>
+  fieldName: keyof T
   className?: string
   placeholder?: string
   error?: string
 }
 
-export function MultiSelect({
+export function MultiSelect<T extends Record<string, any>>({
   options,
   setValue,
   watch,
@@ -20,12 +19,12 @@ export function MultiSelect({
   className,
   placeholder = "Select options...",
   error,
-}: MultiSelectProps) {
+}: MultiSelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false)
   const [focusedIndex, setFocusedIndex] = useState(-1)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLDivElement>(null)
-  const selectedValues = watch(fieldName) ?? []
+  const selectedValues = watch(fieldName as any) ?? []
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -108,13 +107,13 @@ export function MultiSelect({
       ? currentValues.filter((v) => v !== value)
       : [...currentValues, value]
 
-    setValue(fieldName, newValues, { shouldValidate: true })
+    setValue(fieldName as any, newValues, { shouldValidate: true })
   }
 
   const removeValue = (valueToRemove: string) => {
     const currentValues = selectedValues || []
     const newValues = currentValues.filter((v) => v !== valueToRemove)
-    setValue(fieldName, newValues, { shouldValidate: true })
+    setValue(fieldName as any, newValues, { shouldValidate: true })
   }
 
   return (

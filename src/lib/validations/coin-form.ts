@@ -295,6 +295,8 @@ export const coinFormSchema = z
       })
       .pipe(z.array(z.string()).optional()),
     sets: z.array(z.string()).optional(),
+    setsRaw: z.string().optional(),
+    bpRouteRaw: z.string().optional().nullable(),
     antiquities_register: z.string().optional(),
     provenance: z.string().optional(),
     notes: z.string().optional(),

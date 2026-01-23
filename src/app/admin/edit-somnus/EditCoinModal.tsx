@@ -17,24 +17,18 @@ import { useArtifactOptions } from "~/hooks/useArtifactOptions"
 import { useDeityOptions } from "~/hooks/useDeityOptions"
 import { useHistoricalFigureOptions } from "~/hooks/useHistoricalFigureOptions"
 import {
-  FormActions,
-  FormErrorDisplay,
-  handleUnsavedChanges,
-  ModalWrapper,
+    FormActions,
+    FormErrorDisplay,
+    handleUnsavedChanges,
+    ModalWrapper,
 } from "../../../components/forms"
 import {
-  authorityOptions,
-  civilizationOptions,
-  civSpecificOptions,
-  denominationOptions,
-  dieAxisOptions,
+    authorityOptions,
+    civilizationOptions,
+    civSpecificOptions,
+    denominationOptions,
+    dieAxisOptions,
 } from "./coin-form-options"
-
-// Extended CoinFormData with raw string fields for form inputs
-type EditCoinFormData = CoinFormData & {
-  setsRaw: string
-  bpRouteRaw?: string | null
-}
 
 type EditCoinModalProps = {
   isOpen: boolean
@@ -48,7 +42,7 @@ type EditCoinModalProps = {
 // Helper function to transform coin data for form
 const createCoinFormData = (
   coin: SomnusCollection | null,
-): EditCoinFormData => ({
+): CoinFormData => ({
   // Required fields - default to empty string
   nickname: coin?.nickname ?? "",
   authority: coin?.authority ?? "",
@@ -158,7 +152,7 @@ export function EditCoinModal({
   }))
   const [timTookPhotos, setTimTookPhotos] = useState<boolean>(false)
 
-  const form = useForm<EditCoinFormData>({
+  const form = useForm<CoinFormData>({
     ...(mode === "create"
       ? { defaultValues: createCoinFormData(null) }
       : { values: createCoinFormData(coin) }),
@@ -205,7 +199,7 @@ export function EditCoinModal({
     return arr.length > 0 ? arr : undefined
   }
 
-  const onSubmit = async (data: EditCoinFormData) => {
+  const onSubmit = async (data: CoinFormData) => {
     if (mode === "edit" && !coin) return
 
     clearErrors()
