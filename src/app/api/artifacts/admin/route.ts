@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
+import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "~/database/supabase-server"
 import { artifactFormSchema } from "~/lib/validations/artifact-form"
 
@@ -10,7 +10,6 @@ export async function GET() {
     // Check authentication
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser()
 
     if (!user) {
@@ -47,7 +46,6 @@ export async function POST(request: NextRequest) {
     // Check authentication
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser()
 
     if (!user) {
@@ -98,7 +96,6 @@ export async function PUT(request: NextRequest) {
     // Check authentication
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser()
 
     if (!user) {
@@ -159,7 +156,6 @@ export async function DELETE(request: NextRequest) {
     // Check authentication
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser()
 
     if (!user) {

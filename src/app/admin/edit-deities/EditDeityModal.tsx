@@ -3,12 +3,12 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { FormActions, FormErrorDisplay, ModalWrapper } from "~/components/forms"
-import { useFormPersistence } from "~/hooks/useFormPersistence"
 import { CoinageFeaturesEditor } from "~/components/forms/CoinageFeaturesEditor"
 import { FestivalsEditor } from "~/components/forms/FestivalsEditor"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
-import { usePlaceOptions } from "~/hooks/usePlaceOptions"
 import type { Deity, Festival } from "~/database/schema-deities"
+import { useFormPersistence } from "~/hooks/useFormPersistence"
+import { usePlaceOptions } from "~/hooks/usePlaceOptions"
 import type { DeityFormInput } from "~/lib/validations/deity-form"
 
 type FormData = {
@@ -94,16 +94,6 @@ const createDeityFormData = (deity: Deity | null): FormData => {
   }
 
   return formData
-}
-
-// Helper function for processing comma-separated arrays
-const processArray = (str: string): string[] | undefined => {
-  if (!str || str.trim() === "") return undefined
-  const arr = str
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean)
-  return arr.length > 0 ? arr : undefined
 }
 
 export function EditDeityModal({

@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
-import type { Event as TimelineEvent } from "../../data/timelines/types"
+import { useEffect, useRef, useState } from "react"
 import { formatYear } from "~/lib/utils/date-formatting"
+import type { Event as TimelineEvent } from "../../data/timelines/types"
 
 export type MobileTimelineDrawerProps = {
   isOpen: boolean
@@ -25,7 +25,6 @@ export function MobileTimelineDrawer({
   currentEventIndex,
   onEventChange,
   className = "",
-  getEventIcon,
 }: MobileTimelineDrawerProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)

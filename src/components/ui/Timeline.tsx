@@ -1,11 +1,12 @@
 import Image from "next/image"
 import { useEffect, useState } from "react"
+import { formatYear } from "~/lib/utils/date-formatting"
 import type {
   EventKind,
   Event as TimelineEvent,
   Timeline as TimelineType,
 } from "../../data/timelines/types"
-import { formatYear } from "~/lib/utils/date-formatting"
+import { MobileTimelineDrawer } from "./MobileTimelineDrawer"
 import {
   InvertedMarker,
   InvertedStackedMarkers,
@@ -13,7 +14,6 @@ import {
   SideLineMarker,
   StackedMarkers,
 } from "./TimelineMarkers"
-import { MobileTimelineDrawer } from "./MobileTimelineDrawer"
 
 // TODO: icons for all timeline event types
 type TimelineProps = {
@@ -156,11 +156,7 @@ export function Timeline({
     }
   }
 
-  const handleEventClick = (
-    event: TimelineEvent,
-    clientX?: number,
-    clientY?: number,
-  ) => {
+  const handleEventClick = (event: TimelineEvent) => {
     // On mobile, show drawer on click instead of popup
     if (window.innerWidth < 768) {
       // Find the event index in chronological order

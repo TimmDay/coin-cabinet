@@ -15,7 +15,6 @@ export async function POST(request: Request) {
     // Check authentication
     const {
       data: { session },
-      error: authError,
     } = await supabase.auth.getSession()
 
     if (!session) {
