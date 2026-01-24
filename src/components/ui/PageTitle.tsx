@@ -42,7 +42,9 @@ export function PageTitle({
     : null
 
   return (
-    <div className={`flex flex-col items-center text-center ${className}`}>
+    <div
+      className={`mt-6 flex flex-col items-center text-center lg:mt-10 ${className}`}
+    >
       <h1 className="text-2xl font-light tracking-wide text-slate-300 sm:text-3xl lg:text-4xl">
         {words.map((word, index) => {
           if (index === lastWordIndex && shouldAccentLastWord) {
