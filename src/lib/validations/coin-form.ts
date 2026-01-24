@@ -106,7 +106,14 @@ export const coinFormSchema = z
       ),
 
     // Minting information
-    mint_id: z.number().optional(),
+    mint_id: z
+      .union([z.number(), z.string()])
+      .optional()
+      .transform((val) => {
+        if (val === undefined || val === null || val === "") return undefined
+        const num = typeof val === "string" ? parseInt(val) : val
+        return isNaN(num) ? undefined : num
+      }),
     mint_year_earliest: z
       .number()
       .or(z.nan())
