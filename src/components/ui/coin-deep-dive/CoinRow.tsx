@@ -268,15 +268,15 @@ export function CoinRow({
           <div className="flex flex-wrap gap-6">
             {/* Main coin image */}
             <div
-              className="artemis-card flex h-[280px] w-[280px] cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 xl:h-[320px] xl:w-[320px]"
+              className="artemis-card flex h-[420px] w-[420px] cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 xl:h-[480px] xl:w-[480px]"
               onClick={() => handleImageClick(imageLink, `${side} of coin`)}
             >
               <div className="max-h-full max-w-full">
                 <CloudinaryImage
                   src={imageLink}
                   alt={`${side} of coin`}
-                  width={320}
-                  height={320}
+                  width={480}
+                  height={480}
                   priority={priority}
                 />
               </div>
@@ -285,7 +285,7 @@ export function CoinRow({
             {/* Alternative lighting image (if available) */}
             {imageLinkAltlight && (
               <div
-                className="artemis-card flex h-[280px] w-[280px] cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 xl:h-[320px] xl:w-[320px]"
+                className="artemis-card flex h-[420px] w-[420px] cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 xl:h-[480px] xl:w-[480px]"
                 onClick={() =>
                   handleImageClick(
                     imageLinkAltlight,
@@ -297,8 +297,8 @@ export function CoinRow({
                   <CloudinaryImage
                     src={imageLinkAltlight}
                     alt={`${side} of coin (alternative lighting)`}
-                    width={320}
-                    height={320}
+                    width={480}
+                    height={480}
                   />
                 </div>
               </div>
@@ -307,7 +307,7 @@ export function CoinRow({
             {/* Sketch image (if available) */}
             {imageLinkSketch && (
               <div
-                className="artemis-card flex h-[280px] w-[280px] cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 xl:h-[320px] xl:w-[320px]"
+                className="artemis-card flex h-[420px] w-[420px] cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 xl:h-[480px] xl:w-[480px]"
                 onClick={() =>
                   handleImageClick(imageLinkSketch, `${side} sketch of coin`)
                 }
@@ -316,8 +316,8 @@ export function CoinRow({
                   <CloudinaryImage
                     src={imageLinkSketch}
                     alt={`${side} sketch of coin`}
-                    width={320}
-                    height={320}
+                    width={480}
+                    height={480}
                   />
                 </div>
               </div>
@@ -327,7 +327,7 @@ export function CoinRow({
 
         {/* Text content - width matches single coin image */}
         {hasAnyText && (
-          <div className="flex w-[280px] flex-col justify-center space-y-2 text-center xl:w-[320px]">
+          <div className="flex w-[420px] flex-col justify-center space-y-2 text-center xl:w-[480px]">
             {legendExpanded && (
               <p className="text-lg tracking-wide break-words text-slate-400 xl:text-xl">
                 <FormattedLegendExpanded text={legendExpanded} />

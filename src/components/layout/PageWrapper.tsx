@@ -11,12 +11,14 @@ type PageWrapperProps = {
 export function PageWrapper({ children }: PageWrapperProps) {
   const pathname = usePathname()
   const isHomePage = pathname === "/"
+  const isCoinDeepDivePage =
+    pathname.startsWith("/cabinet/") && pathname !== "/cabinet"
 
   return (
     <div className="bg-background flex min-h-screen flex-col">
       {/* Breadcrumb - positioned under header, above page content */}
-      {!isHomePage && (
-        <div className="flex w-full justify-center pt-8 pb-10 md:pt-12 md:pb-18">
+      {!isHomePage && !isCoinDeepDivePage && (
+        <div className="flex w-full justify-center pt-8 pb-6 md:pb-12">
           <Breadcrumb />
         </div>
       )}

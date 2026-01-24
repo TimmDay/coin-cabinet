@@ -234,7 +234,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="somnus-nav z-overlay relative flex h-32 flex-col justify-center px-4 sm:px-6 lg:h-48 lg:justify-end lg:px-8"
+      className="somnus-nav z-overlay relative flex h-32 flex-col justify-center px-4 sm:px-6 lg:h-20 lg:flex-row lg:items-center lg:justify-between lg:px-8"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -244,14 +244,14 @@ export default function Navbar() {
       </div>
 
       {/* UserMenu fixed to top right */}
-      <div className="absolute top-4 right-4 sm:right-6 lg:right-8">
+      <div className="absolute top-4 right-4 sm:right-6 lg:static lg:order-3">
         <UserMenu />
       </div>
 
-      {/* Site Logo */}
-      <div className="flex justify-center lg:absolute lg:top-12 lg:bottom-16 lg:left-1/2 lg:flex lg:-translate-x-1/2 lg:items-center">
+      {/* Site Logo - centered on mobile, left on desktop */}
+      <div className="flex justify-center lg:order-1 lg:justify-start">
         <NextLink href="/" className="">
-          <div className="flex h-20 w-20 cursor-pointer items-center justify-center lg:h-30 lg:w-30">
+          <div className="flex h-20 w-20 cursor-pointer items-center justify-center lg:h-12 lg:w-12">
             <img
               src="/assets/logo-white.svg"
               alt="Coin Cabinet Logo"
@@ -261,8 +261,8 @@ export default function Navbar() {
         </NextLink>
       </div>
 
-      {/* Main navigation centered at bottom - hidden on mobile */}
-      <div className="hidden items-center justify-center space-x-8 pb-4 lg:flex">
+      {/* Main navigation centered at bottom on mobile, centered inline on desktop */}
+      <div className="hidden items-center justify-center space-x-8 pb-4 lg:order-2 lg:flex lg:pb-0">
         <div className="flex items-center space-x-8">
           {visibleNavItems.map((item) => {
             const itemIsActive = pathname === item.href

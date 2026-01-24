@@ -1,7 +1,7 @@
 "use client"
 
-import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
 import { useViewport } from "~/hooks/useViewport"
+import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
 
 type PageTitleProps = {
   /** The main text of the title */
@@ -43,7 +43,7 @@ export function PageTitle({
 
   return (
     <div className={`flex flex-col items-center text-center ${className}`}>
-      <h1 className="text-3xl font-light tracking-wide text-slate-300 sm:text-4xl lg:text-5xl">
+      <h1 className="text-2xl font-light tracking-wide text-slate-300 sm:text-3xl lg:text-4xl">
         {words.map((word, index) => {
           if (index === lastWordIndex && shouldAccentLastWord) {
             return (
@@ -66,7 +66,7 @@ export function PageTitle({
 
       {/* Subtitle */}
       {subtitle && (
-        <div className="mt-2 text-center md:mt-4">
+        <div className="mt-1 text-center md:mt-4">
           {/* Mobile: Subtitle and coin info on same line */}
           {isMobile && physicalInfo ? (
             <div className="flex flex-wrap items-center justify-center gap-2 text-lg">
@@ -80,7 +80,7 @@ export function PageTitle({
       )}
 
       {/* Underline border - 300px wide */}
-      <div className="mt-5 h-px w-[300px] bg-gradient-to-r from-transparent via-slate-600 to-transparent md:mt-7"></div>
+      <div className="mt-3 h-px w-[300px] bg-gradient-to-r from-transparent via-slate-600 to-transparent md:mt-5"></div>
     </div>
   )
 }

@@ -58,9 +58,10 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
     <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
       <div className="content-wrapper">
         <div>
-          <header className="mb-8 md:mb-12">
+          <header className="mb-4 md:mb-6">
             <PageTitle
               subtitle={coin.denomination}
+              className="mt-12"
               coinPhysicalInfo={{
                 diameter: coin.diameter,
                 mass: coin.mass,
