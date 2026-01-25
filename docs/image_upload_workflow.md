@@ -23,7 +23,7 @@
    shopt -s nullglob 2>/dev/null || setopt null_glob 2>/dev/null
 
    # Find all image files using find command to handle extensions properly
-   image_dir="~/Desktop/somnus_collection_images/named_for_upload"
+   image_dir="~/Desktop/somnus_collection_images/04_named_for_upload"
 
    # Use find to locate all image files with various extensions
    while IFS= read -r -d '' file; do
@@ -59,7 +59,7 @@
                fi
            fi
        fi
-   done < <(find ~/Desktop/somnus_collection_images/named_for_upload -type f \( -iname "*.heic" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -print0)
+   done < <(find ~/Desktop/somnus_collection_images/04_named_for_upload -type f \( -iname "*.heic" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -print0)
 
    # Reset shell options
    shopt -u nullglob 2>/dev/null || unsetopt null_glob 2>/dev/null

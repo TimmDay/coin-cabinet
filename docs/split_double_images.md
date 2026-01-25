@@ -4,6 +4,7 @@
    - `brew install imagemagick` (mac)
    - `sudo apt-get install imagemagick` (linux)
    - windows: https://imagemagick.org/script/download.php#windows
+
 2. save this script as an executable and use it locally.
 
 ```bash

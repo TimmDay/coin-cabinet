@@ -18,6 +18,7 @@ export type MarkerProps = {
   onEventBlur?: () => void
   onEventKeyDown?: (event: TimelineEvent, e: React.KeyboardEvent) => void
   tabIndex?: number
+  isSelected?: boolean
 }
 
 export type SideLineMarkerProps = {
@@ -38,6 +39,7 @@ export type SideLineMarkerProps = {
   onEventBlur?: () => void
   onEventKeyDown?: (event: TimelineEvent, e: React.KeyboardEvent) => void
   tabIndex?: number
+  isSelected?: boolean
 }
 
 export type StackedMarkersProps = {
@@ -58,6 +60,8 @@ export type StackedMarkersProps = {
   onEventBlur?: () => void
   onEventKeyDown?: (event: TimelineEvent, e: React.KeyboardEvent) => void
   getEventTabIndex?: (event: TimelineEvent) => number
+  selectedEventIndex?: number
+  allEventsChronological?: TimelineEvent[]
 }
 
 export type InvertedStackedMarkersProps = StackedMarkersProps

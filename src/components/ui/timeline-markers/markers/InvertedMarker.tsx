@@ -12,6 +12,7 @@ export function InvertedMarker({
   onEventBlur,
   onEventKeyDown,
   tabIndex,
+  isSelected = false,
 }: MarkerProps) {
   return (
     <div key={`${year}-0`}>
@@ -22,7 +23,9 @@ export function InvertedMarker({
 
       {/* Event marker - below timeline */}
       <div
-        className="relative transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        className={`relative transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-blue-400 focus:outline-none ${
+          isSelected ? "scale-[1.3]" : ""
+        }`}
         onMouseEnter={(e) => onEventInteraction(event, e.clientX, e.clientY)}
         onMouseLeave={onEventLeave}
         onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
@@ -40,9 +43,11 @@ export function InvertedMarker({
           </div>
           <div
             className={`pointer-events-none absolute inset-0 rounded-full border shadow-lg ${
-              event.kind === "coin-minted"
-                ? "border-amber-500"
-                : "border-gray-500"
+              isSelected
+                ? "border-2 border-purple-500"
+                : event.kind === "coin-minted"
+                  ? "border-amber-500"
+                  : "border-gray-500"
             }`}
             style={{ zIndex: 10 }}
           />

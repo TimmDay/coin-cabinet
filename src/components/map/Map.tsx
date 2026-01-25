@@ -11,6 +11,7 @@ import {
   useMapEvents,
 } from "react-leaflet"
 import { useMints } from "~/api/mints"
+import { MAP_HEIGHT } from "~/lib/constants"
 import { formatYear } from "~/lib/utils/date-formatting"
 import { ROMAN_PROVINCES } from "./constants/provinces"
 import {
@@ -77,18 +78,96 @@ function MapViewController({
   const hasMountedRef = useRef(false)
 
   useEffect(() => {
-    if (map && center && zoom) {
-      // Skip the first render to avoid interfering with initial map setup
-      if (!hasMountedRef.current) {
-        hasMountedRef.current = true
+    console.log("🗺️  MapViewController useEffect triggered:", {
+      center,
+      zoom,
+      hasMap: !!map,
+      hasMounted: hasMountedRef.current,
+    })
+
+    if (!map || !center || !zoom) {
+      console.log("❌ Skipping: missing dependencies")
+      return
+    }
+
+    // Skip the first render to avoid interfering with initial map setup
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true
+      console.log("⏭️  Skipping first render")
+      return
+    }
+
+    // Validate that center is a proper array with exactly 2 elements
+    if (!Array.isArray(center) || center.length !== 2) {
+      console.warn("Invalid center array:", center)
+      return
+    }
+
+    // Extract and validate coordinates
+    const [lat, lng] = center
+
+    // Check if any values are invalid
+    const isLatValid =
+      typeof lat === "number" &&
+      isFinite(lat) &&
+      !isNaN(lat) &&
+      lat !== null &&
+      lat !== undefined
+    const isLngValid =
+      typeof lng === "number" &&
+      isFinite(lng) &&
+      !isNaN(lng) &&
+      lng !== null &&
+      lng !== undefined
+    const isZoomValid =
+      typeof zoom === "number" &&
+      isFinite(zoom) &&
+      !isNaN(zoom) &&
+      zoom !== null &&
+      zoom !== undefined &&
+      zoom > 0
+
+    if (!isLatValid || !isLngValid || !isZoomValid) {
+      console.warn("Invalid coordinates or zoom detected, skipping flyTo:", {
+        lat,
+        lng,
+        zoom,
+        isLatValid,
+        isLngValid,
+        isZoomValid,
+        center,
+      })
+      return
+    }
+
+    try {
+      // Final safety check - validate coordinates one more time right before flyTo
+      const [finalLat, finalLng] = center
+      if (
+        !Array.isArray(center) ||
+        center.length !== 2 ||
+        typeof finalLat !== "number" ||
+        typeof finalLng !== "number" ||
+        !isFinite(finalLat) ||
+        !isFinite(finalLng) ||
+        isNaN(finalLat) ||
+        isNaN(finalLng)
+      ) {
+        console.error(
+          "CRITICAL: Invalid coordinates detected at flyTo execution:",
+          { center, finalLat, finalLng },
+        )
         return
       }
 
       // Use flyTo for smooth aerial-style animation to new position and zoom
+      console.log("✈️  Executing map.flyTo:", { center, zoom })
       map.flyTo(center, zoom, {
         animate: true,
         duration: 1.5, // 1.5 second animation for smoother effect
       })
+    } catch (error) {
+      console.error("Error during flyTo operation:", error, { center, zoom })
     }
   }, [map, center, zoom])
 
@@ -149,7 +228,7 @@ type MapProps = {
 export const Map: React.FC<MapProps> = ({
   center,
   zoom,
-  height = "600px",
+  height = MAP_HEIGHT,
   width = "100%",
   className = "",
   layout = "default",
@@ -168,7 +247,45 @@ export const Map: React.FC<MapProps> = ({
   hideControls = false,
   highlightMint,
   timelineEventMarker,
+  onFlyTo,
 }) => {
+  // Validate and sanitize center prop to prevent NaN coordinates
+  const safeCenter = useMemo((): [number, number] => {
+    if (!center || !Array.isArray(center) || center.length !== 2) {
+      console.warn("Invalid center prop, using Rome default:", center)
+      return [41.9028, 12.4964] // Rome default
+    }
+
+    const [lat, lng] = center
+    const safeLat =
+      typeof lat === "number" && isFinite(lat) && !isNaN(lat) ? lat : 41.9028
+    const safeLng =
+      typeof lng === "number" && isFinite(lng) && !isNaN(lng) ? lng : 12.4964
+
+    if (safeLat !== lat || safeLng !== lng) {
+      console.warn("Sanitized invalid coordinates:", {
+        original: [lat, lng],
+        safe: [safeLat, safeLng],
+      })
+    }
+
+    return [safeLat, safeLng]
+  }, [center])
+
+  // Validate and sanitize zoom prop
+  const safeZoom = useMemo(() => {
+    if (
+      typeof zoom !== "number" ||
+      !isFinite(zoom) ||
+      isNaN(zoom) ||
+      zoom <= 0
+    ) {
+      console.warn("Invalid zoom prop, using default 5:", zoom)
+      return 5
+    }
+    return zoom
+  }, [zoom])
+
   // Use custom hooks for configuration and data management
   const config = useMapConfiguration()
   const { data: mints } = useMints()
@@ -501,15 +618,17 @@ export const Map: React.FC<MapProps> = ({
           className={
             layout === "fullscreen"
               ? "order-1 flex-1"
-              : `relative ${height === "600px" ? "h-[600px]" : ""} ${width === "100%" ? "w-full" : ""}`
+              : `relative ${width === "100%" ? "w-full" : ""}`
           }
+          style={layout === "default" ? { height } : undefined}
         >
           <div
             className={
               layout === "fullscreen"
                 ? "relative h-full w-full"
-                : `relative ${height === "600px" ? "h-[600px]" : ""} ${width === "100%" ? "w-full" : ""}`
+                : `relative ${width === "100%" ? "w-full" : ""}`
             }
+            style={layout === "default" ? { height } : undefined}
             {...(containerStyle && { style: containerStyle })}
           >
             <MapContainer
@@ -520,6 +639,8 @@ export const Map: React.FC<MapProps> = ({
               maxBoundsViscosity={MAP_BOUNDS.maxBoundsViscosity}
               minZoom={config.minZoom}
               maxZoom={config.maxZoom}
+              keyboard={false}
+              zoomControl={false}
             >
               <TileLayer
                 url={TILE_LAYER_CONFIG.url}
@@ -539,8 +660,8 @@ export const Map: React.FC<MapProps> = ({
               />
 
               {/* Map View Controller - handles external center/zoom changes */}
-              {center && zoom && (
-                <MapViewController center={center} zoom={zoom} />
+              {safeCenter && safeZoom && (
+                <MapViewController center={safeCenter} zoom={safeZoom} />
               )}
 
               {/* BC 60 Empire Extent Layer */}

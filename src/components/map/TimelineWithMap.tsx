@@ -1,8 +1,13 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
-import type { Timeline as TimelineType } from "../../data/timelines/types"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { MAP_HEIGHT } from "~/lib/constants"
+import type {
+  Event as TimelineEvent,
+  Timeline as TimelineType,
+} from "../../data/timelines/types"
 import { Timeline } from "../ui/Timeline"
+import { TimelineInfoBox } from "../ui/TimelineInfoBox"
 import { Map } from "./Map"
 
 export type TimelineWithMapProps = {
@@ -57,95 +62,220 @@ export function TimelineWithMap({
     description?: string
   } | null>(null)
 
+  // State for the info box - start at 0 to show first event details
+  const [selectedEventIndex, setSelectedEventIndex] = useState(0)
+
+  // Get all events from timeline (timeline is already an array of events)
+  const allEvents = timeline || []
+
+  // Don't render until we have data
+  if (!timeline || timeline.length === 0) {
+    return (
+      <div className={`flex flex-col lg:flex-row ${className}`}>
+        <div className="flex h-64 items-center justify-center text-slate-500">
+          Loading timeline data...
+        </div>
+      </div>
+    )
+  }
+
+  // Debug state changes
+  useEffect(() => {
+    console.log(
+      "📊 State change - selectedEventIndex:",
+      selectedEventIndex,
+      "mapCenter:",
+      mapCenter,
+      "mapZoom:",
+      mapZoom,
+    )
+    if (allEvents[selectedEventIndex]) {
+      console.log("Current event:", allEvents[selectedEventIndex].name)
+    }
+  }, [selectedEventIndex, mapCenter, mapZoom, allEvents])
+
   // Ref for timeline container to enable scrolling
   const timelineContainerRef = useRef<HTMLDivElement>(null)
   // Ref for map container to enable scrolling to bottom
   const mapContainerRef = useRef<HTMLDivElement>(null)
 
-  // Handle timeline event hover - just pan map to event location and show marker (no scroll)
-  const handleEventInteraction = useCallback(
-    (event: {
-      lat?: number
-      lng?: number
-      name?: string
-      year?: number
-      description?: string
-    }) => {
-      // If the event has coordinates, fly the map to that location and show marker
-      if (event.lat !== undefined && event.lng !== undefined) {
-        setMapCenter([event.lat, event.lng])
-        setMapZoom(eventZoomLevel)
-        setActiveTimelineEvent({
-          lat: event.lat,
-          lng: event.lng,
-          name: event.name ?? "Timeline Event",
-          year: event.year ?? 0,
-          description: event.description,
-        })
-      }
-    },
-    [eventZoomLevel],
-  )
+  // Helper function to validate coordinates
+  const hasValidCoordinates = useCallback((event: TimelineEvent): boolean => {
+    return (
+      event.lat !== undefined &&
+      event.lng !== undefined &&
+      event.lat !== null &&
+      event.lng !== null &&
+      !isNaN(event.lat) &&
+      !isNaN(event.lng) &&
+      typeof event.lat === "number" &&
+      typeof event.lng === "number"
+    )
+  }, [])
 
-  // Handle timeline event click - pan map to event location, show marker, and scroll on mobile
+  // No automatic initialization - map stays on Rome until user interacts
+  // The selectedEventIndex starts at 0 to show first event in info box
+
+  // Handle timeline event click - update selected event index and info box
   const handleEventClick = useCallback(
-    (event: {
-      lat?: number
-      lng?: number
-      name?: string
-      year?: number
-      description?: string
-    }) => {
-      // Auto-scroll so the bottom of the map is at the bottom of viewport with padding
-      if (mapContainerRef.current) {
-        // Calculate target position - bottom of map should be at bottom of viewport minus padding
-        const mapRect = mapContainerRef.current.getBoundingClientRect()
-        const mapBottom = mapRect.bottom + window.pageYOffset
-        const viewportHeight = window.innerHeight
-        const padding = 32 // 2rem padding (double the original 16px)
-        const targetY = mapBottom - viewportHeight + padding
+    (event: TimelineEvent) => {
+      console.log("🔥 handleEventClick called:", event.name, event.year)
+      const eventIndex = allEvents.findIndex(
+        (e) => e.name === event.name && e.year === event.year,
+      )
+      console.log(
+        "Found eventIndex:",
+        eventIndex,
+        "setting selectedEventIndex from",
+        selectedEventIndex,
+        "to",
+        eventIndex,
+      )
+      if (eventIndex !== -1) {
+        setSelectedEventIndex(eventIndex)
+        // Update map directly if event has valid coordinates
+        if (hasValidCoordinates(event)) {
+          const lat = event.lat!
+          const lng = event.lng!
+          if (isFinite(lat) && isFinite(lng) && !isNaN(lat) && !isNaN(lng)) {
+            // Double-check coordinates are valid before setting state
+            const validLat =
+              typeof lat === "number" && isFinite(lat) && !isNaN(lat)
+                ? lat
+                : 41.9028
+            const validLng =
+              typeof lng === "number" && isFinite(lng) && !isNaN(lng)
+                ? lng
+                : 12.4964
 
-        // Use slower, more deliberate scroll timing
-        const startY = window.pageYOffset
-        const distance = targetY - startY
-        const duration = 800 // Slower: 800ms instead of default ~300ms
-        let start: number | null = null
+            if (validLat !== lat || validLng !== lng) {
+              console.warn("Corrected invalid coordinates in setMapCenter:", {
+                original: [lat, lng],
+                corrected: [validLat, validLng],
+              })
+            }
 
-        const step = (timestamp: number) => {
-          if (!start) start = timestamp
-          const progress = Math.min((timestamp - start) / duration, 1)
-
-          // Ease-out function for smoother deceleration
-          const easeOut = 1 - Math.pow(1 - progress, 3)
-
-          window.scrollTo(0, startY + distance * easeOut)
-
-          if (progress < 1) {
-            requestAnimationFrame(step)
+            setMapCenter([validLat, validLng])
+            setMapZoom(eventZoomLevel)
+            setActiveTimelineEvent({
+              lat,
+              lng,
+              name: event.name ?? "Timeline Event",
+              year: event.year ?? 0,
+              description: event.description,
+            })
           }
         }
-
-        requestAnimationFrame(step)
-      }
-
-      // If the event has coordinates, fly the map to that location and show marker
-      if (event.lat !== undefined && event.lng !== undefined) {
-        setMapCenter([event.lat, event.lng])
-        setMapZoom(eventZoomLevel)
-        setActiveTimelineEvent({
-          lat: event.lat,
-          lng: event.lng,
-          name: event.name ?? "Timeline Event",
-          year: event.year ?? 0,
-          description: event.description,
-        })
       }
     },
-    [eventZoomLevel],
+    [allEvents, selectedEventIndex, hasValidCoordinates, eventZoomLevel],
   )
 
+  // Navigation functions for info box
+  const handlePreviousEvent = useCallback(() => {
+    console.log(
+      "⬅️  handlePreviousEvent called, current selectedEventIndex:",
+      selectedEventIndex,
+    )
+    if (allEvents.length === 0) return
+
+    const newIndex =
+      selectedEventIndex <= 0
+        ? allEvents.length - 1 // Wrap to last event
+        : selectedEventIndex - 1
+
+    const newEvent = allEvents[newIndex]
+    setSelectedEventIndex(newIndex)
+
+    // Update map directly
+    if (newEvent && hasValidCoordinates(newEvent)) {
+      const lat = newEvent.lat!
+      const lng = newEvent.lng!
+      if (isFinite(lat) && isFinite(lng) && !isNaN(lat) && !isNaN(lng)) {
+        // Double-check coordinates are valid before setting state
+        const validLat =
+          typeof lat === "number" && isFinite(lat) && !isNaN(lat)
+            ? lat
+            : 41.9028
+        const validLng =
+          typeof lng === "number" && isFinite(lng) && !isNaN(lng)
+            ? lng
+            : 12.4964
+
+        if (validLat !== lat || validLng !== lng) {
+          console.warn(
+            "Corrected invalid coordinates in handlePreviousEvent:",
+            { original: [lat, lng], corrected: [validLat, validLng] },
+          )
+        }
+
+        setMapCenter([validLat, validLng])
+        setMapZoom(eventZoomLevel)
+        setActiveTimelineEvent({
+          lat: validLat,
+          lng: validLng,
+          name: newEvent.name ?? "Timeline Event",
+          year: newEvent.year ?? 0,
+          description: newEvent.description,
+        })
+      }
+    }
+  }, [selectedEventIndex, allEvents, hasValidCoordinates, eventZoomLevel])
+
+  const handleNextEvent = useCallback(() => {
+    console.log(
+      "➡️  handleNextEvent called, current selectedEventIndex:",
+      selectedEventIndex,
+    )
+    if (allEvents.length === 0) return
+
+    const newIndex =
+      selectedEventIndex >= allEvents.length - 1
+        ? 0 // Wrap to first event
+        : selectedEventIndex + 1
+
+    const newEvent = allEvents[newIndex]
+    setSelectedEventIndex(newIndex)
+
+    // Update map directly
+    if (newEvent && hasValidCoordinates(newEvent)) {
+      const lat = newEvent.lat!
+      const lng = newEvent.lng!
+      if (isFinite(lat) && isFinite(lng) && !isNaN(lat) && !isNaN(lng)) {
+        // Double-check coordinates are valid before setting state
+        const validLat =
+          typeof lat === "number" && isFinite(lat) && !isNaN(lat)
+            ? lat
+            : 41.9028
+        const validLng =
+          typeof lng === "number" && isFinite(lng) && !isNaN(lng)
+            ? lng
+            : 12.4964
+
+        if (validLat !== lat || validLng !== lng) {
+          console.warn("Corrected invalid coordinates in handleNextEvent:", {
+            original: [lat, lng],
+            corrected: [validLat, validLng],
+          })
+        }
+
+        setMapCenter([validLat, validLng])
+        setMapZoom(eventZoomLevel)
+        setActiveTimelineEvent({
+          lat: validLat,
+          lng: validLng,
+          name: newEvent.name ?? "Timeline Event",
+          year: newEvent.year ?? 0,
+          description: newEvent.description,
+        })
+      }
+    }
+  }, [selectedEventIndex, allEvents, hasValidCoordinates, eventZoomLevel])
+
+  const currentEvent = allEvents[selectedEventIndex] || null
+
   return (
-    <div className={`flex flex-col${className}`}>
+    <div className={`flex flex-col ${className}`}>
       {/* Timeline at top */}
       <div ref={timelineContainerRef} className="pr-2">
         {showHeaders && (
@@ -155,14 +285,22 @@ export function TimelineWithMap({
         )}
         <Timeline
           timeline={timeline}
-          onEventInteraction={handleEventInteraction}
           onEventClick={handleEventClick}
-          className="timeline-in-map"
+          selectedEventIndex={selectedEventIndex}
+          hideTooltips={false}
+          className="timeline-in-map lg:hidden"
+        />
+        <Timeline
+          timeline={timeline}
+          onEventClick={handleEventClick}
+          selectedEventIndex={selectedEventIndex}
+          hideTooltips={true}
+          className="timeline-in-map hidden lg:block"
         />
       </div>
 
-      {/* Map at bottom */}
-      <div ref={mapContainerRef} className="-mx-4 md:mx-0 md:px-0">
+      {/* Mobile: Map only */}
+      <div ref={mapContainerRef} className="-mx-4 md:mx-0 md:px-0 lg:hidden">
         {showHeaders && (
           <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">Map</h2>
         )}
@@ -175,6 +313,36 @@ export function TimelineWithMap({
           timelineEventMarker={activeTimelineEvent}
           {...mapProps}
         />
+      </div>
+
+      {/* Desktop: Map and Info Box side by side */}
+      <div className="hidden lg:flex lg:flex-1">
+        {/* Map section - 2/3 width */}
+        <div ref={mapContainerRef} className="w-2/3">
+          {showHeaders && (
+            <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">Map</h2>
+          )}
+          <Map
+            center={mapCenter}
+            zoom={mapZoom}
+            width="100%"
+            showProvinceLabels={showProvinceLabels}
+            hideControls={true}
+            timelineEventMarker={activeTimelineEvent}
+            {...mapProps}
+          />
+        </div>
+
+        {/* Info Box section - 1/3 width, height matches map */}
+        <div className="w-1/3" style={{ height: MAP_HEIGHT }}>
+          <TimelineInfoBox
+            event={currentEvent}
+            onPrevious={handlePreviousEvent}
+            onNext={handleNextEvent}
+            hasPrevious={allEvents.length > 1}
+            hasNext={allEvents.length > 1}
+          />
+        </div>
       </div>
     </div>
   )

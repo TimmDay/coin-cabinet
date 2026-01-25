@@ -25,6 +25,8 @@ type TimelineProps = {
     clientX?: number,
     clientY?: number,
   ) => void
+  selectedEventIndex?: number
+  hideTooltips?: boolean
 }
 
 export function Timeline({
@@ -32,6 +34,8 @@ export function Timeline({
   className = "",
   onEventInteraction,
   onEventClick,
+  selectedEventIndex,
+  hideTooltips = false,
 }: TimelineProps) {
   const [hoveredEvent, setHoveredEvent] = useState<TimelineEvent | null>(null)
   const [focusedEvent, setFocusedEvent] = useState<TimelineEvent | null>(null)
@@ -78,6 +82,15 @@ export function Timeline({
   // Create a chronologically ordered flat list of all events for keyboard navigation
   const allEventsChronological = events.flatMap((event) => event)
 
+  // Helper function to check if an event is selected
+  const isEventSelected = (event: TimelineEvent): boolean => {
+    if (selectedEventIndex === undefined) return false
+    const eventIndex = allEventsChronological.findIndex(
+      (e) => e.name === event.name && e.year === event.year,
+    )
+    return eventIndex === selectedEventIndex
+  }
+
   // Function to get tab index for an event based on chronological order
   const getEventTabIndex = (event: TimelineEvent): number => {
     const index = allEventsChronological.findIndex(
@@ -117,6 +130,9 @@ export function Timeline({
   ) => {
     // Only show hover popups on desktop (md breakpoint and above)
     if (window.innerWidth < 768) return
+
+    // Don't show tooltips if hideTooltips is true
+    if (hideTooltips) return
 
     setHoveredEvent(event)
 
@@ -182,6 +198,9 @@ export function Timeline({
   const handleEventFocus = (event: TimelineEvent, element: HTMLElement) => {
     // Only show focus popups on desktop (md breakpoint and above)
     if (window.innerWidth < 768) return
+
+    // Don't show tooltips if hideTooltips is true
+    if (hideTooltips) return
 
     setFocusedEvent(event)
 
@@ -339,6 +358,7 @@ export function Timeline({
             onEventBlur={handleEventBlur}
             onEventKeyDown={handleEventKeyDown}
             tabIndex={getEventTabIndex(sideLineEvent)}
+            isSelected={isEventSelected(sideLineEvent)}
           />
         </div>
       )}
@@ -389,6 +409,8 @@ export function Timeline({
                     onEventBlur={handleEventBlur}
                     onEventKeyDown={handleEventKeyDown}
                     getEventTabIndex={getEventTabIndex}
+                    selectedEventIndex={selectedEventIndex}
+                    allEventsChronological={allEventsChronological}
                   />
                 ) : (
                   <StackedMarkers
@@ -401,6 +423,8 @@ export function Timeline({
                     onEventBlur={handleEventBlur}
                     onEventKeyDown={handleEventKeyDown}
                     getEventTabIndex={getEventTabIndex}
+                    selectedEventIndex={selectedEventIndex}
+                    allEventsChronological={allEventsChronological}
                   />
                 )
               ) : isInverted ? (
@@ -414,6 +438,7 @@ export function Timeline({
                   onEventBlur={handleEventBlur}
                   onEventKeyDown={handleEventKeyDown}
                   tabIndex={getEventTabIndex(yearEvents[0]!)}
+                  isSelected={isEventSelected(yearEvents[0]!)}
                 />
               ) : (
                 <NormalMarker
@@ -426,6 +451,7 @@ export function Timeline({
                   onEventBlur={handleEventBlur}
                   onEventKeyDown={handleEventKeyDown}
                   tabIndex={getEventTabIndex(yearEvents[0]!)}
+                  isSelected={isEventSelected(yearEvents[0]!)}
                 />
               )}
             </div>
@@ -449,6 +475,7 @@ export function Timeline({
             onEventBlur={handleEventBlur}
             onEventKeyDown={handleEventKeyDown}
             tabIndex={getEventTabIndex(sideLineEndEvent)}
+            isSelected={isEventSelected(sideLineEndEvent)}
           />
         </div>
       )}
