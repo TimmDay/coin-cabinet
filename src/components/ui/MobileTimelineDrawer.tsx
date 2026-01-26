@@ -192,39 +192,84 @@ export function MobileTimelineDrawer({
   const hasPrevEvent = true
   const hasNextEvent = true
 
+  // Handle click outside to close
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === drawerRef.current) {
+      onClose()
+    }
+  }
+
   return (
     <div
       ref={drawerRef}
       className="z-modal fixed inset-0 flex items-start justify-center"
+      onClick={handleBackdropClick}
     >
       {/* No background overlay - map stays fully visible */}
 
       {/* Drawer content */}
       <div
         ref={contentRef}
-        className={`relative w-full transform rounded-b-2xl border border-slate-600 bg-slate-800/95 shadow-xl backdrop-blur-sm transition-all duration-300 ease-out ${
+        className={`relative flex w-full flex-col rounded-b-2xl border border-slate-600 bg-slate-800/95 shadow-xl backdrop-blur-sm transition-all duration-300 ease-out ${
           isOpen && !isAnimating
             ? "translate-y-0 opacity-100"
             : "-translate-y-full opacity-0"
         } ${className}`}
+        style={{ height: "320px" }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Top section with close button only */}
-        <div className="relative px-4 pt-4 pb-2">
-          {/* Close button - absolute positioned */}
-          <button
-            onClick={onClose}
-            className="absolute top-2 right-2 rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-700 hover:text-slate-300"
-            aria-label="Close drawer"
-          >
-            <X size={20} />
-          </button>
+        {/* Fixed header with navigation and close button */}
+        <div className="flex-shrink-0">
+          {/* Top section with chevron navigation */}
+          <div className="relative flex items-center justify-between px-4 py-3">
+            {/* Left chevron */}
+            <button
+              onClick={goToPrevEvent}
+              disabled={!hasPrevEvent}
+              className={`rounded-full p-2 transition-colors ${
+                hasPrevEvent
+                  ? "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  : "cursor-not-allowed text-slate-600"
+              }`}
+              aria-label="Previous event"
+            >
+              <ChevronLeft size={24} />
+            </button>
+
+            {/* Event counter in center */}
+            <div className="text-xs text-slate-400">
+              {currentEventIndex + 1} of {events.length}
+            </div>
+
+            {/* Right chevron */}
+            <button
+              onClick={goToNextEvent}
+              disabled={!hasNextEvent}
+              className={`rounded-full p-2 transition-colors ${
+                hasNextEvent
+                  ? "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  : "cursor-not-allowed text-slate-600"
+              }`}
+              aria-label="Next event"
+            >
+              <ChevronRight size={24} />
+            </button>
+
+            {/* Close button - absolute positioned */}
+            <button
+              onClick={onClose}
+              className="absolute top-1 right-1 rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-700 hover:text-slate-300"
+              aria-label="Close drawer"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
-        {/* Event content */}
-        <div className="px-6 pb-4">
+        {/* Scrollable event content */}
+        <div className="flex-1 overflow-y-auto px-6 py-4">
           {/* Event title with year */}
           <div className="mb-3 text-lg font-semibold text-amber-400">
             {currentEvent.name} ({formatYear(currentEvent.year)})
@@ -236,42 +281,6 @@ export function MobileTimelineDrawer({
               {currentEvent.description}
             </div>
           )}
-        </div>
-
-        {/* Bottom section with chevron navigation */}
-        <div className="relative flex items-center justify-between px-4 py-4">
-          {/* Left chevron */}
-          <button
-            onClick={goToPrevEvent}
-            disabled={!hasPrevEvent}
-            className={`rounded-full p-3 transition-colors ${
-              hasPrevEvent
-                ? "text-slate-300 hover:bg-slate-700 hover:text-white"
-                : "cursor-not-allowed text-slate-600"
-            }`}
-            aria-label="Previous event"
-          >
-            <ChevronLeft size={28} />
-          </button>
-
-          {/* Event counter in center */}
-          <div className="text-xs text-slate-400">
-            {currentEventIndex + 1} of {events.length}
-          </div>
-
-          {/* Right chevron */}
-          <button
-            onClick={goToNextEvent}
-            disabled={!hasNextEvent}
-            className={`rounded-full p-3 transition-colors ${
-              hasNextEvent
-                ? "text-slate-300 hover:bg-slate-700 hover:text-white"
-                : "cursor-not-allowed text-slate-600"
-            }`}
-            aria-label="Next event"
-          >
-            <ChevronRight size={28} />
-          </button>
         </div>
       </div>
     </div>

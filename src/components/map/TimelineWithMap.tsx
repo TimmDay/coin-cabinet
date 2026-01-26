@@ -171,6 +171,23 @@ export function TimelineWithMap({
         year: event.year ?? 0,
         description: event.description,
       })
+
+      // On mobile, scroll map into view with 8px gap at bottom
+      if (mapContainerRef.current && window.innerWidth < 1024) {
+        // lg breakpoint
+        setTimeout(() => {
+          if (!mapContainerRef.current) return
+          
+          const rect = mapContainerRef.current.getBoundingClientRect()
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+          const targetPosition = scrollTop + rect.bottom - window.innerHeight + 8
+          
+          window.scrollTo({
+            top: targetPosition,
+            behavior: "smooth",
+          })
+        }, 100)
+      }
     },
     [hasValidCoordinates, eventZoomLevel],
   )
