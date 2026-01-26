@@ -217,6 +217,7 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
           <CoinCardGridItem
             key={coin.id}
             civ={coin.civ}
+            civSpecific={coin.civ_specific}
             nickname={coin.nickname}
             denomination={coin.denomination}
             mintYearEarliest={coin.mint_year_earliest}

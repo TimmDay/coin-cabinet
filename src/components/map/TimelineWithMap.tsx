@@ -177,11 +177,13 @@ export function TimelineWithMap({
         // lg breakpoint
         setTimeout(() => {
           if (!mapContainerRef.current) return
-          
+
           const rect = mapContainerRef.current.getBoundingClientRect()
-          const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-          const targetPosition = scrollTop + rect.bottom - window.innerHeight + 8
-          
+          const scrollTop =
+            window.pageYOffset || document.documentElement.scrollTop
+          const targetPosition =
+            scrollTop + rect.bottom - window.innerHeight + 8
+
           window.scrollTo({
             top: targetPosition,
             behavior: "smooth",

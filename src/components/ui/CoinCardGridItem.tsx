@@ -5,6 +5,8 @@ import { formatYearRange } from "~/lib/utils/date-formatting"
 type CoinCardGridItemProps = {
   /** Civilization of the coin */
   civ: string
+  /** Specific civilization (used for Roman Provincial) */
+  civSpecific?: string | null
   /** Nickname or ruler name */
   nickname?: string
   /** Denomination type */
@@ -29,6 +31,7 @@ type CoinCardGridItemProps = {
 
 export function CoinCardGridItem({
   civ,
+  civSpecific,
   nickname,
   denomination,
   mintYearEarliest,
@@ -156,7 +159,9 @@ export function CoinCardGridItem({
           className={`${textMarginClass} flex w-0 min-w-full flex-col items-center opacity-0 transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100`}
         >
           <p className="text-sm whitespace-nowrap text-slate-300">
-            {civ.toUpperCase()}
+            {civ === "Roman Provincial" && civSpecific
+              ? civSpecific.toUpperCase()
+              : civ.toUpperCase()}
             {nickname && `. ${nickname}`}
           </p>
           <p className="text-sm whitespace-nowrap text-slate-300">
