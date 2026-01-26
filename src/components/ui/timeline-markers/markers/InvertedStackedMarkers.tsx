@@ -5,11 +5,7 @@ import type { InvertedStackedMarkersProps } from "../types"
 export function InvertedStackedMarkers({
   year,
   events,
-  onEventInteraction,
   onEventClick,
-  onEventLeave,
-  onEventFocus,
-  onEventBlur,
   onEventKeyDown,
   getEventTabIndex,
   selectedEventIndex,
@@ -49,13 +45,7 @@ export function InvertedStackedMarkers({
                 isEventSelected ? "scale-[1.3]" : ""
               }`}
               style={{ top: `${eventIndex * 32}px`, left: "50%" }} // Stack vertically downward
-              onMouseEnter={(e) =>
-                onEventInteraction(event, e.clientX, e.clientY)
-              }
-              onMouseLeave={onEventLeave}
               onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
-              onFocus={(e) => onEventFocus?.(event, e.currentTarget)}
-              onBlur={() => onEventBlur?.()}
               onKeyDown={(e) => onEventKeyDown?.(event, e)}
               tabIndex={getEventTabIndex ? getEventTabIndex(event) : undefined}
               role="button"

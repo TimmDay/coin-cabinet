@@ -268,14 +268,12 @@ export function TimelineWithMap({
           timeline={timeline}
           onEventClick={handleEventClick}
           selectedEventIndex={selectedEventIndex}
-          hideTooltips={false}
           className="timeline-in-map lg:hidden"
         />
         <Timeline
           timeline={timeline}
           onEventClick={handleEventClick}
           selectedEventIndex={selectedEventIndex}
-          hideTooltips={true}
           className="timeline-in-map hidden lg:block"
         />
       </div>

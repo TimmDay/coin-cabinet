@@ -5,11 +5,7 @@ import type { StackedMarkersProps } from "../types"
 export function StackedMarkers({
   year,
   events,
-  onEventInteraction,
   onEventClick,
-  onEventLeave,
-  onEventFocus,
-  onEventBlur,
   onEventKeyDown,
   getEventTabIndex,
   selectedEventIndex,
@@ -52,13 +48,7 @@ export function StackedMarkers({
                 top: `${(events.length - 1 - eventIndex) * -32}px`,
                 left: "50%",
               }} // Stack vertically, top to bottom order
-              onMouseEnter={(e) =>
-                onEventInteraction(event, e.clientX, e.clientY)
-              }
-              onMouseLeave={onEventLeave}
               onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
-              onFocus={(e) => onEventFocus?.(event, e.currentTarget)}
-              onBlur={() => onEventBlur?.()}
               onKeyDown={(e) => onEventKeyDown?.(event, e)}
               tabIndex={getEventTabIndex ? getEventTabIndex(event) : undefined}
               role="button"

@@ -5,11 +5,7 @@ import type { MarkerProps } from "../types"
 export function InvertedMarker({
   year,
   event,
-  onEventInteraction,
   onEventClick,
-  onEventLeave,
-  onEventFocus,
-  onEventBlur,
   onEventKeyDown,
   tabIndex,
   isSelected = false,
@@ -26,11 +22,7 @@ export function InvertedMarker({
         className={`relative transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-blue-400 focus:outline-none ${
           isSelected ? "scale-[1.3]" : ""
         }`}
-        onMouseEnter={(e) => onEventInteraction(event, e.clientX, e.clientY)}
-        onMouseLeave={onEventLeave}
         onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
-        onFocus={(e) => onEventFocus?.(event, e.currentTarget)}
-        onBlur={() => onEventBlur?.()}
         onKeyDown={(e) => onEventKeyDown?.(event, e)}
         tabIndex={tabIndex}
         role="button"

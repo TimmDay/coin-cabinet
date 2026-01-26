@@ -3,19 +3,11 @@ import type { Event as TimelineEvent } from "../../../data/timelines/types"
 export type MarkerProps = {
   year: number
   event: TimelineEvent
-  onEventInteraction: (
-    event: TimelineEvent,
-    clientX: number,
-    clientY: number,
-  ) => void
   onEventClick: (
     event: TimelineEvent,
     clientX?: number,
     clientY?: number,
   ) => void
-  onEventLeave: () => void
-  onEventFocus?: (event: TimelineEvent, element: HTMLElement) => void
-  onEventBlur?: () => void
   onEventKeyDown?: (event: TimelineEvent, e: React.KeyboardEvent) => void
   tabIndex?: number
   isSelected?: boolean
@@ -24,19 +16,11 @@ export type MarkerProps = {
 export type SideLineMarkerProps = {
   event: TimelineEvent
   position?: "start" | "end" // New prop to control positioning
-  onEventInteraction: (
-    event: TimelineEvent,
-    clientX: number,
-    clientY: number,
-  ) => void
   onEventClick: (
     event: TimelineEvent,
     clientX?: number,
     clientY?: number,
   ) => void
-  onEventLeave: () => void
-  onEventFocus?: (event: TimelineEvent, element: HTMLElement) => void
-  onEventBlur?: () => void
   onEventKeyDown?: (event: TimelineEvent, e: React.KeyboardEvent) => void
   tabIndex?: number
   isSelected?: boolean
@@ -45,19 +29,11 @@ export type SideLineMarkerProps = {
 export type StackedMarkersProps = {
   year: number
   events: TimelineEvent[]
-  onEventInteraction: (
-    event: TimelineEvent,
-    clientX: number,
-    clientY: number,
-  ) => void
   onEventClick: (
     event: TimelineEvent,
     clientX?: number,
     clientY?: number,
   ) => void
-  onEventLeave: () => void
-  onEventFocus?: (event: TimelineEvent, element: HTMLElement) => void
-  onEventBlur?: () => void
   onEventKeyDown?: (event: TimelineEvent, e: React.KeyboardEvent) => void
   getEventTabIndex?: (event: TimelineEvent) => number
   selectedEventIndex?: number
