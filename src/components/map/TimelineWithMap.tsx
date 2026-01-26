@@ -1,6 +1,7 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
+import { useInViewport } from "~/hooks/useInViewport"
 import { MAP_HEIGHT } from "~/lib/constants"
 import type {
   Event as TimelineEvent,
@@ -10,35 +11,24 @@ import { Timeline } from "../ui/Timeline"
 import { TimelineInfoBox } from "../ui/TimelineInfoBox"
 import { Map } from "./Map"
 
+const ROME_DEFAULT: [number, number] = [41.9028, 12.4964]
+
 /**
- * Hook to detect when an element enters the viewport
+ * Validates and sanitizes coordinates, returning safe values or Rome default
  */
-function useInViewport(ref: React.RefObject<HTMLDivElement | null>) {
-  const [isInViewport, setIsInViewport] = useState(false)
-
-  useEffect(() => {
-    const element = ref.current
-    if (!element) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          setIsInViewport(true)
-          // Once in viewport, stop observing
-          observer.disconnect()
-        }
-      },
-      {
-        rootMargin: "100px", // Load slightly before entering viewport
-      },
-    )
-
-    observer.observe(element)
-
-    return () => observer.disconnect()
-  }, [ref])
-
-  return isInViewport
+function sanitizeCoordinates(
+  lat: number | undefined | null,
+  lng: number | undefined | null,
+): [number, number] {
+  const validLat =
+    typeof lat === "number" && isFinite(lat) && !isNaN(lat)
+      ? lat
+      : ROME_DEFAULT[0]
+  const validLng =
+    typeof lng === "number" && isFinite(lng) && !isNaN(lng)
+      ? lng
+      : ROME_DEFAULT[1]
+  return [validLat, validLng]
 }
 
 export type TimelineWithMapProps = {
@@ -94,7 +84,7 @@ export function TimelineWithMap({
     isFinite(initialCenter[0]) &&
     isFinite(initialCenter[1])
       ? initialCenter
-      : [41.9028, 12.4964] // Rome default fallback
+      : ROME_DEFAULT
 
   const [activeTimelineEvent, setActiveTimelineEvent] = useState<{
     lat: number
@@ -159,6 +149,32 @@ export function TimelineWithMap({
   // No automatic initialization - map stays on Rome until user interacts
   // The selectedEventIndex starts at 0 to show first event in info box
 
+  /**
+   * Navigate to an event on the map if it has valid coordinates
+   */
+  const navigateToEvent = useCallback(
+    (event: TimelineEvent) => {
+      if (!hasValidCoordinates(event) || !navigateMapRef.current) return
+
+      const lat = event.lat!
+      const lng = event.lng!
+
+      if (!isFinite(lat) || !isFinite(lng) || isNaN(lat) || isNaN(lng)) return
+
+      const [validLat, validLng] = sanitizeCoordinates(lat, lng)
+
+      navigateMapRef.current([validLat, validLng], eventZoomLevel)
+      setActiveTimelineEvent({
+        lat: validLat,
+        lng: validLng,
+        name: event.name ?? "Timeline Event",
+        year: event.year ?? 0,
+        description: event.description,
+      })
+    },
+    [hasValidCoordinates, eventZoomLevel],
+  )
+
   // Handle timeline event click - update selected event index and info box
   const handleEventClick = useCallback(
     (event: TimelineEvent) => {
@@ -167,37 +183,10 @@ export function TimelineWithMap({
       )
       if (eventIndex !== -1) {
         setSelectedEventIndex(eventIndex)
-        // Navigate map if event has valid coordinates
-        if (hasValidCoordinates(event)) {
-          const lat = event.lat!
-          const lng = event.lng!
-          if (isFinite(lat) && isFinite(lng) && !isNaN(lat) && !isNaN(lng)) {
-            const validLat =
-              typeof lat === "number" && isFinite(lat) && !isNaN(lat)
-                ? lat
-                : 41.9028
-            const validLng =
-              typeof lng === "number" && isFinite(lng) && !isNaN(lng)
-                ? lng
-                : 12.4964
-
-            // Use the navigate function instead of setState
-            if (navigateMapRef.current) {
-              navigateMapRef.current([validLat, validLng], eventZoomLevel)
-            }
-
-            setActiveTimelineEvent({
-              lat: validLat,
-              lng: validLng,
-              name: event.name ?? "Timeline Event",
-              year: event.year ?? 0,
-              description: event.description,
-            })
-          }
-        }
+        navigateToEvent(event)
       }
     },
-    [allEvents, hasValidCoordinates, eventZoomLevel],
+    [allEvents, navigateToEvent],
   )
 
   // Navigation functions for info box
@@ -212,34 +201,10 @@ export function TimelineWithMap({
     const newEvent = allEvents[newIndex]
     setSelectedEventIndex(newIndex)
 
-    // Update map directly
-    if (newEvent && hasValidCoordinates(newEvent)) {
-      const lat = newEvent.lat!
-      const lng = newEvent.lng!
-      if (isFinite(lat) && isFinite(lng) && !isNaN(lat) && !isNaN(lng)) {
-        // Double-check coordinates are valid before setting state
-        const validLat =
-          typeof lat === "number" && isFinite(lat) && !isNaN(lat)
-            ? lat
-            : 41.9028
-        const validLng =
-          typeof lng === "number" && isFinite(lng) && !isNaN(lng)
-            ? lng
-            : 12.4964
-
-        if (navigateMapRef.current) {
-          navigateMapRef.current([validLat, validLng], eventZoomLevel)
-        }
-        setActiveTimelineEvent({
-          lat: validLat,
-          lng: validLng,
-          name: newEvent.name ?? "Timeline Event",
-          year: newEvent.year ?? 0,
-          description: newEvent.description,
-        })
-      }
+    if (newEvent) {
+      navigateToEvent(newEvent)
     }
-  }, [selectedEventIndex, allEvents, hasValidCoordinates, eventZoomLevel])
+  }, [selectedEventIndex, allEvents, navigateToEvent])
 
   const handleNextEvent = useCallback(() => {
     if (allEvents.length === 0) return
@@ -252,33 +217,10 @@ export function TimelineWithMap({
     const newEvent = allEvents[newIndex]
     setSelectedEventIndex(newIndex)
 
-    // Navigate map if event has valid coordinates
-    if (newEvent && hasValidCoordinates(newEvent) && navigateMapRef.current) {
-      const lat = newEvent.lat!
-      const lng = newEvent.lng!
-      if (isFinite(lat) && isFinite(lng) && !isNaN(lat) && !isNaN(lng)) {
-        const validLat =
-          typeof lat === "number" && isFinite(lat) && !isNaN(lat)
-            ? lat
-            : 41.9028
-        const validLng =
-          typeof lng === "number" && isFinite(lng) && !isNaN(lng)
-            ? lng
-            : 12.4964
-
-        if (navigateMapRef.current) {
-          navigateMapRef.current([validLat, validLng], eventZoomLevel)
-        }
-        setActiveTimelineEvent({
-          lat: validLat,
-          lng: validLng,
-          name: newEvent.name ?? "Timeline Event",
-          year: newEvent.year ?? 0,
-          description: newEvent.description,
-        })
-      }
+    if (newEvent) {
+      navigateToEvent(newEvent)
     }
-  }, [selectedEventIndex, allEvents, hasValidCoordinates, eventZoomLevel])
+  }, [selectedEventIndex, allEvents, navigateToEvent])
 
   const currentEvent = allEvents[selectedEventIndex] || null
 
