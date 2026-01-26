@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Trash2, Plus } from "lucide-react"
+import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
 import { Select } from "~/components/ui/Select"
 import type { Place } from "~/database/schema-places"
 
@@ -152,6 +152,24 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
       const newItems = items.filter((_, i) => i !== index)
       updateFormValue(newItems)
     }
+  }
+
+  const moveItemUp = (index: number) => {
+    if (index === 0) return // Already at the top
+    const newItems = [...items]
+    const temp = newItems[index - 1]
+    newItems[index - 1] = newItems[index]!
+    newItems[index] = temp!
+    updateFormValue(newItems)
+  }
+
+  const moveItemDown = (index: number) => {
+    if (index === items.length - 1) return // Already at the bottom
+    const newItems = [...items]
+    const temp = newItems[index + 1]
+    newItems[index + 1] = newItems[index]!
+    newItems[index] = temp!
+    updateFormValue(newItems)
   }
 
   const getFieldValue = (item: T, field: Field): string => {
@@ -500,15 +518,42 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
                     </div>
                   </div>
 
-                  {/* Delete Button - Absolutely positioned bottom right */}
-                  <button
-                    type="button"
-                    onClick={() => removeItem(index)}
-                    className="absolute right-0 bottom-0 rounded p-1.5 text-red-400 transition-colors hover:bg-red-900/20 hover:text-red-300"
-                    title={`Remove ${title.toLowerCase().slice(0, -1)}`}
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  {/* Action Buttons - Absolutely positioned on the right */}
+                  <div className="absolute right-0 bottom-0 flex flex-col gap-0.5">
+                    {/* Move Up Button */}
+                    <button
+                      type="button"
+                      onClick={() => moveItemUp(index)}
+                      disabled={index === 0}
+                      className="rounded p-1 text-slate-400 transition-colors hover:bg-slate-700/50 hover:text-slate-200 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                      title={index === 0 ? "Already at top" : "Move up"}
+                    >
+                      <ChevronUp size={16} />
+                    </button>
+                    {/* Move Down Button */}
+                    <button
+                      type="button"
+                      onClick={() => moveItemDown(index)}
+                      disabled={index === items.length - 1}
+                      className="rounded p-1 text-slate-400 transition-colors hover:bg-slate-700/50 hover:text-slate-200 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                      title={
+                        index === items.length - 1
+                          ? "Already at bottom"
+                          : "Move down"
+                      }
+                    >
+                      <ChevronDown size={16} />
+                    </button>
+                    {/* Delete Button */}
+                    <button
+                      type="button"
+                      onClick={() => removeItem(index)}
+                      className="rounded p-1 text-red-400 transition-colors hover:bg-red-900/20 hover:text-red-300"
+                      title={`Remove ${title.toLowerCase().slice(0, -1)}`}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               )
             })}
