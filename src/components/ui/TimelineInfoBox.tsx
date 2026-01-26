@@ -32,11 +32,9 @@ export function TimelineInfoBox({
   }
 
   return (
-    <div
-      className={`flex h-full flex-col border-l border-slate-600 bg-slate-800 p-6 ${className}`}
-    >
+    <div className={`flex h-full flex-col bg-slate-800 p-6 ${className}`}>
       {/* Navigation Controls */}
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-start justify-between">
         <button
           onClick={onPrevious}
           onKeyDown={(e) => {
@@ -53,7 +51,7 @@ export function TimelineInfoBox({
           <ChevronLeft className="h-4 w-4 text-slate-300" />
         </button>
 
-        <h3 className="mx-4 flex-1 text-center text-lg font-semibold text-slate-200">
+        <h3 className="mx-4 flex-1 text-center text-lg font-semibold text-slate-400">
           {event.name}
         </h3>
 
@@ -77,14 +75,14 @@ export function TimelineInfoBox({
       {/* Event Details - Scrollable */}
       <div className="flex-1 overflow-y-auto">
         <div className="mb-4">
-          <p className="text-center font-medium text-amber-400">
+          <p className="heading-accent text-center font-medium">
             {formatYear(event.year)}
           </p>
         </div>
 
         {event.description && (
           <div className="mb-4">
-            <p className="leading-relaxed text-slate-300">
+            <p className="leading-relaxed text-slate-400">
               {event.description}
             </p>
           </div>
@@ -92,7 +90,7 @@ export function TimelineInfoBox({
 
         {event.place && (
           <div className="mb-4">
-            <p className="text-slate-300">{event.place}</p>
+            <p className="text-slate-400">{event.place}</p>
           </div>
         )}
       </div>
