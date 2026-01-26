@@ -2,7 +2,7 @@
 
 import L, { DivIcon } from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
   GeoJSON,
   MapContainer,
@@ -66,110 +66,94 @@ function ZoomHandler({
   return null
 }
 
-// Component to handle external center/zoom changes
-function MapViewController({
-  center,
-  zoom,
+// Component to expose map navigation function to parent
+function MapNavigationHandler({
+  onNavigate,
 }: {
-  center: [number, number]
-  zoom: number
+  onNavigate?: (
+    navigateFn: (center: [number, number], zoom: number) => void,
+  ) => void
 }) {
   const map = useMapEvents({})
-  const hasMountedRef = useRef(false)
 
   useEffect(() => {
-    console.log("🗺️  MapViewController useEffect triggered:", {
-      center,
-      zoom,
-      hasMap: !!map,
-      hasMounted: hasMountedRef.current,
-    })
+    if (!onNavigate || !map) return
 
-    if (!map || !center || !zoom) {
-      console.log("❌ Skipping: missing dependencies")
-      return
-    }
+    // Force map to recalculate size on mount (important for mobile)
+    setTimeout(() => {
+      map.invalidateSize()
+      const size = map.getSize()
 
-    // Skip the first render to avoid interfering with initial map setup
-    if (!hasMountedRef.current) {
-      hasMountedRef.current = true
-      console.log("⏭️  Skipping first render")
-      return
-    }
+      // Only register navigate function if map has valid size
+      // This prevents hidden/collapsed maps from overwriting the active map's navigate function
+      if (size && size.x > 0 && size.y > 0) {
+        // Create navigation function and pass to parent
+        const navigate = (center: [number, number], zoom: number) => {
+          // Validate coordinates
+          const [lat, lng] = center
+          const numLat = typeof lat === "string" ? Number(lat) : lat
+          const numLng = typeof lng === "string" ? Number(lng) : lng
+          const numZoom = typeof zoom === "string" ? Number(zoom) : zoom
 
-    // Validate that center is a proper array with exactly 2 elements
-    if (!Array.isArray(center) || center.length !== 2) {
-      console.warn("Invalid center array:", center)
-      return
-    }
+          if (
+            typeof numLat !== "number" ||
+            typeof numLng !== "number" ||
+            typeof numZoom !== "number" ||
+            !isFinite(numLat) ||
+            !isFinite(numLng) ||
+            !isFinite(numZoom) ||
+            isNaN(numLat) ||
+            isNaN(numLng) ||
+            isNaN(numZoom) ||
+            numZoom <= 0
+          ) {
+            return
+          }
 
-    // Extract and validate coordinates
-    const [lat, lng] = center
+          const cleanCenter: [number, number] = [numLat, numLng]
 
-    // Check if any values are invalid
-    const isLatValid =
-      typeof lat === "number" &&
-      isFinite(lat) &&
-      !isNaN(lat) &&
-      lat !== null &&
-      lat !== undefined
-    const isLngValid =
-      typeof lng === "number" &&
-      isFinite(lng) &&
-      !isNaN(lng) &&
-      lng !== null &&
-      lng !== undefined
-    const isZoomValid =
-      typeof zoom === "number" &&
-      isFinite(zoom) &&
-      !isNaN(zoom) &&
-      zoom !== null &&
-      zoom !== undefined &&
-      zoom > 0
+          // Check if map's current center is valid
+          const currentCenter = map.getCenter()
+          const hasValidCurrentCenter =
+            currentCenter &&
+            !isNaN(currentCenter.lat) &&
+            !isNaN(currentCenter.lng) &&
+            isFinite(currentCenter.lat) &&
+            isFinite(currentCenter.lng)
 
-    if (!isLatValid || !isLngValid || !isZoomValid) {
-      console.warn("Invalid coordinates or zoom detected, skipping flyTo:", {
-        lat,
-        lng,
-        zoom,
-        isLatValid,
-        isLngValid,
-        isZoomValid,
-        center,
-      })
-      return
-    }
+          // Check if map container has valid size (flyTo can fail with invalid container size)
+          const mapSize = map.getSize()
+          const hasValidSize = mapSize && mapSize.x > 0 && mapSize.y > 0
 
-    try {
-      // Final safety check - validate coordinates one more time right before flyTo
-      const [finalLat, finalLng] = center
-      if (
-        !Array.isArray(center) ||
-        center.length !== 2 ||
-        typeof finalLat !== "number" ||
-        typeof finalLng !== "number" ||
-        !isFinite(finalLat) ||
-        !isFinite(finalLng) ||
-        isNaN(finalLat) ||
-        isNaN(finalLng)
-      ) {
-        console.error(
-          "CRITICAL: Invalid coordinates detected at flyTo execution:",
-          { center, finalLat, finalLng },
-        )
-        return
+          // If map size is invalid, force recalculation
+          if (!hasValidSize) {
+            map.invalidateSize()
+          }
+
+          // Use setView if current position or map size is invalid, flyTo if both are valid
+          // This prevents NaN errors during flyTo animation when container is collapsed/hidden
+          if (hasValidCurrentCenter && hasValidSize) {
+            try {
+              map.flyTo(cleanCenter, numZoom, {
+                animate: true,
+                duration: 1.5,
+              })
+            } catch {
+              // Fallback to setView if flyTo fails
+              map.setView(cleanCenter, numZoom)
+            }
+          } else {
+            map.setView(cleanCenter, numZoom)
+          }
+        }
+
+        // Expose to parent (only for maps with valid size)
+        if (onNavigate) {
+          onNavigate(navigate)
+        }
       }
-
-      // Use flyTo for smooth aerial-style animation to new position and zoom
-      console.log("✈️  Executing map.flyTo:", { center, zoom })
-      map.flyTo(center, zoom, {
-        animate: true,
-        duration: 1.5, // 1.5 second animation for smoother effect
-      })
-    } catch (error) {
-      console.error("Error during flyTo operation:", error, { center, zoom })
-    }
-  }, [map, center, zoom])
+    }, 100)
+  }, [map, onNavigate])
 
   return null
 }
@@ -223,6 +207,10 @@ type MapProps = {
     year: number
     description?: string
   } | null
+  /** Callback to receive the navigate function */
+  onNavigate?: (
+    navigateFn: (center: [number, number], zoom: number) => void,
+  ) => void
 }
 
 export const Map: React.FC<MapProps> = ({
@@ -247,43 +235,44 @@ export const Map: React.FC<MapProps> = ({
   hideControls = false,
   highlightMint,
   timelineEventMarker,
-  onFlyTo,
+  onNavigate,
 }) => {
   // Validate and sanitize center prop to prevent NaN coordinates
   const safeCenter = useMemo((): [number, number] => {
     if (!center || !Array.isArray(center) || center.length !== 2) {
-      console.warn("Invalid center prop, using Rome default:", center)
       return [41.9028, 12.4964] // Rome default
     }
 
     const [lat, lng] = center
-    const safeLat =
-      typeof lat === "number" && isFinite(lat) && !isNaN(lat) ? lat : 41.9028
-    const safeLng =
-      typeof lng === "number" && isFinite(lng) && !isNaN(lng) ? lng : 12.4964
+    // Explicitly convert to numbers in case they're strings
+    const numLat = typeof lat === "string" ? Number(lat) : lat
+    const numLng = typeof lng === "string" ? Number(lng) : lng
 
-    if (safeLat !== lat || safeLng !== lng) {
-      console.warn("Sanitized invalid coordinates:", {
-        original: [lat, lng],
-        safe: [safeLat, safeLng],
-      })
-    }
+    const safeLat =
+      typeof numLat === "number" && isFinite(numLat) && !isNaN(numLat)
+        ? numLat
+        : 41.9028
+    const safeLng =
+      typeof numLng === "number" && isFinite(numLng) && !isNaN(numLng)
+        ? numLng
+        : 12.4964
 
     return [safeLat, safeLng]
   }, [center])
 
   // Validate and sanitize zoom prop
   const safeZoom = useMemo(() => {
+    const numZoom = typeof zoom === "string" ? Number(zoom) : zoom
+
     if (
-      typeof zoom !== "number" ||
-      !isFinite(zoom) ||
-      isNaN(zoom) ||
-      zoom <= 0
+      typeof numZoom !== "number" ||
+      !isFinite(numZoom) ||
+      isNaN(numZoom) ||
+      numZoom <= 0
     ) {
-      console.warn("Invalid zoom prop, using default 5:", zoom)
       return 5
     }
-    return zoom
+    return numZoom
   }, [zoom])
 
   // Use custom hooks for configuration and data management
@@ -373,15 +362,6 @@ export const Map: React.FC<MapProps> = ({
         ) ?? mint.name.toLowerCase() === highlightMint.toLowerCase(),
     )
   }, [highlightMint, mints])
-
-  // Use actual center and zoom from config if not provided
-  // If highlighting a mint, center on that mint
-  const mapCenter =
-    center ??
-    (highlightedMint
-      ? [highlightedMint.lat, highlightedMint.lng]
-      : config.defaultCenter)
-  const mapZoom = zoom ?? (highlightedMint ? 6 : config.defaultZoom) // Zoom level when highlighting a mint
 
   // Empire extent layer configuration
   const empireLayerConfig = useMemo(
@@ -632,8 +612,8 @@ export const Map: React.FC<MapProps> = ({
             {...(containerStyle && { style: containerStyle })}
           >
             <MapContainer
-              center={mapCenter}
-              zoom={mapZoom}
+              center={safeCenter}
+              zoom={safeZoom}
               className="h-full w-full"
               maxBounds={MAP_BOUNDS.maxBounds}
               maxBoundsViscosity={MAP_BOUNDS.maxBoundsViscosity}
@@ -659,10 +639,8 @@ export const Map: React.FC<MapProps> = ({
                 }
               />
 
-              {/* Map View Controller - handles external center/zoom changes */}
-              {safeCenter && safeZoom && (
-                <MapViewController center={safeCenter} zoom={safeZoom} />
-              )}
+              {/* Map Navigation Handler - exposes navigation function to parent */}
+              <MapNavigationHandler onNavigate={onNavigate} />
 
               {/* BC 60 Empire Extent Layer */}
               {isLayerVisible("bc60") && getLayerData("bc60") && (
@@ -887,51 +865,60 @@ export const Map: React.FC<MapProps> = ({
               })}
 
               {/* Timeline Event Marker */}
-              {timelineEventMarker && (
-                <Marker
-                  key={`timeline-event-${timelineEventMarker.year}`}
-                  position={[timelineEventMarker.lat, timelineEventMarker.lng]}
-                  icon={
-                    new DivIcon({
-                      className: "timeline-event-marker",
-                      html: `
+              {timelineEventMarker &&
+                typeof timelineEventMarker.lat === "number" &&
+                typeof timelineEventMarker.lng === "number" &&
+                !isNaN(timelineEventMarker.lat) &&
+                !isNaN(timelineEventMarker.lng) &&
+                isFinite(timelineEventMarker.lat) &&
+                isFinite(timelineEventMarker.lng) && (
+                  <Marker
+                    key={`timeline-event-${timelineEventMarker.year}`}
+                    position={[
+                      timelineEventMarker.lat,
+                      timelineEventMarker.lng,
+                    ]}
+                    icon={
+                      new DivIcon({
+                        className: "timeline-event-marker",
+                        html: `
                         <div class="timeline-event-marker-container">
                           <div class="timeline-event-label">${timelineEventMarker.name} (${formatYear(timelineEventMarker.year)})</div>
                           <div class="timeline-event-circle"></div>
                           <div class="timeline-event-tail"></div>
                         </div>
                       `,
-                      iconSize: [120, 60], // Width 120px, height 60px (label + circle + tail)
-                      iconAnchor: [60, 48], // Anchor at bottom center of tail
-                    })
-                  }
-                  eventHandlers={{
-                    click: (e: L.LeafletMouseEvent) => {
-                      const mapContainer = getMapContainer(e)
-                      if (!mapContainer) return
-
-                      const rect = mapContainer.getBoundingClientRect()
-                      const clickX = e.originalEvent.clientX - rect.left
-                      const clickY = e.originalEvent.clientY - rect.top
-
-                      setCustomPopup({
-                        isVisible: true,
-                        position: {
-                          x: rect.left + clickX,
-                          y: rect.top + clickY,
-                        },
-                        content: {
-                          title: "", // No heading
-                          description:
-                            timelineEventMarker.description ??
-                            "Timeline Event Location",
-                          className: "text-center",
-                        },
+                        iconSize: [120, 60], // Width 120px, height 60px (label + circle + tail)
+                        iconAnchor: [60, 48], // Anchor at bottom center of tail
                       })
-                    },
-                  }}
-                />
-              )}
+                    }
+                    eventHandlers={{
+                      click: (e: L.LeafletMouseEvent) => {
+                        const mapContainer = getMapContainer(e)
+                        if (!mapContainer) return
+
+                        const rect = mapContainer.getBoundingClientRect()
+                        const clickX = e.originalEvent.clientX - rect.left
+                        const clickY = e.originalEvent.clientY - rect.top
+
+                        setCustomPopup({
+                          isVisible: true,
+                          position: {
+                            x: rect.left + clickX,
+                            y: rect.top + clickY,
+                          },
+                          content: {
+                            title: "", // No heading
+                            description:
+                              timelineEventMarker.description ??
+                              "Timeline Event Location",
+                            className: "text-center",
+                          },
+                        })
+                      },
+                    }}
+                  />
+                )}
             </MapContainer>
           </div>
         </div>
