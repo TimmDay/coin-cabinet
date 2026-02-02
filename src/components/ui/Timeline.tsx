@@ -42,15 +42,14 @@ export function Timeline({
     events.length >= 2 && events[1]!.year - events[0]!.year >= 12
   const sideLineEvent = hasLargeGap ? events[0] : null
 
-  // Check if the last event is a death event for sideline end marker
+  // Always show the last event as sideline end marker
   const lastEvent = events[events.length - 1]
-  const hasDeathAtEnd = lastEvent?.kind === "death"
-  const sideLineEndEvent = hasDeathAtEnd ? lastEvent : null
+  const sideLineEndEvent = lastEvent ?? null
 
   // Remove sideline events from main timeline
   let timelineEvents = events
   if (hasLargeGap) timelineEvents = timelineEvents.slice(1)
-  if (hasDeathAtEnd) timelineEvents = timelineEvents.slice(0, -1)
+  if (sideLineEndEvent) timelineEvents = timelineEvents.slice(0, -1)
 
   // Create a chronologically ordered flat list of all events for keyboard navigation
   const allEventsChronological = events.flatMap((event) => event)
