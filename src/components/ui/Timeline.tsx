@@ -37,19 +37,16 @@ export function Timeline({
 
   const events = timeline.sort((a, b) => a.year - b.year)
 
-  // Check for large gap (12 years) between first and second event
-  const hasLargeGap =
-    events.length >= 2 && events[1]!.year - events[0]!.year >= 12
-  const sideLineEvent = hasLargeGap ? events[0] : null
+  // Always show the first event as sideline start marker
+  const sideLineEvent = events[0] ?? null
 
   // Always show the last event as sideline end marker
   const lastEvent = events[events.length - 1]
   const sideLineEndEvent = lastEvent ?? null
 
   // Remove sideline events from main timeline
-  let timelineEvents = events
-  if (hasLargeGap) timelineEvents = timelineEvents.slice(1)
-  if (sideLineEndEvent) timelineEvents = timelineEvents.slice(0, -1)
+  let timelineEvents = events.slice(1) // Remove first event
+  if (sideLineEndEvent) timelineEvents = timelineEvents.slice(0, -1) // Remove last event
 
   // Create a chronologically ordered flat list of all events for keyboard navigation
   const allEventsChronological = events.flatMap((event) => event)
@@ -75,6 +72,11 @@ export function Timeline({
   const lastEventYear = timelineEvents[timelineEvents.length - 1]?.year ?? 0
   const timelineMagnitude = lastEventYear - firstEventYear
 
+  // Check if timeline events (excluding both sideline markers) span 7 years or less
+  const actualLastYear = sideLineEndEvent?.year ?? lastEventYear
+  const eventsSpanSmallRange =
+    timelineEvents.length > 0 && actualLastYear - firstEventYear <= 7
+
   const startYear = firstEventYear - 1
   // For short timelines (< 6 years), use 1 year extension; otherwise use 3 years
   const endExtension = timelineMagnitude < 6 ? 1 : 3
@@ -92,6 +94,24 @@ export function Timeline({
   )
 
   const getEventPosition = (year: number) => {
+    if (eventsSpanSmallRange) {
+      // For timelines where events span 8 years or less, cluster them at the end
+      // Work backwards from 100% (where sideline marker is) by marker diameter
+      const eventYears = Object.keys(eventsByYear)
+        .map(Number)
+        .sort((a, b) => b - a) // Sort descending
+      const yearIndex = eventYears.indexOf(year)
+
+      if (yearIndex === -1) return 0
+
+      // Each marker is ~32px (h-8 w-8), spacing as percentage of timeline
+      // Approximate marker diameter as 3.5% of typical timeline width
+      const markerSpacing = 3.5
+
+      // Start from 100% and work backwards
+      return 100 - markerSpacing * (yearIndex + 1)
+    }
+
     return ((year - startYear) / totalYears) * 100
   }
 
