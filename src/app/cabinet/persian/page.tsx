@@ -1,11 +1,11 @@
 import { CoinGrid } from "~/components/ui/CoinGrid"
 import { PageTitle } from "~/components/ui/PageTitle"
 
-export default function AdoptiveEmperorsPage() {
+export default function PersianPage() {
   return (
     <main className="content-wrapper">
-      <PageTitle>The Adoptive Emperors</PageTitle>
-      <CoinGrid filterSet="adoptive-emperors" />
+      <PageTitle>Persian</PageTitle>
+      <CoinGrid filterSet="persian" />
     </main>
   )
 }
