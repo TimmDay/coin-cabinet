@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { GeneratedImageIdHelper } from "~/components/ui/GeneratedImageIdHelper"
 import { MultiSelect } from "~/components/ui/MultiSelect"
+import { NativeSelect } from "~/components/ui/NativeSelect"
 import { Select } from "~/components/ui/Select"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
@@ -213,7 +214,7 @@ export function EditCoinModal({
       die_axis: data.die_axis,
       metal: data.metal,
       silver_content: data.silver_content,
-      mint_id: data.mint_id,
+      mint_id: data.mint_id ?? null,
       mint_year_earliest: data.mint_year_earliest,
       mint_year_latest: data.mint_year_latest,
       reference: data.reference,
@@ -526,16 +527,13 @@ export function EditCoinModal({
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Mint
               </label>
-              <Select
+              <NativeSelect
+                {...register("mint_id")}
                 options={[
                   { value: "", label: "Select a mint..." },
                   ...mintOptions,
                 ]}
-                {...register("mint_id", {
-                  setValueAs: (value) =>
-                    value === "" ? undefined : parseInt(value),
-                })}
-                value={watch("mint_id")?.toString() || ""}
+                placeholder="Select a mint"
                 className="w-full"
               />
             </div>

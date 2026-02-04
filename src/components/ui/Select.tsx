@@ -20,16 +20,7 @@ type SelectProps = Omit<
 
 export const Select = forwardRef<HTMLInputElement, SelectProps>(
   (
-    {
-      options,
-      placeholder,
-      error,
-      className,
-      disabled,
-      value,
-      onChange,
-      ...props
-    },
+    { options, placeholder, error, className, disabled, value, ...props },
     ref,
   ) => {
     const [isOpen, setIsOpen] = useState(false)
@@ -96,7 +87,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       if (!disabled) {
         setSearchTerm(e.target.value)
         setIsOpen(true)
-        setFocusedIndex(0) // Reset to first item when searching
+        setFocusedIndex(0)
       }
     }
 
@@ -105,13 +96,15 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       setIsOpen(false)
       setSearchTerm("")
 
-      // Create a synthetic event for react-hook-form compatibility
-      if (onChange) {
-        const syntheticEvent = {
-          target: { value: option.value, name: props.name },
-          currentTarget: { value: option.value, name: props.name },
-        } as React.ChangeEvent<HTMLInputElement>
-        onChange(syntheticEvent)
+      // Directly update the input value
+      const inputElement =
+        ref && "current" in ref ? ref.current : inputRef.current
+      if (inputElement) {
+        inputElement.value = option.value
+
+        // Trigger change event
+        const event = new Event("change", { bubbles: true })
+        inputElement.dispatchEvent(event)
       }
     }
 
@@ -155,7 +148,6 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       }
     }
 
-    const displayValue = isOpen ? searchTerm : (selectedOption?.label ?? "")
     const showPlaceholder = !isOpen && !selectedOption && !searchTerm
 
     const baseClass = disabled
@@ -169,7 +161,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
           type="text"
           className={`${baseClass} ${className ?? ""}`}
           disabled={disabled}
-          value={displayValue}
+          value={isOpen ? searchTerm : (selectedOption?.label ?? "")}
           placeholder={showPlaceholder ? placeholder : ""}
           onClick={handleInputClick}
           onChange={handleInputChange}
