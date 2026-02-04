@@ -1,22 +1,29 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useSomnusCoins } from "~/api/somnus-collection"
 import { BrowseCoinsModal } from "~/components/ui/BrowseCoinsModal"
 import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
+import { SearchBar } from "~/components/ui/SearchBar"
 import {
   ViewModeControls,
   type ClickMode,
 } from "~/components/ui/ViewModeControls"
+import { useDeityOptions } from "~/hooks/useDeityOptions"
 import { generateCoinUrl } from "~/lib/utils/url-helpers"
 
 type CoinGridProps = {
   filterSet?: string
   filterCiv?: string
+  showSearch?: boolean
 }
 
-export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
+export function CoinGrid({
+  filterSet,
+  filterCiv,
+  showSearch = false,
+}: CoinGridProps = {}) {
   const router = useRouter()
   const [modalState, setModalState] = useState<{
     isOpen: boolean
@@ -30,14 +37,29 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
 
   const [clickMode, setClickMode] = useState<ClickMode>("dive")
 
+  const [searchQuery, setSearchQuery] = useState("")
+
   // Fetch coins from database (already filtered for obverse images at DB level)
   const { data: coins, isLoading, error } = useSomnusCoins()
+
+  // Fetch deities for name lookup
+  const { options: deityOptions } = useDeityOptions()
+
+  // Create deity ID to name map
+  const deityMap = useMemo(() => {
+    const map = new Map<string, string>()
+    deityOptions.forEach((deity) => {
+      map.set(deity.value, deity.label)
+    })
+    return map
+  }, [deityOptions])
 
   // Filter coins by set and/or civilization, then sort by mint_year_earliest
   const filteredCoins = (coins ?? [])
     .filter((coin) => {
       let matchesSet = true
       let matchesCiv = true
+      let matchesSearch = true
 
       if (filterSet) {
         matchesSet = coin.sets?.includes(filterSet) ?? false
@@ -47,7 +69,26 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
         matchesCiv = coin.civ === filterCiv
       }
 
-      return matchesSet && matchesCiv
+      // Apply search filter if search is enabled and query exists
+      if (showSearch && searchQuery.trim()) {
+        const query = searchQuery.toLowerCase()
+
+        // Get deity names for this coin
+        const deityNames = (coin.deity_id ?? [])
+          .map((id) => deityMap.get(id) ?? "")
+          .filter(Boolean)
+          .join(" ")
+
+        matchesSearch = [
+          coin.nickname ?? "",
+          coin.denomination ?? "",
+          coin.legend_o ?? "",
+          coin.legend_r ?? "",
+          deityNames,
+        ].some((field) => field.toLowerCase().includes(query))
+      }
+
+      return matchesSet && matchesCiv && matchesSearch
     })
     .sort((a, b) => {
       // Special sorting for "gordy boys" set
@@ -149,20 +190,25 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
 
   const currentCoin = coinsList[modalState.currentIndex]
 
-  // Handle loading state
-  if (isLoading) {
-    return (
-      <>
-        {/* View Mode Controls - Skeleton */}
-        <div className="mt-6 flex justify-center">
-          <div className="flex items-center gap-6 rounded-lg bg-slate-800/30 px-4 py-2 backdrop-blur-sm">
-            <div className="h-4 w-20 animate-pulse rounded bg-slate-600"></div>
-            <div className="h-4 w-20 animate-pulse rounded bg-slate-600"></div>
-            <div className="h-4 w-16 animate-pulse rounded bg-slate-600"></div>
-          </div>
-        </div>
+  return (
+    <>
+      {/* Always render controls */}
+      <ViewModeControls
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        clickMode={clickMode}
+        onClickModeChange={setClickMode}
+      />
 
-        {/* Grid Skeleton */}
+      {/* Search Bar */}
+      {showSearch && (
+        <div className="z-controls mt-3 flex justify-center">
+          <SearchBar value={searchQuery} onChange={setSearchQuery} />
+        </div>
+      )}
+
+      {/* Loading state */}
+      {isLoading && (
         <div className="mt-8 flex flex-wrap justify-center gap-x-12">
           {Array.from({ length: 12 }).map((_, index) => (
             <div key={index} className="group w-fit cursor-pointer text-center">
@@ -174,63 +220,51 @@ export function CoinGrid({ filterSet, filterCiv }: CoinGridProps = {}) {
             </div>
           ))}
         </div>
-      </>
-    )
-  }
+      )}
 
-  // Handle error state
-  if (error) {
-    return (
-      <div className="mt-12 flex justify-center">
-        <div className="text-red-400">
-          Error loading coins:{" "}
-          {error instanceof Error ? error.message : "Unknown error"}
+      {/* Error state */}
+      {!isLoading && error && (
+        <div className="mt-12 flex justify-center">
+          <div className="text-red-400">
+            Error loading coins:{" "}
+            {error instanceof Error ? error.message : "Unknown error"}
+          </div>
         </div>
-      </div>
-    )
-  }
+      )}
 
-  // Handle empty state
-  if (coinsList.length === 0) {
-    return (
-      <div className="mt-12 flex justify-center">
-        <div className="text-slate-400">
-          No coins with obverse images found in the collection.
+      {/* Empty state */}
+      {!isLoading && !error && coinsList.length === 0 && (
+        <div className="mt-12 flex justify-center">
+          <div className="text-slate-400">
+            No coins with obverse images found in the collection.
+          </div>
         </div>
-      </div>
-    )
-  }
+      )}
 
-  return (
-    <>
-      <ViewModeControls
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        clickMode={clickMode}
-        onClickModeChange={setClickMode}
-      />
-
-      <div
-        className={`flex flex-wrap justify-center ${viewMode === "both" ? "gap-x-12" : ""}`}
-      >
-        {coinsList.map((coin, index) => (
-          <CoinCardGridItem
-            key={coin.id}
-            civ={coin.civ}
-            civSpecific={coin.civ_specific}
-            nickname={coin.nickname}
-            denomination={coin.denomination}
-            mintYearEarliest={coin.mint_year_earliest}
-            mintYearLatest={coin.mint_year_latest}
-            obverseImageId={coin.image_link_o}
-            reverseImageId={coin.image_link_r}
-            diameter={coin.diameter}
-            view={viewMode}
-            onClick={() => handleCoinClick(index)}
-            index={index + 1}
-          />
-        ))}
-      </div>
+      {/* Coin grid */}
+      {!isLoading && !error && coinsList.length > 0 && (
+        <div
+          className={`flex flex-wrap justify-center ${viewMode === "both" ? "gap-x-12" : ""}`}
+        >
+          {coinsList.map((coin, index) => (
+            <CoinCardGridItem
+              key={coin.id}
+              civ={coin.civ}
+              civSpecific={coin.civ_specific}
+              nickname={coin.nickname}
+              denomination={coin.denomination}
+              mintYearEarliest={coin.mint_year_earliest}
+              mintYearLatest={coin.mint_year_latest}
+              obverseImageId={coin.image_link_o}
+              reverseImageId={coin.image_link_r}
+              diameter={coin.diameter}
+              view={viewMode}
+              onClick={() => handleCoinClick(index)}
+              index={index + 1}
+            />
+          ))}
+        </div>
+      )}
 
       <BrowseCoinsModal
         isOpen={modalState.isOpen}

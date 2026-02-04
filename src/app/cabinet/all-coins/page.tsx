@@ -7,7 +7,7 @@ export default function AllCoinsPage() {
       <PageTitle>All Coins</PageTitle>
 
       <div className="mt-8">
-        <CoinGrid />
+        <CoinGrid showSearch={true} />
       </div>
     </main>
   )
