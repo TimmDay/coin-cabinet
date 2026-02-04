@@ -168,7 +168,8 @@ main {
 }
 
 /* Navigation styling to match Somnus aesthetic */
-.somnus-nav {
+.somnus-nav,
+.somnus-nav-home {
   background: hsl(var(--card));
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
