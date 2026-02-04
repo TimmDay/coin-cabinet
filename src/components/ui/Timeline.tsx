@@ -37,12 +37,15 @@ export function Timeline({
 
   const events = timeline.sort((a, b) => a.year - b.year)
 
-  // Always show the first event as sideline start marker
-  const sideLineEvent = events[0] ?? null
+  // Check if ALL events span 7 years or less
+  const firstYear = events[0]?.year ?? 0
+  const lastYear = events[events.length - 1]?.year ?? 0
+  const totalSpan = lastYear - firstYear
+  const allEventsSpanSmallRange = totalSpan <= 7
 
-  // Always show the last event as sideline end marker
-  const lastEvent = events[events.length - 1]
-  const sideLineEndEvent = lastEvent ?? null
+  // Always show first and last events as sideline markers
+  const sideLineEvent = events[0] ?? null
+  const sideLineEndEvent = events[events.length - 1] ?? null
 
   // Remove sideline events from main timeline
   let timelineEvents = events.slice(1) // Remove first event
@@ -75,7 +78,9 @@ export function Timeline({
   // Check if timeline events (excluding both sideline markers) span 7 years or less
   const actualLastYear = sideLineEndEvent?.year ?? lastEventYear
   const eventsSpanSmallRange =
-    timelineEvents.length > 0 && actualLastYear - firstEventYear <= 7
+    !allEventsSpanSmallRange &&
+    timelineEvents.length > 0 &&
+    actualLastYear - firstEventYear <= 7
 
   const startYear = firstEventYear - 1
   // For short timelines (< 6 years), use 1 year extension; otherwise use 3 years
@@ -94,8 +99,26 @@ export function Timeline({
   )
 
   const getEventPosition = (year: number) => {
+    if (allEventsSpanSmallRange) {
+      // For timelines where ALL events span 7 years or less, evenly space them
+      const eventYears = Object.keys(eventsByYear)
+        .map(Number)
+        .sort((a, b) => a - b) // Sort ascending
+      const yearIndex = eventYears.indexOf(year)
+
+      if (yearIndex === -1) return 0
+
+      // Evenly distribute events across the timeline
+      const numEvents = eventYears.length
+      if (numEvents === 1) return 50 // Single event in the middle
+
+      // Space events evenly with padding on both sides
+      const spacing = 100 / (numEvents + 1)
+      return spacing * (yearIndex + 1)
+    }
+
     if (eventsSpanSmallRange) {
-      // For timelines where events span 8 years or less, cluster them at the end
+      // For timelines where events span 7 years or less (but not all), cluster them at the end
       // Work backwards from 100% (where sideline marker is) by marker diameter
       const eventYears = Object.keys(eventsByYear)
         .map(Number)

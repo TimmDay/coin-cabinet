@@ -66,25 +66,45 @@ export function addCoinMintingEventToTimeline(
     return timeline
   }
 
-  // Create a new timeline with the coin event added and sorted by year
-  const eventsWithCoin = [...timeline, coinEvent]
-  eventsWithCoin.sort((a, b) => {
-    // First sort by year
-    if (a.year !== b.year) {
-      return a.year - b.year
+  // Find the correct insertion point for the coin-minted event
+  const eventsWithCoin = [...timeline]
+
+  let insertIndex = eventsWithCoin.length // Default to end
+  let lastMadeEmperorIndex = -1
+  let firstEventInYearIndex = -1
+
+  // Find the position of events in the same year
+  for (let i = 0; i < eventsWithCoin.length; i++) {
+    const event = eventsWithCoin[i]!
+
+    if (event.year > coinEvent.year) {
+      // We've moved past the coin's year
+      break
     }
 
-    // For events in the same year, prioritize coin-minted events first
-    if (a.kind === "coin-minted" && b.kind !== "coin-minted") {
-      return -1 // a (coin-minted) comes before b
-    }
-    if (a.kind !== "coin-minted" && b.kind === "coin-minted") {
-      return 1 // b (coin-minted) comes before a
-    }
+    if (event.year === coinEvent.year) {
+      // Track the first event in this year
+      if (firstEventInYearIndex === -1) {
+        firstEventInYearIndex = i
+      }
 
-    // If both are coin-minted or both are not coin-minted, maintain original order
-    return 0
-  })
+      // Track the last made-emperor event in this year
+      if (event.kind === "made-emperor") {
+        lastMadeEmperorIndex = i
+      }
+    }
+  }
 
+  // Determine insert position
+  if (lastMadeEmperorIndex !== -1) {
+    // Found made-emperor in this year, insert right after the last one
+    insertIndex = lastMadeEmperorIndex + 1
+  } else if (firstEventInYearIndex !== -1) {
+    // No made-emperor, but found events in this year, insert before them
+    insertIndex = firstEventInYearIndex
+  }
+  // else insertIndex stays at end (coin's year not found in timeline)
+
+  eventsWithCoin.splice(insertIndex, 0, coinEvent)
   return eventsWithCoin
 }
