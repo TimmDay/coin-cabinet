@@ -168,7 +168,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
 function FlavorFooter({ flavourText }: { flavourText: string }) {
   return (
     <footer className="mt-4 border-t border-slate-600 pt-4">
-      <p className="text-xs leading-relaxed break-words text-slate-400 italic">
+      <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
         {flavourText}
       </p>
     </footer>

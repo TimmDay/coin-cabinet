@@ -59,14 +59,7 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
       <div className="content-wrapper">
         <div>
           <header className="mb-4 md:mb-6">
-            <PageTitle
-              subtitle={coin.denomination}
-              coinPhysicalInfo={{
-                diameter: coin.diameter,
-                mass: coin.mass,
-                dieAxis: coin.die_axis,
-              }}
-            >
+            <PageTitle subtitle={coin.denomination} coin={coin}>
               {coin.nickname ?? "Ancient Coin"}
             </PageTitle>
           </header>

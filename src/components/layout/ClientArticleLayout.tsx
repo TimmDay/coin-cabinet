@@ -62,8 +62,8 @@ function getArticleDisplayData(
   if (pathname.includes("/year-in-coins/")) {
     const year = pathname.split("/").pop()
     return {
-      title: year ? `Year in Coins: ${year}` : "Year in Coins",
-      subtitle: "Numismatic highlights and discoveries",
+      title: year ? `${year} in Coins` : "Year in Coins",
+      subtitle: "",
     }
   }
 

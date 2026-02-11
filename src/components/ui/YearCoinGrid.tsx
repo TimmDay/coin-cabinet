@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useAllSomnusCoins } from "~/api/somnus-collection"
+import { useSomnusCoins } from "~/api/somnus-collection"
 import { BrowseCoinsModal } from "~/components/ui/BrowseCoinsModal"
 import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { ViewModeControls } from "~/components/ui/ViewModeControls"
@@ -21,8 +21,8 @@ export function YearCoinGrid({ year }: YearCoinGridProps) {
     "obverse",
   )
 
-  // Fetch all coins from database (including those without images for date filtering)
-  const { data: coins, isLoading, error } = useAllSomnusCoins()
+  // Fetch coins respecting the hidden coins feature flag
+  const { data: coins, isLoading, error } = useSomnusCoins()
 
   // Filter coins by purchase date year and ensure they have obverse images
   const filteredCoins = (coins ?? []).filter((coin) => {

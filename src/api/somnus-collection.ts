@@ -14,11 +14,12 @@ export function useSomnusCoins() {
   })
 }
 
+// For admin purposes - always fetches all coins including hidden
 export function useAllSomnusCoins() {
   return useQuery({
     queryKey: ["all-somnus-coins"],
     queryFn: fetchAllSomnusCoins,
-    staleTime: 7 * 24 * 60 * 60 * 1000, // 7 days - coins rarely change
+    staleTime: 7 * 24 * 60 * 60 * 1000,
   })
 }
 
@@ -115,7 +116,7 @@ async function fetchSomnusCoins(
 }
 
 /**
- * Fetch all, ie for admin purposes.
+ * Fetch all coins including hidden ones - for admin purposes
  */
 async function fetchAllSomnusCoins(): Promise<SomnusCollection[]> {
   const response = await fetch("/api/somnus-collection?includeAll=true")

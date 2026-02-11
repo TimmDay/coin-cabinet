@@ -51,5 +51,5 @@ export const devArticlesSubmenu = [
 export const yearInCoinsSubmenu = [
   { name: "2025", href: "/articles/year-in-coins/2025" },
   { name: "2026", href: "/articles/year-in-coins/2026" },
-  { name: "2027", href: "/articles/year-in-coins/2027" },
+  // { name: "2027", href: "/articles/year-in-coins/2027" },
 ]

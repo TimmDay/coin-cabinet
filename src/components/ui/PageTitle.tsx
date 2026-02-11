@@ -1,7 +1,8 @@
 "use client"
 
-import { useViewport } from "~/hooks/useViewport"
-import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
+import type { CoinEnhanced } from "~/types/api"
+import { CoinFlipInfo } from "./CoinFlipInfo"
+import { TooltipLaurel } from "./TooltipLaurel"
 
 type PageTitleProps = {
   /** The main text of the title */
@@ -12,12 +13,8 @@ type PageTitleProps = {
   className?: string
   /** Use purple accent instead of gold for auth pages */
   authPage?: boolean
-  /** Coin physical characteristics for mobile info display */
-  coinPhysicalInfo?: {
-    diameter?: number | null
-    mass?: number | null
-    dieAxis?: string | null
-  }
+  /** Full coin data for displaying coin flip information */
+  coin?: CoinEnhanced | null
 }
 
 export function PageTitle({
@@ -25,21 +22,14 @@ export function PageTitle({
   subtitle,
   className = "",
   authPage = false,
-  coinPhysicalInfo,
+  coin,
 }: PageTitleProps) {
-  const { isMobile } = useViewport()
-
   // Split the title into words and identify the last word for accent
   const words = children.trim().split(" ")
   const lastWordIndex = words.length - 1
 
   // If there's a subtitle, don't accent the main title - keep it all the same color
   const shouldAccentLastWord = !subtitle
-
-  // Format physical characteristics for mobile display
-  const physicalInfo = coinPhysicalInfo
-    ? formatPhysicalCharacteristicsCompact(coinPhysicalInfo, " • ")
-    : null
 
   return (
     <div
@@ -68,15 +58,28 @@ export function PageTitle({
 
       {/* Subtitle */}
       {subtitle && (
-        <div className="mt-1 text-center md:mt-4">
-          {/* Mobile: Subtitle and coin info on same line */}
-          {isMobile && physicalInfo ? (
-            <div className="flex flex-wrap items-center justify-center gap-2 text-lg">
-              <span className="text-slate-400">{subtitle}</span>
-              <span className="text-sm text-slate-400">{physicalInfo}</span>
-            </div>
-          ) : (
-            <p className="text-lg text-slate-400">{subtitle}</p>
+        <div className="mt-1 flex items-center justify-center gap-3 md:mt-4">
+          {/* Coin Flip Icon with Tooltip - LEFT of denomination */}
+          {coin && (
+            <TooltipLaurel
+              ariaLabel="Show coin information"
+              tooltipId="coin-flip-tooltip"
+              widthClasses="w-56 sm:w-64"
+            >
+              <CoinFlipInfo coin={coin} />
+            </TooltipLaurel>
+          )}
+
+          <p className="text-lg text-slate-400">{subtitle}</p>
+
+          {/* Laurel Wreath Icon with Tooltip for flavour text - RIGHT of denomination */}
+          {coin?.flavour_text && (
+            <TooltipLaurel
+              ariaLabel="Show additional information"
+              tooltipId="flavour-tooltip"
+            >
+              <div className="whitespace-pre-line">{coin.flavour_text}</div>
+            </TooltipLaurel>
           )}
         </div>
       )}

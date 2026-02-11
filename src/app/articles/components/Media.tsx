@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
-import { useAllSomnusCoins } from "../../../api/somnus-collection"
+import { useSomnusCoins } from "../../../api/somnus-collection"
 import { BPImage } from "../../../components/ui/BPImage"
 import { FeaturedCoins } from "../../../components/ui/FeaturedCoins"
 
@@ -20,7 +20,7 @@ export function FeaturedCoinsWithData({
   title = "Featured Coins from the Collection",
   className = "",
 }: FeaturedCoinsWithDataProps) {
-  const { data: allCoins, isLoading } = useAllSomnusCoins()
+  const { data: allCoins, isLoading } = useSomnusCoins()
 
   // Randomly select 3 coins with images
   const featuredCoins = useMemo(() => {

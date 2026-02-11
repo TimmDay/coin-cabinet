@@ -1,18 +1,9 @@
-import { PageTitle } from "~/components/ui/PageTitle"
+import { YearCoinGrid } from "~/components/ui/YearCoinGrid"
 
 export default function YearInCoins2026Page() {
   return (
-    <main className="content-wrapper">
-      <PageTitle>Year in Coins - 2026</PageTitle>
-
-      <div className="mt-12 text-center">
-        <p className="coin-description mb-6">
-          Articles and insights about coins from 2026.
-        </p>
-        <p className="coin-description">
-          Content for 2026 coin articles will be displayed here.
-        </p>
-      </div>
+    <main className="container mx-auto px-4">
+      <YearCoinGrid year="2026" />
     </main>
   )
 }
