@@ -17,12 +17,14 @@ type CoinGridProps = {
   filterSet?: string
   filterCiv?: string
   showSearch?: boolean
+  showProvenance?: boolean
 }
 
 export function CoinGrid({
   filterSet,
   filterCiv,
   showSearch = false,
+  showProvenance = false,
 }: CoinGridProps = {}) {
   const router = useRouter()
   const [modalState, setModalState] = useState<{
@@ -261,6 +263,8 @@ export function CoinGrid({
               view={viewMode}
               onClick={() => handleCoinClick(index)}
               index={index + 1}
+              provenance={coin.provenance}
+              showProvenance={showProvenance}
             />
           ))}
         </div>

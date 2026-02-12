@@ -25,9 +25,10 @@ export const adminSubmenu = [
 
 export const cabinetSubmenu = [
   { name: "Roman", href: "/cabinet/roman-timeline", hasSubmenu: true },
+  { name: "Detector Finds", href: "/cabinet/detector-finds" },
+  { name: "Gordy Boys", href: "/cabinet/gordy-boys" },
   { name: "Judea", href: "/cabinet/judea" },
   { name: "Persian", href: "/cabinet/persian" },
-  { name: "Gordy Boys", href: "/cabinet/gordy-boys" },
   { name: "All Coins", href: "/cabinet/all-coins" },
 ]
 
