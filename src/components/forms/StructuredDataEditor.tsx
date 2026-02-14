@@ -121,26 +121,29 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
     const currentItem = newItems[index]
     if (!currentItem) return
 
-    if (placeId && placeId !== "custom") {
-      // Selected a real place - populate all fields from places DB
-      const selectedPlace = places.find((p) => p.id.toString() === placeId)
-      if (selectedPlace) {
-        newItems[index] = {
-          ...currentItem,
-          place_id: placeId,
-          place: selectedPlace.name,
-          lat: selectedPlace.lat,
-          lng: selectedPlace.lng,
-        }
-      }
-    } else {
-      // Selected "custom location" or empty - clear place_id but keep existing manual values
+    // Handle empty string or "custom" selection
+    if (!placeId || placeId === "" || placeId === "custom") {
+      // Clear place_id but keep existing manual values
       newItems[index] = {
         ...currentItem,
         place_id: undefined,
       }
+      updateFormValue(newItems)
+      return
     }
-    updateFormValue(newItems)
+
+    // Selected a real place - populate all fields from places DB
+    const selectedPlace = places.find((p) => p.id.toString() === placeId)
+    if (selectedPlace) {
+      newItems[index] = {
+        ...currentItem,
+        place_id: placeId,
+        place: selectedPlace.name,
+        lat: selectedPlace.lat,
+        lng: selectedPlace.lng,
+      }
+      updateFormValue(newItems)
+    }
   }
 
   const removeItem = (index: number) => {

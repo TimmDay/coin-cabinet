@@ -20,7 +20,16 @@ type SelectProps = Omit<
 
 export const Select = forwardRef<HTMLInputElement, SelectProps>(
   (
-    { options, placeholder, error, className, disabled, value, ...props },
+    {
+      options,
+      placeholder,
+      error,
+      className,
+      disabled,
+      value,
+      onChange: onChangeCallback,
+      ...props
+    },
     ref,
   ) => {
     const [isOpen, setIsOpen] = useState(false)
@@ -96,15 +105,20 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       setIsOpen(false)
       setSearchTerm("")
 
-      // Directly update the input value
+      // Directly update the input value and trigger onChange
       const inputElement =
         ref && "current" in ref ? ref.current : inputRef.current
       if (inputElement) {
         inputElement.value = option.value
 
-        // Trigger change event
-        const event = new Event("change", { bubbles: true })
-        inputElement.dispatchEvent(event)
+        // Trigger the onChange callback with proper event structure
+        if (onChangeCallback) {
+          const syntheticEvent = {
+            target: { value: option.value },
+            currentTarget: { value: option.value },
+          } as React.ChangeEvent<HTMLInputElement>
+          onChangeCallback(syntheticEvent)
+        }
       }
     }
 
