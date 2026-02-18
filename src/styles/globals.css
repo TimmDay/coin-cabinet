@@ -325,7 +325,7 @@ main {
   width: 100%; /* Ensure full width utilization */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   gap: 0;
   padding-left: 1rem; /* px-4 */
