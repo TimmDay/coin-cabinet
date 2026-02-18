@@ -347,8 +347,10 @@ export function EditCoinModal({
                 Authority *
               </label>
               <Select
-                {...register("authority")}
                 value={watch("authority")}
+                onChange={(value) =>
+                  setValue("authority", value, { shouldDirty: true })
+                }
                 options={authorityOptions}
                 placeholder="Select authority"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
@@ -360,8 +362,10 @@ export function EditCoinModal({
                 Civilization *
               </label>
               <Select
-                {...register("civ")}
                 value={watch("civ")}
+                onChange={(value) =>
+                  setValue("civ", value, { shouldDirty: true })
+                }
                 options={civilizationOptions}
                 placeholder="Select Civilization"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
@@ -373,8 +377,10 @@ export function EditCoinModal({
                 Civilization Details
               </label>
               <Select
-                {...register("civ_specific")}
                 value={watch("civ_specific")}
+                onChange={(value) =>
+                  setValue("civ_specific", value, { shouldDirty: true })
+                }
                 options={
                   watch("civ") &&
                   civSpecificOptions[
@@ -410,8 +416,10 @@ export function EditCoinModal({
                 Denomination *
               </label>
               <Select
-                {...register("denomination")}
                 value={watch("denomination")}
+                onChange={(value) =>
+                  setValue("denomination", value, { shouldDirty: true })
+                }
                 options={denominationOptions}
                 placeholder="Select denomination"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
@@ -512,8 +520,10 @@ export function EditCoinModal({
                 Die Axis
               </label>
               <Select
-                {...register("die_axis")}
                 value={watch("die_axis")}
+                onChange={(value) =>
+                  setValue("die_axis", value, { shouldDirty: true })
+                }
                 options={dieAxisOptions}
                 placeholder="Select axis"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
@@ -610,8 +620,10 @@ export function EditCoinModal({
                 Metal *
               </label>
               <Select
-                {...register("metal")}
                 value={watch("metal")}
+                onChange={(value) =>
+                  setValue("metal", value, { shouldDirty: true })
+                }
                 options={[
                   { value: "Silver", label: "Silver" },
                   { value: "Bronze", label: "Bronze" },
@@ -821,11 +833,21 @@ export function EditCoinModal({
                 Purchase Type {mode === "create" && "*"}
               </label>
               <Select
-                {...register("purchase_type", {
-                  required:
-                    mode === "create" ? "Purchase type is required" : false,
-                })}
                 value={watch("purchase_type")}
+                onChange={(value) =>
+                  setValue(
+                    "purchase_type",
+                    value as
+                      | "auction"
+                      | "auction aftermarket"
+                      | "retail"
+                      | "private"
+                      | "gift"
+                      | "inheritance"
+                      | "other",
+                    { shouldDirty: true },
+                  )
+                }
                 options={[
                   { value: "auction", label: "Auction" },
                   {

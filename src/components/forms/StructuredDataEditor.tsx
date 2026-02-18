@@ -286,8 +286,8 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
                               })),
                             ]}
                             value={getFieldValue(item, field)}
-                            onChange={(e) =>
-                              handlePlaceSelection(index, e.target.value)
+                            onChange={(value) =>
+                              handlePlaceSelection(index, value)
                             }
                             className={inputClass}
                             placeholder={
@@ -307,8 +307,8 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
                                 label: opt,
                               }))}
                               value={getFieldValue(item, field)}
-                              onChange={(e) =>
-                                updateItem(index, field.key, e.target.value)
+                              onChange={(value) =>
+                                updateItem(index, field.key, value)
                               }
                               className={inputClass}
                               placeholder={field.placeholder}
@@ -385,8 +385,8 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
                                   )!,
                                 ) || "custom"
                               }
-                              onChange={(e) =>
-                                handlePlaceSelection(index, e.target.value)
+                              onChange={(value) =>
+                                handlePlaceSelection(index, value)
                               }
                               className={inputClass}
                               placeholder={
@@ -428,8 +428,8 @@ export function StructuredDataEditor<T extends Record<string, unknown>>({
                                   })),
                                 ]}
                                 value={getFieldValue(item, field) || "custom"}
-                                onChange={(e) =>
-                                  handlePlaceSelection(index, e.target.value)
+                                onChange={(value) =>
+                                  handlePlaceSelection(index, value)
                                 }
                                 className={inputClass}
                                 placeholder={

@@ -15,7 +15,7 @@ type SelectProps = Omit<
   placeholder?: string
   error?: string
   value?: string
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onChange?: (value: string) => void
 }
 
 export const Select = forwardRef<HTMLInputElement, SelectProps>(
@@ -27,7 +27,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       className,
       disabled,
       value,
-      onChange: onChangeCallback,
+      onChange,
       ...props
     },
     ref,
@@ -100,25 +100,18 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       }
     }
 
-    const handleOptionSelect = (option: SelectOption) => {
+    const handleOptionSelect = (option: SelectOption | undefined) => {
+      if (!option) {
+        return
+      }
+
       setSelectedOption(option)
       setIsOpen(false)
       setSearchTerm("")
 
-      // Directly update the input value and trigger onChange
-      const inputElement =
-        ref && "current" in ref ? ref.current : inputRef.current
-      if (inputElement) {
-        inputElement.value = option.value
-
-        // Trigger the onChange callback with proper event structure
-        if (onChangeCallback) {
-          const syntheticEvent = {
-            target: { value: option.value },
-            currentTarget: { value: option.value },
-          } as React.ChangeEvent<HTMLInputElement>
-          onChangeCallback(syntheticEvent)
-        }
+      // Call onChange callback with the actual value
+      if (onChange) {
+        onChange(option.value)
       }
     }
 
@@ -151,8 +144,9 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
         }
       } else if (e.key === "Enter") {
         e.preventDefault()
-        if (focusedIndex >= 0 && filteredOptions[focusedIndex]) {
-          handleOptionSelect(filteredOptions[focusedIndex])
+        const selectedOpt = filteredOptions[focusedIndex]
+        if (focusedIndex >= 0 && selectedOpt) {
+          handleOptionSelect(selectedOpt)
         } else if (filteredOptions.length === 1 && filteredOptions[0]) {
           handleOptionSelect(filteredOptions[0])
         }
@@ -185,6 +179,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
           aria-expanded={isOpen ? "true" : "false"}
           aria-haspopup="menu"
           aria-controls="select-dropdown"
+          readOnly={!isOpen}
           {...props}
         />
 

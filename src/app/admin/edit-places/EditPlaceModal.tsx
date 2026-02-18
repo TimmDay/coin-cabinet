@@ -1,13 +1,13 @@
 "use client"
 
-import { useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
+import { useUpdatePlace } from "~/api/places"
 import { FormActions } from "~/components/forms/FormActions"
 import { ModalWrapper } from "~/components/forms/ModalWrapper"
 import { Select } from "~/components/ui/Select"
 import { type Place } from "~/database/schema-places"
-import { useUpdatePlace } from "~/api/places"
 import { useFormPersistence } from "~/hooks/useFormPersistence"
 import {
   placeFormInputSchema,
@@ -77,6 +77,8 @@ export function EditPlaceModal({
     register,
     formState: { errors, isDirty },
     reset,
+    watch,
+    setValue,
   } = form
 
   // Form persistence for mobile browser resilience
@@ -182,8 +184,13 @@ export function EditPlaceModal({
             Place Kind *
           </label>
           <Select
-            {...register("kind", { required: "Place kind is required" })}
             options={placeKindOptions}
+            value={watch("kind")}
+            onChange={(value) =>
+              setValue("kind", value as PlaceFormInputData["kind"], {
+                shouldDirty: true,
+              })
+            }
             className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
             error={errors.kind?.message}
           />

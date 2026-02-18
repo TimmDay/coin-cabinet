@@ -1,10 +1,8 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useState } from "react"
 import { Select } from "~/components/ui/Select"
 import {
-  placeFormInputSchema,
   placeKindOptions,
   type PlaceFormInputData,
 } from "~/lib/validations/place-form"
@@ -20,19 +18,95 @@ export function PlaceForm({
   isLoading,
   submitLabel = "Add Place",
 }: PlaceFormProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<PlaceFormInputData>({
-    resolver: zodResolver(placeFormInputSchema),
+  const [formData, setFormData] = useState<PlaceFormInputData>({
+    name: "",
+    alt_names: "",
+    kind: "city",
+    lat: 0,
+    lng: 0,
+    location_description: "",
+    established_year: undefined,
+    host_to: "",
+    artifact_ids: "",
+    historical_sources: "",
+    flavour_text: "",
   })
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const handleFormSubmit = async (data: PlaceFormInputData) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value, type } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        type === "number" && value !== "" ? parseFloat(value) : value || "",
+    }))
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev }
+        delete newErrors[name]
+        return newErrors
+      })
+    }
+  }
+
+  const handleSelectChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      kind: value as PlaceFormInputData["kind"],
+    }))
+    if (errors.kind) {
+      setErrors((prev) => {
+        const newErrors = { ...prev }
+        delete newErrors.kind
+        return newErrors
+      })
+    }
+  }
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setErrors({})
+
+    // Basic validation
+    const newErrors: Record<string, string> = {}
+    if (!formData.name.trim()) {
+      newErrors.name = "Place name is required"
+    }
+    if (!formData.kind) {
+      newErrors.kind = "Place kind is required"
+    }
+    if (formData.lat === undefined || formData.lat === null) {
+      newErrors.lat = "Latitude is required"
+    }
+    if (formData.lng === undefined || formData.lng === null) {
+      newErrors.lng = "Longitude is required"
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+
     try {
-      await onSubmit(data)
-      reset() // Clear form on success
+      await onSubmit(formData)
+      await onSubmit(formData)
+      // Clear form on success
+      setFormData({
+        name: "",
+        alt_names: "",
+        kind: "city",
+        lat: 0,
+        lng: 0,
+        location_description: "",
+        established_year: undefined,
+        host_to: "",
+        artifact_ids: "",
+        historical_sources: "",
+        flavour_text: "",
+      })
     } catch (error) {
       console.error("Form submission error:", error)
       // Do NOT clear form on failure - preserve user input
@@ -49,7 +123,7 @@ export function PlaceForm({
     <div className="relative">
       {/* Main centered form */}
       <div className="somnus-card mx-auto w-full max-w-4xl p-8">
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
+        <form onSubmit={handleFormSubmit} className="space-y-8">
           {/* Basic Information Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-slate-200">
@@ -62,15 +136,15 @@ export function PlaceForm({
                   Place Name*
                 </label>
                 <input
-                  {...register("name")}
                   id="name"
+                  name="name"
                   type="text"
                   className={inputClass}
                   placeholder="e.g., Rome, Temple of Jupiter, Pompeii"
+                  value={formData.name}
+                  onChange={handleChange}
                 />
-                {errors.name && (
-                  <p className={errorClass}>{errors.name.message}</p>
-                )}
+                {errors.name && <p className={errorClass}>{errors.name}</p>}
               </div>
 
               <div>
@@ -78,14 +152,12 @@ export function PlaceForm({
                   Place Kind*
                 </label>
                 <Select
-                  {...register("kind", { required: "Place kind is required" })}
-                  options={[...placeKindOptions]}
+                  options={placeKindOptions}
                   className={inputClass}
-                  error={errors.kind?.message}
+                  value={formData.kind}
+                  onChange={handleSelectChange}
                 />
-                {errors.kind && (
-                  <p className={errorClass}>{errors.kind.message}</p>
-                )}
+                {errors.kind && <p className={errorClass}>{errors.kind}</p>}
               </div>
             </div>
 
@@ -94,17 +166,19 @@ export function PlaceForm({
                 Alternative Names
               </label>
               <input
-                {...register("alt_names")}
                 id="alt_names"
+                name="alt_names"
                 type="text"
                 className={inputClass}
                 placeholder="e.g., Roma, Urbs Aeterna (comma-separated)"
+                value={formData.alt_names}
+                onChange={handleChange}
               />
               <p className="mt-1 text-sm text-slate-400">
                 Ancient names, transliterations, or alternative spellings
               </p>
               {errors.alt_names && (
-                <p className={errorClass}>{errors.alt_names.message}</p>
+                <p className={errorClass}>{errors.alt_names}</p>
               )}
             </div>
           </div>
@@ -119,19 +193,19 @@ export function PlaceForm({
                   Latitude*
                 </label>
                 <input
-                  {...register("lat", { valueAsNumber: true })}
                   id="lat"
+                  name="lat"
                   type="number"
                   step="any"
                   className={inputClass}
                   placeholder="e.g., 41.9028"
+                  value={formData.lat}
+                  onChange={handleChange}
                 />
                 <p className="mt-1 text-sm text-slate-400">
                   Decimal degrees (-90 to 90)
                 </p>
-                {errors.lat && (
-                  <p className={errorClass}>{errors.lat.message}</p>
-                )}
+                {errors.lat && <p className={errorClass}>{errors.lat}</p>}
               </div>
 
               <div>
@@ -139,19 +213,19 @@ export function PlaceForm({
                   Longitude*
                 </label>
                 <input
-                  {...register("lng", { valueAsNumber: true })}
                   id="lng"
+                  name="lng"
                   type="number"
                   step="any"
                   className={inputClass}
                   placeholder="e.g., 12.4964"
+                  value={formData.lng}
+                  onChange={handleChange}
                 />
                 <p className="mt-1 text-sm text-slate-400">
                   Decimal degrees (-180 to 180)
                 </p>
-                {errors.lng && (
-                  <p className={errorClass}>{errors.lng.message}</p>
-                )}
+                {errors.lng && <p className={errorClass}>{errors.lng}</p>}
               </div>
             </div>
 
@@ -160,19 +234,19 @@ export function PlaceForm({
                 Location Description
               </label>
               <input
-                {...register("location_description")}
                 id="location_description"
+                name="location_description"
                 type="text"
                 className={inputClass}
                 placeholder="e.g., North face of the hill, grove of trees, bank of the Tiber"
+                value={formData.location_description}
+                onChange={handleChange}
               />
               <p className="mt-1 text-sm text-slate-400">
                 Specific description of the location within the area
               </p>
               {errors.location_description && (
-                <p className={errorClass}>
-                  {errors.location_description.message}
-                </p>
+                <p className={errorClass}>{errors.location_description}</p>
               )}
             </div>
           </div>
@@ -186,20 +260,19 @@ export function PlaceForm({
                 Established Year
               </label>
               <input
-                {...register("established_year", {
-                  setValueAs: (value) =>
-                    value === "" ? undefined : Number(value),
-                })}
                 id="established_year"
+                name="established_year"
                 type="number"
                 className={inputClass}
                 placeholder="e.g., -753 (for 753 BC)"
+                value={formData.established_year ?? ""}
+                onChange={handleChange}
               />
               <p className="mt-1 text-sm text-slate-400">
                 Year established (negative for BC, positive for AD)
               </p>
               {errors.established_year && (
-                <p className={errorClass}>{errors.established_year.message}</p>
+                <p className={errorClass}>{errors.established_year}</p>
               )}
             </div>
 
@@ -208,18 +281,18 @@ export function PlaceForm({
                 Host To (Events/Battles/Festivals)
               </label>
               <input
-                {...register("host_to")}
                 id="host_to"
+                name="host_to"
                 type="text"
                 className={inputClass}
                 placeholder="e.g., Battle of Actium, Olympic Games, Ludi Romani (comma-separated)"
+                value={formData.host_to}
+                onChange={handleChange}
               />
               <p className="mt-1 text-sm text-slate-400">
                 Events, battles, or festivals associated with this place
               </p>
-              {errors.host_to && (
-                <p className={errorClass}>{errors.host_to.message}</p>
-              )}
+              {errors.host_to && <p className={errorClass}>{errors.host_to}</p>}
             </div>
 
             <div>
@@ -227,17 +300,19 @@ export function PlaceForm({
                 Artifact IDs
               </label>
               <input
-                {...register("artifact_ids")}
                 id="artifact_ids"
+                name="artifact_ids"
                 type="text"
                 className={inputClass}
                 placeholder="e.g., coin_001, statue_042 (comma-separated)"
+                value={formData.artifact_ids}
+                onChange={handleChange}
               />
               <p className="mt-1 text-sm text-slate-400">
                 IDs of artifacts associated with this place
               </p>
               {errors.artifact_ids && (
-                <p className={errorClass}>{errors.artifact_ids.message}</p>
+                <p className={errorClass}>{errors.artifact_ids}</p>
               )}
             </div>
 
@@ -246,19 +321,19 @@ export function PlaceForm({
                 Historical Sources
               </label>
               <input
-                {...register("historical_sources")}
                 id="historical_sources"
+                name="historical_sources"
                 type="text"
                 className={inputClass}
                 placeholder="e.g., Livy Ab Urbe Condita 1.7, Plutarch Romulus 11"
+                value={formData.historical_sources}
+                onChange={handleChange}
               />
               <p className="mt-1 text-sm text-slate-400">
                 Primary sources documenting this place
               </p>
               {errors.historical_sources && (
-                <p className={errorClass}>
-                  {errors.historical_sources.message}
-                </p>
+                <p className={errorClass}>{errors.historical_sources}</p>
               )}
             </div>
 
@@ -267,16 +342,18 @@ export function PlaceForm({
                 Description
               </label>
               <textarea
-                {...register("flavour_text")}
                 id="flavour_text"
+                name="flavour_text"
                 className={textareaClass}
                 placeholder="Rich description of the place's historical significance and characteristics..."
+                value={formData.flavour_text}
+                onChange={handleChange}
               />
               <p className="mt-1 text-sm text-slate-400">
                 Rich historical context and significance
               </p>
               {errors.flavour_text && (
-                <p className={errorClass}>{errors.flavour_text.message}</p>
+                <p className={errorClass}>{errors.flavour_text}</p>
               )}
             </div>
           </div>
