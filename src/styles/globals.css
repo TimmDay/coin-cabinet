@@ -97,6 +97,16 @@ body {
   box-sizing: border-box;
 }
 
+/* Hide native number input spinners */
+input.year-input::-webkit-outer-spin-button,
+input.year-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input.year-input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 html,
 body,
 main {
@@ -346,6 +356,7 @@ main {
 .content-wrapper.home {
   --padding-top: 3rem; /* 48px on mobile */
   gap: 3rem; /* 48px gap on mobile - matches top padding */
+  align-items: center; /* Center elements on home page */
 }
 
 /* Larger screens get full top padding and gap */

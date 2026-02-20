@@ -1,5 +1,6 @@
 "use client"
 
+import { Calendar } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { useSomnusCoins } from "~/api/somnus-collection"
@@ -41,6 +42,10 @@ export function CoinGrid({
 
   const [searchQuery, setSearchQuery] = useState("")
 
+  // Year filter state
+  const [yearStart, setYearStart] = useState<string>("")
+  const [yearEnd, setYearEnd] = useState<string>("")
+
   // Fetch coins from database (already filtered for obverse images at DB level)
   const { data: coins, isLoading, error } = useSomnusCoins()
 
@@ -62,6 +67,7 @@ export function CoinGrid({
       let matchesSet = true
       let matchesCiv = true
       let matchesSearch = true
+      let matchesYearRange = true
 
       if (filterSet) {
         matchesSet = coin.sets?.includes(filterSet) ?? false
@@ -90,7 +96,46 @@ export function CoinGrid({
         ].some((field) => field.toLowerCase().includes(query))
       }
 
-      return matchesSet && matchesCiv && matchesSearch
+      // Apply year range filter
+      if (showSearch && (yearStart || yearEnd)) {
+        const startYear = yearStart ? parseInt(yearStart, 10) : null
+        const endYear = yearEnd ? parseInt(yearEnd, 10) : null
+
+        // Get coin's year values
+        const coinYearEarliest = coin.mint_year_earliest
+        const coinYearLatest = coin.mint_year_latest
+
+        // A coin matches if either of its years falls within the range
+        // For start year: coin must have a year >= startYear
+        // For end year: coin must have a year <= endYear
+        if (startYear !== null && !isNaN(startYear)) {
+          const hasYearAfterStart =
+            (coinYearEarliest !== null &&
+              coinYearEarliest !== undefined &&
+              coinYearEarliest >= startYear) ||
+            (coinYearLatest !== null &&
+              coinYearLatest !== undefined &&
+              coinYearLatest >= startYear)
+          if (!hasYearAfterStart) {
+            matchesYearRange = false
+          }
+        }
+
+        if (endYear !== null && !isNaN(endYear)) {
+          const hasYearBeforeEnd =
+            (coinYearEarliest !== null &&
+              coinYearEarliest !== undefined &&
+              coinYearEarliest <= endYear) ||
+            (coinYearLatest !== null &&
+              coinYearLatest !== undefined &&
+              coinYearLatest <= endYear)
+          if (!hasYearBeforeEnd) {
+            matchesYearRange = false
+          }
+        }
+      }
+
+      return matchesSet && matchesCiv && matchesSearch && matchesYearRange
     })
     .sort((a, b) => {
       // Special sorting for "gordy boys" set
@@ -194,19 +239,65 @@ export function CoinGrid({
 
   return (
     <>
-      {/* Always render controls */}
-      <ViewModeControls
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        clickMode={clickMode}
-        onClickModeChange={setClickMode}
-      />
-
-      {/* Search Bar */}
-      {showSearch && (
-        <div className="z-controls mt-3 flex justify-center">
+      {/* Controls row */}
+      {showSearch ? (
+        <div className="flex flex-col items-center gap-3">
+          <ViewModeControls
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            clickMode={clickMode}
+            onClickModeChange={setClickMode}
+          />
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
+
+          {/* Year filters row */}
+          <div className="flex w-80 gap-2">
+            {/* Year Start Input */}
+            <div className="relative flex-1">
+              <label htmlFor="year-start" className="sr-only">
+                Year start
+              </label>
+              <input
+                id="year-start"
+                type="number"
+                value={yearStart}
+                onChange={(e) => setYearStart(e.target.value)}
+                placeholder="Year start"
+                className="year-input w-full rounded-full border border-slate-700/30 bg-slate-700/50 py-2 pr-10 pl-4 text-sm text-slate-200 placeholder-slate-500 backdrop-blur-sm transition-colors duration-200 focus:border-slate-500 focus:outline-none"
+              />
+              <Calendar
+                className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-slate-500"
+                aria-hidden="true"
+              />
+            </div>
+
+            {/* Year End Input */}
+            <div className="relative flex-1">
+              <label htmlFor="year-end" className="sr-only">
+                Year end
+              </label>
+              <input
+                id="year-end"
+                type="number"
+                value={yearEnd}
+                onChange={(e) => setYearEnd(e.target.value)}
+                placeholder="Year end"
+                className="year-input w-full rounded-full border border-slate-700/30 bg-slate-700/50 py-2 pr-10 pl-4 text-sm text-slate-200 placeholder-slate-500 backdrop-blur-sm transition-colors duration-200 focus:border-slate-500 focus:outline-none"
+              />
+              <Calendar
+                className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-slate-500"
+                aria-hidden="true"
+              />
+            </div>
+          </div>
         </div>
+      ) : (
+        <ViewModeControls
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          clickMode={clickMode}
+          onClickModeChange={setClickMode}
+        />
       )}
 
       {/* Loading state */}
