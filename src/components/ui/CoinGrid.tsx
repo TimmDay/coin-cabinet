@@ -1,11 +1,16 @@
 "use client"
 
-import { Calendar } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { useSomnusCoins } from "~/api/somnus-collection"
+import {
+  civilizationOptions,
+  denominationOptions,
+} from "~/app/admin/edit-somnus/coin-form-options"
 import { BrowseCoinsModal } from "~/components/ui/BrowseCoinsModal"
 import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
+import { FilterSelect } from "~/components/ui/FilterSelect"
+import { FilterYear } from "~/components/ui/FilterYear"
 import { SearchBar } from "~/components/ui/SearchBar"
 import {
   ViewModeControls,
@@ -46,6 +51,10 @@ export function CoinGrid({
   const [yearStart, setYearStart] = useState<string>("")
   const [yearEnd, setYearEnd] = useState<string>("")
 
+  // Denomination and civilization filter state
+  const [filterDenomination, setFilterDenomination] = useState<string>("")
+  const [filterCivilization, setFilterCivilization] = useState<string>("")
+
   // Fetch coins from database (already filtered for obverse images at DB level)
   const { data: coins, isLoading, error } = useSomnusCoins()
 
@@ -68,6 +77,8 @@ export function CoinGrid({
       let matchesCiv = true
       let matchesSearch = true
       let matchesYearRange = true
+      let matchesDenomination = true
+      let matchesCivilization = true
 
       if (filterSet) {
         matchesSet = coin.sets?.includes(filterSet) ?? false
@@ -75,6 +86,16 @@ export function CoinGrid({
 
       if (filterCiv) {
         matchesCiv = coin.civ === filterCiv
+      }
+
+      // Apply denomination filter from dropdown
+      if (showSearch && filterDenomination) {
+        matchesDenomination = coin.denomination === filterDenomination
+      }
+
+      // Apply civilization filter from dropdown
+      if (showSearch && filterCivilization) {
+        matchesCivilization = coin.civ === filterCivilization
       }
 
       // Apply search filter if search is enabled and query exists
@@ -101,41 +122,33 @@ export function CoinGrid({
         const startYear = yearStart ? parseInt(yearStart, 10) : null
         const endYear = yearEnd ? parseInt(yearEnd, 10) : null
 
-        // Get coin's year values
-        const coinYearEarliest = coin.mint_year_earliest
-        const coinYearLatest = coin.mint_year_latest
+        const coinYearEarliest = coin.mint_year_earliest ?? null
+        const coinYearLatest = coin.mint_year_latest ?? null
 
         // A coin matches if either of its years falls within the range
-        // For start year: coin must have a year >= startYear
-        // For end year: coin must have a year <= endYear
         if (startYear !== null && !isNaN(startYear)) {
           const hasYearAfterStart =
-            (coinYearEarliest !== null &&
-              coinYearEarliest !== undefined &&
-              coinYearEarliest >= startYear) ||
-            (coinYearLatest !== null &&
-              coinYearLatest !== undefined &&
-              coinYearLatest >= startYear)
-          if (!hasYearAfterStart) {
-            matchesYearRange = false
-          }
+            (coinYearEarliest !== null && coinYearEarliest >= startYear) ||
+            (coinYearLatest !== null && coinYearLatest >= startYear)
+          if (!hasYearAfterStart) matchesYearRange = false
         }
 
         if (endYear !== null && !isNaN(endYear)) {
           const hasYearBeforeEnd =
-            (coinYearEarliest !== null &&
-              coinYearEarliest !== undefined &&
-              coinYearEarliest <= endYear) ||
-            (coinYearLatest !== null &&
-              coinYearLatest !== undefined &&
-              coinYearLatest <= endYear)
-          if (!hasYearBeforeEnd) {
-            matchesYearRange = false
-          }
+            (coinYearEarliest !== null && coinYearEarliest <= endYear) ||
+            (coinYearLatest !== null && coinYearLatest <= endYear)
+          if (!hasYearBeforeEnd) matchesYearRange = false
         }
       }
 
-      return matchesSet && matchesCiv && matchesSearch && matchesYearRange
+      return (
+        matchesSet &&
+        matchesCiv &&
+        matchesSearch &&
+        matchesYearRange &&
+        matchesDenomination &&
+        matchesCivilization
+      )
     })
     .sort((a, b) => {
       // Special sorting for "gordy boys" set
@@ -187,17 +200,10 @@ export function CoinGrid({
       // Default sorting for all sets: by mint_year_earliest (ascending order - oldest first)
       // TODO: Implement proper historical_figures join for reign-based sorting
       // // Special sorting for "silver-emperors" set - order by reign start
-      // if (filterSet === "silver-emperors") {
-      //   const yearA = a.reign_start ?? 0
-      //   const yearB = b.reign_start ?? 0
-      //   return yearA - yearB
-      // }
       const yearA = a.mint_year_earliest ?? 0
       const yearB = b.mint_year_earliest ?? 0
       return yearA - yearB
     })
-
-  const coinsList = filteredCoins
 
   const handleCoinClick = (index: number) => {
     if (clickMode === "browse") {
@@ -205,7 +211,7 @@ export function CoinGrid({
       setModalState({ isOpen: true, currentIndex: index, focusTarget: null })
     } else {
       // Navigate to deep dive page for dive mode
-      const coin = coinsList[index]
+      const coin = filteredCoins[index]
       if (coin?.id && coin?.nickname) {
         const url = generateCoinUrl(coin.id, coin.nickname)
         router.push(url)
@@ -221,7 +227,9 @@ export function CoinGrid({
     setModalState((prev) => ({
       ...prev,
       currentIndex:
-        prev.currentIndex === 0 ? coinsList.length - 1 : prev.currentIndex - 1,
+        prev.currentIndex === 0
+          ? filteredCoins.length - 1
+          : prev.currentIndex - 1,
       focusTarget: "previous",
     }))
   }
@@ -230,12 +238,14 @@ export function CoinGrid({
     setModalState((prev) => ({
       ...prev,
       currentIndex:
-        prev.currentIndex === coinsList.length - 1 ? 0 : prev.currentIndex + 1,
+        prev.currentIndex === filteredCoins.length - 1
+          ? 0
+          : prev.currentIndex + 1,
       focusTarget: "next",
     }))
   }
 
-  const currentCoin = coinsList[modalState.currentIndex]
+  const currentCoin = filteredCoins[modalState.currentIndex]
 
   return (
     <>
@@ -252,43 +262,40 @@ export function CoinGrid({
 
           {/* Year filters row */}
           <div className="flex w-80 gap-2">
-            {/* Year Start Input */}
-            <div className="relative flex-1">
-              <label htmlFor="year-start" className="sr-only">
-                Year start
-              </label>
-              <input
-                id="year-start"
-                type="number"
-                value={yearStart}
-                onChange={(e) => setYearStart(e.target.value)}
-                placeholder="Year start"
-                className="year-input w-full rounded-full border border-slate-700/30 bg-slate-700/50 py-2 pr-10 pl-4 text-sm text-slate-200 placeholder-slate-500 backdrop-blur-sm transition-colors duration-200 focus:border-slate-500 focus:outline-none"
-              />
-              <Calendar
-                className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-slate-500"
-                aria-hidden="true"
-              />
-            </div>
+            <FilterYear
+              id="year-start"
+              value={yearStart}
+              onChange={setYearStart}
+              placeholder="Year start"
+              label="Year start"
+            />
+            <FilterYear
+              id="year-end"
+              value={yearEnd}
+              onChange={setYearEnd}
+              placeholder="Year end"
+              label="Year end"
+            />
+          </div>
 
-            {/* Year End Input */}
-            <div className="relative flex-1">
-              <label htmlFor="year-end" className="sr-only">
-                Year end
-              </label>
-              <input
-                id="year-end"
-                type="number"
-                value={yearEnd}
-                onChange={(e) => setYearEnd(e.target.value)}
-                placeholder="Year end"
-                className="year-input w-full rounded-full border border-slate-700/30 bg-slate-700/50 py-2 pr-10 pl-4 text-sm text-slate-200 placeholder-slate-500 backdrop-blur-sm transition-colors duration-200 focus:border-slate-500 focus:outline-none"
-              />
-              <Calendar
-                className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-slate-500"
-                aria-hidden="true"
-              />
-            </div>
+          {/* Denomination and Civilization filters row */}
+          <div className="flex w-80 gap-2">
+            <FilterSelect
+              id="filter-denomination"
+              value={filterDenomination}
+              onChange={setFilterDenomination}
+              options={denominationOptions}
+              placeholder="Denomination"
+              label="Denomination"
+            />
+            <FilterSelect
+              id="filter-civilization"
+              value={filterCivilization}
+              onChange={setFilterCivilization}
+              options={civilizationOptions}
+              placeholder="Civilisation"
+              label="Civilisation"
+            />
           </div>
         </div>
       ) : (
@@ -326,7 +333,7 @@ export function CoinGrid({
       )}
 
       {/* Empty state */}
-      {!isLoading && !error && coinsList.length === 0 && (
+      {!isLoading && !error && filteredCoins.length === 0 && (
         <div className="mt-12 flex justify-center">
           <div className="text-slate-400">
             No coins with obverse images found in the collection.
@@ -335,11 +342,11 @@ export function CoinGrid({
       )}
 
       {/* Coin grid */}
-      {!isLoading && !error && coinsList.length > 0 && (
+      {!isLoading && !error && filteredCoins.length > 0 && (
         <div
           className={`flex flex-wrap justify-center ${viewMode === "both" ? "gap-x-12" : ""}`}
         >
-          {coinsList.map((coin, index) => (
+          {filteredCoins.map((coin, index) => (
             <CoinCardGridItem
               key={coin.id}
               civ={coin.civ}
@@ -367,28 +374,30 @@ export function CoinGrid({
         imageSrc={currentCoin?.image_link_o ?? undefined}
         reverseImageSrc={currentCoin?.image_link_r ?? undefined}
         nextImageSrc={
-          modalState.currentIndex < coinsList.length - 1
-            ? (coinsList[modalState.currentIndex + 1]?.image_link_o ??
+          modalState.currentIndex < filteredCoins.length - 1
+            ? (filteredCoins[modalState.currentIndex + 1]?.image_link_o ??
               undefined)
-            : (coinsList[0]?.image_link_o ?? undefined)
+            : (filteredCoins[0]?.image_link_o ?? undefined)
         }
         nextReverseImageSrc={
-          modalState.currentIndex < coinsList.length - 1
-            ? (coinsList[modalState.currentIndex + 1]?.image_link_r ??
+          modalState.currentIndex < filteredCoins.length - 1
+            ? (filteredCoins[modalState.currentIndex + 1]?.image_link_r ??
               undefined)
-            : (coinsList[0]?.image_link_r ?? undefined)
+            : (filteredCoins[0]?.image_link_r ?? undefined)
         }
         previousImageSrc={
           modalState.currentIndex > 0
-            ? (coinsList[modalState.currentIndex - 1]?.image_link_o ??
+            ? (filteredCoins[modalState.currentIndex - 1]?.image_link_o ??
               undefined)
-            : (coinsList[coinsList.length - 1]?.image_link_o ?? undefined)
+            : (filteredCoins[filteredCoins.length - 1]?.image_link_o ??
+              undefined)
         }
         previousReverseImageSrc={
           modalState.currentIndex > 0
-            ? (coinsList[modalState.currentIndex - 1]?.image_link_r ??
+            ? (filteredCoins[modalState.currentIndex - 1]?.image_link_r ??
               undefined)
-            : (coinsList[coinsList.length - 1]?.image_link_r ?? undefined)
+            : (filteredCoins[filteredCoins.length - 1]?.image_link_r ??
+              undefined)
         }
         civ={currentCoin?.civ ?? undefined}
         civ_specific={currentCoin?.civ_specific ?? undefined}
