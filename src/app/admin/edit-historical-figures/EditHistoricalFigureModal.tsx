@@ -1,24 +1,26 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useFormPersistence } from "~/hooks/useFormPersistence"
-import type { HistoricalFigure } from "~/database/schema-historical-figures"
-import { HistoricalSourcesEditor } from "~/components/forms/HistoricalSourcesEditor"
 import {
-  FormErrorDisplay,
   FormActions,
+  FormErrorDisplay,
   handleUnsavedChanges,
   ModalWrapper,
 } from "~/components/forms"
+import { HistoricalSourcesEditor } from "~/components/forms/HistoricalSourcesEditor"
+import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
+import type { HistoricalFigure } from "~/database/schema-historical-figures"
+import { useArtifactOptions } from "~/hooks/useArtifactOptions"
+import { useFormPersistence } from "~/hooks/useFormPersistence"
 
+import type { BaseEditModalProps } from "~/lib/types/form-patterns"
 import {
   historicalFigureFormInputSchema,
   historicalFigureFormSchema,
   type HistoricalFigureFormInputData,
 } from "~/lib/validations/historical-figure-form"
-import type { BaseEditModalProps } from "~/lib/types/form-patterns"
 
 type EditHistoricalFigureModalProps = BaseEditModalProps<HistoricalFigure>
 
@@ -40,7 +42,7 @@ const createFigureFormData = (
     ? JSON.stringify(figure.historical_sources)
     : "",
   timeline_id: figure?.timeline_id?.join(", ") ?? "",
-  artifacts_id: figure?.artifacts_id?.join(", ") ?? "",
+  artifact_ids: figure?.artifact_ids?.join(", ") ?? "",
   places_id: figure?.places_id?.join(", ") ?? "",
 })
 
@@ -68,6 +70,9 @@ export function EditHistoricalFigureModal({
   } = form
 
   const isCreateMode = !figure
+
+  // Artifact options for multi-select
+  const { options: artifactOptions } = useArtifactOptions()
 
   // Form persistence for mobile browser resilience
   const { clearSavedData } = useFormPersistence({
@@ -119,7 +124,7 @@ export function EditHistoricalFigureModal({
       flavour_text: transformedData.flavour_text ?? null,
       historical_sources: transformedData.historical_sources,
       timeline_id: transformedData.timeline_id,
-      artifacts_id: transformedData.artifacts_id,
+      artifact_ids: transformedData.artifact_ids,
       places_id: transformedData.places_id,
     }
 
@@ -325,12 +330,21 @@ export function EditHistoricalFigureModal({
           </div>
 
           <div>
-            <label className={labelClass}>Artifact IDs</label>
-            <input
-              type="text"
-              {...register("artifacts_id")}
-              className={inputClass}
-              placeholder="1, 2, 3 (comma separated)"
+            <label className={labelClass}>Artifacts</label>
+            <SimpleMultiSelect
+              options={artifactOptions}
+              selectedValues={
+                watch("artifact_ids")
+                  ?.split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean) ?? []
+              }
+              onSelectionChange={(values) =>
+                setValue("artifact_ids", values.join(", "), {
+                  shouldDirty: true,
+                })
+              }
+              placeholder="Select artifacts..."
             />
           </div>
         </div>

@@ -19,7 +19,7 @@ export const historicalFigureFormInputSchema = z.object({
   flavour_text: optionalStringField,
   historical_sources: optionalStringField,
   timeline_id: optionalStringField,
-  artifacts_id: optionalStringField,
+  artifact_ids: optionalStringField,
   places_id: optionalStringField,
 })
 
@@ -50,12 +50,12 @@ export const historicalFigureFormSchema = historicalFigureFormInputSchema
             .map((item) => parseInt(item.trim()))
             .filter((num) => !isNaN(num))
         : null,
-    artifacts_id:
-      data.artifacts_id && data.artifacts_id !== ""
-        ? data.artifacts_id
+    artifact_ids:
+      data.artifact_ids && data.artifact_ids !== ""
+        ? data.artifact_ids
             .split(",")
-            .map((item) => parseInt(item.trim()))
-            .filter((num) => !isNaN(num))
+            .map((item) => item.trim())
+            .filter(Boolean)
         : null,
     places_id:
       data.places_id && data.places_id !== ""

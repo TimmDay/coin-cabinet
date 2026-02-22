@@ -130,7 +130,7 @@ export async function GET(
         const { data: figures, error: figuresError } = await supabase
           .from("historical_figures")
           .select(
-            "id, name, full_name, authority, reign_start, reign_end, birth, death, altNames, flavour_text",
+            "id, name, full_name, authority, reign_start, reign_end, birth, death, altNames, flavour_text, artifact_ids",
           )
           .in("id", figureIds)
 

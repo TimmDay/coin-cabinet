@@ -35,6 +35,7 @@ export type CoinEnhanced = SomnusCollection & {
     death?: number | null
     altNames?: string[] | null
     flavour_text?: string | null
+    artifact_ids?: string[] | null
   }>
 }
 

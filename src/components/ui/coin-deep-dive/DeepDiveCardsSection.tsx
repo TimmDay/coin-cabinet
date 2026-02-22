@@ -31,7 +31,7 @@ function transformDeitiesToCards(
         primaryInfo: deity.flavour_text ?? "",
         footer: deity.features_coinage?.map((f) => f.name).join(", ") ?? "",
         image: artifact?.img_src ?? undefined,
-        altText: artifact?.img_alt ?? deity.name,
+        altText: artifact?.img_alt ?? deity.name ?? undefined,
       }
     }) ?? []
   )
@@ -39,10 +39,21 @@ function transformDeitiesToCards(
 
 function transformHistoricalFiguresToCards(
   figures: CoinEnhanced["historical_figures"],
+  artifacts: ReturnType<typeof useArtifacts>["data"],
 ) {
   return (
     figures?.map((figure: unknown) => {
       const figureAny = figure as Record<string, unknown>
+
+      // Look up first artifact for image
+      const artifactIds = Array.isArray(figureAny.artifact_ids)
+        ? (figureAny.artifact_ids as string[])
+        : null
+      const artifactId = artifactIds?.[0]
+      const artifact =
+        artifactId && artifacts
+          ? artifacts.find((a) => a.id === artifactId)
+          : null
 
       // Extract and validate numeric fields
       const birth = typeof figureAny.birth === "number" ? figureAny.birth : null
@@ -87,6 +98,10 @@ function transformHistoricalFiguresToCards(
             : "") ?? "",
         secondaryInfo: undefined,
         footer: footerText,
+        image: artifact?.img_src ?? undefined,
+        altText:
+          artifact?.img_alt ??
+          (typeof figureAny.name === "string" ? figureAny.name : ""),
       }
     }) ?? []
   )
@@ -133,8 +148,8 @@ function createCoinFlip(
     primaryInfo: [coin.provenance].filter(Boolean).join(" • ") || undefined,
     secondaryInfo: coin.flavour_desc ?? undefined,
     footer: mintInfo || undefined,
-    image: artifact?.img_src || undefined,
-    altText: artifact?.img_alt || undefined,
+    image: artifact?.img_src ?? undefined,
+    altText: artifact?.img_alt ?? undefined,
   }
 }
 
@@ -154,8 +169,10 @@ export function DeepDiveCardsSection({
 
   // Transform data to cards format
   const matchingDeities = transformDeitiesToCards(deities, artifacts)
-  const matchingHistoricalFigures =
-    transformHistoricalFiguresToCards(historicalFigures)
+  const matchingHistoricalFigures = transformHistoricalFiguresToCards(
+    historicalFigures,
+    artifacts,
+  )
   // Helper to create a DeepDive card
   const createCard = (
     id: string,

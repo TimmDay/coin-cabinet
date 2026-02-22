@@ -49,6 +49,9 @@ export function DeepDiveCard({
 }: DeepDiveCardProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
+  // Check if there's any content to show in the expandable section
+  const hasExpandableContent = primaryInfo || secondaryInfo || image
+
   return (
     <div
       className={`bg-card w-full overflow-hidden rounded-lg border border-gray-500 px-6 pt-6 break-words ${className}`}
@@ -63,29 +66,31 @@ export function DeepDiveCard({
         </p>
       )}
 
-      {/* Accordion Toggle */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="bg-muted/50 text-foreground hover:bg-muted mb-4 flex w-full items-center justify-center rounded text-sm font-medium transition-colors"
-        aria-expanded={isOpen}
-        aria-label={isOpen ? "Collapse details" : "Expand details"}
-      >
-        <svg
-          className={`heading-accent h-6 w-6 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      {/* Accordion Toggle - only show if there's content to expand */}
+      {hasExpandableContent && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="bg-muted/50 text-foreground hover:bg-muted mb-4 flex w-full items-center justify-center rounded text-sm font-medium transition-colors"
+          aria-expanded={isOpen}
+          aria-label={isOpen ? "Collapse details" : "Expand details"}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
+          <svg
+            className={`heading-accent h-6 w-6 transition-transform duration-200 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+      )}
 
       {/* Accordion Content - Info Area */}
       <div
