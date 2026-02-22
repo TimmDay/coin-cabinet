@@ -1,5 +1,5 @@
 const severanImages = [
-  "z_severan_Tondo-Altes_Museum-Berlin-Germany_2017",
+  "z_severan_Tondo-Altes_Museum-Berlin-Germany_2017__bg",
   "z_caracalla-geta-jacques-pajou",
 ]
 const gordyImages = ["z_bust-gordianus-iii-louvre-ma1063-ba2c6c-1024_2"]
