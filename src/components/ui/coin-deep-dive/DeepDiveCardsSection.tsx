@@ -12,14 +12,28 @@ type DeepDiveCardsSectionProps = {
   historicalFigures: CoinEnhanced["historical_figures"]
 }
 
-function transformDeitiesToCards(deities: CoinEnhanced["deities"]) {
+function transformDeitiesToCards(
+  deities: CoinEnhanced["deities"],
+  artifacts: ReturnType<typeof useArtifacts>["data"],
+) {
   return (
-    deities?.map((deity) => ({
-      title: deity.name,
-      subtitle: deity.subtitle ?? "",
-      primaryInfo: deity.flavour_text ?? "",
-      footer: deity.features_coinage?.map((f) => f.name).join(", ") ?? "",
-    })) ?? []
+    deities?.map((deity) => {
+      // Look up first artifact for image
+      const artifactId = deity.artifact_ids?.[0]
+      const artifact =
+        artifactId && artifacts
+          ? artifacts.find((a) => a.id === artifactId)
+          : null
+
+      return {
+        title: deity.name,
+        subtitle: deity.subtitle ?? "",
+        primaryInfo: deity.flavour_text ?? "",
+        footer: deity.features_coinage?.map((f) => f.name).join(", ") ?? "",
+        image: artifact?.img_src ?? undefined,
+        altText: artifact?.img_alt ?? deity.name,
+      }
+    }) ?? []
   )
 }
 
@@ -120,7 +134,7 @@ function createCoinFlip(
     secondaryInfo: coin.flavour_desc ?? undefined,
     footer: mintInfo || undefined,
     image: artifact?.img_src || undefined,
-    altText: artifact?.flavour_text || undefined,
+    altText: artifact?.img_alt || undefined,
   }
 }
 
@@ -139,7 +153,7 @@ export function DeepDiveCardsSection({
   }
 
   // Transform data to cards format
-  const matchingDeities = transformDeitiesToCards(deities)
+  const matchingDeities = transformDeitiesToCards(deities, artifacts)
   const matchingHistoricalFigures =
     transformHistoricalFiguresToCards(historicalFigures)
   // Helper to create a DeepDive card

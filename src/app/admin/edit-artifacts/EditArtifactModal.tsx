@@ -10,6 +10,7 @@ import type { ArtifactFormData } from "~/lib/validations/artifact-form"
 type FormData = {
   name: string
   img_src: string
+  img_alt: string
   institution_name: string
   location_name: string
   lat: string
@@ -34,6 +35,7 @@ type EditArtifactModalProps = {
 const createArtifactFormData = (artifact: Artifact | null): FormData => ({
   name: artifact?.name ?? "",
   img_src: artifact?.img_src ?? "",
+  img_alt: artifact?.img_alt ?? "",
   institution_name: artifact?.institution_name ?? "",
   location_name: artifact?.location_name ?? "",
   lat: artifact?.lat?.toString() ?? "",
@@ -110,6 +112,7 @@ export function EditArtifactModal({
     const updates: ArtifactFormData = {
       name: data.name,
       img_src: data.img_src || null,
+      img_alt: data.img_alt || null,
       institution_name: data.institution_name || null,
       location_name: data.location_name || null,
       lat: data.lat ? parseFloat(data.lat) : null,
@@ -171,6 +174,19 @@ export function EditArtifactModal({
               {...register("img_src")}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="https://example.com/image.jpg"
+            />
+          </div>
+
+          {/* Image Alt Text */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Image Alt Text
+            </label>
+            <input
+              type="text"
+              {...register("img_alt")}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+              placeholder="Description of the image for accessibility..."
             />
           </div>
 
