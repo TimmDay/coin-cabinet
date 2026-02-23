@@ -7,6 +7,7 @@ import { CoinageFeaturesEditor } from "~/components/forms/CoinageFeaturesEditor"
 import { FestivalsEditor } from "~/components/forms/FestivalsEditor"
 import { SimpleMultiSelect } from "~/components/ui/SimpleMultiSelect"
 import type { Deity, Festival } from "~/database/schema-deities"
+import { useArtifactOptions } from "~/hooks/useArtifactOptions"
 import { useFormPersistence } from "~/hooks/useFormPersistence"
 import { usePlaceOptions } from "~/hooks/usePlaceOptions"
 import type { DeityFormInput } from "~/lib/validations/deity-form"
@@ -23,6 +24,7 @@ type FormData = {
   legends_coinage_raw: string
   historical_sources_raw: string
   place_ids: string[]
+  artifact_ids: string[]
   festivals_raw: string
 }
 
@@ -59,6 +61,10 @@ const createDeityFormData = (deity: Deity | null): FormData => {
     place_ids:
       deity?.place_ids && Array.isArray(deity.place_ids)
         ? deity.place_ids.map((id) => id.toString())
+        : [],
+    artifact_ids:
+      deity?.artifact_ids && Array.isArray(deity.artifact_ids)
+        ? deity.artifact_ids
         : [],
     festivals_raw: (() => {
       if (!deity?.festivals) return ""
@@ -104,6 +110,7 @@ export function EditDeityModal({
   isSaving = false,
 }: EditDeityModalProps) {
   const { options: placeOptions } = usePlaceOptions()
+  const { options: artifactOptions } = useArtifactOptions()
   const form = useForm<FormData>({
     defaultValues: createDeityFormData(null),
   })
@@ -167,7 +174,7 @@ export function EditDeityModal({
       historical_sources: data.historical_sources_raw.trim() || "",
       place_ids: data.place_ids || [],
       festivals: data.festivals_raw?.trim() || "",
-      artifact_ids: "", // Default empty string for artifact_ids
+      artifact_ids: data.artifact_ids || [],
     }
 
     if (!updates.name) {
@@ -384,6 +391,21 @@ export function EditDeityModal({
               selectedValues={watch("place_ids") || []}
               onSelectionChange={(values) => setValue("place_ids", values)}
               placeholder="Select temples, shrines, sacred sites..."
+            />
+          </div>
+
+          {/* Artifact IDs */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Associated Artifacts
+            </label>
+            <SimpleMultiSelect
+              options={artifactOptions}
+              selectedValues={watch("artifact_ids") || []}
+              onSelectionChange={(values) =>
+                setValue("artifact_ids", values, { shouldDirty: true })
+              }
+              placeholder="Select statues, museum pieces, artwork..."
             />
           </div>
 

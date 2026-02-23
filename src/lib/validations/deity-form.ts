@@ -14,7 +14,7 @@ export type DeityFormInput = {
   historical_sources: string
   place_ids: string[]
   festivals: string
-  artifact_ids: string
+  artifact_ids: string[] | string
 }
 
 // Schema that properly handles database column types
@@ -132,16 +132,18 @@ export const deityFormSchema = z.object({
       ids.map((id) => parseInt(id, 10)).filter((id) => !isNaN(id)),
     ),
   artifact_ids: z
-    .string()
+    .union([
+      z.array(z.string()),
+      z.string().transform((val) => {
+        if (!val || val === "") return []
+        return val
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      }),
+    ])
     .optional()
-    .or(z.literal(""))
-    .transform((val) => {
-      if (!val || val === "") return []
-      return val
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean)
-    }),
+    .default([]),
 })
 
 export type DeityFormData = z.infer<typeof deityFormSchema>

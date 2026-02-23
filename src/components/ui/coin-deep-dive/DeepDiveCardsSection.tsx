@@ -216,12 +216,9 @@ export function DeepDiveCardsSection({
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4">
-      <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
+      <div className="columns-1 gap-4 md:columns-2">
         {cardsToRender.map((card) => (
-          <div
-            key={card.id}
-            className="w-full md:w-[calc(50%-0.5rem)] md:flex-shrink-0"
-          >
+          <div key={card.id} className="mb-4 break-inside-avoid">
             {card.component}
           </div>
         ))}
