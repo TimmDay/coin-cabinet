@@ -32,6 +32,7 @@ function transformDeitiesToCards(
         footer: deity.features_coinage?.map((f) => f.name).join(", ") ?? "",
         image: artifact?.img_src ?? undefined,
         altText: artifact?.img_alt ?? deity.name ?? undefined,
+        caption: artifact?.flavour_text ?? undefined,
       }
     }) ?? []
   )
@@ -102,6 +103,7 @@ function transformHistoricalFiguresToCards(
         altText:
           artifact?.img_alt ??
           (typeof figureAny.name === "string" ? figureAny.name : ""),
+        caption: artifact?.flavour_text ?? undefined,
       }
     }) ?? []
   )

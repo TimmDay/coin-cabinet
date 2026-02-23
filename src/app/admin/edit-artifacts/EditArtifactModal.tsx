@@ -2,7 +2,9 @@
 
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
+import { usePlaces } from "~/api/places"
 import { FormActions, FormErrorDisplay, ModalWrapper } from "~/components/forms"
+import { Select } from "~/components/ui/Select"
 import type { Artifact } from "~/database/schema-artifacts"
 import { useFormPersistence } from "~/hooks/useFormPersistence"
 import type { ArtifactFormData } from "~/lib/validations/artifact-form"
@@ -11,6 +13,7 @@ type FormData = {
   name: string
   img_src: string
   img_alt: string
+  place_id: string
   institution_name: string
   location_name: string
   lat: string
@@ -36,6 +39,7 @@ const createArtifactFormData = (artifact: Artifact | null): FormData => ({
   name: artifact?.name ?? "",
   img_src: artifact?.img_src ?? "",
   img_alt: artifact?.img_alt ?? "",
+  place_id: artifact?.place_id ?? "",
   institution_name: artifact?.institution_name ?? "",
   location_name: artifact?.location_name ?? "",
   lat: artifact?.lat?.toString() ?? "",
@@ -61,6 +65,16 @@ export function EditArtifactModal({
     ? `artifact-edit-${artifact.id}`
     : "artifact-create-new"
 
+  // Fetch places for the Select dropdown
+  const { data: places } = usePlaces()
+  const placeOptions = [
+    { value: "", label: "None (manual entry)" },
+    ...(places?.map((place) => ({
+      value: place.id.toString(),
+      label: place.name,
+    })) ?? []),
+  ]
+
   const form = useForm<FormData>({
     defaultValues: createArtifactFormData(artifact),
   })
@@ -69,8 +83,36 @@ export function EditArtifactModal({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isDirty },
   } = form
+
+  // Watch place_id to auto-fill fields when a place is selected
+  const selectedPlaceId = watch("place_id")
+  const selectedPlace = selectedPlaceId
+    ? places?.find((p) => p.id.toString() === selectedPlaceId)
+    : null
+
+  // Track if this is the initial place_id (from artifact) vs user-selected
+  const initialPlaceId = artifact?.place_id ?? ""
+
+  // Auto-fill fields when place is selected (or on initial load with place_id)
+  useEffect(() => {
+    if (selectedPlace) {
+      // Only mark as dirty if user changed the place (not on initial load)
+      const isUserChange = selectedPlaceId !== initialPlaceId
+      setValue("institution_name", selectedPlace.name, {
+        shouldDirty: isUserChange,
+      })
+      setValue("lat", selectedPlace.lat.toString(), {
+        shouldDirty: isUserChange,
+      })
+      setValue("lng", selectedPlace.lng.toString(), {
+        shouldDirty: isUserChange,
+      })
+    }
+  }, [selectedPlace, setValue, selectedPlaceId, initialPlaceId])
 
   // Use form persistence - enabled for both create and edit
   const { clearSavedData } = useFormPersistence({
@@ -109,14 +151,17 @@ export function EditArtifactModal({
 
   const onSubmit = async (data: FormData) => {
     // Transform form data to match expected schema
+    // If place_id is set, don't save institution_name/lat/lng (they come from the place)
+    const hasPlace = !!data.place_id
     const updates: ArtifactFormData = {
       name: data.name,
       img_src: data.img_src || null,
       img_alt: data.img_alt || null,
-      institution_name: data.institution_name || null,
+      place_id: data.place_id || null,
+      institution_name: hasPlace ? null : data.institution_name || null,
       location_name: data.location_name || null,
-      lat: data.lat ? parseFloat(data.lat) : null,
-      lng: data.lng ? parseFloat(data.lng) : null,
+      lat: hasPlace ? null : data.lat ? parseFloat(data.lat) : null,
+      lng: hasPlace ? null : data.lng ? parseFloat(data.lng) : null,
       medium: data.medium || null,
       artist_designer: data.artist_designer || null,
       year_of_creation_estimate: data.year_of_creation_estimate
@@ -190,16 +235,41 @@ export function EditArtifactModal({
             />
           </div>
 
+          {/* Place Selection */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Link to Existing Place
+            </label>
+            <Select
+              options={placeOptions}
+              value={watch("place_id")}
+              onChange={(value) =>
+                setValue("place_id", value, { shouldDirty: true })
+              }
+              placeholder="Select a place..."
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Selecting a place will auto-fill and lock the institution name and
+              coordinates
+            </p>
+          </div>
+
           {/* Institution Information */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Institution Name
+                {selectedPlace && (
+                  <span className="ml-2 text-xs text-purple-400">
+                    (from place)
+                  </span>
+                )}
               </label>
               <input
                 type="text"
                 {...register("institution_name")}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+                disabled={!!selectedPlace}
+                className={`w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none ${selectedPlace ? "cursor-not-allowed bg-slate-700 text-slate-400" : ""}`}
                 placeholder="Museum or institution name..."
               />
             </div>
@@ -221,24 +291,36 @@ export function EditArtifactModal({
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Latitude
+                {selectedPlace && (
+                  <span className="ml-2 text-xs text-purple-400">
+                    (from place)
+                  </span>
+                )}
               </label>
               <input
                 type="number"
                 step="any"
                 {...register("lat")}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+                disabled={!!selectedPlace}
+                className={`w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none ${selectedPlace ? "cursor-not-allowed bg-slate-700 text-slate-400" : ""}`}
                 placeholder="41.8919"
               />
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Longitude
+                {selectedPlace && (
+                  <span className="ml-2 text-xs text-purple-400">
+                    (from place)
+                  </span>
+                )}
               </label>
               <input
                 type="number"
                 step="any"
                 {...register("lng")}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+                disabled={!!selectedPlace}
+                className={`w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none ${selectedPlace ? "cursor-not-allowed bg-slate-700 text-slate-400" : ""}`}
                 placeholder="12.5113"
               />
             </div>

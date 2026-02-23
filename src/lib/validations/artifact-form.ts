@@ -4,6 +4,7 @@ export const artifactFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   img_src: z.string().optional().nullable(),
   img_alt: z.string().optional().nullable(),
+  place_id: z.string().optional().nullable(),
   institution_name: z.string().optional().nullable(),
   location_name: z.string().optional().nullable(),
   lat: z.number().min(-90).max(90).optional().nullable(),

@@ -2,9 +2,11 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
+import { usePlaces } from "~/api/places"
 import { GenericEditView } from "~/components/admin/GenericEditView"
 import type { Artifact } from "~/database/schema-artifacts"
 import { useEditModal } from "~/hooks/useEditModal"
+import { getArtifactInstitutionName } from "~/lib/utils/artifact-helpers"
 import type { ArtifactFormData } from "~/lib/validations/artifact-form"
 import { EditArtifactModal } from "./EditArtifactModal"
 
@@ -60,6 +62,9 @@ export function EditArtifactsView() {
     queryKey: ["artifacts"],
     queryFn: fetchArtifacts,
   })
+
+  // Fetch places for resolving place_id to location data
+  const { data: places } = usePlaces()
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: ArtifactFormData }) =>
@@ -129,9 +134,10 @@ export function EditArtifactsView() {
     // Check name
     const nameMatch = item.name?.toLowerCase().includes(searchTerm) ?? false
 
-    // Check institution
+    // Check institution (use place lookup with fallback)
+    const institutionName = getArtifactInstitutionName(item, places)
     const institutionMatch =
-      item.institution_name?.toLowerCase().includes(searchTerm) ?? false
+      institutionName?.toLowerCase().includes(searchTerm) ?? false
 
     // Check location
     const locationMatch =
@@ -143,50 +149,59 @@ export function EditArtifactsView() {
     return nameMatch || institutionMatch || locationMatch || mediumMatch
   }
 
-  const renderListItem = (item: Artifact) => (
-    <div className="flex w-full items-center justify-between">
-      <div className="flex-1">
-        <h3 className="text-lg font-medium text-white">{item.name}</h3>
-        {item.institution_name && (
-          <p className="text-sm text-gray-400">{item.institution_name}</p>
-        )}
-        <div className="mt-1 flex flex-wrap gap-2 text-xs text-gray-400">
-          {item.location_name && <span>{item.location_name}</span>}
-          {item.medium && <span>• {item.medium}</span>}
-          {item.year_of_creation_estimate && (
-            <span>• {item.year_of_creation_estimate} AD</span>
+  const renderListItem = (item: Artifact) => {
+    const institutionName = getArtifactInstitutionName(item, places)
+
+    return (
+      <div className="flex w-full items-center justify-between">
+        <div className="flex-1">
+          <h3 className="text-lg font-medium text-white">{item.name}</h3>
+          {institutionName && (
+            <p className="text-sm text-gray-400">
+              {institutionName}
+              {item.place_id && (
+                <span className="ml-1 text-purple-400">(linked)</span>
+              )}
+            </p>
           )}
+          <div className="mt-1 flex flex-wrap gap-2 text-xs text-gray-400">
+            {item.location_name && <span>{item.location_name}</span>}
+            {item.medium && <span>• {item.medium}</span>}
+            {item.year_of_creation_estimate && (
+              <span>• {item.year_of_creation_estimate} AD</span>
+            )}
+          </div>
         </div>
-      </div>
-      {(!item.historical_sources || item.historical_sources.length === 0) && (
-        <span className="mr-3 rounded-full bg-purple-500/20 px-2 py-1 text-xs text-purple-400">
-          needs sources
-        </span>
-      )}
-      <button
-        onClick={(e) => {
-          e.stopPropagation()
-          void handleDelete(item)
-        }}
-        className="mr-3 rounded p-1 text-gray-400 transition-colors hover:bg-red-500/20 hover:text-red-300"
-        title={`Delete ${item.name}`}
-      >
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+        {(!item.historical_sources || item.historical_sources.length === 0) && (
+          <span className="mr-3 rounded-full bg-purple-500/20 px-2 py-1 text-xs text-purple-400">
+            needs sources
+          </span>
+        )}
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            void handleDelete(item)
+          }}
+          className="mr-3 rounded p-1 text-gray-400 transition-colors hover:bg-red-500/20 hover:text-red-300"
+          title={`Delete ${item.name}`}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-          />
-        </svg>
-      </button>
-    </div>
-  )
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+        </button>
+      </div>
+    )
+  }
 
   const handleModalSave = async (
     id: string | null,

@@ -3,6 +3,7 @@ export type Artifact = {
   name: string
   img_src: string | null
   img_alt: string | null
+  place_id: string | null
   institution_name: string | null
   location_name: string | null
   lat: number | null
@@ -21,6 +22,7 @@ export type ArtifactInsert = {
   name: string
   img_src?: string | null
   img_alt?: string | null
+  place_id?: string | null
   institution_name?: string | null
   location_name?: string | null
   lat?: number | null

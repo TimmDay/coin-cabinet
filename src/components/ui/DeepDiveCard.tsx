@@ -22,6 +22,8 @@ export type DeepDiveCardProps = {
   image?: string
   /** Alt text for the image */
   altText?: string
+  /** Caption to display under the image */
+  caption?: string
   /** Footer text (usually styled greyish) */
   footer?: string
   sources?: Source[]
@@ -43,6 +45,7 @@ export function DeepDiveCard({
   secondaryInfo,
   image,
   altText,
+  caption,
   footer,
   className = "",
   defaultOpen = false,
@@ -133,6 +136,12 @@ export function DeepDiveCard({
                 </div>
               )}
             </div>
+            {/* Caption */}
+            {caption && (
+              <p className="mt-3 text-center text-xs leading-relaxed text-gray-400 italic">
+                {caption}
+              </p>
+            )}
           </div>
         )}
       </div>
