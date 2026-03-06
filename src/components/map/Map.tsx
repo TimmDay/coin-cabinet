@@ -79,80 +79,107 @@ function MapNavigationHandler({
   useEffect(() => {
     if (!onNavigate || !map) return
 
+    let isDisposed = false
+
     // Force map to recalculate size on mount (important for mobile)
-    setTimeout(() => {
-      map.invalidateSize()
-      const size = map.getSize()
+    const timeoutId = window.setTimeout(() => {
+      if (isDisposed) return
 
-      // Only register navigate function if map has valid size
-      // This prevents hidden/collapsed maps from overwriting the active map's navigate function
-      if (size && size.x > 0 && size.y > 0) {
-        // Create navigation function and pass to parent
-        const navigate = (center: [number, number], zoom: number) => {
-          // Validate coordinates
-          const [lat, lng] = center
-          const numLat = typeof lat === "string" ? Number(lat) : lat
-          const numLng = typeof lng === "string" ? Number(lng) : lng
-          const numZoom = typeof zoom === "string" ? Number(zoom) : zoom
+      try {
+        const container = map.getContainer()
+        if (!container?.isConnected) return
 
-          if (
-            typeof numLat !== "number" ||
-            typeof numLng !== "number" ||
-            typeof numZoom !== "number" ||
-            !isFinite(numLat) ||
-            !isFinite(numLng) ||
-            !isFinite(numZoom) ||
-            isNaN(numLat) ||
-            isNaN(numLng) ||
-            isNaN(numZoom) ||
-            numZoom <= 0
-          ) {
-            return
-          }
+        map.invalidateSize()
+        const size = map.getSize()
 
-          const cleanCenter: [number, number] = [numLat, numLng]
+        // Only register navigate function if map has valid size
+        // This prevents hidden/collapsed maps from overwriting the active map's navigate function
+        if (size && size.x > 0 && size.y > 0) {
+          // Create navigation function and pass to parent
+          const navigate = (center: [number, number], zoom: number) => {
+            if (isDisposed) return
 
-          // Check if map's current center is valid
-          const currentCenter = map.getCenter()
-          const hasValidCurrentCenter =
-            currentCenter &&
-            !isNaN(currentCenter.lat) &&
-            !isNaN(currentCenter.lng) &&
-            isFinite(currentCenter.lat) &&
-            isFinite(currentCenter.lng)
+            let liveContainer: HTMLElement | null = null
 
-          // Check if map container has valid size (flyTo can fail with invalid container size)
-          const mapSize = map.getSize()
-          const hasValidSize = mapSize && mapSize.x > 0 && mapSize.y > 0
-
-          // If map size is invalid, force recalculation
-          if (!hasValidSize) {
-            map.invalidateSize()
-          }
-
-          // Use setView if current position or map size is invalid, flyTo if both are valid
-          // This prevents NaN errors during flyTo animation when container is collapsed/hidden
-          if (hasValidCurrentCenter && hasValidSize) {
             try {
-              map.flyTo(cleanCenter, numZoom, {
-                animate: true,
-                duration: 1.5,
-              })
+              liveContainer = map.getContainer()
             } catch {
-              // Fallback to setView if flyTo fails
-              map.setView(cleanCenter, numZoom)
+              return
             }
-          } else {
-            map.setView(cleanCenter, numZoom)
+
+            if (!liveContainer?.isConnected) return
+
+            // Validate coordinates
+            const [lat, lng] = center
+            const numLat = typeof lat === "string" ? Number(lat) : lat
+            const numLng = typeof lng === "string" ? Number(lng) : lng
+            const numZoom = typeof zoom === "string" ? Number(zoom) : zoom
+
+            if (
+              typeof numLat !== "number" ||
+              typeof numLng !== "number" ||
+              typeof numZoom !== "number" ||
+              !isFinite(numLat) ||
+              !isFinite(numLng) ||
+              !isFinite(numZoom) ||
+              isNaN(numLat) ||
+              isNaN(numLng) ||
+              isNaN(numZoom) ||
+              numZoom <= 0
+            ) {
+              return
+            }
+
+            const cleanCenter: [number, number] = [numLat, numLng]
+
+            // Check if map's current center is valid
+            const currentCenter = map.getCenter()
+            const hasValidCurrentCenter =
+              currentCenter &&
+              !isNaN(currentCenter.lat) &&
+              !isNaN(currentCenter.lng) &&
+              isFinite(currentCenter.lat) &&
+              isFinite(currentCenter.lng)
+
+            // Check if map container has valid size (flyTo can fail with invalid container size)
+            const mapSize = map.getSize()
+            const hasValidSize = mapSize && mapSize.x > 0 && mapSize.y > 0
+
+            // If map size is invalid, force recalculation
+            if (!hasValidSize) {
+              map.invalidateSize()
+            }
+
+            try {
+              // Use setView if current position or map size is invalid, flyTo if both are valid
+              // This prevents NaN errors during flyTo animation when container is collapsed/hidden
+              if (hasValidCurrentCenter && hasValidSize) {
+                map.flyTo(cleanCenter, numZoom, {
+                  animate: true,
+                  duration: 1.5,
+                })
+              } else {
+                map.setView(cleanCenter, numZoom)
+              }
+            } catch {
+              // Ignore navigation attempts on disposed/hidden maps
+            }
+          }
+
+          // Expose to parent (only for maps with valid size)
+          if (onNavigate) {
+            onNavigate(navigate)
           }
         }
-
-        // Expose to parent (only for maps with valid size)
-        if (onNavigate) {
-          onNavigate(navigate)
-        }
+      } catch {
+        // Ignore setup errors for hidden or unmounted maps
       }
     }, 100)
+
+    return () => {
+      isDisposed = true
+      window.clearTimeout(timeoutId)
+    }
   }, [map, onNavigate])
 
   return null

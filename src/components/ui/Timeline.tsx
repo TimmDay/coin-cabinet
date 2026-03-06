@@ -24,6 +24,7 @@ type TimelineProps = {
     clientY?: number,
   ) => void
   selectedEventIndex?: number
+  enableMobileDrawer?: boolean
 }
 
 export function Timeline({
@@ -31,6 +32,7 @@ export function Timeline({
   className = "",
   onEventClick,
   selectedEventIndex,
+  enableMobileDrawer = true,
 }: TimelineProps) {
   const [currentEventIndex, setCurrentEventIndex] = useState(0)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -75,14 +77,16 @@ export function Timeline({
   const lastEventYear = timelineEvents[timelineEvents.length - 1]?.year ?? 0
   const timelineMagnitude = lastEventYear - firstEventYear
 
-  // Check if timeline events (excluding both sideline markers) span 7 years or less
-  const actualLastYear = sideLineEndEvent?.year ?? lastEventYear
-  const eventsSpanSmallRange =
-    !allEventsSpanSmallRange &&
-    timelineEvents.length > 0 &&
-    actualLastYear - firstEventYear <= 7
+  // Calculate the gap between sideline event and first timeline event
+  const sideLineYear = sideLineEvent?.year ?? firstEventYear
+  const gapYears = firstEventYear - sideLineYear // Years between sideline and first event
 
-  const startYear = firstEventYear - 1
+  // Compress the gap by a factor of 3 (1 visual unit = 3 actual years in the gap)
+  const compressionFactor = 10
+  const compressedGapYears = gapYears / compressionFactor
+
+  // Calculate timeline bounds with compression applied to the initial gap
+  const startYear = firstEventYear - compressedGapYears - 1
   // For short timelines (< 6 years), use 1 year extension; otherwise use 3 years
   const endExtension = timelineMagnitude < 6 ? 1 : 3
   const endYear = lastEventYear + endExtension
@@ -117,30 +121,14 @@ export function Timeline({
       return spacing * (yearIndex + 1)
     }
 
-    if (eventsSpanSmallRange) {
-      // For timelines where events span 7 years or less (but not all), cluster them at the end
-      // Work backwards from 100% (where sideline marker is) by marker diameter
-      const eventYears = Object.keys(eventsByYear)
-        .map(Number)
-        .sort((a, b) => b - a) // Sort descending
-      const yearIndex = eventYears.indexOf(year)
-
-      if (yearIndex === -1) return 0
-
-      // Each marker is ~32px (h-8 w-8), spacing as percentage of timeline
-      // Approximate marker diameter as 3.5% of typical timeline width
-      const markerSpacing = 3.5
-
-      // Start from 100% and work backwards
-      return 100 - markerSpacing * (yearIndex + 1)
-    }
-
+    // Use linear positioning with compressed gap at the start
+    // The compression is already applied in startYear calculation
     return ((year - startYear) / totalYears) * 100
   }
 
   const handleEventClick = (event: TimelineEvent) => {
     // Show drawer on click for mobile and tablet (below lg breakpoint: 1024px)
-    if (window.innerWidth < 1024) {
+    if (enableMobileDrawer && window.innerWidth < 1024) {
       // Find the event index in chronological order
       const eventIndex = allEventsChronological.findIndex(
         (e) => e.name === event.name && e.year === event.year,
@@ -369,14 +357,16 @@ export function Timeline({
       )}
 
       {/* Mobile Timeline Drawer */}
-      <MobileTimelineDrawer
-        isOpen={isDrawerOpen}
-        onClose={handleDrawerClose}
-        events={allEventsChronological}
-        currentEventIndex={currentEventIndex}
-        onEventChange={handleEventChange}
-        getEventIcon={getEventIcon}
-      />
+      {enableMobileDrawer && (
+        <MobileTimelineDrawer
+          isOpen={isDrawerOpen}
+          onClose={handleDrawerClose}
+          events={allEventsChronological}
+          currentEventIndex={currentEventIndex}
+          onEventChange={handleEventChange}
+          getEventIcon={getEventIcon}
+        />
+      )}
     </div>
   )
 }
