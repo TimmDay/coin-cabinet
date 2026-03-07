@@ -370,7 +370,7 @@ export function TimelineWithMap({
   return (
     <div className={`flex flex-col ${className}`}>
       {/* Timeline at top */}
-      <div ref={timelineContainerRef} className="pr-2">
+      <div ref={timelineContainerRef} className="hidden pr-2 lg:block">
         {showHeaders && (
           <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
             Timeline
@@ -381,14 +381,7 @@ export function TimelineWithMap({
           onEventClick={handleEventClick}
           selectedEventIndex={selectedEventIndex}
           enableMobileDrawer={false}
-          className="timeline-in-map lg:hidden"
-        />
-        <Timeline
-          timeline={timeline}
-          onEventClick={handleEventClick}
-          selectedEventIndex={selectedEventIndex}
-          enableMobileDrawer={false}
-          className="timeline-in-map hidden lg:block"
+          className="timeline-in-map"
         />
       </div>
 
