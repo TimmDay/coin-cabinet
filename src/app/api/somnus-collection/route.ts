@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { SOMNUS_COLLECTION_SELECT } from "~/database/schema-somnus-collection"
 import { createClient } from "~/database/supabase-server"
 
 export async function GET(request: Request) {
@@ -15,7 +16,9 @@ export async function GET(request: Request) {
     const includeAll = searchParams.get("includeAll") === "true"
     const showHidden = searchParams.get("showHidden") === "true"
 
-    let query = supabase.from("somnus_collection").select("*")
+    let query = supabase
+      .from("somnus_collection")
+      .select(SOMNUS_COLLECTION_SELECT)
 
     // Only filter for coins with obverse images if not requesting all coins
     if (!includeAll) {

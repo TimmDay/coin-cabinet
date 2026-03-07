@@ -1,7 +1,10 @@
 import { createServerClient } from "@supabase/ssr"
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
-import type { SomnusCollection } from "~/database/schema-somnus-collection"
+import {
+  SOMNUS_COLLECTION_SELECT,
+  type SomnusCollection,
+} from "~/database/schema-somnus-collection"
 import type { CoinEnhanced, CoinUpdateData } from "~/types/api"
 
 export async function GET(
@@ -39,7 +42,7 @@ export async function GET(
 
     let query = supabase
       .from("somnus_collection")
-      .select("*")
+      .select(SOMNUS_COLLECTION_SELECT)
       .eq("id", parseInt(id))
 
     if (!showHidden) {
