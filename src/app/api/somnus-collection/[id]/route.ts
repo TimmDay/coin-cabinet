@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr"
+import type { PostgrestMaybeSingleResponse } from "@supabase/supabase-js"
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import {
@@ -49,21 +50,22 @@ export async function GET(
       query = query.or("is_hidden.eq.false,is_hidden.is.null")
     }
 
-    const { data: coinData, error: coinError } = await query
+    const result: PostgrestMaybeSingleResponse<SomnusCollection> =
+      await query.maybeSingle()
+
+    const { data: coin, error: coinError } = result
 
     if (coinError) {
       console.error("Supabase coin fetch error:", coinError)
       throw new Error(`Database fetch failed: ${coinError.message}`)
     }
 
-    if (!coinData || coinData.length === 0) {
+    if (!coin) {
       return NextResponse.json(
         { success: false, message: "Coin not found" },
         { status: 404 },
       )
     }
-
-    const coin = coinData[0] as SomnusCollection
 
     // Use coin data directly (already properly typed)
     const typedCoin = coin

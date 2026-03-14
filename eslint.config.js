@@ -1,6 +1,6 @@
-import tseslint from "typescript-eslint"
+import nextVitals from "eslint-config-next/core-web-vitals"
 
-export default [
+const config = [
   {
     ignores: [
       ".next",
@@ -11,7 +11,7 @@ export default [
       "**/*.spec.tsx",
     ],
   },
-  ...tseslint.configs.recommended,
+  ...nextVitals,
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
@@ -60,3 +60,5 @@ export default [
     },
   },
 ]
+
+export default config
