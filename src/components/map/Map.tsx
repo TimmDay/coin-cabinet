@@ -2,14 +2,16 @@
 
 import L, { DivIcon } from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import {
   GeoJSON,
   MapContainer,
   Marker,
+  Polyline,
   TileLayer,
   useMapEvents,
 } from "react-leaflet"
+import Supercluster from "supercluster"
 import { useMints } from "~/api/mints"
 import { MAP_HEIGHT } from "~/lib/constants"
 import { formatYear } from "~/lib/utils/date-formatting"
@@ -40,29 +42,276 @@ function getMapContainer(event: L.LeafletMouseEvent): HTMLElement | null {
   return (event.target as any)?._map?._container ?? null
 }
 
+function getLeafletMap(event: L.LeafletMouseEvent): L.Map | null {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+  return (event.target as any)?._map ?? null
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;")
+}
+
+function createReverseTeardropMarkerHtml({
+  fillColor,
+  borderColor,
+  iconSrc,
+  active = false,
+}: {
+  fillColor: string
+  borderColor: string
+  iconSrc?: string
+  active?: boolean
+}) {
+  const size = active ? 34 : 30
+  const safeIconSrc = iconSrc ? escapeHtml(iconSrc) : null
+  const iconSize = active ? 18 : 16
+  const borderWidth = active ? 3 : 2
+
+  return `
+    <div style="position: relative; width: ${size}px; height: ${size + 10}px;">
+      <div
+        style="
+          position: absolute;
+          left: 50%;
+          top: 1px;
+          width: ${size}px;
+          height: ${size}px;
+          transform: translateX(-50%) rotate(-45deg);
+          transform-origin: center;
+          border-radius: 50% 50% 50% 0;
+          background: ${fillColor};
+          border: ${borderWidth}px solid ${borderColor};
+          box-shadow: 0 4px 10px rgba(15, 23, 42, 0.35);
+        "
+      ></div>
+      <div
+        style="
+          position: absolute;
+          left: 50%;
+          top: ${active ? 11 : 10}px;
+          width: ${iconSize}px;
+          height: ${iconSize}px;
+          transform: translateX(-50%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+        "
+      >
+        ${
+          safeIconSrc
+            ? `<img src="${safeIconSrc}" alt="" style="width: ${iconSize}px; height: ${iconSize}px; object-fit: contain; filter: brightness(0) invert(1);" />`
+            : `<div style="width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.92);"></div>`
+        }
+      </div>
+    </div>
+  `
+}
+
+export type CustomMapMarker = {
+  id: string
+  lat: number
+  lng: number
+  title: string
+  subtitle?: string
+  description?: string
+  className?: string
+  fillColor: string
+  borderColor: string
+  iconSrc?: string
+  isActive?: boolean
+  showPopup?: boolean
+  onClick?: () => void
+  zIndexOffset?: number
+}
+
+type ViewportBounds = [number, number, number, number]
+
+type ClusterFeatureProperties = {
+  cluster?: boolean
+  cluster_id?: number
+  point_count?: number
+  point_count_abbreviated?: string | number
+  markerId?: string
+}
+
+type SpiderfiedMarker = {
+  marker: CustomMapMarker
+  position: [number, number]
+  leg: [[number, number], [number, number]]
+}
+
+type SpiderfiedClusterState = {
+  clusterId: number
+  markers: SpiderfiedMarker[]
+}
+
+type ClusteredMarker =
+  | {
+      type: "cluster"
+      id: number
+      lat: number
+      lng: number
+      count: number
+      expansionZoom: number
+    }
+  | {
+      type: "marker"
+      marker: CustomMapMarker
+    }
+
+function createClusterMarkerHtml(count: number) {
+  const size = count >= 10 ? 42 : 38
+
+  return `
+    <div style="position: relative; width: ${size}px; height: ${size}px;">
+      <div
+        style="
+          position: absolute;
+          inset: 0;
+          border-radius: 9999px;
+          background: radial-gradient(circle at 30% 30%, #1e293b 0%, #0f172a 58%, #020617 100%);
+          border: 2px solid rgba(250, 204, 21, 0.95);
+          box-shadow: 0 10px 24px rgba(15, 23, 42, 0.32), 0 0 0 6px rgba(15, 23, 42, 0.2);
+        "
+      ></div>
+      <div
+        style="
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #f8fafc;
+          font-size: ${count >= 100 ? 11 : 12}px;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+        "
+      >${count}</div>
+    </div>
+  `
+}
+
+function sanitizeCssDimension(value: string, fallback: string): string {
+  return /^[0-9a-zA-Z.%(),\s-]+$/.test(value) ? value : fallback
+}
+
+function getCoordinateKey(lat: number, lng: number): string {
+  return `${lat.toFixed(6)}:${lng.toFixed(6)}`
+}
+
+function createSpiderfyPositions({
+  map,
+  center,
+  markers,
+}: {
+  map: L.Map
+  center: [number, number]
+  markers: CustomMapMarker[]
+}): SpiderfiedMarker[] {
+  const markerCount = markers.length
+
+  if (markerCount === 0) {
+    return []
+  }
+
+  const centerLatLng = L.latLng(center[0], center[1])
+  const centerPoint = map.latLngToLayerPoint(centerLatLng)
+
+  return markers.map((marker, index) => {
+    let offsetX = 0
+    let offsetY = 0
+
+    if (markerCount <= 8) {
+      const angle = (Math.PI * 2 * index) / markerCount - Math.PI / 2
+      const radius = markerCount <= 3 ? 28 : 38
+      offsetX = Math.cos(angle) * radius
+      offsetY = Math.sin(angle) * radius
+    } else {
+      const angle = index * 0.7
+      const radius = 26 + index * 5
+      offsetX = Math.cos(angle) * radius
+      offsetY = Math.sin(angle) * radius
+    }
+
+    const spiderPoint = L.point(
+      centerPoint.x + offsetX,
+      centerPoint.y + offsetY,
+    )
+    const spiderLatLng = map.layerPointToLatLng(spiderPoint)
+    const position: [number, number] = [spiderLatLng.lat, spiderLatLng.lng]
+
+    return {
+      marker,
+      position,
+      leg: [center, position],
+    }
+  })
+}
+
 // Component to handle zoom level changes and pan events
 function ZoomHandler({
   onZoomChange,
   onZoomStart,
   onPanStart,
+  onViewportChange,
+  onMapClick,
 }: {
   onZoomChange: (zoom: number) => void
   onZoomStart?: () => void
   onPanStart?: () => void
+  onViewportChange?: (bounds: ViewportBounds) => void
+  onMapClick?: () => void
 }) {
-  useMapEvents({
+  const map = useMapEvents({
     zoomstart: () => {
       onZoomStart?.()
     },
     zoomend: (e) => {
-      const zoom = (e.target as L.Map).getZoom()
+      const nextMap = e.target as L.Map
+      const zoom = nextMap.getZoom()
       onZoomChange(zoom)
+      const bounds = nextMap.getBounds()
+      onViewportChange?.([
+        bounds.getWest(),
+        bounds.getSouth(),
+        bounds.getEast(),
+        bounds.getNorth(),
+      ])
     },
     movestart: () => {
       // Close popups when user starts panning/dragging the map
       onPanStart?.()
     },
+    moveend: (e) => {
+      const bounds = (e.target as L.Map).getBounds()
+      onViewportChange?.([
+        bounds.getWest(),
+        bounds.getSouth(),
+        bounds.getEast(),
+        bounds.getNorth(),
+      ])
+    },
+    click: () => {
+      onMapClick?.()
+    },
   })
+
+  useEffect(() => {
+    const bounds = map.getBounds()
+    onViewportChange?.([
+      bounds.getWest(),
+      bounds.getSouth(),
+      bounds.getEast(),
+      bounds.getNorth(),
+    ])
+  }, [map, onViewportChange])
+
   return null
 }
 
@@ -185,7 +434,7 @@ function MapNavigationHandler({
   return null
 }
 
-type MapProps = {
+export type MapProps = {
   /** Center coordinates of the map [latitude, longitude] */
   center?: [number, number]
   /** Zoom level of the map */
@@ -226,6 +475,10 @@ type MapProps = {
   hideControls?: boolean
   /** Mint name to highlight with special pin (case insensitive match) */
   highlightMint?: string
+  /** Whether default mint markers from the mints table should be displayed */
+  showMintMarkers?: boolean
+  /** Custom markers to render for coin detail pages and other specialized views */
+  customMarkers?: CustomMapMarker[]
   /** Timeline event marker to show on the map */
   timelineEventMarker?: {
     lat: number
@@ -234,6 +487,8 @@ type MapProps = {
     year: number
     description?: string
   } | null
+  /** Whether the default single highlighted timeline event marker should be displayed */
+  showTimelineEventMarker?: boolean
   /** Callback to receive the navigate function */
   onNavigate?: (
     navigateFn: (center: [number, number], zoom: number) => void,
@@ -261,7 +516,10 @@ export const Map: React.FC<MapProps> = ({
   showProvinceLabels: externalShowProvinceLabels = true,
   hideControls = false,
   highlightMint,
+  showMintMarkers = true,
+  customMarkers = [],
   timelineEventMarker,
+  showTimelineEventMarker = true,
   onNavigate,
 }) => {
   // Validate and sanitize center prop to prevent NaN coordinates
@@ -318,6 +576,12 @@ export const Map: React.FC<MapProps> = ({
   const [internalShowProvinceLabels, setInternalShowProvinceLabels] =
     useState(true)
   const [currentZoom, setCurrentZoom] = useState<number>(config.defaultZoom)
+  const [viewportBounds, setViewportBounds] = useState<ViewportBounds>([
+    MAP_BOUNDS.maxBounds[0][1],
+    MAP_BOUNDS.maxBounds[1][0],
+    MAP_BOUNDS.maxBounds[1][1],
+    MAP_BOUNDS.maxBounds[0][0],
+  ])
 
   // Custom popup state for mint markers
   const [customPopup, setCustomPopup] = useState<{
@@ -334,6 +598,8 @@ export const Map: React.FC<MapProps> = ({
     position: { x: 0, y: 0 },
     content: { title: "" },
   })
+  const [spiderfiedCluster, setSpiderfiedCluster] =
+    useState<SpiderfiedClusterState | null>(null)
 
   // Close popup on scroll
   useEffect(() => {
@@ -348,6 +614,10 @@ export const Map: React.FC<MapProps> = ({
       window.removeEventListener("scroll", handleScroll)
     }
   }, [customPopup.isVisible])
+
+  useEffect(() => {
+    setSpiderfiedCluster(null)
+  }, [customMarkers])
 
   // Province selection logic using custom hook
   const allProvinces = useMemo(() => {
@@ -389,6 +659,214 @@ export const Map: React.FC<MapProps> = ({
         ) ?? mint.name.toLowerCase() === highlightMint.toLowerCase(),
     )
   }, [highlightMint, mints])
+
+  const activeCustomMarkers = useMemo(
+    () => customMarkers.filter((marker) => marker.isActive),
+    [customMarkers],
+  )
+
+  const clusterableCustomMarkers = useMemo(
+    () => customMarkers.filter((marker) => !marker.isActive),
+    [customMarkers],
+  )
+
+  const markerLookup = useMemo(() => {
+    const lookup: Record<string, CustomMapMarker> = {}
+
+    for (const marker of clusterableCustomMarkers) {
+      lookup[marker.id] = marker
+    }
+
+    return lookup
+  }, [clusterableCustomMarkers])
+
+  const customMarkerClusterIndex = useMemo(() => {
+    if (clusterableCustomMarkers.length === 0) {
+      return null
+    }
+
+    const index = new Supercluster<ClusterFeatureProperties>({
+      radius: 52,
+      maxZoom: 17,
+      minZoom: 0,
+    })
+
+    index.load(
+      clusterableCustomMarkers.map((marker) => ({
+        type: "Feature" as const,
+        properties: {
+          markerId: marker.id,
+        },
+        geometry: {
+          type: "Point" as const,
+          coordinates: [marker.lng, marker.lat] as [number, number],
+        },
+      })),
+    )
+
+    return index
+  }, [clusterableCustomMarkers])
+
+  const clusteredCustomMarkers = useMemo(() => {
+    if (!customMarkerClusterIndex) {
+      return activeCustomMarkers.map((marker) => ({
+        type: "marker" as const,
+        marker,
+      }))
+    }
+
+    const zoomLevel = Math.max(0, Math.round(currentZoom))
+
+    const clusteredMarkers: ClusteredMarker[] = []
+
+    for (const feature of customMarkerClusterIndex.getClusters(
+      viewportBounds,
+      zoomLevel,
+    )) {
+      const [lng, lat] = feature.geometry.coordinates
+      const properties = feature.properties ?? {}
+
+      if (properties.cluster && properties.cluster_id !== undefined) {
+        clusteredMarkers.push({
+          type: "cluster",
+          id: properties.cluster_id,
+          lat,
+          lng,
+          count: properties.point_count ?? 0,
+          expansionZoom: customMarkerClusterIndex.getClusterExpansionZoom(
+            properties.cluster_id,
+          ),
+        })
+        continue
+      }
+
+      if (!properties.markerId) {
+        continue
+      }
+
+      const marker = markerLookup[properties.markerId]
+      if (marker) {
+        clusteredMarkers.push({
+          type: "marker",
+          marker,
+        })
+      }
+    }
+
+    return clusteredMarkers.concat(
+      activeCustomMarkers.map((marker) => ({
+        type: "marker" as const,
+        marker,
+      })),
+    )
+  }, [
+    activeCustomMarkers,
+    currentZoom,
+    customMarkerClusterIndex,
+    markerLookup,
+    viewportBounds,
+  ])
+
+  const openPopupFromMouseEvent = useCallback(
+    (
+      e: L.LeafletMouseEvent,
+      content: {
+        title: string
+        subtitle?: string
+        description?: string
+        className?: string
+      },
+    ) => {
+      const mapContainer = getMapContainer(e)
+      if (!mapContainer) return
+
+      const rect = mapContainer.getBoundingClientRect()
+      const clickX = e.originalEvent.clientX - rect.left
+      const clickY = e.originalEvent.clientY - rect.top
+
+      setCustomPopup({
+        isVisible: true,
+        position: {
+          x: rect.left + clickX,
+          y: rect.top + clickY,
+        },
+        content,
+      })
+    },
+    [],
+  )
+
+  const handleCustomMarkerClick = useCallback(
+    (marker: CustomMapMarker, e: L.LeafletMouseEvent) => {
+      marker.onClick?.()
+
+      if (
+        marker.showPopup === false ||
+        (!marker.title && !marker.subtitle && !marker.description)
+      ) {
+        return
+      }
+
+      openPopupFromMouseEvent(e, {
+        title: marker.title,
+        subtitle: marker.subtitle,
+        description: marker.description ?? "",
+        className: marker.className ?? "text-slate-100",
+      })
+    },
+    [openPopupFromMouseEvent],
+  )
+
+  const handleClusterClick = useCallback(
+    (
+      item: Extract<ClusteredMarker, { type: "cluster" }>,
+      e: L.LeafletMouseEvent,
+    ) => {
+      const map = getLeafletMap(e)
+      if (!map || !customMarkerClusterIndex) return
+
+      const leaves = customMarkerClusterIndex.getLeaves(item.id, item.count)
+      const markers = leaves
+        .map((leaf) => {
+          const markerId = leaf.properties?.markerId
+          return markerId ? markerLookup[markerId] : null
+        })
+        .filter((marker): marker is CustomMapMarker => marker !== null)
+
+      if (markers.length === 0) {
+        return
+      }
+
+      const coordinateKeys = new Set(
+        markers.map((marker) => getCoordinateKey(marker.lat, marker.lng)),
+      )
+
+      if (coordinateKeys.size === 1) {
+        setSpiderfiedCluster((current) => {
+          if (current?.clusterId === item.id) {
+            return null
+          }
+
+          return {
+            clusterId: item.id,
+            markers: createSpiderfyPositions({
+              map,
+              center: [item.lat, item.lng],
+              markers,
+            }),
+          }
+        })
+        return
+      }
+
+      setSpiderfiedCluster(null)
+      map.flyTo([item.lat, item.lng], item.expansionZoom, {
+        animate: true,
+        duration: 0.6,
+      })
+    },
+    [customMarkerClusterIndex, markerLookup],
+  )
 
   // Empire extent layer configuration
   const empireLayerConfig = useMemo(
@@ -517,13 +995,8 @@ export const Map: React.FC<MapProps> = ({
   // Styling for AD 200 empire extent layer
 
   // Apply custom dimensions if provided, otherwise use Tailwind defaults
-  const containerStyle =
-    height !== "600px" || width !== "100%"
-      ? {
-          height: height === "600px" ? "600px" : height,
-          width: width === "100%" ? "100%" : width,
-        }
-      : undefined
+  const safeHeight = sanitizeCssDimension(height, MAP_HEIGHT)
+  const safeWidth = sanitizeCssDimension(width, "100%")
 
   return (
     <>
@@ -531,6 +1004,15 @@ export const Map: React.FC<MapProps> = ({
       <style jsx global>{`
         .province-label {
           /* No background - transparent labels */
+        }
+
+        .map-shell-default {
+          height: ${safeHeight};
+        }
+
+        .map-shell-sized {
+          height: ${safeHeight};
+          width: ${safeWidth};
         }
 
         .timeline-event-marker-container {
@@ -625,18 +1107,15 @@ export const Map: React.FC<MapProps> = ({
           className={
             layout === "fullscreen"
               ? "order-1 flex-1"
-              : `relative ${width === "100%" ? "w-full" : ""}`
+              : `map-shell-default relative ${width === "100%" ? "w-full" : ""}`
           }
-          style={layout === "default" ? { height } : undefined}
         >
           <div
             className={
               layout === "fullscreen"
                 ? "relative h-full w-full"
-                : `relative ${width === "100%" ? "w-full" : ""}`
+                : `map-shell-sized relative ${width === "100%" ? "w-full" : ""}`
             }
-            style={layout === "default" ? { height } : undefined}
-            {...(containerStyle && { style: containerStyle })}
           >
             <MapContainer
               center={safeCenter}
@@ -658,12 +1137,18 @@ export const Map: React.FC<MapProps> = ({
               {/* Zoom Level Handler */}
               <ZoomHandler
                 onZoomChange={setCurrentZoom}
-                onZoomStart={() =>
+                onZoomStart={() => {
                   setCustomPopup((prev) => ({ ...prev, isVisible: false }))
-                }
-                onPanStart={() =>
+                  setSpiderfiedCluster(null)
+                }}
+                onPanStart={() => {
                   setCustomPopup((prev) => ({ ...prev, isVisible: false }))
-                }
+                  setSpiderfiedCluster(null)
+                }}
+                onViewportChange={setViewportBounds}
+                onMapClick={() => {
+                  setSpiderfiedCluster(null)
+                }}
               />
 
               {/* Map Navigation Handler - exposes navigation function to parent */}
@@ -837,62 +1322,165 @@ export const Map: React.FC<MapProps> = ({
                 ))}
 
               {/* Mint Markers */}
-              {mints?.map((mint) => {
-                const isHighlighted = highlightedMint?.name === mint.name
+              {showMintMarkers &&
+                mints?.map((mint) => {
+                  const isHighlighted = highlightedMint?.name === mint.name
+
+                  return (
+                    <Marker
+                      key={`mint-${mint.name}`}
+                      position={[mint.lat, mint.lng]}
+                      icon={
+                        isHighlighted
+                          ? new DivIcon({
+                              className: "highlighted-mint-marker",
+                              html: `<div class="mint-pin-wrapper" data-mint="${mint.name}">${createHighlightedMintHtml(mint.name)}</div>`,
+                              iconSize: [120, 60], // Larger to accommodate label
+                              iconAnchor: [60, 12], // Anchor at the center of the circle (24px circle, so 12px from top)
+                            })
+                          : new DivIcon({
+                              className: "mint-marker",
+                              html: `<div style="${MAP_STYLES.mintMarker.css}" data-mint="${mint.name}"></div>`,
+                              iconSize: MAP_STYLES.mintMarker.iconSize,
+                              iconAnchor: MAP_STYLES.mintMarker.iconAnchor,
+                            })
+                      }
+                      eventHandlers={{
+                        click: (e: L.LeafletMouseEvent) => {
+                          const mapContainer = getMapContainer(e)
+                          if (!mapContainer) return
+
+                          const rect = mapContainer.getBoundingClientRect()
+                          const clickX = e.originalEvent.clientX - rect.left
+                          const clickY = e.originalEvent.clientY - rect.top
+
+                          setCustomPopup({
+                            isVisible: true,
+                            position: {
+                              x: rect.left + clickX,
+                              y: rect.top + clickY,
+                            },
+                            content: {
+                              title: mint.name,
+                              subtitle: isHighlighted
+                                ? "This coin was struck here"
+                                : "",
+                              description: mint.flavour_text ?? "",
+                              className: isHighlighted
+                                ? "text-purple-900"
+                                : "text-blue-800",
+                            },
+                          })
+                        },
+                      }}
+                    />
+                  )
+                })}
+
+              {/* Custom Markers */}
+              {clusteredCustomMarkers.map((item) => {
+                if (item.type === "cluster") {
+                  const isSpiderfied = spiderfiedCluster?.clusterId === item.id
+
+                  if (isSpiderfied) {
+                    return null
+                  }
+
+                  return (
+                    <Marker
+                      key={`custom-cluster-${item.id}`}
+                      position={[item.lat, item.lng]}
+                      zIndexOffset={800}
+                      icon={
+                        new DivIcon({
+                          className: "custom-map-cluster-marker",
+                          html: createClusterMarkerHtml(item.count),
+                          iconSize: item.count >= 10 ? [42, 42] : [38, 38],
+                          iconAnchor: item.count >= 10 ? [21, 21] : [19, 19],
+                        })
+                      }
+                      eventHandlers={{
+                        click: (e: L.LeafletMouseEvent) =>
+                          handleClusterClick(item, e),
+                      }}
+                    />
+                  )
+                }
+
+                const marker = item.marker
 
                 return (
                   <Marker
-                    key={`mint-${mint.name}`}
-                    position={[mint.lat, mint.lng]}
+                    key={marker.id}
+                    position={[marker.lat, marker.lng]}
+                    zIndexOffset={
+                      marker.zIndexOffset ?? (marker.isActive ? 1000 : 0)
+                    }
                     icon={
-                      isHighlighted
-                        ? new DivIcon({
-                            className: "highlighted-mint-marker",
-                            html: `<div class="mint-pin-wrapper" data-mint="${mint.name}">${createHighlightedMintHtml(mint.name)}</div>`,
-                            iconSize: [120, 60], // Larger to accommodate label
-                            iconAnchor: [60, 12], // Anchor at the center of the circle (24px circle, so 12px from top)
-                          })
-                        : new DivIcon({
-                            className: "mint-marker",
-                            html: `<div style="${MAP_STYLES.mintMarker.css}" data-mint="${mint.name}"></div>`,
-                            iconSize: MAP_STYLES.mintMarker.iconSize,
-                            iconAnchor: MAP_STYLES.mintMarker.iconAnchor,
-                          })
+                      new DivIcon({
+                        className: "custom-map-marker",
+                        html: createReverseTeardropMarkerHtml({
+                          fillColor: marker.fillColor,
+                          borderColor: marker.borderColor,
+                          iconSrc: marker.iconSrc,
+                          active: marker.isActive,
+                        }),
+                        iconSize: marker.isActive ? [34, 44] : [30, 40],
+                        iconAnchor: marker.isActive ? [17, 42] : [15, 38],
+                      })
                     }
                     eventHandlers={{
-                      click: (e: L.LeafletMouseEvent) => {
-                        const mapContainer = getMapContainer(e)
-                        if (!mapContainer) return
+                      click: (e: L.LeafletMouseEvent) =>
+                        handleCustomMarkerClick(marker, e),
+                    }}
+                  />
+                )
+              })}
 
-                        const rect = mapContainer.getBoundingClientRect()
-                        const clickX = e.originalEvent.clientX - rect.left
-                        const clickY = e.originalEvent.clientY - rect.top
+              {spiderfiedCluster?.markers.map((item) => (
+                <Polyline
+                  key={`spider-leg-${item.marker.id}`}
+                  positions={item.leg}
+                  pathOptions={{
+                    color: "rgba(15, 23, 42, 0.55)",
+                    weight: 2,
+                    opacity: 0.9,
+                  }}
+                />
+              ))}
 
-                        setCustomPopup({
-                          isVisible: true,
-                          position: {
-                            x: rect.left + clickX,
-                            y: rect.top + clickY,
-                          },
-                          content: {
-                            title: mint.name,
-                            subtitle: isHighlighted
-                              ? "This coin was struck here"
-                              : "",
-                            description: mint.flavour_text ?? "",
-                            className: isHighlighted
-                              ? "text-purple-900"
-                              : "text-blue-800",
-                          },
-                        })
-                      },
+              {spiderfiedCluster?.markers.map((item) => {
+                const marker = item.marker
+
+                return (
+                  <Marker
+                    key={`spiderfied-${marker.id}`}
+                    position={item.position}
+                    zIndexOffset={1200 + (marker.zIndexOffset ?? 0)}
+                    icon={
+                      new DivIcon({
+                        className: "custom-map-marker spiderfied-map-marker",
+                        html: createReverseTeardropMarkerHtml({
+                          fillColor: marker.fillColor,
+                          borderColor: marker.borderColor,
+                          iconSrc: marker.iconSrc,
+                          active: true,
+                        }),
+                        iconSize: [34, 44],
+                        iconAnchor: [17, 42],
+                      })
+                    }
+                    eventHandlers={{
+                      click: (e: L.LeafletMouseEvent) =>
+                        handleCustomMarkerClick(marker, e),
                     }}
                   />
                 )
               })}
 
               {/* Timeline Event Marker */}
-              {timelineEventMarker &&
+              {showTimelineEventMarker &&
+                timelineEventMarker &&
                 typeof timelineEventMarker.lat === "number" &&
                 typeof timelineEventMarker.lng === "number" &&
                 !isNaN(timelineEventMarker.lat) &&
@@ -920,29 +1508,14 @@ export const Map: React.FC<MapProps> = ({
                       })
                     }
                     eventHandlers={{
-                      click: (e: L.LeafletMouseEvent) => {
-                        const mapContainer = getMapContainer(e)
-                        if (!mapContainer) return
-
-                        const rect = mapContainer.getBoundingClientRect()
-                        const clickX = e.originalEvent.clientX - rect.left
-                        const clickY = e.originalEvent.clientY - rect.top
-
-                        setCustomPopup({
-                          isVisible: true,
-                          position: {
-                            x: rect.left + clickX,
-                            y: rect.top + clickY,
-                          },
-                          content: {
-                            title: "", // No heading
-                            description:
-                              timelineEventMarker.description ??
-                              "Timeline Event Location",
-                            className: "text-center",
-                          },
-                        })
-                      },
+                      click: (e: L.LeafletMouseEvent) =>
+                        openPopupFromMouseEvent(e, {
+                          title: "",
+                          description:
+                            timelineEventMarker.description ??
+                            "Timeline Event Location",
+                          className: "text-center",
+                        }),
                     }}
                   />
                 )}
