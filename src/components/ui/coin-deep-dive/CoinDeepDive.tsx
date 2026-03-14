@@ -140,7 +140,6 @@ function buildDeityPlaceMarkers(
         borderColor: "#92400e",
         sizeScale: 0.67,
         centerDotScale: 0.7,
-        isActive: true,
         showPopup: true,
         zIndexOffset: 200,
       },
