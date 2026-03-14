@@ -1,4 +1,27 @@
 import { z } from "zod"
+import type { CoinageFeature, Festival } from "~/database/schema-deities"
+
+const coinageFeatureSchema = z.object({
+  name: z.string(),
+  alt_names: z.array(z.string()).optional(),
+  notes: z.string().optional(),
+})
+
+const festivalSchema = z.object({
+  name: z.string(),
+  date: z.string().optional(),
+  note: z.string().optional(),
+})
+
+function parseJsonArray<T>(value: string, schema: z.ZodType<T>): T[] {
+  try {
+    const parsed: unknown = JSON.parse(value)
+    const result = z.array(schema).safeParse(parsed)
+    return result.success ? result.data : []
+  } catch {
+    return []
+  }
+}
 
 // Raw form input type that matches what the API expects before Zod transformation
 export type DeityFormInput = {
@@ -102,25 +125,17 @@ export const deityFormSchema = z.object({
     .string()
     .optional()
     .or(z.literal(""))
-    .transform((val) => {
+    .transform((val): CoinageFeature[] => {
       if (!val || val === "") return []
-      try {
-        return JSON.parse(val)
-      } catch {
-        return []
-      }
+      return parseJsonArray(val, coinageFeatureSchema)
     }),
   festivals: z
     .string()
     .optional()
     .or(z.literal(""))
-    .transform((val) => {
+    .transform((val): Festival[] => {
       if (!val || val === "") return []
-      try {
-        return JSON.parse(val)
-      } catch {
-        return []
-      }
+      return parseJsonArray(val, festivalSchema)
     }),
 
   // Integer array fields

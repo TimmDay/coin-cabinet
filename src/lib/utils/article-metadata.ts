@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+import { metadata as caracallaMetadata } from "../../app/articles/caracalla-and-geta/page"
 
 export type ArticleMetadata = {
   title: string
@@ -22,11 +22,6 @@ export function getAllArticleMetadata(): Record<string, ArticleMetadata> {
 
   // Add articles here as you create them
   try {
-    // Import the metadata from React components
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const {
-      metadata: caracallaMetadata,
-    } = require("../../app/articles/caracalla-and-geta/page")
     if (caracallaMetadata) {
       articles["/articles/caracalla-and-geta"] = caracallaMetadata
     }

@@ -1,4 +1,5 @@
-import nextVitals from "eslint-config-next/core-web-vitals"
+import nextPlugin from "@next/eslint-plugin-next"
+import tseslint from "typescript-eslint"
 
 const config = [
   {
@@ -11,7 +12,16 @@ const config = [
       "**/*.spec.tsx",
     ],
   },
-  ...nextVitals,
+  ...tseslint.configs.recommended,
+  {
+    files: ["**/*.{js,jsx,ts,tsx,mjs,mts,cjs,cts}"],
+    plugins: {
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+    },
+  },
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {

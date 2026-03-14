@@ -4,13 +4,33 @@ import type { ArticleMetadata } from "./article-metadata"
  * Validation helpers for article content
  */
 
-export function validateMetadata(metadata: any): metadata is ArticleMetadata {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null
+}
+
+export function validateMetadata(
+  metadata: unknown,
+): metadata is ArticleMetadata {
+  if (!isRecord(metadata)) {
+    throw new Error("Article metadata must be an object")
+  }
+
   const required = ["title", "description", "date", "author", "slug"]
 
   for (const field of required) {
     if (!metadata[field]) {
       throw new Error(`Article metadata missing required field: ${field}`)
     }
+  }
+
+  if (
+    typeof metadata.title !== "string" ||
+    typeof metadata.description !== "string" ||
+    typeof metadata.date !== "string" ||
+    typeof metadata.author !== "string" ||
+    typeof metadata.slug !== "string"
+  ) {
+    throw new Error("Article metadata fields must be strings")
   }
 
   // Validate date format
@@ -28,7 +48,11 @@ export function validateMetadata(metadata: any): metadata is ArticleMetadata {
   }
 
   // Validate keywords array
-  if (metadata.keywords && !Array.isArray(metadata.keywords)) {
+  if (
+    metadata.keywords !== undefined &&
+    (!Array.isArray(metadata.keywords) ||
+      metadata.keywords.some((keyword) => typeof keyword !== "string"))
+  ) {
     throw new Error("Keywords must be an array of strings")
   }
 
