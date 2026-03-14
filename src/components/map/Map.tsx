@@ -11,7 +11,6 @@ import {
   TileLayer,
   useMapEvents,
 } from "react-leaflet"
-import Supercluster from "supercluster"
 import { useMints } from "~/api/mints"
 import { MAP_HEIGHT } from "~/lib/constants"
 import { formatYear } from "~/lib/utils/date-formatting"
@@ -33,6 +32,21 @@ import {
   type EmpireLayerConfigMap,
 } from "./mapConfig"
 import { MapEmbeddedControls } from "./MapEmbeddedControls"
+import {
+  buildClusteredCustomMarkers,
+  buildMarkerLookup,
+  createCustomMarkerClusterIndex,
+  createSpiderfyPositions,
+  getCoordinateKey,
+  type ClusteredMarker,
+  type SpiderfiedClusterState,
+} from "./mapMarkerClustering"
+import {
+  createClusterMarkerHtml,
+  createCustomMarkerIcon,
+  createSpiderfiedMarkerIcon,
+  type CustomMapMarker,
+} from "./mapMarkers"
 import { MapPopup } from "./MapPopup"
 import { createHighlightedMintHtml } from "./MintMarkerSvg"
 
@@ -47,217 +61,12 @@ function getLeafletMap(event: L.LeafletMouseEvent): L.Map | null {
   return (event.target as any)?._map ?? null
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;")
-}
-
-function createReverseTeardropMarkerHtml({
-  fillColor,
-  borderColor,
-  iconSrc,
-  active = false,
-  sizeScale = 1,
-}: {
-  fillColor: string
-  borderColor: string
-  iconSrc?: string
-  active?: boolean
-  sizeScale?: number
-}) {
-  const size = Math.round((active ? 34 : 30) * sizeScale)
-  const safeIconSrc = iconSrc ? escapeHtml(iconSrc) : null
-  const iconSize = Math.max(10, Math.round((active ? 18 : 16) * sizeScale))
-  const borderWidth = Math.max(2, Math.round((active ? 3 : 2) * sizeScale))
-  const containerHeight = size + Math.round(10 * sizeScale)
-  const iconTop = Math.round((active ? 11 : 10) * sizeScale)
-  const fallbackDotSize = Math.max(5, Math.round(8 * sizeScale))
-
-  return `
-    <div style="position: relative; width: ${size}px; height: ${containerHeight}px;">
-      <div
-        style="
-          position: absolute;
-          left: 50%;
-          top: 1px;
-          width: ${size}px;
-          height: ${size}px;
-          transform: translateX(-50%) rotate(-45deg);
-          transform-origin: center;
-          border-radius: 50% 50% 50% 0;
-          background: ${fillColor};
-          border: ${borderWidth}px solid ${borderColor};
-          box-shadow: 0 4px 10px rgba(15, 23, 42, 0.35);
-        "
-      ></div>
-      <div
-        style="
-          position: absolute;
-          left: 50%;
-          top: ${iconTop}px;
-          width: ${iconSize}px;
-          height: ${iconSize}px;
-          transform: translateX(-50%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          pointer-events: none;
-        "
-      >
-        ${
-          safeIconSrc
-            ? `<img src="${safeIconSrc}" alt="" style="width: ${iconSize}px; height: ${iconSize}px; object-fit: contain; filter: brightness(0) invert(1);" />`
-            : `<div style="width: ${fallbackDotSize}px; height: ${fallbackDotSize}px; border-radius: 9999px; background: rgba(255,255,255,0.92);"></div>`
-        }
-      </div>
-    </div>
-  `
-}
-
-export type CustomMapMarker = {
-  id: string
-  lat: number
-  lng: number
-  title: string
-  subtitle?: string
-  description?: string
-  className?: string
-  fillColor: string
-  borderColor: string
-  iconSrc?: string
-  sizeScale?: number
-  isActive?: boolean
-  showPopup?: boolean
-  onClick?: () => void
-  zIndexOffset?: number
-}
+export type { CustomMapMarker } from "./mapMarkers"
 
 type ViewportBounds = [number, number, number, number]
 
-type ClusterFeatureProperties = {
-  cluster?: boolean
-  cluster_id?: number
-  point_count?: number
-  point_count_abbreviated?: string | number
-  markerId?: string
-}
-
-type SpiderfiedMarker = {
-  marker: CustomMapMarker
-  position: [number, number]
-  leg: [[number, number], [number, number]]
-}
-
-type SpiderfiedClusterState = {
-  clusterId: number
-  markers: SpiderfiedMarker[]
-}
-
-type ClusteredMarker =
-  | {
-      type: "cluster"
-      id: number
-      lat: number
-      lng: number
-      count: number
-      expansionZoom: number
-    }
-  | {
-      type: "marker"
-      marker: CustomMapMarker
-    }
-
-function createClusterMarkerHtml(count: number) {
-  const size = count >= 10 ? 42 : 38
-
-  return `
-    <div style="position: relative; width: ${size}px; height: ${size}px;">
-      <div
-        style="
-          position: absolute;
-          inset: 0;
-          border-radius: 9999px;
-          background: radial-gradient(circle at 30% 30%, #1e293b 0%, #0f172a 58%, #020617 100%);
-          border: 2px solid rgba(250, 204, 21, 0.95);
-          box-shadow: 0 10px 24px rgba(15, 23, 42, 0.32), 0 0 0 6px rgba(15, 23, 42, 0.2);
-        "
-      ></div>
-      <div
-        style="
-          position: absolute;
-          inset: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #f8fafc;
-          font-size: ${count >= 100 ? 11 : 12}px;
-          font-weight: 700;
-          letter-spacing: 0.02em;
-        "
-      >${count}</div>
-    </div>
-  `
-}
-
 function sanitizeCssDimension(value: string, fallback: string): string {
   return /^[0-9a-zA-Z.%(),\s-]+$/.test(value) ? value : fallback
-}
-
-function getCoordinateKey(lat: number, lng: number): string {
-  return `${lat.toFixed(6)}:${lng.toFixed(6)}`
-}
-
-function createSpiderfyPositions({
-  map,
-  center,
-  markers,
-}: {
-  map: L.Map
-  center: [number, number]
-  markers: CustomMapMarker[]
-}): SpiderfiedMarker[] {
-  const markerCount = markers.length
-
-  if (markerCount === 0) {
-    return []
-  }
-
-  const centerLatLng = L.latLng(center[0], center[1])
-  const centerPoint = map.latLngToLayerPoint(centerLatLng)
-
-  return markers.map((marker, index) => {
-    let offsetX = 0
-    let offsetY = 0
-
-    if (markerCount <= 8) {
-      const angle = (Math.PI * 2 * index) / markerCount - Math.PI / 2
-      const radius = markerCount <= 3 ? 28 : 38
-      offsetX = Math.cos(angle) * radius
-      offsetY = Math.sin(angle) * radius
-    } else {
-      const angle = index * 0.7
-      const radius = 26 + index * 5
-      offsetX = Math.cos(angle) * radius
-      offsetY = Math.sin(angle) * radius
-    }
-
-    const spiderPoint = L.point(
-      centerPoint.x + offsetX,
-      centerPoint.y + offsetY,
-    )
-    const spiderLatLng = map.layerPointToLatLng(spiderPoint)
-    const position: [number, number] = [spiderLatLng.lat, spiderLatLng.lng]
-
-    return {
-      marker,
-      position,
-      leg: [center, position],
-    }
-  })
 }
 
 // Component to handle zoom level changes and pan events
@@ -677,94 +486,21 @@ export const Map: React.FC<MapProps> = ({
   )
 
   const markerLookup = useMemo(() => {
-    const lookup: Record<string, CustomMapMarker> = {}
-
-    for (const marker of clusterableCustomMarkers) {
-      lookup[marker.id] = marker
-    }
-
-    return lookup
+    return buildMarkerLookup(clusterableCustomMarkers)
   }, [clusterableCustomMarkers])
 
   const customMarkerClusterIndex = useMemo(() => {
-    if (clusterableCustomMarkers.length === 0) {
-      return null
-    }
-
-    const index = new Supercluster<ClusterFeatureProperties>({
-      radius: 52,
-      maxZoom: 17,
-      minZoom: 0,
-    })
-
-    index.load(
-      clusterableCustomMarkers.map((marker) => ({
-        type: "Feature" as const,
-        properties: {
-          markerId: marker.id,
-        },
-        geometry: {
-          type: "Point" as const,
-          coordinates: [marker.lng, marker.lat] as [number, number],
-        },
-      })),
-    )
-
-    return index
+    return createCustomMarkerClusterIndex(clusterableCustomMarkers)
   }, [clusterableCustomMarkers])
 
   const clusteredCustomMarkers = useMemo(() => {
-    if (!customMarkerClusterIndex) {
-      return activeCustomMarkers.map((marker) => ({
-        type: "marker" as const,
-        marker,
-      }))
-    }
-
-    const zoomLevel = Math.max(0, Math.round(currentZoom))
-
-    const clusteredMarkers: ClusteredMarker[] = []
-
-    for (const feature of customMarkerClusterIndex.getClusters(
+    return buildClusteredCustomMarkers({
+      activeCustomMarkers,
+      currentZoom,
+      customMarkerClusterIndex,
+      markerLookup,
       viewportBounds,
-      zoomLevel,
-    )) {
-      const [lng, lat] = feature.geometry.coordinates
-      const properties = feature.properties ?? {}
-
-      if (properties.cluster && properties.cluster_id !== undefined) {
-        clusteredMarkers.push({
-          type: "cluster",
-          id: properties.cluster_id,
-          lat,
-          lng,
-          count: properties.point_count ?? 0,
-          expansionZoom: customMarkerClusterIndex.getClusterExpansionZoom(
-            properties.cluster_id,
-          ),
-        })
-        continue
-      }
-
-      if (!properties.markerId) {
-        continue
-      }
-
-      const marker = markerLookup[properties.markerId]
-      if (marker) {
-        clusteredMarkers.push({
-          type: "marker",
-          marker,
-        })
-      }
-    }
-
-    return clusteredMarkers.concat(
-      activeCustomMarkers.map((marker) => ({
-        type: "marker" as const,
-        marker,
-      })),
-    )
+    })
   }, [
     activeCustomMarkers,
     currentZoom,
@@ -1422,36 +1158,7 @@ export const Map: React.FC<MapProps> = ({
                     zIndexOffset={
                       marker.zIndexOffset ?? (marker.isActive ? 1000 : 0)
                     }
-                    icon={
-                      new DivIcon({
-                        className: "custom-map-marker",
-                        html: createReverseTeardropMarkerHtml({
-                          fillColor: marker.fillColor,
-                          borderColor: marker.borderColor,
-                          iconSrc: marker.iconSrc,
-                          active: marker.isActive,
-                          sizeScale: marker.sizeScale,
-                        }),
-                        iconSize: marker.isActive
-                          ? [
-                              Math.round(34 * (marker.sizeScale ?? 1)),
-                              Math.round(44 * (marker.sizeScale ?? 1)),
-                            ]
-                          : [
-                              Math.round(30 * (marker.sizeScale ?? 1)),
-                              Math.round(40 * (marker.sizeScale ?? 1)),
-                            ],
-                        iconAnchor: marker.isActive
-                          ? [
-                              Math.round(17 * (marker.sizeScale ?? 1)),
-                              Math.round(42 * (marker.sizeScale ?? 1)),
-                            ]
-                          : [
-                              Math.round(15 * (marker.sizeScale ?? 1)),
-                              Math.round(38 * (marker.sizeScale ?? 1)),
-                            ],
-                      })
-                    }
+                    icon={createCustomMarkerIcon(marker)}
                     eventHandlers={{
                       click: (e: L.LeafletMouseEvent) =>
                         handleCustomMarkerClick(marker, e),
@@ -1480,26 +1187,7 @@ export const Map: React.FC<MapProps> = ({
                     key={`spiderfied-${marker.id}`}
                     position={item.position}
                     zIndexOffset={1200 + (marker.zIndexOffset ?? 0)}
-                    icon={
-                      new DivIcon({
-                        className: "custom-map-marker spiderfied-map-marker",
-                        html: createReverseTeardropMarkerHtml({
-                          fillColor: marker.fillColor,
-                          borderColor: marker.borderColor,
-                          iconSrc: marker.iconSrc,
-                          active: true,
-                          sizeScale: marker.sizeScale,
-                        }),
-                        iconSize: [
-                          Math.round(34 * (marker.sizeScale ?? 1)),
-                          Math.round(44 * (marker.sizeScale ?? 1)),
-                        ],
-                        iconAnchor: [
-                          Math.round(17 * (marker.sizeScale ?? 1)),
-                          Math.round(42 * (marker.sizeScale ?? 1)),
-                        ],
-                      })
-                    }
+                    icon={createSpiderfiedMarkerIcon(marker)}
                     eventHandlers={{
                       click: (e: L.LeafletMouseEvent) =>
                         handleCustomMarkerClick(marker, e),
