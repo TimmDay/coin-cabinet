@@ -149,7 +149,9 @@ export function DeepDiveCard({
       {/* Footer */}
       {footer && (
         <div className="flex items-center justify-center border-t border-gray-500 pt-5 pb-5">
-          <p className="text-center text-xs text-gray-400">{footer}</p>
+          <p className="text-center text-xs whitespace-pre-line text-gray-400">
+            {footer}
+          </p>
         </div>
       )}
     </div>

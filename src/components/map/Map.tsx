@@ -61,19 +61,24 @@ function createReverseTeardropMarkerHtml({
   borderColor,
   iconSrc,
   active = false,
+  sizeScale = 1,
 }: {
   fillColor: string
   borderColor: string
   iconSrc?: string
   active?: boolean
+  sizeScale?: number
 }) {
-  const size = active ? 34 : 30
+  const size = Math.round((active ? 34 : 30) * sizeScale)
   const safeIconSrc = iconSrc ? escapeHtml(iconSrc) : null
-  const iconSize = active ? 18 : 16
-  const borderWidth = active ? 3 : 2
+  const iconSize = Math.max(10, Math.round((active ? 18 : 16) * sizeScale))
+  const borderWidth = Math.max(2, Math.round((active ? 3 : 2) * sizeScale))
+  const containerHeight = size + Math.round(10 * sizeScale)
+  const iconTop = Math.round((active ? 11 : 10) * sizeScale)
+  const fallbackDotSize = Math.max(5, Math.round(8 * sizeScale))
 
   return `
-    <div style="position: relative; width: ${size}px; height: ${size + 10}px;">
+    <div style="position: relative; width: ${size}px; height: ${containerHeight}px;">
       <div
         style="
           position: absolute;
@@ -93,7 +98,7 @@ function createReverseTeardropMarkerHtml({
         style="
           position: absolute;
           left: 50%;
-          top: ${active ? 11 : 10}px;
+          top: ${iconTop}px;
           width: ${iconSize}px;
           height: ${iconSize}px;
           transform: translateX(-50%);
@@ -106,7 +111,7 @@ function createReverseTeardropMarkerHtml({
         ${
           safeIconSrc
             ? `<img src="${safeIconSrc}" alt="" style="width: ${iconSize}px; height: ${iconSize}px; object-fit: contain; filter: brightness(0) invert(1);" />`
-            : `<div style="width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.92);"></div>`
+            : `<div style="width: ${fallbackDotSize}px; height: ${fallbackDotSize}px; border-radius: 9999px; background: rgba(255,255,255,0.92);"></div>`
         }
       </div>
     </div>
@@ -124,6 +129,7 @@ export type CustomMapMarker = {
   fillColor: string
   borderColor: string
   iconSrc?: string
+  sizeScale?: number
   isActive?: boolean
   showPopup?: boolean
   onClick?: () => void
@@ -1424,9 +1430,26 @@ export const Map: React.FC<MapProps> = ({
                           borderColor: marker.borderColor,
                           iconSrc: marker.iconSrc,
                           active: marker.isActive,
+                          sizeScale: marker.sizeScale,
                         }),
-                        iconSize: marker.isActive ? [34, 44] : [30, 40],
-                        iconAnchor: marker.isActive ? [17, 42] : [15, 38],
+                        iconSize: marker.isActive
+                          ? [
+                              Math.round(34 * (marker.sizeScale ?? 1)),
+                              Math.round(44 * (marker.sizeScale ?? 1)),
+                            ]
+                          : [
+                              Math.round(30 * (marker.sizeScale ?? 1)),
+                              Math.round(40 * (marker.sizeScale ?? 1)),
+                            ],
+                        iconAnchor: marker.isActive
+                          ? [
+                              Math.round(17 * (marker.sizeScale ?? 1)),
+                              Math.round(42 * (marker.sizeScale ?? 1)),
+                            ]
+                          : [
+                              Math.round(15 * (marker.sizeScale ?? 1)),
+                              Math.round(38 * (marker.sizeScale ?? 1)),
+                            ],
                       })
                     }
                     eventHandlers={{
@@ -1465,9 +1488,16 @@ export const Map: React.FC<MapProps> = ({
                           borderColor: marker.borderColor,
                           iconSrc: marker.iconSrc,
                           active: true,
+                          sizeScale: marker.sizeScale,
                         }),
-                        iconSize: [34, 44],
-                        iconAnchor: [17, 42],
+                        iconSize: [
+                          Math.round(34 * (marker.sizeScale ?? 1)),
+                          Math.round(44 * (marker.sizeScale ?? 1)),
+                        ],
+                        iconAnchor: [
+                          Math.round(17 * (marker.sizeScale ?? 1)),
+                          Math.round(42 * (marker.sizeScale ?? 1)),
+                        ],
                       })
                     }
                     eventHandlers={{

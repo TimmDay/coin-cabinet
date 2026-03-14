@@ -138,6 +138,7 @@ function createCoinFlip(
   const mintInfo = [civText, mintName, mintYearRangeClean]
     .filter(Boolean)
     .join(" ")
+  const footerText = [mintInfo, coin.provenance].filter(Boolean).join("\n")
 
   // Look up artifact for flavour image
   const artifactId = coin.flavour_img?.[0]
@@ -147,9 +148,9 @@ function createCoinFlip(
   return {
     title: coin.reference ?? "Unknown Reference",
     subtitle: physicalCharacteristics ?? undefined,
-    primaryInfo: [coin.provenance].filter(Boolean).join(" • ") || undefined,
+    primaryInfo: coin.flavour_text ?? undefined,
     secondaryInfo: coin.flavour_desc ?? undefined,
-    footer: mintInfo || undefined,
+    footer: footerText || undefined,
     image: artifact?.img_src ?? undefined,
     altText: artifact?.img_alt ?? undefined,
   }

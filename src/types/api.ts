@@ -18,6 +18,7 @@ export type CoinEnhanced = SomnusCollection & {
     subtitle?: string
     flavour_text?: string | null
     artifact_ids?: string[]
+    place_ids?: number[] | null
     features_coinage?: Array<{
       name: string
       alt_name?: string

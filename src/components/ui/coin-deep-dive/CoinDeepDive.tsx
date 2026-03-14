@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic"
 import { useArtifacts } from "~/api/artifacts"
+import { useDeities } from "~/api/deities"
 import { useMints } from "~/api/mints"
 import { usePlaces } from "~/api/places"
 import { useTimelines } from "~/api/timelines"
@@ -66,6 +67,87 @@ function getRelatedArtifactIds(coin: CoinEnhanced) {
   return [...artifactIds]
 }
 
+function buildDeityPlaceMarkers(
+  coin: CoinEnhanced,
+  places: ReturnType<typeof usePlaces>["data"],
+  allDeities: ReturnType<typeof useDeities>["data"],
+): CustomMapMarker[] {
+  if (!places) {
+    return []
+  }
+
+  const deityNamesByPlaceId = new globalThis.Map<number, Set<string>>()
+
+  const deityIdsFromCoin = (coin.deity_id ?? [])
+    .map((id) => Number.parseInt(id, 10))
+    .filter((id) => Number.isFinite(id))
+
+  const resolvedDeities =
+    allDeities?.filter((deity) => deityIdsFromCoin.includes(deity.id)) ??
+    coin.deities ??
+    []
+
+  for (const deity of resolvedDeities) {
+    for (const rawPlaceId of deity.place_ids ?? []) {
+      const placeId =
+        typeof rawPlaceId === "number"
+          ? rawPlaceId
+          : Number.parseInt(String(rawPlaceId), 10)
+
+      if (!Number.isFinite(placeId)) {
+        continue
+      }
+
+      const names = deityNamesByPlaceId.get(placeId) ?? new Set<string>()
+      names.add(deity.name)
+      deityNamesByPlaceId.set(placeId, names)
+    }
+  }
+
+  return [...deityNamesByPlaceId.entries()].flatMap(([placeId, deityNames]) => {
+    const place = places.find(
+      (candidate) => Number(candidate.id) === Number(placeId),
+    )
+
+    const lat = Number(place?.lat)
+    const lng = Number(place?.lng)
+
+    if (!place || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+      return []
+    }
+
+    if (!isWithinMapBounds(lat, lng)) {
+      return []
+    }
+
+    const relatedDeities = [...deityNames]
+    const deityLabel =
+      relatedDeities.length === 1
+        ? `Associated with ${relatedDeities[0]}`
+        : `Associated with ${relatedDeities.join(", ")}`
+
+    return [
+      {
+        id: `deity-place-${place.id}`,
+        lat,
+        lng,
+        title: place.name,
+        subtitle: deityLabel,
+        description:
+          place.flavour_text ?? place.location_description ?? undefined,
+        className: "text-amber-900",
+        fillColor: "#0f172a",
+        borderColor: "#92400e",
+        sizeScale: 0.67,
+        centerDotScale: 0.7,
+        isActive: true,
+        showPopup: true,
+        zIndexOffset: 200,
+      },
+    ]
+  })
+}
+
 // Data transformation helpers
 function buildTimelineForCoin(
   coin: CoinEnhanced,
@@ -109,6 +191,7 @@ function getMintCoordinates(
 
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const { data: dbTimelines } = useTimelines()
+  const { data: allDeities } = useDeities()
   const { data: mints } = useMints()
   const { data: artifacts } = useArtifacts()
   const { data: places } = usePlaces()
@@ -161,6 +244,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
     },
   )
 
+  const deityPlaceMarkers = buildDeityPlaceMarkers(coin, places, allDeities)
+
   const standaloneMarkers: CustomMapMarker[] = [
     ...(mintCoords && mintName
       ? [
@@ -183,18 +268,30 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
           },
         ]
       : []),
+    ...deityPlaceMarkers,
     ...artifactMarkers,
   ]
 
   // Determine map display logic - show timeline map if available, otherwise mint map
   const shouldShowMap = Boolean(
-    matchingTimeline || mintCoords || artifactMarkers.length,
+    matchingTimeline ||
+      mintCoords ||
+      deityPlaceMarkers.length ||
+      artifactMarkers.length,
   )
   const mapCenter =
     mintCoords ??
-    (artifactMarkers.length > 0
-      ? ([artifactMarkers[0]!.lat, artifactMarkers[0]!.lng] as [number, number])
-      : undefined)
+    (deityPlaceMarkers.length > 0
+      ? ([deityPlaceMarkers[0]!.lat, deityPlaceMarkers[0]!.lng] as [
+          number,
+          number,
+        ])
+      : artifactMarkers.length > 0
+        ? ([artifactMarkers[0]!.lat, artifactMarkers[0]!.lng] as [
+            number,
+            number,
+          ])
+        : undefined)
 
   return (
     <section className="w-full space-y-8 md:space-y-12 md:overflow-x-hidden">
@@ -234,7 +331,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                 showHeaders={false}
                 initialCenter={mapCenter}
                 eventZoomLevel={6}
-                additionalMarkers={artifactMarkers}
+                additionalMarkers={deityPlaceMarkers.concat(artifactMarkers)}
                 showDefaultMintMarkers={false}
                 mapProps={{
                   height: "400px",
@@ -251,13 +348,13 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                   height="400px"
                 />
               </div>
-            ) : artifactMarkers.length > 0 ? (
+            ) : deityPlaceMarkers.length > 0 || artifactMarkers.length > 0 ? (
               <div className="space-y-4">
                 <Map
                   center={mapCenter}
                   hideControls
                   showMintMarkers={false}
-                  customMarkers={artifactMarkers}
+                  customMarkers={deityPlaceMarkers.concat(artifactMarkers)}
                   showTimelineEventMarker={false}
                   height="400px"
                 />

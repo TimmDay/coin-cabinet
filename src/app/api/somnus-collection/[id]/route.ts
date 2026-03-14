@@ -97,7 +97,7 @@ export async function GET(
         const { data: deities, error: deitiesError } = await supabase
           .from("deities")
           .select(
-            "id, name, subtitle, flavour_text, secondary_info, features_coinage, artifact_ids",
+            "id, name, subtitle, flavour_text, secondary_info, features_coinage, artifact_ids, place_ids",
           )
           .in("id", deityIds)
 
