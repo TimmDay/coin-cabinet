@@ -9,7 +9,7 @@ const tetrachyImages = [
   "z_7952_-_Venezia_-_Tetrarchi_in_Piazza_San_Marco_-_Foto_Giovanni_Dall_Orto_8-Aug-2007",
 ]
 const constantinianImages = ["z_helena_pubdom"]
-const hoardsImages = [""]
+const detectorFindsImages = [""]
 const adoptiveEmperorsImages = [""]
 
 const severanSet = {
@@ -57,12 +57,12 @@ const constantinianSet = {
     "The transformative period of Constantine the Great, including the first Christian symbols on Roman coinage.",
   image: pickRandomImage(constantinianImages),
 }
-const hoardsSet = {
-  name: "Hoards",
-  href: "/cabinet/hoards",
+const detectorFindsSet = {
+  name: "Detector Finds",
+  href: "/cabinet/detector-finds",
   description:
-    "Archaeological treasure finds that provide insight into ancient economic conditions and coin circulation patterns.",
-  image: pickRandomImage(hoardsImages),
+    "Coins recovered through detector finds, with provenance details that add context to where and how they were discovered.",
+  image: pickRandomImage(detectorFindsImages),
 }
 
 const adoptiveEmperorsSet = {
@@ -89,7 +89,7 @@ export const romanSets = [
   crisisSet,
   tetrachySet,
   constantinianSet,
-  hoardsSet,
+  detectorFindsSet,
   imperialWomenSet,
   silverEmperorsSet,
 ]

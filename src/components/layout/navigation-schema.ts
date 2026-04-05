@@ -24,33 +24,34 @@ export const adminSubmenu = [
 ]
 
 export const cabinetSubmenu = [
+  { name: "All Coins", href: "/cabinet/all-coins" },
   { name: "Roman", href: "/cabinet/roman-timeline", hasSubmenu: true },
-  { name: "Detector Finds", href: "/cabinet/detector-finds" },
-  { name: "Gordy Boys", href: "/cabinet/gordy-boys" },
   { name: "Judea", href: "/cabinet/judea" },
   { name: "Persian", href: "/cabinet/persian" },
-  { name: "All Coins", href: "/cabinet/all-coins" },
+  { name: "Greek", href: "/cabinet/greek" },
+  { name: "Byzantine", href: "/cabinet/byzantine" },
 ]
 
 export const cabinetRomanSubmenu = [
   { name: "Emperors", href: "/cabinet/silver-emperors" },
   { name: "Women", href: "/cabinet/imperial-women" },
+  { name: "Gordy Boys", href: "/cabinet/gordy-boys" },
   { name: "Severan", href: "/cabinet/severan-dynasty" },
   { name: "Crisis", href: "/cabinet/crisis" },
-  { name: "Hoards", href: "/cabinet/hoards" },
+  { name: "Detector Finds", href: "/cabinet/detector-finds" },
 ]
 
 export const articlesSubmenu = [
   { name: "Year in coins", href: "/articles/year-in-coins", hasSubmenu: true },
 ]
 
-// Feature-flagged articles that require dev mode
-export const devArticlesSubmenu = [
-  { name: "Caracalla and Geta", href: "/articles/caracalla-and-geta" },
-]
-
 export const yearInCoinsSubmenu = [
   { name: "2025", href: "/articles/year-in-coins/2025" },
   { name: "2026", href: "/articles/year-in-coins/2026" },
   // { name: "2027", href: "/articles/year-in-coins/2027" },
+]
+
+// Feature-flagged articles that require dev mode
+export const devArticlesSubmenu = [
+  { name: "Caracalla and Geta", href: "/articles/caracalla-and-geta" },
 ]
