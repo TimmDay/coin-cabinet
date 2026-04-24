@@ -1,7 +1,8 @@
 const text = {
-  welcome: `This site is for exploring. I love the imagination and stories that ancient coins inspire. They scratch a travel itch - time travel even. They remind us that we are all part of a long line of people living with occasionally nutjob leadership. They are a thing we can hold in our hands, that someone else held thousands of years ago. A coin might have been at the market exchanged for lunch, in a pocket while fleeing danger, lost at the gambling table in a game of dice or hidden somewhere secret being saved up for a life changing purchase. They were a tool of propaganda and survival, helped society cooperate commercially and were often an object of suspicion (how much silver is actually in this?).
-  This site began while I was on paternity leave with my first child - hence the appeal to Somnus the god of sleep. Cloacina would also have been appropriate. I am not a historian or photographer, please go easy on me. Any errors are either my own or Caracalla's.`,
-  thanks: `A thank you to the wonderful artemis-collection.com for the inspiration to start this site.`,
+  welcome: `I love the stories, art and imagination of ancient coins. They scratch a travel itch (geographical and temporal). They remind me that I am a blip on a timeline of people who are getting through tough times, living with occasionally nutjob leaders and just trying to buy some lunch at the market. I can hold a coin in my hand that someone else held in their hand 2000 years ago.
+  Coins helped early societies cooperate commercially. They were a tool of propaganda (the first newspapers) and survival (I'm burying this in the yard just in case) and suspicion (how much silver is actually in this?).
+  This site began while I was on paternity leave with my first child - hence the appeal to Somnus the god of sleep. Cloacina would also have been appropriate. I am not a historian or photographer, but I enjoy history and photos. Any errors are either my own or Caracalla's.`,
+  thanks: `A thank you to the wonderful artemis-collection.com for the inspiration to start this site, to Cerberus Coins for being an honest Aussie dealer and to the ancient coins reddit community for teaching me so much.`,
 }
 
 export default text
