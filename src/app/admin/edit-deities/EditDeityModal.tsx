@@ -133,6 +133,7 @@ export function EditDeityModal({
     key: isCreateMode ? "create-deity" : `edit-deity-${deity?.id}`,
     form,
     enabled: isOpen,
+    excludeFromRestore: ["place_ids", "artifact_ids"],
   })
 
   // Reset form when deity changes (but only for edit mode to avoid overriding persistence)

@@ -180,7 +180,7 @@ async function updateSomnusCoin(params: {
     throw new Error(result.message ?? "Failed to update somnus coin")
   }
 
-  return result.coin!
+  return result.coin as SomnusCollection
 }
 
 async function deleteSomnusCoin(id: number): Promise<void> {

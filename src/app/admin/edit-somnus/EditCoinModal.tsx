@@ -175,11 +175,24 @@ export function EditCoinModal({
 
   const isCreateMode = mode === "create"
 
-  // Form persistence for mobile browser resilience
+  // Form persistence for mobile browser resilience.
+  // Relational array fields are excluded from restore — they always come
+  // from the DB via the `values` prop and must not be overwritten by a
+  // potentially stale localStorage snapshot.
   const { clearSavedData } = useFormPersistence({
     key: isCreateMode ? "create-coin" : `edit-coin-${coin?.id}`,
     form,
     enabled: isOpen,
+    excludeFromRestore: [
+      "device_ids",
+      "deity_id",
+      "historical_figures_id",
+      "timelines_id",
+      "flavour_img",
+      "sets",
+      "notable_features",
+      "bpRoute",
+    ],
   })
 
   // Initialize create mode with defaults only if no saved data exists
@@ -236,29 +249,13 @@ export function EditCoinModal({
       flavour_obv: data.flavour_obv,
       flavour_rev: data.flavour_rev,
       flavour_desc: data.flavour_desc,
-      flavour_img:
-        data.flavour_img && data.flavour_img.length > 0
-          ? data.flavour_img
-          : undefined,
-      deity_id:
-        data.deity_id && data.deity_id.length > 0 ? data.deity_id : undefined,
-      historical_figures_id:
-        data.historical_figures_id && data.historical_figures_id.length > 0
-          ? data.historical_figures_id
-          : undefined,
-      timelines_id:
-        data.timelines_id && data.timelines_id.length > 0
-          ? data.timelines_id
-          : undefined,
-      device_ids:
-        data.device_ids && data.device_ids.length > 0
-          ? data.device_ids
-          : undefined,
-      sets: processArray(data.setsRaw ?? "", false), // Keep original case for sets
-      notable_features:
-        data.notable_features && data.notable_features.length > 0
-          ? data.notable_features
-          : undefined,
+      flavour_img: data.flavour_img ?? [],
+      deity_id: data.deity_id ?? [],
+      historical_figures_id: data.historical_figures_id ?? [],
+      timelines_id: data.timelines_id ?? [],
+      device_ids: data.device_ids ?? [],
+      sets: processArray(data.setsRaw ?? "", false) ?? [],
+      notable_features: data.notable_features ?? [],
       purchase_type: data.purchase_type,
       purchase_date: data.purchase_date,
       price_aud: data.price_aud,

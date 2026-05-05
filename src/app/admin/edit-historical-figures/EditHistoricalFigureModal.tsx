@@ -81,6 +81,7 @@ export function EditHistoricalFigureModal({
       : `edit-historical-figure-${figure?.id}`,
     form,
     enabled: isOpen,
+    excludeFromRestore: ["artifact_ids"],
   })
 
   // Reset form when figure changes (but only for edit mode to avoid overriding persistence)

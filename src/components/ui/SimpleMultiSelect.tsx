@@ -9,6 +9,7 @@ type SimpleMultiSelectProps = {
   className?: string
   placeholder?: string
   maxHeight?: string
+  isLoading?: boolean
 }
 
 export function SimpleMultiSelect({
@@ -18,7 +19,13 @@ export function SimpleMultiSelect({
   className = "w-full rounded-md border border-slate-600 bg-slate-800/50 text-slate-200 placeholder-slate-400 focus:border-purple-900 focus:ring-1 focus:ring-purple-900",
   placeholder = "Select options...",
   maxHeight = "max-h-60",
+  isLoading = false,
 }: SimpleMultiSelectProps) {
+  if (isLoading) {
+    return (
+      <div className="h-[42px] w-full animate-pulse rounded-md border border-slate-600 bg-slate-800/50" />
+    )
+  }
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [focusedIndex, setFocusedIndex] = useState(-1)

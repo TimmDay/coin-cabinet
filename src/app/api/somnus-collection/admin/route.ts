@@ -1,4 +1,3 @@
-import type { PostgrestSingleResponse } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 import { ZodError } from "zod"
 import { createClient } from "~/database/supabase-server"
@@ -212,41 +211,34 @@ export async function PUT(request: Request) {
     const tableName = "somnus_collection"
     console.log("Using table:", tableName)
 
-    // Update without changing user_id (preserve ownership)
-    const result: PostgrestSingleResponse<Record<string, unknown>> =
-      await supabase
-        .from(tableName)
-        .update(updateData)
-        .eq("id", id)
-        .eq("user_id", session.user.id) // Ensure user can only update their own coins
-        .select()
-        .single()
+    // Update without changing user_id (preserve ownership).
+    // Avoid .select().single() — if the SELECT RLS policy hides the row
+    // (e.g. is_hidden coins) the RETURNING clause returns 0 rows and
+    // .single() throws PGRST116, masking a successful update.
+    const { error: updateError } = await supabase
+      .from(tableName)
+      .update(updateData)
+      .eq("id", id)
+      .eq("user_id", session.user.id)
 
-    const { data, error } = result
-
-    if (error) {
-      console.error("Supabase error:", error)
+    if (updateError) {
+      console.error("Supabase update error:", updateError)
       return NextResponse.json(
         {
           success: false,
-          message: "Failed to update coin in somnus collection",
-          error: error.message,
+          message: `DB error: ${updateError.message}`,
+          error: updateError.message,
+          details: updateError.details,
+          hint: updateError.hint,
         },
         { status: 500 },
-      )
-    }
-
-    if (!data) {
-      return NextResponse.json(
-        { success: false, message: "Coin not found or access denied" },
-        { status: 404 },
       )
     }
 
     return NextResponse.json({
       success: true,
       message: "Coin updated successfully!",
-      coin: data as { id: number; nickname: string; updated_at: string },
+      coin: { id },
     })
   } catch (error: unknown) {
     console.error("Error updating coin in somnus collection:", error)

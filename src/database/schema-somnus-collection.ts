@@ -91,10 +91,10 @@ export type SomnusCollection = {
   is_hidden?: boolean | null
 
   // joins
-  deity_id?: string[] | null
-  historical_figures_id?: string[] | null
-  timelines_id?: number[] | null
-  device_ids?: string[] | null
+  deity_id?: string[]
+  historical_figures_id?: string[]
+  timelines_id?: number[]
+  device_ids?: string[]
 }
 
 export const SOMNUS_COLLECTION_SELECT_FIELDS = [

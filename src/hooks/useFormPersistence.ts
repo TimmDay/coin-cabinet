@@ -5,26 +5,30 @@ type UseFormPersistenceOptions<T extends FieldValues = FieldValues> = {
   key: string
   form: UseFormReturn<T>
   enabled?: boolean
+  // Fields listed here are never restored from localStorage — they always
+  // come from the database via the form's `values` prop. This prevents a
+  // stale snapshot from overwriting correct DB state for relational fields.
+  excludeFromRestore?: string[]
 }
 
 export function useFormPersistence<T extends FieldValues = FieldValues>({
   key,
   form,
   enabled = true,
+  excludeFromRestore = [],
 }: UseFormPersistenceOptions<T>) {
   const formValues = form.watch()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const excludeFromRestoreRef = useRef(excludeFromRestore)
 
   // Save form data to localStorage with debouncing
   useEffect(() => {
     if (!enabled || typeof window === "undefined") return
 
-    // Clear existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
 
-    // Set new timeout to save after 1 second of inactivity
     timeoutRef.current = setTimeout(() => {
       try {
         const dataToSave = {
@@ -37,7 +41,6 @@ export function useFormPersistence<T extends FieldValues = FieldValues>({
       }
     }, 1000)
 
-    // Cleanup timeout on unmount
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
@@ -53,30 +56,35 @@ export function useFormPersistence<T extends FieldValues = FieldValues>({
       const savedData = localStorage.getItem(`form_${key}`)
       if (savedData) {
         const parsed = JSON.parse(savedData) as {
-          values?: T
+          values?: Record<string, unknown>
           timestamp?: number
         }
-        // Only restore if saved within the last 24 hours
         if (
           parsed.timestamp &&
           Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000 &&
           parsed.values
         ) {
-          // Reset form with saved values
-          form.reset(parsed.values)
+          const excluded = excludeFromRestoreRef.current
+          const valuesToRestore =
+            excluded.length > 0
+              ? Object.fromEntries(
+                  Object.entries(parsed.values).filter(
+                    ([k]) => !excluded.includes(k),
+                  ),
+                )
+              : parsed.values
+
+          form.reset({ ...form.getValues(), ...valuesToRestore })
         } else {
-          // Clean up expired data
           localStorage.removeItem(`form_${key}`)
         }
       }
     } catch (error) {
       console.warn("Failed to restore form data from localStorage:", error)
-      // Clean up corrupted data
       localStorage.removeItem(`form_${key}`)
     }
   }, [key, enabled, form])
 
-  // Clear saved data
   const clearSavedData = () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem(`form_${key}`)

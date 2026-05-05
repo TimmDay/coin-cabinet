@@ -9,6 +9,7 @@ type MultiSelectProps<T extends Record<string, any>> = {
   className?: string
   placeholder?: string
   error?: string
+  isLoading?: boolean
 }
 
 export function MultiSelect<T extends Record<string, any>>({
@@ -19,7 +20,13 @@ export function MultiSelect<T extends Record<string, any>>({
   className,
   placeholder = "Select options...",
   error,
+  isLoading = false,
 }: MultiSelectProps<T>) {
+  if (isLoading) {
+    return (
+      <div className="h-[42px] w-full animate-pulse rounded-md border border-slate-600 bg-slate-800/50" />
+    )
+  }
   const [isOpen, setIsOpen] = useState(false)
   const [focusedIndex, setFocusedIndex] = useState(-1)
   const dropdownRef = useRef<HTMLDivElement>(null)
