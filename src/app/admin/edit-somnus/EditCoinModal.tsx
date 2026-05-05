@@ -70,7 +70,9 @@ const createCoinFormData = (coin: SomnusCollection | null): CoinFormData => ({
   legend_r_expanded: coin?.legend_r_expanded ?? "",
   legend_r_translation: coin?.legend_r_translation ?? "",
   desc_r: coin?.desc_r ?? "",
-  flavour_text: coin?.flavour_text ?? "",
+  flavour_gen: coin?.flavour_gen ?? "",
+  flavour_obv: coin?.flavour_obv ?? "",
+  flavour_rev: coin?.flavour_rev ?? "",
   flavour_desc: coin?.flavour_desc ?? "",
   flavour_img: coin?.flavour_img ?? undefined,
 
@@ -227,7 +229,9 @@ export function EditCoinModal({
       legend_r_expanded: data.legend_r_expanded,
       legend_r_translation: data.legend_r_translation,
       desc_r: data.desc_r,
-      flavour_text: data.flavour_text,
+      flavour_gen: data.flavour_gen,
+      flavour_obv: data.flavour_obv,
+      flavour_rev: data.flavour_rev,
       flavour_desc: data.flavour_desc,
       flavour_img:
         data.flavour_img && data.flavour_img.length > 0
@@ -601,9 +605,11 @@ export function EditCoinModal({
           </div>
 
           {/* Notable Features Section */}
+          {/* These can be used as identifying features for this specific coin. */}
           <div className="space-y-4">
             <p className="mb-2 text-sm text-slate-400">
-              Particular elements on this coin that are worth pointing out
+              Notable condition elements on this coin (flan crack, weak strike,
+              corrosion, toning, etc.) that are notable.
             </p>
 
             <NotableFeaturesEditor
@@ -706,6 +712,18 @@ export function EditCoinModal({
                   placeholder="Describe what appears on the obverse"
                 />
               </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-300">
+                  Flavour Text (Obverse)
+                </label>
+                <textarea
+                  {...register("flavour_obv")}
+                  rows={2}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+                  placeholder="Flavour text specific to the obverse"
+                />
+              </div>
             </div>
 
             {/* Reverse Column */}
@@ -757,19 +775,31 @@ export function EditCoinModal({
                   placeholder="Describe what appears on the reverse"
                 />
               </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-300">
+                  Flavour Text (Reverse)
+                </label>
+                <textarea
+                  {...register("flavour_rev")}
+                  rows={2}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
+                  placeholder="Flavour text specific to the reverse"
+                />
+              </div>
             </div>
           </div>
 
           {/* Flavour Text */}
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-300">
-              Flavour Text
+              Flavour Text (General)
             </label>
             <textarea
-              {...register("flavour_text")}
+              {...register("flavour_gen")}
               rows={3}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
-              placeholder="Additional context or notes"
+              placeholder="General flavour text shown in footer"
             />
           </div>
 

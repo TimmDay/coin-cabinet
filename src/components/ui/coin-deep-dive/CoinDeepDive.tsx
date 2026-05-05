@@ -371,17 +371,45 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       />
 
       {/* Coin Details */}
-      {coin.flavour_text && <FlavorFooter flavourText={coin.flavour_text} />}
+      {(coin.flavour_gen || coin.flavour_obv || coin.flavour_rev) && (
+        <FlavourFooter
+          flavourGen={coin.flavour_gen ?? undefined}
+          flavourObv={coin.flavour_obv ?? undefined}
+          flavourRev={coin.flavour_rev ?? undefined}
+        />
+      )}
     </section>
   )
 }
 
-function FlavorFooter({ flavourText }: { flavourText: string }) {
+function FlavourFooter({
+  flavourGen,
+  flavourObv,
+  flavourRev,
+}: {
+  flavourGen?: string
+  flavourObv?: string
+  flavourRev?: string
+}) {
   return (
-    <footer className="mt-4 border-t border-slate-600 pt-4">
-      <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
-        {flavourText}
-      </p>
+    <footer className="mt-4 border-t border-slate-600 pt-4 space-y-2">
+      {flavourObv && (
+        <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
+          <span className="not-italic text-slate-500">Obverse — </span>
+          {flavourObv}
+        </p>
+      )}
+      {flavourRev && (
+        <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
+          <span className="not-italic text-slate-500">Reverse — </span>
+          {flavourRev}
+        </p>
+      )}
+      {flavourGen && (
+        <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
+          {flavourGen}
+        </p>
+      )}
     </footer>
   )
 }

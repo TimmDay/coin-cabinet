@@ -71,7 +71,9 @@ export type SomnusCollection = {
   image_rotation: string[] | null
 
   // Additional information
-  flavour_text?: string | null
+  flavour_gen?: string | null
+  flavour_obv?: string | null
+  flavour_rev?: string | null
   flavour_desc?: string | null
   flavour_img?: string[] | null
   bpRoute?: string[] | null
@@ -92,6 +94,7 @@ export type SomnusCollection = {
   deity_id?: string[] | null
   historical_figures_id?: string[] | null
   timelines_id?: number[] | null
+  device_ids?: string[] | null
 }
 
 export const SOMNUS_COLLECTION_SELECT_FIELDS = [
@@ -139,7 +142,9 @@ export const SOMNUS_COLLECTION_SELECT_FIELDS = [
   "image_link_zoom_o",
   "image_link_zoom_r",
   "image_rotation",
-  "flavour_text",
+  "flavour_gen",
+  "flavour_obv",
+  "flavour_rev",
   "flavour_desc",
   "flavour_img",
   "bpRoute",
@@ -154,6 +159,7 @@ export const SOMNUS_COLLECTION_SELECT_FIELDS = [
   "deity_id",
   "historical_figures_id",
   "timelines_id",
+  "device_ids",
 ] as const
 
 export const SOMNUS_COLLECTION_SELECT =

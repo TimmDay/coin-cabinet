@@ -148,7 +148,7 @@ function createCoinFlip(
   return {
     title: coin.reference ?? "Unknown Reference",
     subtitle: physicalCharacteristics ?? undefined,
-    primaryInfo: coin.flavour_text ?? undefined,
+    primaryInfo: coin.flavour_gen ?? undefined,
     secondaryInfo: coin.flavour_desc ?? undefined,
     footer: footerText || undefined,
     image: artifact?.img_src ?? undefined,

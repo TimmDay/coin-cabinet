@@ -128,6 +128,17 @@ export default function AdminPage() {
               </p>
             </a>
 
+            {/* Manage Devices */}
+            <a
+              href="/admin/edit-devices"
+              className="artemis-card p-6 text-center transition-colors hover:bg-purple-900/5"
+            >
+              <h3 className="coin-title mb-4 text-xl">Manage Devices</h3>
+              <p className="coin-description">
+                Add, edit, and manage ancient devices and implements
+              </p>
+            </a>
+
             {/* Feature Flags */}
             <a
               href="/admin/feature-flags"

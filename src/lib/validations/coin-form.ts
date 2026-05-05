@@ -272,7 +272,9 @@ export const coinFormSchema = z
       .pipe(z.string().optional()),
 
     // Additional information
-    flavour_text: z.string().optional(),
+    flavour_gen: z.string().optional(),
+    flavour_obv: z.string().optional(),
+    flavour_rev: z.string().optional(),
     flavour_desc: z.string().optional(),
     flavour_img: z.array(z.string()).optional(),
     secondary_info: z.string().optional(),

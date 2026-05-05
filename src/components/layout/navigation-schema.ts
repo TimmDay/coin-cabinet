@@ -20,6 +20,7 @@ export const adminSubmenu = [
   { name: "Manage People", href: "/admin/edit-historical-figures" },
   { name: "Manage Timelines", href: "/admin/edit-timelines" },
   { name: "Manage Artifacts", href: "/admin/edit-artifacts" },
+  { name: "Manage Devices", href: "/admin/edit-devices" },
   { name: "Feature Flags", href: "/admin/feature-flags" },
 ]
 
