@@ -74,6 +74,7 @@ export type CoinUpdateData = {
   flavour_desc?: string | null
   flavour_img?: string[] | null
   deity_id?: string[] | null
+  device_ids?: string[] | null
   sets?: string[] | null
   notable_features?: NotableFeature[] | null
 }

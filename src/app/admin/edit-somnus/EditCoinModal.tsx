@@ -16,6 +16,7 @@ import { useTimelines } from "~/api/timelines"
 import { NotableFeaturesEditor } from "~/components/forms/NotableFeaturesEditor"
 import { useArtifactOptions } from "~/hooks/useArtifactOptions"
 import { useDeityOptions } from "~/hooks/useDeityOptions"
+import { useDeviceOptions } from "~/hooks/useDeviceOptions"
 import { useHistoricalFigureOptions } from "~/hooks/useHistoricalFigureOptions"
 import {
   FormActions,
@@ -80,6 +81,7 @@ const createCoinFormData = (coin: SomnusCollection | null): CoinFormData => ({
   deity_id: coin?.deity_id ?? undefined,
   historical_figures_id: coin?.historical_figures_id ?? undefined,
   timelines_id: coin?.timelines_id ?? undefined,
+  device_ids: coin?.device_ids ?? undefined,
   sets: coin?.sets ?? undefined,
   notable_features: coin?.notable_features ?? undefined,
   bpRoute: coin?.bpRoute ?? undefined,
@@ -135,6 +137,7 @@ export function EditCoinModal({
   mode,
 }: EditCoinModalProps) {
   const { options: deityOptions } = useDeityOptions()
+  const { options: deviceOptions } = useDeviceOptions()
   const { options: historicalFigureOptions } = useHistoricalFigureOptions()
   const { options: artifactOptions } = useArtifactOptions()
   const { data: allTimelines = [] } = useTimelines()
@@ -246,6 +249,10 @@ export function EditCoinModal({
       timelines_id:
         data.timelines_id && data.timelines_id.length > 0
           ? data.timelines_id
+          : undefined,
+      device_ids:
+        data.device_ids && data.device_ids.length > 0
+          ? data.device_ids
           : undefined,
       sets: processArray(data.setsRaw ?? "", false), // Keep original case for sets
       notable_features:
@@ -482,6 +489,21 @@ export function EditCoinModal({
                 placeholder="Select deities..."
               />
             </div>
+          </div>
+
+          {/* Devices */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Devices
+            </label>
+            <SimpleMultiSelect
+              options={deviceOptions}
+              selectedValues={watch("device_ids") ?? []}
+              onSelectionChange={(values) =>
+                setValue("device_ids", values, { shouldDirty: true })
+              }
+              placeholder="Search and select devices..."
+            />
           </div>
         </div>
 
