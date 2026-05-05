@@ -120,14 +120,14 @@ export function NotableFeaturesEditor({
         className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-dashed border-slate-600 p-4 text-slate-400 transition-colors hover:border-slate-500 hover:text-slate-300"
       >
         <Plus className="h-4 w-4" />
-        Add Notable Feature
+        Add Unique Feature
       </button>
 
       {features.length === 0 && (
         <p className="text-center text-sm text-slate-400">
-          No notable features added yet. Click the button above to add features
-          like unique die cracks, rare mint marks, or other interesting
-          characteristics.
+          No unique features added yet. Click the button above to add features
+          like die cracks, bankers marks, (not devices). Things that help
+          identify this specific coin.
         </p>
       )}
     </div>
