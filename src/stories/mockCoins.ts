@@ -51,7 +51,7 @@ export const mockCoins = [
       "20250911__q-fabius-labeo-denarius__r__src-the-coin-cabinet",
     image_link_zoom_o: null,
     image_link_zoom_r: null,
-    flavour_gen:
+    flavour_tag:
       "X is the denomination - worth 10 bronze Asses. Marcus Atilius Labeo was a moneyer at the mint - outside this role we don't know much about him. He wa of the gens Atilia. This was a plebeian family (perhaps more like a 'clan') that tracked it's ancestry and had sacra gentilicia (it's own gods, rites and rituals).",
     deity_id: ["1"], // Jupiter
     bpRoute: ["/articles/republic-coins", "/articles/roman-moneyers"],
@@ -109,7 +109,7 @@ export const mockCoins = [
       "20250714__faustina-ii-denarius__r__src-imperial-numismatics",
     image_link_zoom_o: null,
     image_link_zoom_r: null,
-    flavour_gen:
+    flavour_tag:
       "Venus was the divine ancestor of the Julian dynasty through her son Aeneas. This reverse type emphasizes the goddess's connection to imperial legitimacy and divine favor.",
     deity_id: ["2"], // Venus
     bpRoute: ["/articles/imperial-women", "/articles/faustina-ii"],
@@ -168,7 +168,7 @@ export const mockCoins = [
       "20250820__faustina-ii-sestertius__r__src-imperial-numismatics",
     image_link_zoom_o: null,
     image_link_zoom_r: null,
-    flavour_gen:
+    flavour_tag:
       "Daughter of Antoninus Pius, wife of Marcus Aurelius. at least 13 children, up to 6 stillborn. At least 4 reached adulthood (Lucilla, Commodus, Fadilla, Cornificia). Diana goddess of the moon, the hunt and women in childbirth.",
     deity_id: ["3"], // Diana
     bpRoute: ["/articles/imperial-women", "/articles/marcus-aurelius"],
@@ -219,7 +219,7 @@ export const mockCoins = [
     image_link_altlight_r: null,
     image_link_zoom_o: null,
     image_link_zoom_r: null,
-    flavour_gen: "",
+    flavour_tag: "",
     deity_id: null,
     bpRoute: null,
     image_rotation: null,

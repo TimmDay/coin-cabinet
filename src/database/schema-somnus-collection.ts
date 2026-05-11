@@ -71,10 +71,10 @@ export type SomnusCollection = {
   image_rotation: string[] | null
 
   // Additional information
-  flavour_gen?: string | null
+  flavour_tag?: string | null
   flavour_obv?: string | null
   flavour_rev?: string | null
-  flavour_desc?: string | null
+  flavour_body?: string | null
   flavour_img?: string[] | null
   bpRoute?: string[] | null
   antiquities_register?: string | null
@@ -143,10 +143,10 @@ export const SOMNUS_COLLECTION_SELECT_FIELDS = [
   "image_link_zoom_o",
   "image_link_zoom_r",
   "image_rotation",
-  "flavour_gen",
+  "flavour_tag",
   "flavour_obv",
   "flavour_rev",
-  "flavour_desc",
+  "flavour_body",
   "flavour_img",
   "bpRoute",
   "antiquities_register",

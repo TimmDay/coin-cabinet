@@ -177,7 +177,7 @@ export function YearCoinGrid({ year }: YearCoinGridProps) {
         desc_r={currentCoin?.desc_r ?? undefined}
         reference={currentCoin?.reference ?? undefined}
         provenance={currentCoin?.provenance ?? undefined}
-        flavour_gen={currentCoin?.flavour_gen ?? undefined}
+        flavour_tag={currentCoin?.flavour_tag ?? undefined}
         onPrevious={handlePreviousWithFocus}
         onNext={handleNextWithFocus}
         focusTarget={modalState.focusTarget}

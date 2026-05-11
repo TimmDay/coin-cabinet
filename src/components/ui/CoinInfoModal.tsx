@@ -35,7 +35,7 @@ type CoinInfoModalProps = {
   desc_r?: string
   reference?: string
   provenance?: string
-  flavour_gen?: string
+  flavour_tag?: string
   onPrevious?: () => void
   onNext?: () => void
   focusTarget?: "previous" | "next" | null
@@ -66,7 +66,7 @@ export function CoinInfoModal({
   desc_r,
   reference,
   provenance,
-  flavour_gen,
+  flavour_tag,
   onPrevious,
   onNext,
   focusTarget,
@@ -593,11 +593,11 @@ export function CoinInfoModal({
                     </button>
                   )}
 
-                  {/* Info Tooltip - Only show if flavour_gen is available, positioned absolutely to the right */}
-                  {flavour_gen && (
+                  {/* Info Tooltip - Only show if flavour_tag is available, positioned absolutely to the right */}
+                  {flavour_tag && (
                     <div className="absolute right-4">
                       <InfoTooltip
-                        content={`${coinAge ? `~${coinAge} years old\n\n` : ""}${flavour_gen}`}
+                        content={`${coinAge ? `~${coinAge} years old\n\n` : ""}${flavour_tag}`}
                         id="coin-tooltip"
                       />
                     </div>
@@ -606,10 +606,10 @@ export function CoinInfoModal({
               )}
 
               {/* Mobile Info Tooltip */}
-              {isMobile && flavour_gen && (
+              {isMobile && flavour_tag && (
                 <div className="mt-6 flex justify-center">
                   <InfoTooltip
-                    content={`${coinAge ? `~${coinAge} years old\n\n` : ""}${flavour_gen}`}
+                    content={`${coinAge ? `~${coinAge} years old\n\n` : ""}${flavour_tag}`}
                     id="coin-tooltip"
                   />
                 </div>

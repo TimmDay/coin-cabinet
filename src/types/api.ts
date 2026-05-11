@@ -68,10 +68,10 @@ export type CoinUpdateData = {
   legend_r_expanded?: string | null
   legend_r_translation?: string | null
   desc_r?: string | null
-  flavour_gen?: string | null
+  flavour_tag?: string | null
   flavour_obv?: string | null
   flavour_rev?: string | null
-  flavour_desc?: string | null
+  flavour_body?: string | null
   flavour_img?: string[]
   deity_id?: string[]
   obv_device_ids?: string[]

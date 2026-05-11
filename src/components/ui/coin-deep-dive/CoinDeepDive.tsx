@@ -371,9 +371,9 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       />
 
       {/* Coin Details */}
-      {(coin.flavour_gen || coin.flavour_obv || coin.flavour_rev) && (
+      {(coin.flavour_tag || coin.flavour_obv || coin.flavour_rev) && (
         <FlavourFooter
-          flavourGen={coin.flavour_gen ?? undefined}
+          flavourGen={coin.flavour_tag ?? undefined}
           flavourObv={coin.flavour_obv ?? undefined}
           flavourRev={coin.flavour_rev ?? undefined}
         />

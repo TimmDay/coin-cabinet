@@ -71,10 +71,10 @@ const createCoinFormData = (coin: SomnusCollection | null): CoinFormData => ({
   legend_r_expanded: coin?.legend_r_expanded ?? "",
   legend_r_translation: coin?.legend_r_translation ?? "",
   desc_r: coin?.desc_r ?? "",
-  flavour_gen: coin?.flavour_gen ?? "",
+  flavour_tag: coin?.flavour_tag ?? "",
   flavour_obv: coin?.flavour_obv ?? "",
   flavour_rev: coin?.flavour_rev ?? "",
-  flavour_desc: coin?.flavour_desc ?? "",
+  flavour_body: coin?.flavour_body ?? "",
   flavour_img: coin?.flavour_img ?? undefined,
 
   // Arrays and special fields
@@ -191,6 +191,10 @@ export function EditCoinModal({
       "historical_figures_id",
       "timelines_id",
       "flavour_img",
+      "flavour_obv",
+      "flavour_rev",
+      "flavour_tag",
+      "flavour_body",
       "sets",
       "notable_features",
       "bpRoute",
@@ -247,10 +251,10 @@ export function EditCoinModal({
       legend_r_expanded: data.legend_r_expanded,
       legend_r_translation: data.legend_r_translation,
       desc_r: data.desc_r,
-      flavour_gen: data.flavour_gen,
+      flavour_tag: data.flavour_tag,
       flavour_obv: data.flavour_obv,
       flavour_rev: data.flavour_rev,
-      flavour_desc: data.flavour_desc,
+      flavour_body: data.flavour_body,
       flavour_img: data.flavour_img ?? [],
       deity_id: data.deity_id ?? [],
       historical_figures_id: data.historical_figures_id ?? [],
@@ -830,23 +834,23 @@ export function EditCoinModal({
           {/* Flavour Text */}
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-300">
-              Flavour Text (General)
+              Flavour Tagline
             </label>
             <textarea
-              {...register("flavour_gen")}
+              {...register("flavour_tag")}
               rows={3}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="General flavour text shown in footer"
             />
           </div>
 
-          {/* Flavour Description */}
+          {/* Flavour Body */}
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-300">
-              Flavour Description
+              Flavour Body
             </label>
             <textarea
-              {...register("flavour_desc")}
+              {...register("flavour_body")}
               rows={3}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-purple-900 focus:ring-1 focus:ring-purple-900 focus:outline-none"
               placeholder="Detailed description for flavour content"

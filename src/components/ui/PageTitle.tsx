@@ -73,12 +73,12 @@ export function PageTitle({
           <p className="text-lg text-slate-400">{subtitle}</p>
 
           {/* Laurel Wreath Icon with Tooltip for flavour text - RIGHT of denomination */}
-          {coin?.flavour_gen && (
+          {coin?.flavour_tag && (
             <TooltipLaurel
               ariaLabel="Show additional information"
               tooltipId="flavour-tooltip"
             >
-              <div className="whitespace-pre-line">{coin.flavour_gen}</div>
+              <div className="whitespace-pre-line">{coin.flavour_tag}</div>
             </TooltipLaurel>
           )}
         </div>
