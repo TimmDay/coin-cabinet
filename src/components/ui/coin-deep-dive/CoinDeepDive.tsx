@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic"
 import { useArtifacts } from "~/api/artifacts"
 import { useDeities } from "~/api/deities"
+import { useDevices } from "~/api/devices"
 import { useMints } from "~/api/mints"
 import { usePlaces } from "~/api/places"
 import { useTimelines } from "~/api/timelines"
@@ -191,9 +192,17 @@ function getMintCoordinates(
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const { data: dbTimelines } = useTimelines()
   const { data: allDeities } = useDeities()
+  const { data: allDevices = [] } = useDevices()
   const { data: mints } = useMints()
   const { data: artifacts } = useArtifacts()
   const { data: places } = usePlaces()
+
+  const obvDevices = allDevices.filter((d) =>
+    coin.obv_device_ids?.includes(d.id),
+  )
+  const revDevices = allDevices.filter((d) =>
+    coin.rev_device_ids?.includes(d.id),
+  )
 
   // Process data using helper functions
   const matchingTimeline = buildTimelineForCoin(coin, dbTimelines, mints)
@@ -304,6 +313,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
           legendExpanded={coin.legend_o_expanded || coin.legend_o}
           legendTranslation={coin.legend_o_translation}
           description={coin.desc_o}
+          flavourText={coin.flavour_obv}
+          devices={obvDevices}
           priority={true}
         />
       )}
@@ -317,6 +328,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
           legendExpanded={coin.legend_r_expanded || coin.legend_r}
           legendTranslation={coin.legend_r_translation}
           description={coin.desc_r}
+          flavourText={coin.flavour_rev}
+          devices={revDevices}
         />
       )}
 
@@ -392,16 +405,16 @@ function FlavourFooter({
   flavourRev?: string
 }) {
   return (
-    <footer className="mt-4 border-t border-slate-600 pt-4 space-y-2">
+    <footer className="mt-4 space-y-2 border-t border-slate-600 pt-4">
       {flavourObv && (
         <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
-          <span className="not-italic text-slate-500">Obverse — </span>
+          <span className="text-slate-500 not-italic">Obverse — </span>
           {flavourObv}
         </p>
       )}
       {flavourRev && (
         <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
-          <span className="not-italic text-slate-500">Reverse — </span>
+          <span className="text-slate-500 not-italic">Reverse — </span>
           {flavourRev}
         </p>
       )}

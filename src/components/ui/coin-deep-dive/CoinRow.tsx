@@ -3,6 +3,8 @@
 import { useState } from "react"
 import CloudinaryImage from "~/components/CloudinaryImage"
 import { FormattedLegendExpanded } from "~/components/FormattedLegendExpanded"
+import type { Device } from "~/database/schema-devices"
+import { DescriptionWithDeviceHighlights } from "./DescriptionWithDeviceHighlights"
 import { ImageModal } from "./ImageModal"
 
 type CoinRowProps = {
@@ -13,6 +15,8 @@ type CoinRowProps = {
   legendExpanded?: string | null
   legendTranslation?: string | null
   description?: string | null
+  flavourText?: string | null
+  devices?: Device[]
   priority?: boolean
 }
 
@@ -24,6 +28,8 @@ export function CoinRow({
   legendExpanded,
   legendTranslation,
   description,
+  flavourText,
+  devices = [],
   priority = false,
 }: CoinRowProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -33,7 +39,9 @@ export function CoinRow({
   // State for mobile image switching
   const [currentMobileImageIndex, setCurrentMobileImageIndex] = useState(0)
 
-  const hasAnyText = Boolean(legendExpanded || legendTranslation || description)
+  const hasAnyText = Boolean(
+    legendExpanded || legendTranslation || description || flavourText,
+  )
 
   // Available images array for mobile switching
   const availableImages = [
@@ -141,8 +149,18 @@ export function CoinRow({
             )}
 
             {description && (
-              <p className="mt-2 text-sm leading-relaxed break-words text-slate-400 italic">
-                {description}
+              <div data-popover-container>
+                <DescriptionWithDeviceHighlights
+                  text={description}
+                  devices={devices}
+                  className="mt-2 text-sm leading-relaxed break-words text-slate-400 italic"
+                />
+              </div>
+            )}
+
+            {flavourText && (
+              <p className="mt-3 hidden text-sm leading-relaxed break-words text-slate-500 lg:block">
+                {flavourText}
               </p>
             )}
 
