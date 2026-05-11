@@ -15,7 +15,7 @@ async function fetchDevices(): Promise<Device[]> {
   return result.data
 }
 
-async function addDevice(data: DeviceFormData): Promise<Device> {
+async function addDevice(data: DeviceFormData): Promise<void> {
   const response = await fetch("/api/devices/admin", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -23,18 +23,15 @@ async function addDevice(data: DeviceFormData): Promise<Device> {
   })
   const result = (await response.json()) as {
     success: boolean
-    device?: Device
     message?: string
   }
   if (!result.success) throw new Error(result.message ?? "Failed to add device")
-  if (!result.device) throw new Error("Device data not returned")
-  return result.device
 }
 
 async function updateDevice(
   id: string,
   updates: Partial<DeviceFormData>,
-): Promise<Device> {
+): Promise<void> {
   const response = await fetch("/api/devices/admin", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -42,13 +39,10 @@ async function updateDevice(
   })
   const result = (await response.json()) as {
     success: boolean
-    device?: Device
     message?: string
   }
   if (!result.success)
     throw new Error(result.message ?? "Failed to update device")
-  if (!result.device) throw new Error("Device data not returned")
-  return result.device
 }
 
 async function deleteDevice(id: string): Promise<void> {

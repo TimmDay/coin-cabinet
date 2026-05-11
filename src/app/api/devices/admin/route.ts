@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { ZodError } from "zod"
-import type { Device } from "~/database/schema-devices"
 import { createClient } from "~/database/supabase-server"
 import type { DeviceFormData } from "~/lib/validations/device-form"
 
@@ -36,15 +35,15 @@ export async function POST(request: Request) {
       )
     }
 
-    const result = await supabase.from("devices").insert(body).select().single()
+    const { error: insertError } = await supabase.from("devices").insert(body)
 
-    if (result.error) {
-      console.error("Supabase error:", result.error)
+    if (insertError) {
+      console.error("Supabase error:", insertError)
       return NextResponse.json(
         {
           success: false,
           message: "Failed to add device",
-          error: result.error.message,
+          error: insertError.message,
         },
         { status: 500 },
       )
@@ -53,7 +52,6 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message: "Device added successfully",
-      device: result.data as Device,
     })
   } catch (error) {
     console.error("Error in POST /api/devices/admin:", error)
@@ -110,20 +108,18 @@ export async function PUT(request: Request) {
       )
     }
 
-    const result = await supabase
+    const { error: updateError } = await supabase
       .from("devices")
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq("id", id)
-      .select()
-      .single()
 
-    if (result.error) {
-      console.error("Supabase error:", result.error)
+    if (updateError) {
+      console.error("Supabase error:", updateError)
       return NextResponse.json(
         {
           success: false,
           message: "Failed to update device",
-          error: result.error.message,
+          error: updateError.message,
         },
         { status: 500 },
       )
@@ -132,7 +128,6 @@ export async function PUT(request: Request) {
     return NextResponse.json({
       success: true,
       message: "Device updated successfully",
-      device: result.data as Device,
     })
   } catch (error) {
     console.error("Error in PUT /api/devices/admin:", error)
@@ -189,7 +184,10 @@ export async function DELETE(request: Request) {
       )
     }
 
-    return NextResponse.json({ success: true, message: "Device deleted successfully" })
+    return NextResponse.json({
+      success: true,
+      message: "Device deleted successfully",
+    })
   } catch (error) {
     console.error("Error in DELETE /api/devices/admin:", error)
     return NextResponse.json(
