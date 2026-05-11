@@ -94,7 +94,8 @@ export type SomnusCollection = {
   deity_id?: string[]
   historical_figures_id?: string[]
   timelines_id?: number[]
-  device_ids?: string[]
+  obv_device_ids?: string[]
+  rev_device_ids?: string[]
 }
 
 export const SOMNUS_COLLECTION_SELECT_FIELDS = [
@@ -159,7 +160,8 @@ export const SOMNUS_COLLECTION_SELECT_FIELDS = [
   "deity_id",
   "historical_figures_id",
   "timelines_id",
-  "device_ids",
+  "obv_device_ids",
+  "rev_device_ids",
 ] as const
 
 export const SOMNUS_COLLECTION_SELECT =

@@ -17,9 +17,15 @@ export function EditDevicesView() {
   const coinsByDeviceId = useMemo(() => {
     const map = new Map<string, { id: number; nickname: string }[]>()
     for (const coin of allCoins ?? []) {
-      for (const deviceId of coin.device_ids ?? []) {
+      const allDeviceIds = [
+        ...(coin.obv_device_ids ?? []),
+        ...(coin.rev_device_ids ?? []),
+      ]
+      for (const deviceId of allDeviceIds) {
         const existing = map.get(deviceId) ?? []
-        existing.push({ id: coin.id, nickname: coin.nickname })
+        if (!existing.some((c) => c.id === coin.id)) {
+          existing.push({ id: coin.id, nickname: coin.nickname })
+        }
         map.set(deviceId, existing)
       }
     }
@@ -74,75 +80,77 @@ export function EditDevicesView() {
     const overflow = linkedCoins.length - visibleCoins.length
 
     return (
-    <div className="flex w-full items-center justify-between">
-      <div className="flex-1">
-        <h3 className="font-medium text-white">
-          {device.name}
-          {device.translation && (
-            <span className="ml-2 text-sm text-gray-300">
-              ({device.translation})
+      <div className="flex w-full items-center justify-between">
+        <div className="flex-1">
+          <h3 className="font-medium text-white">
+            {device.name}
+            {device.translation && (
+              <span className="ml-2 text-sm text-gray-300">
+                ({device.translation})
+              </span>
+            )}
+          </h3>
+          <div className="mt-1 space-y-1">
+            {device.category && (
+              <p className="text-sm text-gray-400">{device.category}</p>
+            )}
+            <p className="line-clamp-1 text-xs text-gray-500">
+              {device.description}
+            </p>
+            {linkedCoins.length > 0 ? (
+              <p className="text-xs text-slate-400">
+                {visibleCoins.map((c) => c.nickname).join(", ")}
+                {overflow > 0 && (
+                  <span className="text-slate-500"> +{overflow} more</span>
+                )}
+              </p>
+            ) : (
+              <p className="text-xs text-slate-600 italic">
+                not linked to any coins
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="mr-3 flex flex-col items-end gap-1">
+          {linkedCoins.length > 0 ? (
+            <span className="rounded-full bg-slate-700 px-2 py-0.5 text-xs text-slate-300">
+              {linkedCoins.length} {linkedCoins.length === 1 ? "coin" : "coins"}
+            </span>
+          ) : (
+            <span className="rounded-full bg-slate-800 px-2 py-0.5 text-xs text-slate-500">
+              unused
             </span>
           )}
-        </h3>
-        <div className="mt-1 space-y-1">
-          {device.category && (
-            <p className="text-sm text-gray-400">{device.category}</p>
-          )}
-          <p className="line-clamp-1 text-xs text-gray-500">
-            {device.description}
-          </p>
-          {linkedCoins.length > 0 ? (
-            <p className="text-xs text-slate-400">
-              {visibleCoins.map((c) => c.nickname).join(", ")}
-              {overflow > 0 && (
-                <span className="text-slate-500"> +{overflow} more</span>
-              )}
-            </p>
-          ) : (
-            <p className="text-xs text-slate-600 italic">not linked to any coins</p>
+          {device.sources.length === 0 && (
+            <span className="rounded-full bg-purple-500/20 px-2 py-0.5 text-xs text-purple-400">
+              needs sources
+            </span>
           )}
         </div>
-      </div>
-      <div className="mr-3 flex flex-col items-end gap-1">
-        {linkedCoins.length > 0 ? (
-          <span className="rounded-full bg-slate-700 px-2 py-0.5 text-xs text-slate-300">
-            {linkedCoins.length} {linkedCoins.length === 1 ? "coin" : "coins"}
-          </span>
-        ) : (
-          <span className="rounded-full bg-slate-800 px-2 py-0.5 text-xs text-slate-500">
-            unused
-          </span>
-        )}
-        {device.sources.length === 0 && (
-          <span className="rounded-full bg-purple-500/20 px-2 py-0.5 text-xs text-purple-400">
-            needs sources
-          </span>
-        )}
-      </div>
-      <button
-        onClick={(e) => {
-          e.stopPropagation()
-          void handleDelete(device)
-        }}
-        className="mr-3 rounded p-1 text-gray-400 transition-colors hover:bg-red-500/20 hover:text-red-300"
-        title={`Delete ${device.name}`}
-      >
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            void handleDelete(device)
+          }}
+          className="mr-3 rounded p-1 text-gray-400 transition-colors hover:bg-red-500/20 hover:text-red-300"
+          title={`Delete ${device.name}`}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-          />
-        </svg>
-      </button>
-    </div>
-  )
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+        </button>
+      </div>
+    )
   }
 
   const renderModal = (selectedDevice: Device | null) => (

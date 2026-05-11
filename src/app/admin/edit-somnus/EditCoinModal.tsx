@@ -81,7 +81,8 @@ const createCoinFormData = (coin: SomnusCollection | null): CoinFormData => ({
   deity_id: coin?.deity_id ?? undefined,
   historical_figures_id: coin?.historical_figures_id ?? undefined,
   timelines_id: coin?.timelines_id ?? undefined,
-  device_ids: coin?.device_ids ?? undefined,
+  obv_device_ids: coin?.obv_device_ids ?? undefined,
+  rev_device_ids: coin?.rev_device_ids ?? undefined,
   sets: coin?.sets ?? undefined,
   notable_features: coin?.notable_features ?? undefined,
   bpRoute: coin?.bpRoute ?? undefined,
@@ -184,7 +185,8 @@ export function EditCoinModal({
     form,
     enabled: isOpen,
     excludeFromRestore: [
-      "device_ids",
+      "obv_device_ids",
+      "rev_device_ids",
       "deity_id",
       "historical_figures_id",
       "timelines_id",
@@ -253,7 +255,8 @@ export function EditCoinModal({
       deity_id: data.deity_id ?? [],
       historical_figures_id: data.historical_figures_id ?? [],
       timelines_id: data.timelines_id ?? [],
-      device_ids: data.device_ids ?? [],
+      obv_device_ids: data.obv_device_ids ?? [],
+      rev_device_ids: data.rev_device_ids ?? [],
       sets: processArray(data.setsRaw ?? "", false) ?? [],
       notable_features: data.notable_features ?? [],
       purchase_type: data.purchase_type,
@@ -489,18 +492,33 @@ export function EditCoinModal({
           </div>
 
           {/* Devices */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-              Devices
-            </label>
-            <SimpleMultiSelect
-              options={deviceOptions}
-              selectedValues={watch("device_ids") ?? []}
-              onSelectionChange={(values) =>
-                setValue("device_ids", values, { shouldDirty: true })
-              }
-              placeholder="Search and select devices..."
-            />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300">
+                Obverse Devices
+              </label>
+              <SimpleMultiSelect
+                options={deviceOptions}
+                selectedValues={watch("obv_device_ids") ?? []}
+                onSelectionChange={(values) =>
+                  setValue("obv_device_ids", values, { shouldDirty: true })
+                }
+                placeholder="Search obverse devices..."
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300">
+                Reverse Devices
+              </label>
+              <SimpleMultiSelect
+                options={deviceOptions}
+                selectedValues={watch("rev_device_ids") ?? []}
+                onSelectionChange={(values) =>
+                  setValue("rev_device_ids", values, { shouldDirty: true })
+                }
+                placeholder="Search reverse devices..."
+              />
+            </div>
           </div>
         </div>
 
