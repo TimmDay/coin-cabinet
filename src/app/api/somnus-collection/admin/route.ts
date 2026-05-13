@@ -55,10 +55,11 @@ export async function POST(request: Request) {
       user_id: session.user.id,
     }
 
-    const result: PostgrestSingleResponse<Record<string, unknown>> =
-      await supabase.from(tableName).insert(dataWithUserId).select().single()
-
-    const { data, error } = result
+    const { data, error } = await supabase
+      .from(tableName)
+      .insert(dataWithUserId)
+      .select()
+      .single()
 
     if (error) {
       console.error("Supabase error:", error)
