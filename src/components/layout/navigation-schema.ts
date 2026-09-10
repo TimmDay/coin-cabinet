@@ -25,9 +25,9 @@ export const cabinetRomanSubmenu = [
   { name: "Detector Finds", href: "/cabinet/detector-finds" },
 ]
 
-export const articlesSubmenu: { name: string; href: string }[] = []
-
-// Feature-flagged articles that require dev mode
-export const devArticlesSubmenu = [
+// The whole "Articles" nav item (this menu and everything under it) is
+// gated behind the "articles" feature flag, so its contents don't need
+// their own separate flag check.
+export const articlesSubmenu = [
   { name: "Caracalla and Geta", href: "/articles/caracalla-and-geta" },
 ]

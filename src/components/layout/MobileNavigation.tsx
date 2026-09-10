@@ -11,7 +11,6 @@ import {
   articlesSubmenu,
   cabinetRomanSubmenu,
   cabinetSubmenu,
-  devArticlesSubmenu,
   navigationItems,
   type SubmenuTypes,
 } from "./navigation-schema"
@@ -32,6 +31,7 @@ export function MobileNavigation() {
   const pathname = usePathname()
   const router = useRouter()
   const isDevMode = useTypedFeatureFlag("dev")
+  const isArticlesMode = useTypedFeatureFlag("articles")
 
   const [isOpen, setIsOpen] = useState(false)
   const [menuStack, setMenuStack] = useState<MenuLevel[]>([])
@@ -51,9 +51,7 @@ export function MobileNavigation() {
       case "Cabinet":
         return cabinetSubmenu
       case "Articles":
-        return isDevMode
-          ? [...articlesSubmenu, ...devArticlesSubmenu]
-          : articlesSubmenu
+        return articlesSubmenu
       default:
         return []
     }
@@ -80,6 +78,7 @@ export function MobileNavigation() {
   // Filter navigation items based on feature flags
   const visibleNavItems = navigationItems.filter((item) => {
     if (item.name === "Map" || item.name === "Feature Flags") return isDevMode
+    if (item.name === "Articles") return isArticlesMode
     return true
   })
 

@@ -10,7 +10,6 @@ import {
   articlesSubmenu,
   cabinetRomanSubmenu,
   cabinetSubmenu,
-  devArticlesSubmenu,
   navigationItems,
   type SubmenuTypes,
 } from "./navigation-schema"
@@ -21,6 +20,7 @@ export default function HomeNavbar() {
   const pathname = usePathname()
   const router = useRouter()
   const isDevMode = useTypedFeatureFlag("dev")
+  const isArticlesMode = useTypedFeatureFlag("articles")
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null)
   const [openMainDropdown, setOpenMainDropdown] = useState<string | null>(null)
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -153,9 +153,7 @@ export default function HomeNavbar() {
       case "Cabinet":
         return cabinetSubmenu
       case "Articles":
-        return isDevMode
-          ? [...articlesSubmenu, ...devArticlesSubmenu]
-          : articlesSubmenu
+        return articlesSubmenu
       default:
         return []
     }
@@ -202,6 +200,9 @@ export default function HomeNavbar() {
   const visibleNavItems = navigationItems.filter((item) => {
     if (item.name === "Map" || item.name === "Feature Flags") {
       return isDevMode
+    }
+    if (item.name === "Articles") {
+      return isArticlesMode
     }
     return true
   })

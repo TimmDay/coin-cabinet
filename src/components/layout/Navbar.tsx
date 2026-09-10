@@ -10,7 +10,6 @@ import {
   articlesSubmenu,
   cabinetRomanSubmenu,
   cabinetSubmenu,
-  devArticlesSubmenu,
   navigationItems,
   type SubmenuTypes,
 } from "./navigation-schema"
@@ -20,6 +19,7 @@ export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const isDevMode = useTypedFeatureFlag("dev")
+  const isArticlesMode = useTypedFeatureFlag("articles")
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null)
   const [openMainDropdown, setOpenMainDropdown] = useState<string | null>(null)
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -159,10 +159,7 @@ export default function Navbar() {
       case "Cabinet":
         return cabinetSubmenu
       case "Articles":
-        // Combine regular articles with dev articles if feature flag is enabled
-        return isDevMode
-          ? [...articlesSubmenu, ...devArticlesSubmenu]
-          : articlesSubmenu
+        return articlesSubmenu
       default:
         return []
     }
@@ -213,6 +210,10 @@ export default function Navbar() {
     // Only show "Map" and "Feature Flags" when dev feature flag is enabled
     if (item.name === "Map" || item.name === "Feature Flags") {
       return isDevMode
+    }
+    // "Articles" (and everything under it) is gated by its own flag
+    if (item.name === "Articles") {
+      return isArticlesMode
     }
     return true
   })
