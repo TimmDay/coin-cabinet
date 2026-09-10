@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server"
+import { fetchDevices } from "~/database/queries/devices"
 import { createClient } from "~/database/supabase-server"
 
 export async function GET(_request: Request) {
   try {
     const supabase = await createClient()
 
-    const { data, error } = await supabase
-      .from("devices")
-      .select("*")
-      .order("name", { ascending: true })
+    const { data, error } = await fetchDevices(supabase)
 
     if (error) {
       console.error("Supabase error:", error)

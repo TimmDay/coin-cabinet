@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server"
+import { fetchArtifacts } from "~/database/queries/artifacts"
 import { createClient } from "~/database/supabase-server"
 
 export async function GET() {
   try {
     const supabase = await createClient()
 
-    const { data: artifacts, error } = await supabase
-      .from("artifacts")
-      .select("*")
-      .order("name", { ascending: true })
+    const { data: artifacts, error } = await fetchArtifacts(supabase)
 
     if (error) {
       console.error("Error fetching artifacts:", error)

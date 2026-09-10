@@ -6,7 +6,7 @@ export default function GordyBoysPage() {
     <main className="content-wrapper">
       <PageTitle>Gordy Boys</PageTitle>
 
-      <CoinGrid filterSet="gordy boys" />
+      <CoinGrid filterSet="Gordy Boys" />
 
       <div className="mt-12 text-center">
         <p className="coin-description mb-6">

@@ -27,10 +27,6 @@ type CoinCardGridItemProps = {
   onClick?: () => void
   /** Grid item index (1-based) for zigzag effect */
   index?: number
-  /** Provenance information */
-  provenance?: string | null
-  /** Whether to display provenance chip */
-  showProvenance?: boolean
 }
 
 export function CoinCardGridItem({
@@ -46,8 +42,6 @@ export function CoinCardGridItem({
   view = "both",
   onClick,
   index = 1,
-  provenance,
-  showProvenance = false,
 }: CoinCardGridItemProps) {
   const { isMobile } = useViewport()
 
@@ -160,21 +154,10 @@ export function CoinCardGridItem({
         )}
       </div>
 
-      {/* Provenance chip - visible on hover, positioned above hover text */}
-      {!isMobile && showProvenance && provenance && (
-        <div
-          className={`${textMarginClass} flex justify-center opacity-0 transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100`}
-        >
-          <span className="rounded-full bg-slate-700/50 px-3 py-1 text-xs font-medium text-slate-500">
-            {provenance.split(".")[0]}
-          </span>
-        </div>
-      )}
-
       {/* Hover text - only render on non-mobile devices */}
       {!isMobile && (
         <div
-          className={`${showProvenance && provenance ? "mt-2" : textMarginClass} flex w-0 min-w-full flex-col items-center opacity-0 transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100`}
+          className={`${textMarginClass} flex w-0 min-w-full flex-col items-center opacity-0 transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100`}
         >
           <p className="text-sm whitespace-nowrap text-slate-300">
             {civ === "Roman Provincial" && civSpecific

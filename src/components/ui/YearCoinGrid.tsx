@@ -176,7 +176,6 @@ export function YearCoinGrid({ year }: YearCoinGridProps) {
         legend_r={currentCoin?.legend_r ?? undefined}
         desc_r={currentCoin?.desc_r ?? undefined}
         reference={currentCoin?.reference ?? undefined}
-        provenance={currentCoin?.provenance ?? undefined}
         flavour_tag={currentCoin?.flavour_tag ?? undefined}
         onPrevious={handlePreviousWithFocus}
         onNext={handleNextWithFocus}

@@ -6,7 +6,7 @@ export default function CrisisPage() {
     <main className="content-wrapper">
       <PageTitle>Crisis</PageTitle>
 
-      <CoinGrid filterSet="crisis" />
+      <CoinGrid filterSet="Crisis" />
 
       <div className="mt-12 text-center">
         <p className="coin-description mb-6">

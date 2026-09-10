@@ -5,7 +5,7 @@ export default function RomanTimelinePage() {
   return (
     <main className="content-wrapper">
       <PageTitle>Roman</PageTitle>
-      <CoinGrid filterSet="roman-timeline" />
+      <CoinGrid filterSet="Roman Timeline" />
     </main>
   )
 }

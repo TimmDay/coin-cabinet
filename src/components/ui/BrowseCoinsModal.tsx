@@ -36,7 +36,6 @@ type BrowseCoinsModalProps = {
   legend_r?: string
   desc_r?: string
   reference?: string
-  provenance?: string
   flavour_tag?: string
   onPrevious?: () => void
   onNext?: () => void
@@ -68,7 +67,6 @@ export function BrowseCoinsModal({
   legend_r,
   desc_r,
   reference,
-  provenance,
   flavour_tag,
   onPrevious,
   onNext,
@@ -537,14 +535,9 @@ export function BrowseCoinsModal({
                 {isReverse ? desc_r : desc_o}
               </p>
 
-              {/* Reference and Provenance */}
+              {/* Reference */}
               <div className="mt-4">
                 <span className="text-sm text-slate-400">{reference}</span>
-                {provenance && (
-                  <span className="ml-2 text-xs text-slate-400 italic">
-                    {provenance}
-                  </span>
-                )}
               </div>
 
               {/* Action Buttons - Desktop only */}

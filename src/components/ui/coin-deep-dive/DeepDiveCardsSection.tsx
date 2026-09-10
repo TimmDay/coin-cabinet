@@ -135,10 +135,9 @@ function createCoinFlip(
     coin.mint_year_latest,
   )
   const mintYearRangeClean = mintYearRange.replace(/[()]/g, "")
-  const mintInfo = [civText, mintName, mintYearRangeClean]
+  const footerText = [civText, mintName, mintYearRangeClean]
     .filter(Boolean)
     .join(" ")
-  const footerText = [mintInfo, coin.provenance].filter(Boolean).join("\n")
 
   // Look up artifact for flavour image
   const artifactId = coin.flavour_img?.[0]
