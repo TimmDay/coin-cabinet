@@ -2,27 +2,14 @@ export const navigationItems = [
   { name: "Cabinet", href: "/cabinet", hasSubmenu: true },
   { name: "Articles", href: "/articles", hasSubmenu: true },
   { name: "Map", href: "/map" },
-  { name: "Admin", href: "/admin", hasSubmenu: true },
+  { name: "Feature Flags", href: "/admin/feature-flags" },
 ]
 
 export type SubmenuTypes =
   | "Cabinet"
-  | "Admin"
   | "Articles"
   | "yearInCoins"
   | "cabinetRoman"
-
-export const adminSubmenu = [
-  { name: "Manage Collection", href: "/admin/edit-somnus" },
-  { name: "Manage Deities", href: "/admin/edit-deities" },
-  { name: "Manage Places", href: "/admin/edit-places" },
-  { name: "Manage Mints", href: "/admin/edit-mints" },
-  { name: "Manage People", href: "/admin/edit-historical-figures" },
-  { name: "Manage Timelines", href: "/admin/edit-timelines" },
-  { name: "Manage Artifacts", href: "/admin/edit-artifacts" },
-  { name: "Manage Devices", href: "/admin/edit-devices" },
-  { name: "Feature Flags", href: "/admin/feature-flags" },
-]
 
 export const cabinetSubmenu = [
   { name: "All Coins", href: "/cabinet/all-coins" },

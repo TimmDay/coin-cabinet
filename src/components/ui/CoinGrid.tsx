@@ -3,10 +3,6 @@
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { useSomnusCoins } from "~/api/somnus-collection"
-import {
-  civilizationOptions,
-  denominationOptions,
-} from "~/app/admin/edit-somnus/coin-form-options"
 import { BrowseCoinsModal } from "~/components/ui/BrowseCoinsModal"
 import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { FilterSelect } from "~/components/ui/FilterSelect"
@@ -17,6 +13,10 @@ import {
   type ClickMode,
 } from "~/components/ui/ViewModeControls"
 import { useDeityOptions } from "~/hooks/useDeityOptions"
+import {
+  civilizationOptions,
+  denominationOptions,
+} from "~/lib/constants/coin-options"
 import { generateCoinUrl } from "~/lib/utils/url-helpers"
 
 type CoinGridProps = {

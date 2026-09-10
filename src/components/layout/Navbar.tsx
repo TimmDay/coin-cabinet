@@ -3,13 +3,10 @@ import { ChevronDown, ChevronRight } from "lucide-react"
 import NextLink from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
-import { UserMenu } from "~/components/auth/UserMenu"
-import { useAuth } from "~/components/providers/auth-provider"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { cn } from "~/lib/utils"
 import { MobileNavigation } from "./MobileNavigation"
 import {
-  adminSubmenu,
   articlesSubmenu,
   cabinetRomanSubmenu,
   cabinetSubmenu,
@@ -23,7 +20,6 @@ const HOVER_DELAY = 200 // milliseconds
 export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { user } = useAuth()
   const isDevMode = useTypedFeatureFlag("dev")
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null)
   const [openMainDropdown, setOpenMainDropdown] = useState<string | null>(null)
@@ -172,8 +168,6 @@ export default function Navbar() {
         return isDevMode
           ? [...articlesSubmenu, ...devArticlesSubmenu]
           : articlesSubmenu
-      case "Admin":
-        return adminSubmenu
       default:
         return []
     }
@@ -219,14 +213,10 @@ export default function Navbar() {
     }
   }, [openMainDropdown])
 
-  // Filter navigation items based on authentication status and feature flags
+  // Filter navigation items based on feature flags
   const visibleNavItems = navigationItems.filter((item) => {
-    // Only show "Admin" for authenticated users
-    if (item.name === "Admin") {
-      return !!user
-    }
-    // Only show "Map" when dev feature flag is enabled
-    if (item.name === "Map") {
+    // Only show "Map" and "Feature Flags" when dev feature flag is enabled
+    if (item.name === "Map" || item.name === "Feature Flags") {
       return isDevMode
     }
     return true
@@ -241,11 +231,6 @@ export default function Navbar() {
       {/* Mobile navigation burger menu - vertically centered on mobile */}
       <div className="absolute top-1/2 left-4 -translate-y-1/2 sm:left-6 lg:hidden">
         <MobileNavigation />
-      </div>
-
-      {/* UserMenu fixed to top right */}
-      <div className="absolute top-4 right-4 sm:right-6 lg:static lg:order-3">
-        <UserMenu />
       </div>
 
       {/* Site Logo - centered on mobile, left on desktop */}
