@@ -2,14 +2,10 @@ export const navigationItems = [
   { name: "Cabinet", href: "/cabinet", hasSubmenu: true },
   { name: "Articles", href: "/articles", hasSubmenu: true },
   { name: "Map", href: "/map" },
-  { name: "Feature Flags", href: "/admin/feature-flags" },
+  { name: "Feature Flags", href: "/feature-flags" },
 ]
 
-export type SubmenuTypes =
-  | "Cabinet"
-  | "Articles"
-  | "yearInCoins"
-  | "cabinetRoman"
+export type SubmenuTypes = "Cabinet" | "Articles" | "cabinetRoman"
 
 export const cabinetSubmenu = [
   { name: "All Coins", href: "/cabinet/all-coins" },
@@ -29,15 +25,7 @@ export const cabinetRomanSubmenu = [
   { name: "Detector Finds", href: "/cabinet/detector-finds" },
 ]
 
-export const articlesSubmenu = [
-  { name: "Year in coins", href: "/articles/year-in-coins", hasSubmenu: true },
-]
-
-export const yearInCoinsSubmenu = [
-  { name: "2025", href: "/articles/year-in-coins/2025" },
-  { name: "2026", href: "/articles/year-in-coins/2026" },
-  // { name: "2027", href: "/articles/year-in-coins/2027" },
-]
+export const articlesSubmenu: { name: string; href: string }[] = []
 
 // Feature-flagged articles that require dev mode
 export const devArticlesSubmenu = [

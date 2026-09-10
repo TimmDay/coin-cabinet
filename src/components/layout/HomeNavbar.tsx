@@ -12,7 +12,6 @@ import {
   cabinetSubmenu,
   devArticlesSubmenu,
   navigationItems,
-  yearInCoinsSubmenu,
   type SubmenuTypes,
 } from "./navigation-schema"
 
@@ -133,8 +132,6 @@ export default function HomeNavbar() {
 
   const getNestedSubmenuItems = (submenuType: SubmenuTypes) => {
     switch (submenuType) {
-      case "yearInCoins":
-        return yearInCoinsSubmenu
       case "cabinetRoman":
         return cabinetRomanSubmenu
       default:
@@ -144,8 +141,6 @@ export default function HomeNavbar() {
 
   const getSubmenuType = (itemName: string): SubmenuTypes | null => {
     switch (itemName) {
-      case "Year in coins":
-        return "yearInCoins"
       case "Roman":
         return "cabinetRoman"
       default:

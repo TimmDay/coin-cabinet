@@ -12,7 +12,6 @@ import {
   cabinetSubmenu,
   devArticlesSubmenu,
   navigationItems,
-  yearInCoinsSubmenu,
   type SubmenuTypes,
 } from "./navigation-schema"
 
@@ -139,8 +138,6 @@ export default function Navbar() {
   // Helper function to get the appropriate submenu items for nested submenus
   const getNestedSubmenuItems = (submenuType: SubmenuTypes) => {
     switch (submenuType) {
-      case "yearInCoins":
-        return yearInCoinsSubmenu
       case "cabinetRoman":
         return cabinetRomanSubmenu
       default:
@@ -151,8 +148,6 @@ export default function Navbar() {
   // Helper function to determine submenu type from item name
   const getSubmenuType = (itemName: string): SubmenuTypes | null => {
     switch (itemName) {
-      case "Year in coins":
-        return "yearInCoins"
       case "Roman":
         return "cabinetRoman"
       default:
