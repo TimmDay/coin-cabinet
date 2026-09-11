@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { createPortal } from "react-dom"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
+import { useFeatureFlagQuery } from "~/lib/hooks/useFeatureFlagQuery"
 import { cn } from "~/lib/utils"
 import {
   articlesSubmenu,
@@ -32,6 +33,7 @@ export function MobileNavigation() {
   const router = useRouter()
   const isDevMode = useTypedFeatureFlag("dev")
   const isArticlesMode = useTypedFeatureFlag("articles")
+  const withFeatureQuery = useFeatureFlagQuery()
 
   const [isOpen, setIsOpen] = useState(false)
   const [menuStack, setMenuStack] = useState<MenuLevel[]>([])
@@ -118,7 +120,7 @@ export function MobileNavigation() {
   const navigateToSubmenu = async (item: MenuItem) => {
     if (!item.hasSubmenu) {
       // Navigate to the page and close menu
-      router.push(item.href)
+      router.push(withFeatureQuery(item.href))
       closeMenu()
       return
     }
@@ -171,7 +173,7 @@ export function MobileNavigation() {
     if (item.hasSubmenu) {
       void navigateToSubmenu(item)
     } else {
-      router.push(item.href)
+      router.push(withFeatureQuery(item.href))
       closeMenu()
     }
   }
@@ -285,7 +287,7 @@ export function MobileNavigation() {
                     return (
                       <NextLink
                         key={item.name}
-                        href={item.href}
+                        href={withFeatureQuery(item.href)}
                         onClick={(e) => {
                           if (e.button === 0) {
                             e.preventDefault()

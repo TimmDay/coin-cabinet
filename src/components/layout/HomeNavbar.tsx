@@ -4,6 +4,7 @@ import NextLink from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
+import { useFeatureFlagQuery } from "~/lib/hooks/useFeatureFlagQuery"
 import { cn } from "~/lib/utils"
 import { MobileNavigation } from "./MobileNavigation"
 import {
@@ -21,6 +22,7 @@ export default function HomeNavbar() {
   const router = useRouter()
   const isDevMode = useTypedFeatureFlag("dev")
   const isArticlesMode = useTypedFeatureFlag("articles")
+  const withFeatureQuery = useFeatureFlagQuery()
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null)
   const [openMainDropdown, setOpenMainDropdown] = useState<string | null>(null)
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -119,7 +121,7 @@ export default function HomeNavbar() {
       case "Enter":
       case " ":
         event.preventDefault()
-        router.push(href)
+        router.push(withFeatureQuery(href))
         setOpenMainDropdown(null)
         setOpenSubmenu(null)
         break
@@ -220,7 +222,7 @@ export default function HomeNavbar() {
 
       {/* Large centered logo */}
       <div className="flex justify-center pt-8 lg:mb-6 lg:pt-0">
-        <NextLink href="/" className="">
+        <NextLink href={withFeatureQuery("/")} className="">
           <div className="flex h-32 w-32 cursor-pointer items-center justify-center lg:h-40 lg:w-40">
             <img
               src="/assets/logo-white.svg"
@@ -247,11 +249,11 @@ export default function HomeNavbar() {
                   data-dropdown={item.name.toLowerCase()}
                 >
                   <NextLink
-                    href={item.href}
+                    href={withFeatureQuery(item.href)}
                     onClick={(e) => {
                       if (e.button === 0) {
                         e.preventDefault()
-                        router.push(item.href)
+                        router.push(withFeatureQuery(item.href))
                       }
                     }}
                     onKeyDown={(e) => handleKeyDown(e, item.name)}
@@ -286,7 +288,7 @@ export default function HomeNavbar() {
                             {"hasSubmenu" in submenuItem &&
                             submenuItem.hasSubmenu ? (
                               <NextLink
-                                href={submenuItem.href}
+                                href={withFeatureQuery(submenuItem.href)}
                                 className="flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
                                 onMouseEnter={() => {
                                   const submenuType = getSubmenuType(
@@ -308,7 +310,7 @@ export default function HomeNavbar() {
                                 onClick={(e) => {
                                   if (e.button === 0) {
                                     e.preventDefault()
-                                    router.push(submenuItem.href)
+                                    router.push(withFeatureQuery(submenuItem.href))
                                     setOpenMainDropdown(null)
                                     setOpenSubmenu(null)
                                   }
@@ -327,12 +329,12 @@ export default function HomeNavbar() {
                               </NextLink>
                             ) : (
                               <NextLink
-                                href={submenuItem.href}
+                                href={withFeatureQuery(submenuItem.href)}
                                 className="block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
                                 onClick={(e) => {
                                   if (e.button === 0) {
                                     e.preventDefault()
-                                    router.push(submenuItem.href)
+                                    router.push(withFeatureQuery(submenuItem.href))
                                     setOpenMainDropdown(null)
                                     setOpenSubmenu(null)
                                   }
@@ -367,12 +369,12 @@ export default function HomeNavbar() {
                                     (nestedItem) => (
                                       <NextLink
                                         key={nestedItem.name}
-                                        href={nestedItem.href}
+                                        href={withFeatureQuery(nestedItem.href)}
                                         className="block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
                                         onClick={(e) => {
                                           if (e.button === 0) {
                                             e.preventDefault()
-                                            router.push(nestedItem.href)
+                                            router.push(withFeatureQuery(nestedItem.href))
                                             setOpenMainDropdown(null)
                                             setOpenSubmenu(null)
                                           }
@@ -403,7 +405,7 @@ export default function HomeNavbar() {
             return (
               <NextLink
                 key={item.name}
-                href={item.href}
+                href={withFeatureQuery(item.href)}
                 className={cn(
                   "border-b-2 px-1 pt-1 text-base font-normal transition-colors duration-200",
                   itemIsActive
