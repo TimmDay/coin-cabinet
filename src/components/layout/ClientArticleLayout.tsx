@@ -8,7 +8,7 @@
  * WHERE IT'S USED:
  * - Imported by src/app/articles/layout.tsx (server component)
  * - Wraps all content under the /articles route
- * - Applied to individual article pages, article index, and year-in-coins pages
+ * - Applied to individual article pages and the article index
  *
  * WHY IT'S NECESSARY:
  * 1. Server/Client Boundary: Separates server-side metadata processing from client-side
@@ -58,15 +58,6 @@ function getArticleDisplayData(
     }
   }
 
-  // For year-in-coins articles, extract year from path
-  if (pathname.includes("/year-in-coins/")) {
-    const year = pathname.split("/").pop()
-    return {
-      title: year ? `${year} in Coins` : "Year in Coins",
-      subtitle: "",
-    }
-  }
-
   // Fallback
   return {
     title: "Articles",
@@ -80,8 +71,8 @@ export function ClientArticleLayout({
 }: ClientArticleLayoutProps) {
   const pathname = usePathname()
 
-  // Only show Table of Contents for markdown articles, not for year-in-coins
-  const showTableOfContents = !pathname.includes("/year-in-coins")
+  // Only show Table of Contents for markdown articles
+  const showTableOfContents = true
 
   // Get dynamic title and subtitle based on the current route
   const { title, subtitle } = getArticleDisplayData(pathname, articleMetadata)

@@ -2,27 +2,10 @@ export const navigationItems = [
   { name: "Cabinet", href: "/cabinet", hasSubmenu: true },
   { name: "Articles", href: "/articles", hasSubmenu: true },
   { name: "Map", href: "/map" },
-  { name: "Admin", href: "/admin", hasSubmenu: true },
+  { name: "Feature Flags", href: "/feature-flags" },
 ]
 
-export type SubmenuTypes =
-  | "Cabinet"
-  | "Admin"
-  | "Articles"
-  | "yearInCoins"
-  | "cabinetRoman"
-
-export const adminSubmenu = [
-  { name: "Manage Collection", href: "/admin/edit-somnus" },
-  { name: "Manage Deities", href: "/admin/edit-deities" },
-  { name: "Manage Places", href: "/admin/edit-places" },
-  { name: "Manage Mints", href: "/admin/edit-mints" },
-  { name: "Manage People", href: "/admin/edit-historical-figures" },
-  { name: "Manage Timelines", href: "/admin/edit-timelines" },
-  { name: "Manage Artifacts", href: "/admin/edit-artifacts" },
-  { name: "Manage Devices", href: "/admin/edit-devices" },
-  { name: "Feature Flags", href: "/admin/feature-flags" },
-]
+export type SubmenuTypes = "Cabinet" | "Articles" | "cabinetRoman"
 
 export const cabinetSubmenu = [
   { name: "All Coins", href: "/cabinet/all-coins" },
@@ -42,17 +25,9 @@ export const cabinetRomanSubmenu = [
   { name: "Detector Finds", href: "/cabinet/detector-finds" },
 ]
 
+// The whole "Articles" nav item (this menu and everything under it) is
+// gated behind the "articles" feature flag, so its contents don't need
+// their own separate flag check.
 export const articlesSubmenu = [
-  { name: "Year in coins", href: "/articles/year-in-coins", hasSubmenu: true },
-]
-
-export const yearInCoinsSubmenu = [
-  { name: "2025", href: "/articles/year-in-coins/2025" },
-  { name: "2026", href: "/articles/year-in-coins/2026" },
-  // { name: "2027", href: "/articles/year-in-coins/2027" },
-]
-
-// Feature-flagged articles that require dev mode
-export const devArticlesSubmenu = [
   { name: "Caracalla and Geta", href: "/articles/caracalla-and-geta" },
 ]

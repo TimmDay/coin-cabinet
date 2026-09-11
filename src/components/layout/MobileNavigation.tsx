@@ -5,18 +5,13 @@ import NextLink from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { createPortal } from "react-dom"
-import { UserMenu } from "~/components/auth/UserMenu"
-import { useAuth } from "~/components/providers/auth-provider"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { cn } from "~/lib/utils"
 import {
-  adminSubmenu,
   articlesSubmenu,
   cabinetRomanSubmenu,
   cabinetSubmenu,
-  devArticlesSubmenu,
   navigationItems,
-  yearInCoinsSubmenu,
   type SubmenuTypes,
 } from "./navigation-schema"
 
@@ -35,8 +30,8 @@ type MenuLevel = {
 export function MobileNavigation() {
   const pathname = usePathname()
   const router = useRouter()
-  const { user } = useAuth()
   const isDevMode = useTypedFeatureFlag("dev")
+  const isArticlesMode = useTypedFeatureFlag("articles")
 
   const [isOpen, setIsOpen] = useState(false)
   const [menuStack, setMenuStack] = useState<MenuLevel[]>([])
@@ -56,11 +51,7 @@ export function MobileNavigation() {
       case "Cabinet":
         return cabinetSubmenu
       case "Articles":
-        return isDevMode
-          ? [...articlesSubmenu, ...devArticlesSubmenu]
-          : articlesSubmenu
-      case "Admin":
-        return adminSubmenu
+        return articlesSubmenu
       default:
         return []
     }
@@ -68,8 +59,6 @@ export function MobileNavigation() {
 
   const getNestedSubmenuItems = (submenuType: SubmenuTypes): MenuItem[] => {
     switch (submenuType) {
-      case "yearInCoins":
-        return yearInCoinsSubmenu
       case "cabinetRoman":
         return cabinetRomanSubmenu
       default:
@@ -79,8 +68,6 @@ export function MobileNavigation() {
 
   const getSubmenuType = (itemName: string): SubmenuTypes | null => {
     switch (itemName) {
-      case "Year in coins":
-        return "yearInCoins"
       case "Roman":
         return "cabinetRoman"
       default:
@@ -88,10 +75,10 @@ export function MobileNavigation() {
     }
   }
 
-  // Filter navigation items based on authentication and feature flags
+  // Filter navigation items based on feature flags
   const visibleNavItems = navigationItems.filter((item) => {
-    if (item.name === "Admin") return !!user
-    if (item.name === "Map") return isDevMode
+    if (item.name === "Map" || item.name === "Feature Flags") return isDevMode
+    if (item.name === "Articles") return isArticlesMode
     return true
   })
 
@@ -327,16 +314,6 @@ export function MobileNavigation() {
             )
           })}
         </div>
-
-        {/* Footer with user menu - only show on main menu */}
-        {isMainMenu && (
-          <div className="absolute right-0 bottom-0 left-0 border-t border-slate-700 p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Account</span>
-              <UserMenu />
-            </div>
-          </div>
-        )}
       </div>
     </>
   )

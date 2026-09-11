@@ -2,7 +2,6 @@ import { type Metadata } from "next"
 import { Poppins } from "next/font/google"
 import Navbar from "~/components/layout/Navbar"
 import { PageWrapper } from "~/components/layout/PageWrapper"
-import { AuthProvider } from "~/components/providers/auth-provider"
 import { ReactQueryProvider } from "~/components/providers/react-query-provider"
 import { ScrollToTop } from "~/components/ui"
 import "~/styles/globals.css"
@@ -25,13 +24,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable}`}>
       <body>
-        <AuthProvider>
-          <ReactQueryProvider>
-            <Navbar />
-            <PageWrapper>{children}</PageWrapper>
-            <ScrollToTop />
-          </ReactQueryProvider>
-        </AuthProvider>
+        <ReactQueryProvider>
+          <Navbar />
+          <PageWrapper>{children}</PageWrapper>
+          <ScrollToTop />
+        </ReactQueryProvider>
       </body>
     </html>
   )

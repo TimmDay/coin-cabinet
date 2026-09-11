@@ -12,6 +12,12 @@ export const FEATURE_FLAGS = {
     description:
       "When enabled, coins marked as 'isHidden' will be visible in the collection.",
   },
+  articles: {
+    name: "articles",
+    displayName: "Articles",
+    description:
+      "Shows the Articles nav menu and everything under it (e.g. the Caracalla and Geta post).",
+  },
 } as const
 
 // Extract the available feature flag names as a union type
