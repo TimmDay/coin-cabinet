@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { fetchMints } from "~/database/queries/mints"
 import { createClient } from "~/database/supabase-server"
 
 export async function GET(_request: Request) {
@@ -8,10 +9,7 @@ export async function GET(_request: Request) {
     // Use server client but don't require authentication for GET
     const supabase = await createClient()
 
-    const { data, error } = await supabase
-      .from("mints")
-      .select("*")
-      .order("name", { ascending: true })
+    const { data, error } = await fetchMints(supabase)
 
     if (error) {
       console.error("Supabase error:", error)

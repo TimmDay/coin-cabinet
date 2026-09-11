@@ -5,7 +5,7 @@ export default function PersianPage() {
   return (
     <main className="content-wrapper">
       <PageTitle>Persian</PageTitle>
-      <CoinGrid filterSet="persian" />
+      <CoinGrid filterSet="Persian" />
     </main>
   )
 }

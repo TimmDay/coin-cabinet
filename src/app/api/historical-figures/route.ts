@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server"
+import { fetchHistoricalFigures } from "~/database/queries/historical-figures"
 import { createClient } from "~/database/supabase-server"
 
 export async function GET() {
   try {
     const supabase = await createClient()
 
-    const { data, error } = await supabase
-      .from("historical_figures")
-      .select("*")
-      .order("name", { ascending: true })
+    const { data, error } = await fetchHistoricalFigures(supabase)
 
     if (error) {
       console.error("Error fetching historical figures:", error)

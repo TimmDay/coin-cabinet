@@ -12,7 +12,7 @@ type CoinFlipInfoProps = {
 
 /**
  * Displays formatted coin flip information including physical characteristics,
- * civilization, reference, provenance, mint, and minting year.
+ * civilization, reference, mint, and minting year.
  */
 export function CoinFlipInfo({ coin, className = "" }: CoinFlipInfoProps) {
   const { data: mints } = useMints()
@@ -37,10 +37,7 @@ export function CoinFlipInfo({ coin, className = "" }: CoinFlipInfoProps) {
   // Line 3: reference
   if (coin.reference) lines.push(coin.reference)
 
-  // Line 4: provenance
-  if (coin.provenance) lines.push(coin.provenance)
-
-  // Line 5: Mint year and name (year first, then mint name on same line)
+  // Line 4: Mint year and name (year first, then mint name on same line)
   let mintYearName = ""
 
   // Get mint year/range with AD/BCE formatting

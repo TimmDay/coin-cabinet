@@ -7,7 +7,7 @@ export default function SeveranDynastyPage() {
     <main className="content-wrapper">
       <PageTitle>Severan Dynasty</PageTitle>
 
-      <CoinGrid filterSet="severan" />
+      <CoinGrid filterSet="Severan" />
 
       <div className="mt-12">
         <Quote

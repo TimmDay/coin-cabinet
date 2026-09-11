@@ -3,19 +3,14 @@ import { ChevronDown, ChevronRight } from "lucide-react"
 import NextLink from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
-import { UserMenu } from "~/components/auth/UserMenu"
-import { useAuth } from "~/components/providers/auth-provider"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { cn } from "~/lib/utils"
 import { MobileNavigation } from "./MobileNavigation"
 import {
-  adminSubmenu,
   articlesSubmenu,
   cabinetRomanSubmenu,
   cabinetSubmenu,
-  devArticlesSubmenu,
   navigationItems,
-  yearInCoinsSubmenu,
   type SubmenuTypes,
 } from "./navigation-schema"
 
@@ -24,8 +19,8 @@ const HOVER_DELAY = 200 // milliseconds
 export default function HomeNavbar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { user } = useAuth()
   const isDevMode = useTypedFeatureFlag("dev")
+  const isArticlesMode = useTypedFeatureFlag("articles")
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null)
   const [openMainDropdown, setOpenMainDropdown] = useState<string | null>(null)
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -137,8 +132,6 @@ export default function HomeNavbar() {
 
   const getNestedSubmenuItems = (submenuType: SubmenuTypes) => {
     switch (submenuType) {
-      case "yearInCoins":
-        return yearInCoinsSubmenu
       case "cabinetRoman":
         return cabinetRomanSubmenu
       default:
@@ -148,8 +141,6 @@ export default function HomeNavbar() {
 
   const getSubmenuType = (itemName: string): SubmenuTypes | null => {
     switch (itemName) {
-      case "Year in coins":
-        return "yearInCoins"
       case "Roman":
         return "cabinetRoman"
       default:
@@ -162,11 +153,7 @@ export default function HomeNavbar() {
       case "Cabinet":
         return cabinetSubmenu
       case "Articles":
-        return isDevMode
-          ? [...articlesSubmenu, ...devArticlesSubmenu]
-          : articlesSubmenu
-      case "Admin":
-        return adminSubmenu
+        return articlesSubmenu
       default:
         return []
     }
@@ -211,11 +198,11 @@ export default function HomeNavbar() {
   }, [openMainDropdown])
 
   const visibleNavItems = navigationItems.filter((item) => {
-    if (item.name === "Admin") {
-      return !!user
-    }
-    if (item.name === "Map") {
+    if (item.name === "Map" || item.name === "Feature Flags") {
       return isDevMode
+    }
+    if (item.name === "Articles") {
+      return isArticlesMode
     }
     return true
   })
@@ -229,11 +216,6 @@ export default function HomeNavbar() {
       {/* Mobile navigation burger menu */}
       <div className="absolute top-1/2 left-4 -translate-y-1/2 sm:left-6 lg:hidden">
         <MobileNavigation />
-      </div>
-
-      {/* UserMenu fixed to top right - outside layout flow */}
-      <div className="fixed top-4 right-4 z-50 sm:right-6">
-        <UserMenu />
       </div>
 
       {/* Large centered logo */}

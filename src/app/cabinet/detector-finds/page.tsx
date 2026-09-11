@@ -6,7 +6,7 @@ export default function DetectorFindsPage() {
     <main className="content-wrapper">
       <PageTitle>Detector Finds</PageTitle>
 
-      <CoinGrid filterSet="detector" showProvenance />
+      <CoinGrid filterSet="Detector" />
     </main>
   )
 }

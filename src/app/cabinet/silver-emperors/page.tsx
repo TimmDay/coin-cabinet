@@ -5,7 +5,7 @@ export default function SilverEmperorsPage() {
   return (
     <main className="content-wrapper">
       <PageTitle>Roman Emperors</PageTitle>
-      <CoinGrid filterSet="silver-emperors" />
+      <CoinGrid filterSet="Silver Emperors" />
     </main>
   )
 }

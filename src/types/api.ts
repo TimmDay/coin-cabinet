@@ -2,10 +2,7 @@
  * Shared API types for consistent data structures across the application
  */
 
-import type {
-  NotableFeature,
-  SomnusCollection,
-} from "~/database/schema-somnus-collection"
+import type { SomnusCollection } from "~/database/schema-somnus-collection"
 
 /**
  * Enhanced coin data with optional joined deity information
@@ -54,28 +51,3 @@ export type ApiResponse<T = unknown> = {
  * Specific response type for coin API endpoints
  */
 export type CoinApiResponse = ApiResponse<CoinEnhanced>
-
-/**
- * Update data structure for PATCH operations on coins
- */
-export type CoinUpdateData = {
-  nickname?: string
-  legend_o?: string | null
-  legend_o_expanded?: string | null
-  legend_o_translation?: string | null
-  desc_o?: string | null
-  legend_r?: string | null
-  legend_r_expanded?: string | null
-  legend_r_translation?: string | null
-  desc_r?: string | null
-  flavour_tag?: string | null
-  flavour_obv?: string | null
-  flavour_rev?: string | null
-  flavour_body?: string | null
-  flavour_img?: string[]
-  deity_id?: string[]
-  obv_device_ids?: string[]
-  rev_device_ids?: string[]
-  sets?: string[]
-  notable_features?: NotableFeature[]
-}

@@ -6,7 +6,7 @@ export default function ImperialWomenPage() {
     <main className="content-wrapper">
       <PageTitle>Imperial Women</PageTitle>
 
-      <CoinGrid filterSet="imperial women" />
+      <CoinGrid filterSet="Imperial Women" />
 
       <div className="mt-12 text-center">
         <p className="coin-description mb-6">

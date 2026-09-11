@@ -3,10 +3,6 @@
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { useSomnusCoins } from "~/api/somnus-collection"
-import {
-  civilizationOptions,
-  denominationOptions,
-} from "~/app/admin/edit-somnus/coin-form-options"
 import { BrowseCoinsModal } from "~/components/ui/BrowseCoinsModal"
 import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { FilterSelect } from "~/components/ui/FilterSelect"
@@ -17,20 +13,22 @@ import {
   type ClickMode,
 } from "~/components/ui/ViewModeControls"
 import { useDeityOptions } from "~/hooks/useDeityOptions"
+import {
+  civilizationOptions,
+  denominationOptions,
+} from "~/lib/constants/coin-options"
 import { generateCoinUrl } from "~/lib/utils/url-helpers"
 
 type CoinGridProps = {
   filterSet?: string
   filterCiv?: string
   showSearch?: boolean
-  showProvenance?: boolean
 }
 
 export function CoinGrid({
   filterSet,
   filterCiv,
   showSearch = false,
-  showProvenance = false,
 }: CoinGridProps = {}) {
   const router = useRouter()
   const [modalState, setModalState] = useState<{
@@ -151,8 +149,8 @@ export function CoinGrid({
       )
     })
     .sort((a, b) => {
-      // Special sorting for "gordy boys" set
-      if (filterSet === "gordy boys") {
+      // Special sorting for "Gordy Boys" set
+      if (filterSet === "Gordy Boys") {
         const denomA = a.denomination?.toLowerCase() ?? ""
         const denomB = b.denomination?.toLowerCase() ?? ""
 
@@ -178,8 +176,8 @@ export function CoinGrid({
         return yearA - yearB
       }
 
-      // Special sorting for "adoptive-emperors" set
-      if (filterSet === "adoptive-emperors") {
+      // Special sorting for "Adoptive Emperors" set
+      if (filterSet === "Adoptive Emperors") {
         const denomA = a.denomination?.toLowerCase() ?? ""
         const denomB = b.denomination?.toLowerCase() ?? ""
 
@@ -361,8 +359,6 @@ export function CoinGrid({
               view={viewMode}
               onClick={() => handleCoinClick(index)}
               index={index + 1}
-              provenance={coin.provenance}
-              showProvenance={showProvenance}
             />
           ))}
         </div>
@@ -413,7 +409,6 @@ export function CoinGrid({
         legend_r={currentCoin?.legend_r ?? undefined}
         desc_r={currentCoin?.desc_r ?? undefined}
         reference={currentCoin?.reference ?? undefined}
-        provenance={currentCoin?.provenance ?? undefined}
         flavour_tag={currentCoin?.flavour_tag ?? undefined}
         onPrevious={handlePreviousWithFocus}
         onNext={handleNextWithFocus}

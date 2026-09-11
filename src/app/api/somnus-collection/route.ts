@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
-import { SOMNUS_COLLECTION_SELECT } from "~/database/schema-somnus-collection"
+import { fetchCollectionList } from "~/database/queries/collection"
 import { createClient } from "~/database/supabase-server"
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   try {
     console.log(
       "🚀 GET /api/somnus-collection - Fetching coins (public access)",
@@ -11,36 +11,14 @@ export async function GET(request: Request) {
     // Use server client but don't require authentication for GET
     const supabase = await createClient()
 
-    // Check if we should include all coins (for admin purposes)
-    const { searchParams } = new URL(request.url)
-    const includeAll = searchParams.get("includeAll") === "true"
-    const showHidden = searchParams.get("showHidden") === "true"
-
-    let query = supabase
-      .from("somnus_collection")
-      .select(SOMNUS_COLLECTION_SELECT)
-
-    // Only filter for coins with obverse images if not requesting all coins
-    if (!includeAll) {
-      query = query.not("image_link_o", "is", null).neq("image_link_o", "")
-
-      // Filter out hidden coins unless the feature flag is enabled
-      // We accept FALSE or NULL as "visible" to handle legacy/unmigrated data gracefully
-      if (!showHidden) {
-        query = query.or("is_hidden.eq.false,is_hidden.is.null")
-      }
-    }
-
-    const { data, error } = await query
-      // TODO: pull reign start from historical figures table and use that
-      .order("mint_year_earliest", {
-        ascending: true,
-        nullsFirst: false,
-      })
-      .order("diameter", {
-        ascending: true,
-        nullsFirst: false,
-      })
+    // `includeAll`/`showHidden` are no longer meaningful here: anon RLS on
+    // `public_items` already excludes hidden/unconfirmed items regardless of
+    // these params (see docs/SCHEMA_MIGRATION_READ_PATH.md). Only images
+    // already come pre-filtered to what's public, matching the old route's
+    // "obverse image required" behavior naturally (a coin without a
+    // `coin_images` standard-obverse row just has `image_link_o: null`, same
+    // shape as before).
+    const { data, error } = await fetchCollectionList(supabase)
 
     if (error) {
       console.error("Supabase error:", error)
@@ -61,9 +39,7 @@ export async function GET(request: Request) {
       return errorResponse
     }
 
-    console.log(
-      `📋 Found ${data.length} coins${includeAll ? " (including all)" : " with obverse images"}`,
-    )
+    console.log(`📋 Found ${data.length} coins with obverse images`)
 
     const response = NextResponse.json({
       success: true,
@@ -95,68 +71,5 @@ export async function GET(request: Request) {
       "no-cache, no-store, must-revalidate",
     )
     return errorResponse
-  }
-}
-
-export async function DELETE(request: Request) {
-  try {
-    // Use server client for authenticated requests
-    const supabase = await createClient()
-
-    // Check authentication
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session) {
-      return NextResponse.json(
-        { success: false, message: "Authentication required" },
-        { status: 401 },
-      )
-    }
-
-    // Parse request body
-    const body = (await request.json()) as { id?: number }
-    const { id } = body
-
-    if (!id || typeof id !== "number") {
-      return NextResponse.json(
-        { success: false, message: "Valid id is required" },
-        { status: 400 },
-      )
-    }
-
-    // Delete somnus coin
-    const { error } = await supabase
-      .from("somnus_collection")
-      .delete()
-      .eq("id", id)
-
-    if (error) {
-      console.error("Supabase error:", error)
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Failed to delete somnus coin",
-          error: error.message,
-        },
-        { status: 500 },
-      )
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: "Somnus coin deleted successfully!",
-    })
-  } catch (error: unknown) {
-    console.error("Error deleting somnus coin:", error)
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Failed to delete somnus coin",
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 },
-    )
   }
 }
