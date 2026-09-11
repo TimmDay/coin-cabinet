@@ -19,6 +19,30 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 )
 
+const TABLES = [
+  "somnus_collection",
+  "deities",
+  "mints",
+  "artifacts",
+  "devices",
+  "historical_figures",
+  "places",
+  "timelines",
+]
+
+async function fetchTable(table) {
+  const { data, error } = await supabase
+    .from(table)
+    .select("*")
+    .order("id", { ascending: true })
+
+  if (error) {
+    throw new Error(`Failed to fetch ${table} for backup: ${error.message}`)
+  }
+
+  return data || []
+}
+
 async function createDatabaseBackup() {
   try {
     const timestamp = new Date().toISOString().split("T")[0] // YYYY-MM-DD
@@ -27,56 +51,21 @@ async function createDatabaseBackup() {
     // Ensure backup directory exists
     await fs.mkdir(backupDir, { recursive: true })
 
-    // Export somnus_collection data using Supabase
-    const { data: coins, error: coinsError } = await supabase
-      .from("somnus_collection")
-      .select("*")
-      .order("id", { ascending: true })
+    const tables = {}
+    const totalRecords = {}
 
-    if (coinsError) {
-      throw new Error(`Failed to fetch coins for backup: ${coinsError.message}`)
-    }
-
-    if (!coins) {
-      throw new Error("No coin data returned from database")
-    }
-
-    // Export deities data
-    const { data: deities, error: deitiesError } = await supabase
-      .from("deities")
-      .select("*")
-      .order("id", { ascending: true })
-
-    if (deitiesError) {
-      throw new Error(
-        `Failed to fetch deities for backup: ${deitiesError.message}`,
-      )
-    }
-
-    // Export mints data
-    const { data: mints, error: mintsError } = await supabase
-      .from("mints")
-      .select("*")
-      .order("id", { ascending: true })
-
-    if (mintsError) {
-      throw new Error(`Failed to fetch mints for backup: ${mintsError.message}`)
+    for (const table of TABLES) {
+      const rows = await fetchTable(table)
+      tables[table] = rows
+      totalRecords[table] = rows.length
     }
 
     const backupData = {
       timestamp: new Date().toISOString(),
-      version: "2.0",
-      tables: {
-        somnus_collection: coins || [],
-        deities: deities || [],
-        mints: mints || [],
-      },
+      version: "3.0",
+      tables,
       metadata: {
-        totalRecords: {
-          coins: coins?.length || 0,
-          deities: deities?.length || 0,
-          mints: mints?.length || 0,
-        },
+        totalRecords,
         exportedBy: "automated-backup",
       },
     }
@@ -87,9 +76,9 @@ async function createDatabaseBackup() {
 
     console.log(`✅ Backup created: ${backupFile}`)
     console.log(`📊 Exported records:`)
-    console.log(`   - ${coins?.length || 0} coins`)
-    console.log(`   - ${deities?.length || 0} deities`)
-    console.log(`   - ${mints?.length || 0} mints`)
+    for (const table of TABLES) {
+      console.log(`   - ${table}: ${totalRecords[table]}`)
+    }
 
     return backupFile
   } catch (error) {
