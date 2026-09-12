@@ -389,17 +389,26 @@ export function TimelineWithMap({
 
     const [lat, lng] = sanitizeCoordinates(event.lat!, event.lng!)
     const isCoinMinted = event.kind === "coin-minted"
+    const isFound = event.kind === "found"
 
     timelineCustomMarkers.push({
       id: `timeline-marker-${event.kind}-${event.year}-${index}`,
       lat,
       lng,
       title: event.name,
-      subtitle: isCoinMinted ? "This coin was minted here" : undefined,
+      subtitle: isCoinMinted
+        ? "This coin was minted here"
+        : isFound
+          ? "This coin was found here"
+          : undefined,
       description: event.description,
-      className: isCoinMinted ? "text-amber-900" : "text-purple-900",
-      fillColor: isCoinMinted ? "#f59e0b" : "#0f172a",
-      borderColor: isCoinMinted ? "#f59e0b" : "#7c3aed",
+      className: isCoinMinted
+        ? "text-amber-900"
+        : isFound
+          ? "text-emerald-900"
+          : "text-purple-900",
+      fillColor: isCoinMinted ? "#f59e0b" : isFound ? "#059669" : "#0f172a",
+      borderColor: isCoinMinted ? "#f59e0b" : isFound ? "#059669" : "#7c3aed",
       isActive: index === selectedEventIndex,
       showPopup: false,
       onClick: () => handleTimelineMarkerSelection(event, index),

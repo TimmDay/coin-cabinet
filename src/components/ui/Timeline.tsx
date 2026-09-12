@@ -39,21 +39,33 @@ export function Timeline({
 
   const events = timeline.sort((a, b) => a.year - b.year)
 
+  // The "found" event (where/when the coin was found in modern times) sits
+  // far outside the historical timeline's scale -- excluded from the axis
+  // and from sideline start/end selection below, and instead rendered as
+  // its own marker further right (see foundEvent usage near the bottom).
+  const foundEvent = events.find((event) => event.kind === "found") ?? null
+  const scaledEvents = foundEvent
+    ? events.filter((event) => event !== foundEvent)
+    : events
+
   // Check if ALL events span 7 years or less
-  const firstYear = events[0]?.year ?? 0
-  const lastYear = events[events.length - 1]?.year ?? 0
+  const firstYear = scaledEvents[0]?.year ?? 0
+  const lastYear = scaledEvents[scaledEvents.length - 1]?.year ?? 0
   const totalSpan = lastYear - firstYear
   const allEventsSpanSmallRange = totalSpan <= 7
 
   // Always show first and last events as sideline markers
-  const sideLineEvent = events[0] ?? null
-  const sideLineEndEvent = events[events.length - 1] ?? null
+  const sideLineEvent = scaledEvents[0] ?? null
+  const sideLineEndEvent = scaledEvents[scaledEvents.length - 1] ?? null
 
   // Remove sideline events from main timeline
-  let timelineEvents = events.slice(1) // Remove first event
+  let timelineEvents = scaledEvents.slice(1) // Remove first event
   if (sideLineEndEvent) timelineEvents = timelineEvents.slice(0, -1) // Remove last event
 
-  // Create a chronologically ordered flat list of all events for keyboard navigation
+  // Create a chronologically ordered flat list of all events (including the
+  // found event) for keyboard navigation -- kept in sync with
+  // TimelineWithMap's index-based selectedEventIndex, which indexes the
+  // same full, sorted `timeline` array.
   const allEventsChronological = events.flatMap((event) => event)
 
   // Helper function to check if an event is selected
@@ -236,136 +248,166 @@ export function Timeline({
   )
 
   return (
-    <div
-      className={`relative w-full ${className}`}
-      style={{
-        paddingTop: `${topPadding}px`,
-        paddingBottom: `${bottomPadding}px`,
-      }}
-    >
-      {/* Side line event (if there's a large gap after first event, ie birth and then nothing for a while) */}
-      {sideLineEvent && (
-        <div
-          className="absolute left-0 -translate-y-1/2"
-          style={{ top: `${topPadding + 4}px` }}
-        >
-          <SideLineMarker
-            event={sideLineEvent}
-            onEventClick={handleEventClick}
-            onEventKeyDown={handleEventKeyDown}
-            tabIndex={getEventTabIndex(sideLineEvent)}
-            isSelected={isEventSelected(sideLineEvent)}
-          />
-        </div>
-      )}
-
-      {/* Timeline axis */}
+    <div className={`flex items-start ${foundEvent ? "gap-4 md:gap-8" : ""}`}>
       <div
-        className={`relative h-2 rounded-full bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 ${
-          className?.includes("timeline-in-map")
-            ? sideLineEvent
-              ? sideLineEndEvent
-                ? "mx-10" // Both sideline markers
-                : "mr-0 ml-10" // Only start sideline
-              : sideLineEndEvent
-                ? "mr-10 ml-0" // Only end sideline
-                : "mx-0" // No sideline markers in map context
-            : sideLineEvent
-              ? sideLineEndEvent
-                ? "mx-10 md:mx-24" // Both sideline markers
-                : "mr-2 ml-10 md:mr-24" // Only start sideline
-              : sideLineEndEvent
-                ? "mr-10 ml-2 md:ml-24" // Only end sideline
-                : "mr-2 md:mr-24" // Normal margins for standalone
-        }`}
+        className={`relative w-full min-w-0 flex-1 ${className}`}
+        style={{
+          paddingTop: `${topPadding}px`,
+          paddingBottom: `${bottomPadding}px`,
+        }}
       >
-        {/* Events */}
-        {Object.entries(eventsByYear).map(([year, yearEvents], yearIndex) => {
-          const position = getEventPosition(Number(year))
-          const isMultipleEvents = yearEvents.length > 1
+        {/* Side line event (if there's a large gap after first event, ie birth and then nothing for a while) */}
+        {sideLineEvent && (
+          <div
+            className="absolute left-0 -translate-y-1/2"
+            style={{ top: `${topPadding + 4}px` }}
+          >
+            <SideLineMarker
+              event={sideLineEvent}
+              onEventClick={handleEventClick}
+              onEventKeyDown={handleEventKeyDown}
+              tabIndex={getEventTabIndex(sideLineEvent)}
+              isSelected={isEventSelected(sideLineEvent)}
+            />
+          </div>
+        )}
 
-          // Simple alternating pattern for all markers (normal and stacked)
-          const isInverted = yearIndex % 2 === 1
+        {/* Timeline axis */}
+        <div
+          className={`relative h-2 rounded-full bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 ${
+            className?.includes("timeline-in-map")
+              ? sideLineEvent
+                ? sideLineEndEvent
+                  ? "mx-10" // Both sideline markers
+                  : "mr-0 ml-10" // Only start sideline
+                : sideLineEndEvent
+                  ? "mr-10 ml-0" // Only end sideline
+                  : "mx-0" // No sideline markers in map context
+              : sideLineEvent
+                ? sideLineEndEvent
+                  ? "mx-10 md:mx-24" // Both sideline markers
+                  : "mr-2 ml-10 md:mr-24" // Only start sideline
+                : sideLineEndEvent
+                  ? "mr-10 ml-2 md:ml-24" // Only end sideline
+                  : "mr-2 md:mr-24" // Normal margins for standalone
+          }`}
+        >
+          {/* Events */}
+          {Object.entries(eventsByYear).map(([year, yearEvents], yearIndex) => {
+            const position = getEventPosition(Number(year))
+            const isMultipleEvents = yearEvents.length > 1
 
-          return (
-            <div
-              key={year}
-              className={`absolute -translate-x-1/2 transform ${isInverted ? "top-4" : "-top-10"}`}
-              style={{ left: `${position}%` }} // Dynamic positioning required
-            >
-              {isMultipleEvents ? (
-                isInverted ? (
-                  <InvertedStackedMarkers
+            // Simple alternating pattern for all markers (normal and stacked)
+            const isInverted = yearIndex % 2 === 1
+
+            return (
+              <div
+                key={year}
+                className={`absolute -translate-x-1/2 transform ${isInverted ? "top-4" : "-top-10"}`}
+                style={{ left: `${position}%` }} // Dynamic positioning required
+              >
+                {isMultipleEvents ? (
+                  isInverted ? (
+                    <InvertedStackedMarkers
+                      year={Number(year)}
+                      events={yearEvents}
+                      onEventClick={handleEventClick}
+                      onEventKeyDown={handleEventKeyDown}
+                      getEventTabIndex={getEventTabIndex}
+                      selectedEventIndex={selectedEventIndex}
+                      allEventsChronological={allEventsChronological}
+                    />
+                  ) : (
+                    <StackedMarkers
+                      year={Number(year)}
+                      events={yearEvents}
+                      onEventClick={handleEventClick}
+                      onEventKeyDown={handleEventKeyDown}
+                      getEventTabIndex={getEventTabIndex}
+                      selectedEventIndex={selectedEventIndex}
+                      allEventsChronological={allEventsChronological}
+                    />
+                  )
+                ) : isInverted ? (
+                  <InvertedMarker
                     year={Number(year)}
-                    events={yearEvents}
+                    event={yearEvents[0]!}
                     onEventClick={handleEventClick}
                     onEventKeyDown={handleEventKeyDown}
-                    getEventTabIndex={getEventTabIndex}
-                    selectedEventIndex={selectedEventIndex}
-                    allEventsChronological={allEventsChronological}
+                    tabIndex={getEventTabIndex(yearEvents[0]!)}
+                    isSelected={isEventSelected(yearEvents[0]!)}
                   />
                 ) : (
-                  <StackedMarkers
+                  <NormalMarker
                     year={Number(year)}
-                    events={yearEvents}
+                    event={yearEvents[0]!}
                     onEventClick={handleEventClick}
                     onEventKeyDown={handleEventKeyDown}
-                    getEventTabIndex={getEventTabIndex}
-                    selectedEventIndex={selectedEventIndex}
-                    allEventsChronological={allEventsChronological}
+                    tabIndex={getEventTabIndex(yearEvents[0]!)}
+                    isSelected={isEventSelected(yearEvents[0]!)}
                   />
-                )
-              ) : isInverted ? (
-                <InvertedMarker
-                  year={Number(year)}
-                  event={yearEvents[0]!}
-                  onEventClick={handleEventClick}
-                  onEventKeyDown={handleEventKeyDown}
-                  tabIndex={getEventTabIndex(yearEvents[0]!)}
-                  isSelected={isEventSelected(yearEvents[0]!)}
-                />
-              ) : (
-                <NormalMarker
-                  year={Number(year)}
-                  event={yearEvents[0]!}
-                  onEventClick={handleEventClick}
-                  onEventKeyDown={handleEventKeyDown}
-                  tabIndex={getEventTabIndex(yearEvents[0]!)}
-                  isSelected={isEventSelected(yearEvents[0]!)}
-                />
-              )}
-            </div>
-          )
-        })}
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Side line end event (if last event is death) */}
+        {sideLineEndEvent && (
+          <div
+            className="absolute right-0 -translate-y-1/2"
+            style={{ top: `${topPadding + 4}px` }}
+          >
+            <SideLineMarker
+              event={sideLineEndEvent}
+              position="end"
+              onEventClick={handleEventClick}
+              onEventKeyDown={handleEventKeyDown}
+              tabIndex={getEventTabIndex(sideLineEndEvent)}
+              isSelected={isEventSelected(sideLineEndEvent)}
+            />
+          </div>
+        )}
+
+        {/* Mobile Timeline Drawer */}
+        {enableMobileDrawer && (
+          <MobileTimelineDrawer
+            isOpen={isDrawerOpen}
+            onClose={handleDrawerClose}
+            events={allEventsChronological}
+            currentEventIndex={currentEventIndex}
+            onEventChange={handleEventChange}
+            getEventIcon={getEventIcon}
+          />
+        )}
       </div>
 
-      {/* Side line end event (if last event is death) */}
-      {sideLineEndEvent && (
+      {/* Found event -- deliberately not part of the scaled axis above (see
+          foundEvent filtering near the top of this component): a coin's
+          find date is typically 1000s of years after its historical
+          events, so it gets its own fixed marker off to the right instead. */}
+      {foundEvent && (
         <div
-          className="absolute right-0 -translate-y-1/2"
-          style={{ top: `${topPadding + 4}px` }}
+          className="relative w-10 shrink-0"
+          style={{
+            paddingTop: `${topPadding}px`,
+            paddingBottom: `${bottomPadding}px`,
+          }}
         >
-          <SideLineMarker
-            event={sideLineEndEvent}
-            position="end"
-            onEventClick={handleEventClick}
-            onEventKeyDown={handleEventKeyDown}
-            tabIndex={getEventTabIndex(sideLineEndEvent)}
-            isSelected={isEventSelected(sideLineEndEvent)}
-          />
+          <div
+            className="absolute -translate-y-1/2"
+            style={{ top: `${topPadding + 4}px` }}
+          >
+            <SideLineMarker
+              event={foundEvent}
+              position="end"
+              onEventClick={handleEventClick}
+              onEventKeyDown={handleEventKeyDown}
+              tabIndex={getEventTabIndex(foundEvent)}
+              isSelected={isEventSelected(foundEvent)}
+            />
+          </div>
         </div>
-      )}
-
-      {/* Mobile Timeline Drawer */}
-      {enableMobileDrawer && (
-        <MobileTimelineDrawer
-          isOpen={isDrawerOpen}
-          onClose={handleDrawerClose}
-          events={allEventsChronological}
-          currentEventIndex={currentEventIndex}
-          onEventChange={handleEventChange}
-          getEventIcon={getEventIcon}
-        />
       )}
     </div>
   )

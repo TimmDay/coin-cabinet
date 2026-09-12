@@ -6,6 +6,7 @@ export type EventKind =
   | "political"
   | "family"
   | "coin-minted" // added dynamically to the list on coin detail pages.
+  | "found" // added dynamically on coin detail pages; rendered off the scaled axis, see Timeline.tsx.
   | "unrest"
   | "other"
 
