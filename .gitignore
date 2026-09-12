@@ -57,3 +57,6 @@ storybook-static
 
 # backup files
 /backups/
+
+# local Supabase CLI link/config state (machine-specific, not shared)
+/supabase/.temp/
