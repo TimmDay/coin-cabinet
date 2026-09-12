@@ -133,6 +133,21 @@ to visitors (see `IMPLEMENTATION_TODOS.md`'s RLS section). There's no
 new-schema field anon can read that stands in for the old free-text
 `provenance` blurb, and adding one was out of scope for a read-only retrofit.
 
+**One narrow exception, added later:** `/api/somnus-collection/[id]` also
+reads `public_find_events` — a column-allowlisted view (see
+`somnus-data-ingestion/docs/migrations/2026-09-11_public_find_events_view.sql`)
+exposing only `item_id, event_date, find_lat, find_lng, notes` for
+`provenance_events` rows where `event_type = 'find'`. Nothing else on
+`provenance_events` (price, vendor, source, auction, acquisition_channel) is
+exposed. This deliberately reverses the `findspot_place_id` exclusion
+documented in `views.sql`'s `public_items` header — the owner revisited that
+call specifically for provenance find-events. Powers the "coin found here"
+marker on the deep-dive map/timeline (`CoinDeepDive.tsx`,
+`lib/utils/provenance-helpers.ts`). The query in `collection.ts` treats a
+missing/erroring view as "no found event" rather than failing the whole
+fetch, since the view may not exist yet in a given environment until the
+migration above is applied by hand.
+
 ## `sets` naming fixed to match the new authority table
 
 The new `sets` table stores Title Case names (`"Imperial Women"`,

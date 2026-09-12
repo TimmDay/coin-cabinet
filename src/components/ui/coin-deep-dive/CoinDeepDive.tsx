@@ -11,6 +11,7 @@ import type { CustomMapMarker } from "~/components/map/Map"
 import { MAP_BOUNDS } from "~/components/map/mapConfig"
 import { getArtifactLocationData } from "~/lib/utils/artifact-helpers"
 import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
+import { addFoundEventToTimeline } from "~/lib/utils/provenance-helpers"
 import type { CoinEnhanced } from "~/types/api"
 import { CoinRow } from "./CoinRow"
 import { DeepDiveCardsSection } from "./DeepDiveCardsSection"
@@ -160,7 +161,7 @@ function buildTimelineForCoin(
       coin.timelines_id!.includes(timeline.id),
     )
     if (coinTimeline) {
-      return addCoinMintingEventToTimeline(
+      const withMintEvent = addCoinMintingEventToTimeline(
         coinTimeline.timeline,
         {
           denomination: coin.denomination,
@@ -170,11 +171,31 @@ function buildTimelineForCoin(
         },
         mints, // Pass mints data for timeline event creation
       )
+      return addFoundEventToTimeline(withMintEvent, coin.found_event)
     }
   }
 
   // No timeline found
   return null
+}
+
+function getFoundMarker(coin: CoinEnhanced): CustomMapMarker | null {
+  const found = coin.found_event
+  if (!found) return null
+
+  return {
+    id: `coin-found-${coin.id}`,
+    lat: found.lat,
+    lng: found.lng,
+    title: "Coin Found",
+    subtitle: "This coin was found here",
+    description: found.notes ?? undefined,
+    className: "text-emerald-900",
+    fillColor: "#059669",
+    borderColor: "#059669",
+    showPopup: true,
+    zIndexOffset: 900,
+  }
 }
 
 function getMintCoordinates(
@@ -207,6 +228,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   // Process data using helper functions
   const matchingTimeline = buildTimelineForCoin(coin, dbTimelines, mints)
   const mintCoords = getMintCoordinates(coin, mints)
+  const foundMarker = getFoundMarker(coin)
 
   // Get mint name for map highlighting
   const mint =
@@ -278,14 +300,16 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       : []),
     ...deityPlaceMarkers,
     ...artifactMarkers,
+    ...(foundMarker ? [foundMarker] : []),
   ]
 
   // Determine map display logic - show timeline map if available, otherwise mint map
   const shouldShowMap = Boolean(
     matchingTimeline ||
-      mintCoords ||
-      deityPlaceMarkers.length ||
-      artifactMarkers.length,
+    mintCoords ||
+    deityPlaceMarkers.length ||
+    artifactMarkers.length ||
+    foundMarker,
   )
   const mapCenter =
     mintCoords ??
@@ -299,7 +323,9 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             number,
             number,
           ])
-        : undefined)
+        : foundMarker
+          ? ([foundMarker.lat, foundMarker.lng] as [number, number])
+          : undefined)
 
   return (
     <section className="w-full space-y-8 md:space-y-12 md:overflow-x-hidden">
@@ -360,13 +386,18 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                   height="400px"
                 />
               </div>
-            ) : deityPlaceMarkers.length > 0 || artifactMarkers.length > 0 ? (
+            ) : deityPlaceMarkers.length > 0 ||
+              artifactMarkers.length > 0 ||
+              foundMarker ? (
               <div className="space-y-4">
                 <Map
                   center={mapCenter}
                   hideControls
                   showMintMarkers={false}
-                  customMarkers={deityPlaceMarkers.concat(artifactMarkers)}
+                  customMarkers={deityPlaceMarkers.concat(
+                    artifactMarkers,
+                    foundMarker ? [foundMarker] : [],
+                  )}
                   showTimelineEventMarker={false}
                   height="400px"
                 />

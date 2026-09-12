@@ -26,6 +26,8 @@ type SupportingImageRow =
   Database["public"]["Tables"]["supporting_images"]["Row"]
 type ItemPresentationRow =
   Database["public"]["Tables"]["item_presentation"]["Row"]
+type PublicFindEventRow =
+  Database["public"]["Views"]["public_find_events"]["Row"]
 
 /** Base fields shared by the list and detail endpoints. Caller sets `mint_id`
  * afterward (it comes from the `coins` table, not `public_items`). */
@@ -139,7 +141,9 @@ export async function fetchCollectionList(
 
   if (itemsError) return { data: null, error: itemsError }
 
-  const itemIds = items.map((i) => i.id).filter((id): id is number => id !== null)
+  const itemIds = items
+    .map((i) => i.id)
+    .filter((id): id is number => id !== null)
 
   const { data: coins, error: coinsError } = await supabase
     .from("coins")
@@ -295,6 +299,7 @@ export async function fetchCollectionDetail(
     itemPersonsResult,
     itemTimelinesResult,
     presentationResult,
+    findEventsResult,
   ] = await Promise.all([
     coinId
       ? supabase
@@ -350,7 +355,24 @@ export async function fetchCollectionDetail(
       .eq("item_id", item.id)
       .maybeSingle()
       .overrideTypes<Pick<ItemPresentationRow, "id">, { merge: false }>(),
+    // Not included in the error-checking loop below, deliberately: this
+    // view (docs/migrations/2026-09-11_public_find_events_view.sql) may not
+    // exist in the DB yet, and a missing-relation error here shouldn't take
+    // down the whole coin page -- it just means no found-location marker,
+    // same as any other coin with no find event on record.
+    supabase
+      .from("public_find_events")
+      .select("*")
+      .eq("item_id", item.id)
+      .returns<PublicFindEventRow[]>(),
   ])
+
+  if (findEventsResult.error) {
+    console.error(
+      "public_find_events query failed (has the migration been applied?):",
+      findEventsResult.error,
+    )
+  }
 
   for (const { error } of [
     imagesResult,
@@ -375,50 +397,58 @@ export async function fetchCollectionDetail(
   const itemTimelineRows = itemTimelinesResult.data ?? []
   const presentationId = presentationResult.data?.id
 
-  const [deviceIdsResult, deitiesResult, personsResult, supportingImagesResult] =
-    await Promise.all([
-      coinId
-        ? Promise.resolve(coinDevicesResult)
-        : Promise.resolve({ data: [] as CoinDeviceRow[], error: null }),
-      itemDeityRows.length > 0
-        ? supabase
-            .from("deities")
-            .select(
-              "id, name, subtitle, flavour_text, secondary_info, place_ids:deity_places(place_id)",
-            )
-            .in(
-              "id",
-              itemDeityRows.map((d) => d.deity_id),
-            )
-            .returns<
-              (Pick<
-                DeityRow,
-                "id" | "name" | "subtitle" | "flavour_text" | "secondary_info"
-              > & { place_ids: { place_id: number }[] })[]
-            >()
-        : Promise.resolve({ data: [], error: null }),
-      itemPersonRows.length > 0
-        ? supabase
-            .from("persons")
-            .select("*")
-            .in(
-              "id",
-              itemPersonRows.map((p) => p.person_id),
-            )
-            .returns<PersonRow[]>()
-        : Promise.resolve({ data: [] as PersonRow[], error: null }),
-      presentationId
-        ? supabase
-            .from("supporting_images")
-            .select("*, artifacts(id)")
-            .eq("presentation_id", presentationId)
-            .order("sequence", { ascending: true })
-            .returns<(SupportingImageRow & { artifacts: { id: number } | null })[]>()
-        : Promise.resolve({
-            data: [] as (SupportingImageRow & { artifacts: { id: number } | null })[],
-            error: null,
-          }),
-    ])
+  const [
+    deviceIdsResult,
+    deitiesResult,
+    personsResult,
+    supportingImagesResult,
+  ] = await Promise.all([
+    coinId
+      ? Promise.resolve(coinDevicesResult)
+      : Promise.resolve({ data: [] as CoinDeviceRow[], error: null }),
+    itemDeityRows.length > 0
+      ? supabase
+          .from("deities")
+          .select(
+            "id, name, subtitle, flavour_text, secondary_info, place_ids:deity_places(place_id)",
+          )
+          .in(
+            "id",
+            itemDeityRows.map((d) => d.deity_id),
+          )
+          .returns<
+            (Pick<
+              DeityRow,
+              "id" | "name" | "subtitle" | "flavour_text" | "secondary_info"
+            > & { place_ids: { place_id: number }[] })[]
+          >()
+      : Promise.resolve({ data: [], error: null }),
+    itemPersonRows.length > 0
+      ? supabase
+          .from("persons")
+          .select("*")
+          .in(
+            "id",
+            itemPersonRows.map((p) => p.person_id),
+          )
+          .returns<PersonRow[]>()
+      : Promise.resolve({ data: [] as PersonRow[], error: null }),
+    presentationId
+      ? supabase
+          .from("supporting_images")
+          .select("*, artifacts(id)")
+          .eq("presentation_id", presentationId)
+          .order("sequence", { ascending: true })
+          .returns<
+            (SupportingImageRow & { artifacts: { id: number } | null })[]
+          >()
+      : Promise.resolve({
+          data: [] as (SupportingImageRow & {
+            artifacts: { id: number } | null
+          })[],
+          error: null,
+        }),
+  ])
 
   for (const { error } of [
     deviceIdsResult,
@@ -468,8 +498,20 @@ export async function fetchCollectionDetail(
     .filter((id): id is number => id !== undefined && id !== null)
     .map(String)
 
+  const findEventRow = (findEventsResult.data ?? []).find(
+    (row) => row.find_lat !== null && row.find_lng !== null,
+  )
+
   const enhanced: CoinEnhanced = {
     ...base,
+    found_event: findEventRow
+      ? {
+          event_date: findEventRow.event_date,
+          lat: findEventRow.find_lat!,
+          lng: findEventRow.find_lng!,
+          notes: findEventRow.notes,
+        }
+      : null,
     deities: (deitiesResult.data ?? []).map((d) => ({
       id: d.id,
       name: d.name,
