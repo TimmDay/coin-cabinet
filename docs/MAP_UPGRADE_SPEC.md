@@ -98,16 +98,12 @@ rather than trading CARTO for a different key-gated service.
 - Mint/coin/found-location markers: MapLibre supports HTML-element
   `Marker`s (same DivIcon-style approach as today), so
   `mapMarkers.ts`/`MintMarkerSvg.tsx`/`MintPin.tsx` mostly carry over.
-- Clustering: MapLibre GeoJSON sources have **built-in** clustering
-  (`cluster: true`, `clusterRadius`, `clusterMaxZoom`), which — per the
-  decision below — we're evaluating as a replacement for the hand-rolled
-  `supercluster` + `mapMarkerClustering.ts` in this same branch. The
-  custom "spiderfy" (fanning out overlapping points at max cluster zoom)
-  is bespoke behavior MapLibre doesn't give you for free, so that piece
-  likely stays custom regardless of which clustering engine sits under it
-  — the evaluation is about whether `mapMarkerClustering.ts`'s own
-  cluster-computation logic (not the spiderfy layer on top) can be
-  deleted in favor of the built-in version.
+- Clustering: kept the existing hand-rolled `supercluster` +
+  `mapMarkerClustering.ts` approach, ported to MapLibre's
+  `project()`/`unproject()` instead of Leaflet's
+  `latLngToLayerPoint()`/`layerPointToLatLng()`. Evaluated and decided
+  against migrating to MapLibre's built-in GeoJSON source clustering --
+  see the Decisions section for why.
 
 ### React integration
 
@@ -212,3 +208,27 @@ React 19 at v8.
 3. **React binding**: `react-map-gl/maplibre`.
 4. **Time-slider prep**: add `year_start`/`year_end` to `provinces.geojson`
    now, placeholder-valued, in this branch.
+5. **Clustering re-evaluation: keep the ported `supercluster` approach,
+   don't migrate to MapLibre's built-in clustering.** MapLibre's built-in
+   GeoJSON clustering (`cluster: true` on the source) uses `supercluster`
+   internally too — same algorithm, so no computation is being
+   duplicated by keeping our own instance. The reason to switch would be
+   to delete `mapMarkerClustering.ts`'s glue code, but that code doesn't
+   actually go away: built-in clustering is designed around GL-rendered
+   `circle`/`symbol` layers, not arbitrary HTML per marker. Our markers
+   need per-marker HTML (different fill/border colors, icons, rich
+   title/subtitle/description popups) — keeping that with built-in
+   clustering means querying the source's cluster state
+   (`querySourceFeatures`/`getClusterLeaves()`, both async/promise-based)
+   and mirroring it into React state on `sourcedata` events, which is
+   *more* glue code than what exists today, not less, and a structurally
+   different (event-driven vs. prop-driven) data flow to get there. The
+   custom "spiderfy" behavior (fanning out overlapping same-coordinate
+   points) is bespoke either way and doesn't come from either clustering
+   engine. Combined with marker counts here being small (mints, artifacts,
+   deity-places are each a few dozen at most) — nowhere near the scale
+   where GPU-side clustering's performance advantage over a plain JS
+   `Supercluster` instance would matter — there's no upside to migrating,
+   only added complexity and a real risk of visual/behavioral regression.
+   Revisit only if marker counts grow by an order of magnitude or the
+   custom per-marker styling requirement goes away.
