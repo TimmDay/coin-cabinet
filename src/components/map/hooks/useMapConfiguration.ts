@@ -1,14 +1,9 @@
-import type { LatLngExpression } from "leaflet"
 import { useMemo } from "react"
 
 export type MapConfiguration = {
-  defaultCenter: LatLngExpression
   defaultZoom: number
   minZoom: number
   maxZoom: number
-  attribution: string
-  tileLayerUrl: string
-  romeCoordinates: LatLngExpression
 }
 
 /**
@@ -18,14 +13,9 @@ export type MapConfiguration = {
 export const useMapConfiguration = (): MapConfiguration => {
   return useMemo(
     () => ({
-      defaultCenter: [41.9028, 12.4964] as LatLngExpression, // Rome
       defaultZoom: 5,
       minZoom: 3,
       maxZoom: 14,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      tileLayerUrl: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      romeCoordinates: [41.9028, 12.4964] as LatLngExpression,
     }),
     [],
   )

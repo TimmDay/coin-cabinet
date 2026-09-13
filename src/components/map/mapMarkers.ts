@@ -1,5 +1,3 @@
-import { DivIcon } from "leaflet"
-
 function escapeHtml(value: string): string {
   return value
     .replaceAll("&", "&amp;")
@@ -9,7 +7,7 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;")
 }
 
-function createReverseTeardropMarkerHtml({
+export function createReverseTeardropMarkerHtml({
   fillColor,
   borderColor,
   iconSrc,
@@ -127,42 +125,26 @@ export function createClusterMarkerHtml(count: number) {
   `
 }
 
-export function createCustomMarkerIcon(marker: CustomMapMarker): DivIcon {
-  const sizeScale = marker.sizeScale ?? 1
-
-  return new DivIcon({
-    className: "custom-map-marker",
-    html: createReverseTeardropMarkerHtml({
-      fillColor: marker.fillColor,
-      borderColor: marker.borderColor,
-      iconSrc: marker.iconSrc,
-      active: marker.isActive,
-      sizeScale,
-      centerDotScale: marker.centerDotScale,
-    }),
-    iconSize: marker.isActive
-      ? [Math.round(34 * sizeScale), Math.round(44 * sizeScale)]
-      : [Math.round(30 * sizeScale), Math.round(40 * sizeScale)],
-    iconAnchor: marker.isActive
-      ? [Math.round(17 * sizeScale), Math.round(42 * sizeScale)]
-      : [Math.round(15 * sizeScale), Math.round(38 * sizeScale)],
+/** HTML for a marker in its normal (non-spiderfied) state. */
+export function createCustomMarkerHtml(marker: CustomMapMarker): string {
+  return createReverseTeardropMarkerHtml({
+    fillColor: marker.fillColor,
+    borderColor: marker.borderColor,
+    iconSrc: marker.iconSrc,
+    active: marker.isActive,
+    sizeScale: marker.sizeScale ?? 1,
+    centerDotScale: marker.centerDotScale,
   })
 }
 
-export function createSpiderfiedMarkerIcon(marker: CustomMapMarker): DivIcon {
-  const sizeScale = marker.sizeScale ?? 1
-
-  return new DivIcon({
-    className: "custom-map-marker spiderfied-map-marker",
-    html: createReverseTeardropMarkerHtml({
-      fillColor: marker.fillColor,
-      borderColor: marker.borderColor,
-      iconSrc: marker.iconSrc,
-      active: true,
-      sizeScale,
-      centerDotScale: marker.centerDotScale,
-    }),
-    iconSize: [Math.round(34 * sizeScale), Math.round(44 * sizeScale)],
-    iconAnchor: [Math.round(17 * sizeScale), Math.round(42 * sizeScale)],
+/** HTML for a marker fanned out of a spiderfied cluster -- always drawn "active" size, regardless of the marker's own isActive flag. */
+export function createSpiderfiedMarkerHtml(marker: CustomMapMarker): string {
+  return createReverseTeardropMarkerHtml({
+    fillColor: marker.fillColor,
+    borderColor: marker.borderColor,
+    iconSrc: marker.iconSrc,
+    active: true,
+    sizeScale: marker.sizeScale ?? 1,
+    centerDotScale: marker.centerDotScale,
   })
 }

@@ -1,4 +1,4 @@
-import L from "leaflet"
+import type { Map as MapLibreMap } from "maplibre-gl"
 import Supercluster from "supercluster"
 import type { CustomMapMarker } from "./mapMarkers"
 
@@ -12,7 +12,9 @@ export type ClusterFeatureProperties = {
 
 export type SpiderfiedMarker = {
   marker: CustomMapMarker
+  /** [lat, lng] */
   position: [number, number]
+  /** [[lat, lng], [lat, lng]] -- cluster center to fanned-out position */
   leg: [[number, number], [number, number]]
 }
 
@@ -148,7 +150,8 @@ export function createSpiderfyPositions({
   center,
   markers,
 }: {
-  map: L.Map
+  map: MapLibreMap
+  /** [lat, lng] */
   center: [number, number]
   markers: CustomMapMarker[]
 }): SpiderfiedMarker[] {
@@ -158,8 +161,7 @@ export function createSpiderfyPositions({
     return []
   }
 
-  const centerLatLng = L.latLng(center[0], center[1])
-  const centerPoint = map.latLngToLayerPoint(centerLatLng)
+  const centerPoint = map.project([center[1], center[0]])
 
   return markers.map((marker, index) => {
     let offsetX = 0
@@ -177,12 +179,11 @@ export function createSpiderfyPositions({
       offsetY = Math.sin(angle) * radius
     }
 
-    const spiderPoint = L.point(
+    const spiderLngLat = map.unproject([
       centerPoint.x + offsetX,
       centerPoint.y + offsetY,
-    )
-    const spiderLatLng = map.layerPointToLatLng(spiderPoint)
-    const position: [number, number] = [spiderLatLng.lat, spiderLatLng.lng]
+    ])
+    const position: [number, number] = [spiderLngLat.lat, spiderLngLat.lng]
 
     return {
       marker,
