@@ -7,7 +7,7 @@
   "features": [
     {
       "type": "Feature",
-      "properties": { "name": "Britannia" },
+      "properties": { "name": "Britannia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -893,7 +893,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Lugdunensis" },
+      "properties": { "name": "Lugdunensis", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -1722,7 +1722,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Belgica" },
+      "properties": { "name": "Belgica", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -1972,7 +1972,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Germania Inferior" },
+      "properties": { "name": "Germania Inferior", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -2217,7 +2217,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Aquitania" },
+      "properties": { "name": "Aquitania", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -2700,7 +2700,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Germania Superior" },
+      "properties": { "name": "Germania Superior", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -2869,7 +2869,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Alpes Graiae et Poeninae" },
+      "properties": { "name": "Alpes Graiae et Poeninae", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -2952,7 +2952,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "XI" },
+      "properties": { "name": "XI", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -3058,7 +3058,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Alpes Cottiae" },
+      "properties": { "name": "Alpes Cottiae", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -3115,7 +3115,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Alpes Maritimae" },
+      "properties": { "name": "Alpes Maritimae", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -3177,7 +3177,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "IX" },
+      "properties": { "name": "IX", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -3328,7 +3328,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Narbonensis" },
+      "properties": { "name": "Narbonensis", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -3726,7 +3726,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Tarraconensis" },
+      "properties": { "name": "Tarraconensis", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -4784,7 +4784,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Baetica" },
+      "properties": { "name": "Baetica", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -5082,7 +5082,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Lusitania" },
+      "properties": { "name": "Lusitania", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -5419,7 +5419,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Raetia" },
+      "properties": { "name": "Raetia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -5545,7 +5545,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Noricum" },
+      "properties": { "name": "Noricum", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -5674,7 +5674,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "X" },
+      "properties": { "name": "X", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -5930,7 +5930,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "VIII" },
+      "properties": { "name": "VIII", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -6088,7 +6088,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "VII" },
+      "properties": { "name": "VII", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -6384,7 +6384,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "VI" },
+      "properties": { "name": "VI", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -6472,7 +6472,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "IV" },
+      "properties": { "name": "IV", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -6572,7 +6572,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "V" },
+      "properties": { "name": "V", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -6645,7 +6645,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "I" },
+      "properties": { "name": "I", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -6931,7 +6931,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "III" },
+      "properties": { "name": "III", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -7150,7 +7150,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Sicilia" },
+      "properties": { "name": "Sicilia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -7544,7 +7544,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Pannonia Superior" },
+      "properties": { "name": "Pannonia Superior", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -7638,7 +7638,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Pannonia Inferior" },
+      "properties": { "name": "Pannonia Inferior", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -7756,7 +7756,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Dalmatia" },
+      "properties": { "name": "Dalmatia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -8575,7 +8575,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "II" },
+      "properties": { "name": "II", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -8816,7 +8816,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Sardinia et Corsica" },
+      "properties": { "name": "Sardinia et Corsica", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -9218,7 +9218,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Moesia Superior" },
+      "properties": { "name": "Moesia Superior", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -9329,7 +9329,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Dacia" },
+      "properties": { "name": "Dacia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -9469,7 +9469,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Moesia Inferior" },
+      "properties": { "name": "Moesia Inferior", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -9790,7 +9790,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Thracia" },
+      "properties": { "name": "Thracia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -10065,7 +10065,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Macedonia" },
+      "properties": { "name": "Macedonia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -10354,7 +10354,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Achaia" },
+      "properties": { "name": "Achaia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -12155,7 +12155,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Bithynia et Pontus" },
+      "properties": { "name": "Bithynia et Pontus", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -12454,7 +12454,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Cilicia" },
+      "properties": { "name": "Cilicia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -12648,7 +12648,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Creta et Cyrene" },
+      "properties": { "name": "Creta et Cyrene", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -12991,7 +12991,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Cyprus" },
+      "properties": { "name": "Cyprus", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -13096,7 +13096,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Aegyptus" },
+      "properties": { "name": "Aegyptus", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -13598,7 +13598,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Arabia" },
+      "properties": { "name": "Arabia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -13961,7 +13961,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Iudaea" },
+      "properties": { "name": "Iudaea", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -14043,7 +14043,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Syria" },
+      "properties": { "name": "Syria", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -14273,7 +14273,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Africa Proconsularis" },
+      "properties": { "name": "Africa Proconsularis", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -14838,7 +14838,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Numidia" },
+      "properties": { "name": "Numidia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -14970,7 +14970,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Mauretania Caesariensis" },
+      "properties": { "name": "Mauretania Caesariensis", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -15217,7 +15217,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Mauretania Tingitana" },
+      "properties": { "name": "Mauretania Tingitana", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -15399,7 +15399,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Galatia et Cappadocia" },
+      "properties": { "name": "Galatia et Cappadocia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -15632,7 +15632,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Lycia et Pamphylia" },
+      "properties": { "name": "Lycia et Pamphylia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -15819,7 +15819,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Asia" },
+      "properties": { "name": "Asia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -17023,7 +17023,7 @@
     },
     {
       "type": "Feature",
-      "properties": { "name": "Armenia Mesopotamia" },
+      "properties": { "name": "Armenia Mesopotamia", "year_start": -750, "year_end": 500 },
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
