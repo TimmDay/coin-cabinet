@@ -71,6 +71,19 @@ function sanitizeCssDimension(value: string, fallback: string): string {
   return /^[0-9a-zA-Z.%(),\s-]+$/.test(value) ? value : fallback
 }
 
+// Hide the basemap style's own modern place-name labels (cities, towns,
+// countries, ...) -- they're anachronistic clutter next to a Roman
+// province overlay. Matched by source-layer rather than a hardcoded list
+// of layer ids, so it stays correct if OpenFreeMap's style adds/renames
+// label layers later.
+function hideModernPlaceLabels(map: MapLibreMap) {
+  for (const layer of map.getStyle().layers) {
+    if ("source-layer" in layer && layer["source-layer"] === "place") {
+      map.setLayoutProperty(layer.id, "visibility", "none")
+    }
+  }
+}
+
 export type MapProps = {
   /** Center coordinates of the map [latitude, longitude] */
   center?: [number, number]
@@ -852,6 +865,7 @@ export const Map: React.FC<MapProps> = ({
               onLoad={(e) => {
                 setMapLoaded(true)
                 updateViewportBounds(e.target)
+                hideModernPlaceLabels(e.target)
               }}
               onZoomEnd={(e) => {
                 setCurrentZoom(e.viewState.zoom)
