@@ -1,16 +1,15 @@
 "use client"
 
-import L, { DivIcon } from "leaflet"
-import "leaflet/dist/leaflet.css"
-import { useCallback, useEffect, useMemo, useState } from "react"
-import {
-  GeoJSON,
-  MapContainer,
-  Marker,
-  Polyline,
-  TileLayer,
-  useMapEvents,
-} from "react-leaflet"
+import "maplibre-gl/dist/maplibre-gl.css"
+import type {
+  MapGeoJSONFeature,
+  Map as MapLibreMap,
+  MapLayerMouseEvent,
+} from "maplibre-gl"
+import { setWorkerUrl } from "maplibre-gl"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { Layer, Map as MapGL, Marker, Source } from "react-map-gl/maplibre"
+import type { MapRef } from "react-map-gl/maplibre"
 import { useMints } from "~/api/mints"
 import { MAP_HEIGHT } from "~/lib/constants"
 import { formatYear } from "~/lib/utils/date-formatting"
@@ -21,14 +20,12 @@ import {
   useMapData,
   useProvinceSelection,
 } from "./hooks"
-import { createMapCardHTML } from "./MapCard"
 import {
-  createEmpireLayerConfig,
-  LEAFLET_ICON_CONFIG,
-  MAP_BOUNDS,
+  MAP_BOUNDS_LNGLAT,
+  MAP_STYLE_URL,
   MAP_STYLES,
   PROVINCE_LABEL_STYLES,
-  TILE_LAYER_CONFIG,
+  createEmpireLayerConfig,
   type EmpireLayerConfigMap,
 } from "./mapConfig"
 import { MapEmbeddedControls } from "./MapEmbeddedControls"
@@ -43,210 +40,48 @@ import {
 } from "./mapMarkerClustering"
 import {
   createClusterMarkerHtml,
-  createCustomMarkerIcon,
-  createSpiderfiedMarkerIcon,
+  createCustomMarkerHtml,
+  createSpiderfiedMarkerHtml,
   type CustomMapMarker,
 } from "./mapMarkers"
 import { MapPopup } from "./MapPopup"
-import { createHighlightedMintHtml } from "./MintMarkerSvg"
-
-// Helper function to safely get map container from Leaflet event
-function getMapContainer(event: L.LeafletMouseEvent): HTMLElement | null {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-  return (event.target as any)?._map?._container ?? null
-}
-
-function getLeafletMap(event: L.LeafletMouseEvent): L.Map | null {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-  return (event.target as any)?._map ?? null
-}
+import { HighlightedMintSvg } from "./MintMarkerSvg"
 
 export type { CustomMapMarker } from "./mapMarkers"
 
+// maplibre-gl resolves its worker script's URL via import.meta.url at
+// runtime, which only works when the module is served unbundled -- Next's
+// webpack build rewrites it, so the auto-detected URL comes back empty and
+// every vector/geojson source silently never finishes loading (raster
+// sources still work, since they don't need the worker). Point it at the
+// static copy instead -- see scripts/copy-maplibre-assets.mjs for how that
+// file gets there and stays in sync with the installed maplibre-gl version.
+setWorkerUrl("/maplibre-gl-worker.mjs")
+
 type ViewportBounds = [number, number, number, number]
+
+type PopupContent = {
+  title: string
+  subtitle?: string
+  description?: string
+  className?: string
+}
 
 function sanitizeCssDimension(value: string, fallback: string): string {
   return /^[0-9a-zA-Z.%(),\s-]+$/.test(value) ? value : fallback
 }
 
-// Component to handle zoom level changes and pan events
-function ZoomHandler({
-  onZoomChange,
-  onZoomStart,
-  onPanStart,
-  onViewportChange,
-  onMapClick,
-}: {
-  onZoomChange: (zoom: number) => void
-  onZoomStart?: () => void
-  onPanStart?: () => void
-  onViewportChange?: (bounds: ViewportBounds) => void
-  onMapClick?: () => void
-}) {
-  const map = useMapEvents({
-    zoomstart: () => {
-      onZoomStart?.()
-    },
-    zoomend: (e) => {
-      const nextMap = e.target as L.Map
-      const zoom = nextMap.getZoom()
-      onZoomChange(zoom)
-      const bounds = nextMap.getBounds()
-      onViewportChange?.([
-        bounds.getWest(),
-        bounds.getSouth(),
-        bounds.getEast(),
-        bounds.getNorth(),
-      ])
-    },
-    movestart: () => {
-      // Close popups when user starts panning/dragging the map
-      onPanStart?.()
-    },
-    moveend: (e) => {
-      const bounds = (e.target as L.Map).getBounds()
-      onViewportChange?.([
-        bounds.getWest(),
-        bounds.getSouth(),
-        bounds.getEast(),
-        bounds.getNorth(),
-      ])
-    },
-    click: () => {
-      onMapClick?.()
-    },
-  })
-
-  useEffect(() => {
-    const bounds = map.getBounds()
-    onViewportChange?.([
-      bounds.getWest(),
-      bounds.getSouth(),
-      bounds.getEast(),
-      bounds.getNorth(),
-    ])
-  }, [map, onViewportChange])
-
-  return null
-}
-
-// Component to expose map navigation function to parent
-function MapNavigationHandler({
-  onNavigate,
-}: {
-  onNavigate?: (
-    navigateFn: (center: [number, number], zoom: number) => void,
-  ) => void
-}) {
-  const map = useMapEvents({})
-
-  useEffect(() => {
-    if (!onNavigate || !map) return
-
-    let isDisposed = false
-
-    // Force map to recalculate size on mount (important for mobile)
-    const timeoutId = window.setTimeout(() => {
-      if (isDisposed) return
-
-      try {
-        const container = map.getContainer()
-        if (!container?.isConnected) return
-
-        map.invalidateSize()
-        const size = map.getSize()
-
-        // Only register navigate function if map has valid size
-        // This prevents hidden/collapsed maps from overwriting the active map's navigate function
-        if (size && size.x > 0 && size.y > 0) {
-          // Create navigation function and pass to parent
-          const navigate = (center: [number, number], zoom: number) => {
-            if (isDisposed) return
-
-            let liveContainer: HTMLElement | null = null
-
-            try {
-              liveContainer = map.getContainer()
-            } catch {
-              return
-            }
-
-            if (!liveContainer?.isConnected) return
-
-            // Validate coordinates
-            const [lat, lng] = center
-            const numLat = typeof lat === "string" ? Number(lat) : lat
-            const numLng = typeof lng === "string" ? Number(lng) : lng
-            const numZoom = typeof zoom === "string" ? Number(zoom) : zoom
-
-            if (
-              typeof numLat !== "number" ||
-              typeof numLng !== "number" ||
-              typeof numZoom !== "number" ||
-              !isFinite(numLat) ||
-              !isFinite(numLng) ||
-              !isFinite(numZoom) ||
-              isNaN(numLat) ||
-              isNaN(numLng) ||
-              isNaN(numZoom) ||
-              numZoom <= 0
-            ) {
-              return
-            }
-
-            const cleanCenter: [number, number] = [numLat, numLng]
-
-            // Check if map's current center is valid
-            const currentCenter = map.getCenter()
-            const hasValidCurrentCenter =
-              currentCenter &&
-              !isNaN(currentCenter.lat) &&
-              !isNaN(currentCenter.lng) &&
-              isFinite(currentCenter.lat) &&
-              isFinite(currentCenter.lng)
-
-            // Check if map container has valid size (flyTo can fail with invalid container size)
-            const mapSize = map.getSize()
-            const hasValidSize = mapSize && mapSize.x > 0 && mapSize.y > 0
-
-            // If map size is invalid, force recalculation
-            if (!hasValidSize) {
-              map.invalidateSize()
-            }
-
-            try {
-              // Use setView if current position or map size is invalid, flyTo if both are valid
-              // This prevents NaN errors during flyTo animation when container is collapsed/hidden
-              if (hasValidCurrentCenter && hasValidSize) {
-                map.flyTo(cleanCenter, numZoom, {
-                  animate: true,
-                  duration: 1.5,
-                })
-              } else {
-                map.setView(cleanCenter, numZoom)
-              }
-            } catch {
-              // Ignore navigation attempts on disposed/hidden maps
-            }
-          }
-
-          // Expose to parent (only for maps with valid size)
-          if (onNavigate) {
-            onNavigate(navigate)
-          }
-        }
-      } catch {
-        // Ignore setup errors for hidden or unmounted maps
-      }
-    }, 100)
-
-    return () => {
-      isDisposed = true
-      window.clearTimeout(timeoutId)
+// Hide the basemap style's own modern place-name labels (cities, towns,
+// countries, ...) -- they're anachronistic clutter next to a Roman
+// province overlay. Matched by source-layer rather than a hardcoded list
+// of layer ids, so it stays correct if OpenFreeMap's style adds/renames
+// label layers later.
+function hideModernPlaceLabels(map: MapLibreMap) {
+  for (const layer of map.getStyle().layers) {
+    if ("source-layer" in layer && layer["source-layer"] === "place") {
+      map.setLayoutProperty(layer.id, "visibility", "none")
     }
-  }, [map, onNavigate])
-
-  return null
+  }
 }
 
 export type MapProps = {
@@ -384,6 +219,9 @@ export const Map: React.FC<MapProps> = ({
     loading: provincesLoading,
   } = useMapData()
 
+  const mapRef = useRef<MapRef>(null)
+  const [mapLoaded, setMapLoaded] = useState(false)
+
   // Local state for map-specific functionality
   const [internalSelectedProvinces, setInternalSelectedProvinces] = useState<
     string[]
@@ -391,23 +229,14 @@ export const Map: React.FC<MapProps> = ({
   const [internalShowProvinceLabels, setInternalShowProvinceLabels] =
     useState(true)
   const [currentZoom, setCurrentZoom] = useState<number>(config.defaultZoom)
-  const [viewportBounds, setViewportBounds] = useState<ViewportBounds>([
-    MAP_BOUNDS.maxBounds[0][1],
-    MAP_BOUNDS.maxBounds[1][0],
-    MAP_BOUNDS.maxBounds[1][1],
-    MAP_BOUNDS.maxBounds[0][0],
-  ])
+  const [viewportBounds, setViewportBounds] =
+    useState<ViewportBounds>(MAP_BOUNDS_LNGLAT)
 
   // Custom popup state for mint markers
   const [customPopup, setCustomPopup] = useState<{
     isVisible: boolean
     position: { x: number; y: number }
-    content: {
-      title: string
-      subtitle?: string
-      description?: string
-      className?: string
-    }
+    content: PopupContent
   }>({
     isVisible: false,
     position: { x: 0, y: 0 },
@@ -509,29 +338,11 @@ export const Map: React.FC<MapProps> = ({
     viewportBounds,
   ])
 
-  const openPopupFromMouseEvent = useCallback(
-    (
-      e: L.LeafletMouseEvent,
-      content: {
-        title: string
-        subtitle?: string
-        description?: string
-        className?: string
-      },
-    ) => {
-      const mapContainer = getMapContainer(e)
-      if (!mapContainer) return
-
-      const rect = mapContainer.getBoundingClientRect()
-      const clickX = e.originalEvent.clientX - rect.left
-      const clickY = e.originalEvent.clientY - rect.top
-
+  const openPopup = useCallback(
+    (clientX: number, clientY: number, content: PopupContent) => {
       setCustomPopup({
         isVisible: true,
-        position: {
-          x: rect.left + clickX,
-          y: rect.top + clickY,
-        },
+        position: { x: clientX, y: clientY },
         content,
       })
     },
@@ -539,7 +350,7 @@ export const Map: React.FC<MapProps> = ({
   )
 
   const handleCustomMarkerClick = useCallback(
-    (marker: CustomMapMarker, e: L.LeafletMouseEvent) => {
+    (marker: CustomMapMarker, originalEvent: MouseEvent) => {
       marker.onClick?.()
 
       if (
@@ -549,23 +360,19 @@ export const Map: React.FC<MapProps> = ({
         return
       }
 
-      openPopupFromMouseEvent(e, {
+      openPopup(originalEvent.clientX, originalEvent.clientY, {
         title: marker.title,
         subtitle: marker.subtitle,
         description: marker.description ?? "",
         className: marker.className ?? "text-slate-100",
       })
     },
-    [openPopupFromMouseEvent],
+    [openPopup],
   )
 
   const handleClusterClick = useCallback(
-    (
-      item: Extract<ClusteredMarker, { type: "cluster" }>,
-      e: L.LeafletMouseEvent,
-    ) => {
-      const map = getLeafletMap(e)
-      if (!map || !customMarkerClusterIndex) return
+    (item: Extract<ClusteredMarker, { type: "cluster" }>, map: MapLibreMap) => {
+      if (!customMarkerClusterIndex) return
 
       const leaves = customMarkerClusterIndex.getLeaves(item.id, item.count)
       const markers = leaves
@@ -602,9 +409,10 @@ export const Map: React.FC<MapProps> = ({
       }
 
       setSpiderfiedCluster(null)
-      map.flyTo([item.lat, item.lng], item.expansionZoom, {
-        animate: true,
-        duration: 0.6,
+      map.flyTo({
+        center: [item.lng, item.lat],
+        zoom: item.expansionZoom,
+        duration: 600,
       })
     },
     [customMarkerClusterIndex, markerLookup],
@@ -715,39 +523,220 @@ export const Map: React.FC<MapProps> = ({
         const name = feature.properties?.name as string
         if (!name || feature.geometry.type !== "Point") return null
 
-        const coordinates = feature.geometry.coordinates as [number, number]
-        // Convert from [lng, lat] to [lat, lng] for Leaflet
-        const position: [number, number] = [coordinates[1], coordinates[0]]
+        const [lng, lat] = feature.geometry.coordinates as [number, number]
 
-        return { name, position }
+        return { name, lng, lat }
       })
       .filter(
-        (label): label is { name: string; position: [number, number] } =>
+        (label): label is { name: string; lng: number; lat: number } =>
           label !== null,
       )
   }, [provincesLabelsData, selectedProvinces])
 
-  useEffect(() => {
-    // Fix for Leaflet default markers not showing properly in Next.js
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
-    delete (L.Icon.Default.prototype as any)._getIconUrl
-    L.Icon.Default.mergeOptions(LEAFLET_ICON_CONFIG)
-  }, [])
+  // GeoJSON for the provinces overlay, filtered to the current selection
+  const filteredProvincesGeoJSON = useMemo(() => {
+    if (!provincesData) return null
 
-  // Styling for AD 200 empire extent layer
+    const filteredFeatures = provincesData.features.filter((feature) => {
+      const provinceName = feature.properties?.name as string
+      return selectedProvinces.includes(provinceName)
+    })
+
+    return {
+      type: "FeatureCollection",
+      features: filteredFeatures,
+    } as GeoJSON.FeatureCollection
+  }, [provincesData, selectedProvinces])
+
+  // GeoJSON for the spiderfy "leg" lines connecting a cluster center to its
+  // fanned-out markers
+  const spiderLegsGeoJSON = useMemo((): GeoJSON.FeatureCollection => {
+    if (!spiderfiedCluster) {
+      return { type: "FeatureCollection", features: [] }
+    }
+
+    return {
+      type: "FeatureCollection",
+      features: spiderfiedCluster.markers.map((item) => ({
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "LineString",
+          coordinates: [
+            [item.leg[0][1], item.leg[0][0]],
+            [item.leg[1][1], item.leg[1][0]],
+          ],
+        },
+      })),
+    }
+  }, [spiderfiedCluster])
+
+  // Layer ids currently eligible for click interaction -- must match
+  // whichever fill layers are actually mounted below, or MapLibre has
+  // nothing to hit-test against.
+  const interactiveLayerIds = useMemo(() => {
+    const ids: string[] = []
+    if (filteredProvincesGeoJSON) {
+      ids.push("provinces-fill")
+    }
+    for (const key of Object.keys(empireLayerConfig)) {
+      if (isLayerVisible(key) && getLayerData(key)) {
+        ids.push(`${key}-fill`)
+      }
+    }
+    return ids
+  }, [
+    filteredProvincesGeoJSON,
+    empireLayerConfig,
+    isLayerVisible,
+    getLayerData,
+  ])
+
+  const handleMapClick = useCallback(
+    (e: MapLayerMouseEvent) => {
+      setSpiderfiedCluster(null)
+
+      const feature: MapGeoJSONFeature | undefined = e.features?.[0]
+      if (!feature?.layer) return
+
+      const layerId = feature.layer.id
+
+      if (layerId === "provinces-fill") {
+        const name = feature.properties?.name as string | undefined
+        if (!name) return
+
+        openPopup(e.originalEvent.clientX, e.originalEvent.clientY, {
+          title: name,
+          // TODO: hook this up to a data file with info for provinces.
+          description: "Roman Territory",
+          className: "text-emerald-800",
+        })
+        return
+      }
+
+      const empireLayer = Object.values(empireLayerConfig).find(
+        (layerConfig) => `${layerConfig.id}-fill` === layerId,
+      )
+      if (empireLayer) {
+        openPopup(e.originalEvent.clientX, e.originalEvent.clientY, {
+          title: empireLayer.title,
+          description: empireLayer.description,
+        })
+      }
+    },
+    [empireLayerConfig, openPopup],
+  )
+
+  // Register the imperative navigate function with the parent once the map
+  // has finished loading. Mirrors the size checks a hidden/collapsed map
+  // container would otherwise fail on (a zero-size canvas can't flyTo).
+  useEffect(() => {
+    if (!mapLoaded || !onNavigate) return
+
+    const map = mapRef.current?.getMap()
+    if (!map) return
+
+    let isDisposed = false
+
+    const timeoutId = window.setTimeout(() => {
+      if (isDisposed) return
+
+      try {
+        map.resize()
+        const canvas = map.getCanvas()
+        if (!(canvas.clientWidth > 0 && canvas.clientHeight > 0)) return
+
+        const navigate = (center: [number, number], zoom: number) => {
+          if (isDisposed) return
+
+          const [lat, lng] = center
+          const numLat = typeof lat === "string" ? Number(lat) : lat
+          const numLng = typeof lng === "string" ? Number(lng) : lng
+          const numZoom = typeof zoom === "string" ? Number(zoom) : zoom
+
+          if (
+            typeof numLat !== "number" ||
+            typeof numLng !== "number" ||
+            typeof numZoom !== "number" ||
+            !isFinite(numLat) ||
+            !isFinite(numLng) ||
+            !isFinite(numZoom) ||
+            isNaN(numLat) ||
+            isNaN(numLng) ||
+            isNaN(numZoom) ||
+            numZoom <= 0
+          ) {
+            return
+          }
+
+          let liveCanvas: HTMLCanvasElement | null = null
+          try {
+            liveCanvas = map.getCanvas()
+          } catch {
+            return
+          }
+          if (!liveCanvas?.isConnected) return
+
+          const currentCenter = map.getCenter()
+          const hasValidCurrentCenter =
+            currentCenter &&
+            !isNaN(currentCenter.lat) &&
+            !isNaN(currentCenter.lng) &&
+            isFinite(currentCenter.lat) &&
+            isFinite(currentCenter.lng)
+
+          const hasValidSize =
+            liveCanvas.clientWidth > 0 && liveCanvas.clientHeight > 0
+
+          if (!hasValidSize) {
+            map.resize()
+          }
+
+          try {
+            if (hasValidCurrentCenter && hasValidSize) {
+              map.flyTo({
+                center: [numLng, numLat],
+                zoom: numZoom,
+                duration: 1500,
+              })
+            } else {
+              map.jumpTo({ center: [numLng, numLat], zoom: numZoom })
+            }
+          } catch {
+            // Ignore navigation attempts on disposed/hidden maps
+          }
+        }
+
+        onNavigate(navigate)
+      } catch {
+        // Ignore setup errors for hidden or unmounted maps
+      }
+    }, 100)
+
+    return () => {
+      isDisposed = true
+      window.clearTimeout(timeoutId)
+    }
+  }, [mapLoaded, onNavigate])
 
   // Apply custom dimensions if provided, otherwise use Tailwind defaults
   const safeHeight = sanitizeCssDimension(height, MAP_HEIGHT)
   const safeWidth = sanitizeCssDimension(width, "100%")
 
+  const updateViewportBounds = useCallback((map: MapLibreMap) => {
+    const bounds = map.getBounds()
+    setViewportBounds([
+      bounds.getWest(),
+      bounds.getSouth(),
+      bounds.getEast(),
+      bounds.getNorth(),
+    ])
+  }, [])
+
   return (
     <>
-      {/* Custom CSS for province labels */}
+      {/* Custom CSS for the timeline event marker template */}
       <style jsx global>{`
-        .province-label {
-          /* No background - transparent labels */
-        }
-
         .map-shell-default {
           height: ${safeHeight};
         }
@@ -859,189 +848,91 @@ export const Map: React.FC<MapProps> = ({
                 : `map-shell-sized relative ${width === "100%" ? "w-full" : ""}`
             }
           >
-            <MapContainer
-              center={safeCenter}
-              zoom={safeZoom}
-              className="h-full w-full"
-              maxBounds={MAP_BOUNDS.maxBounds}
-              maxBoundsViscosity={MAP_BOUNDS.maxBoundsViscosity}
+            <MapGL
+              ref={mapRef}
+              initialViewState={{
+                longitude: safeCenter[1],
+                latitude: safeCenter[0],
+                zoom: safeZoom,
+              }}
+              mapStyle={MAP_STYLE_URL}
+              style={{ width: "100%", height: "100%" }}
+              maxBounds={MAP_BOUNDS_LNGLAT}
               minZoom={config.minZoom}
               maxZoom={config.maxZoom}
               keyboard={false}
-              zoomControl={false}
+              interactiveLayerIds={interactiveLayerIds}
+              onLoad={(e) => {
+                setMapLoaded(true)
+                updateViewportBounds(e.target)
+                hideModernPlaceLabels(e.target)
+              }}
+              onZoomEnd={(e) => {
+                setCurrentZoom(e.viewState.zoom)
+                updateViewportBounds(e.target)
+              }}
+              onMoveEnd={(e) => updateViewportBounds(e.target)}
+              onMoveStart={() => {
+                setCustomPopup((prev) => ({ ...prev, isVisible: false }))
+                setSpiderfiedCluster(null)
+              }}
+              onClick={handleMapClick}
             >
-              <TileLayer
-                url={TILE_LAYER_CONFIG.url}
-                attribution={TILE_LAYER_CONFIG.attribution}
-                opacity={TILE_LAYER_CONFIG.opacity}
-              />
+              {/* Empire extent layers */}
+              {Object.entries(empireLayerConfig).map(([key, layerConfig]) => {
+                const data = getLayerData(key)
+                if (!isLayerVisible(key) || !data) return null
 
-              {/* Zoom Level Handler */}
-              <ZoomHandler
-                onZoomChange={setCurrentZoom}
-                onZoomStart={() => {
-                  setCustomPopup((prev) => ({ ...prev, isVisible: false }))
-                  setSpiderfiedCluster(null)
-                }}
-                onPanStart={() => {
-                  setCustomPopup((prev) => ({ ...prev, isVisible: false }))
-                  setSpiderfiedCluster(null)
-                }}
-                onViewportChange={setViewportBounds}
-                onMapClick={() => {
-                  setSpiderfiedCluster(null)
-                }}
-              />
-
-              {/* Map Navigation Handler - exposes navigation function to parent */}
-              <MapNavigationHandler onNavigate={onNavigate} />
-
-              {/* BC 60 Empire Extent Layer */}
-              {isLayerVisible("bc60") && getLayerData("bc60") && (
-                <GeoJSON
-                  key="bc60-extent"
-                  data={getLayerData("bc60")!}
-                  style={empireLayerConfig.bc60.style}
-                  onEachFeature={(feature, layer) => {
-                    const popup = createMapCardHTML({
-                      title: empireLayerConfig.bc60.title,
-                      description: empireLayerConfig.bc60.description,
-                    })
-                    layer.bindPopup(popup, {
-                      maxWidth: 300,
-                      className: "bc60-popup",
-                    })
-                  }}
-                />
-              )}
-
-              {/* AD 14 Empire Extent Layer */}
-              {isLayerVisible("ad14") && getLayerData("ad14") && (
-                <GeoJSON
-                  key="ad14-extent"
-                  data={getLayerData("ad14")!}
-                  style={empireLayerConfig.ad14.style}
-                  onEachFeature={(feature, layer) => {
-                    const popup = createMapCardHTML({
-                      title: empireLayerConfig.ad14.title,
-                      description: empireLayerConfig.ad14.description,
-                    })
-                    layer.bindPopup(popup, {
-                      maxWidth: 300,
-                      className: "ad14-popup",
-                    })
-                  }}
-                />
-              )}
-
-              {/* AD 69 Empire Extent Layer */}
-              {isLayerVisible("ad69") && getLayerData("ad69") && (
-                <GeoJSON
-                  key="ad69-extent"
-                  data={getLayerData("ad69")!}
-                  style={empireLayerConfig.ad69.style}
-                  onEachFeature={(feature, layer) => {
-                    const popup = createMapCardHTML({
-                      title: empireLayerConfig.ad69.title,
-                      description: empireLayerConfig.ad69.description,
-                    })
-                    layer.bindPopup(popup, {
-                      maxWidth: 300,
-                      className: "ad69-popup",
-                    })
-                  }}
-                />
-              )}
-
-              {/* AD 117 Empire Extent Layer */}
-              {isLayerVisible("ad117") && getLayerData("ad117") && (
-                <GeoJSON
-                  key="ad117-extent"
-                  data={getLayerData("ad117")!}
-                  style={empireLayerConfig.ad117.style}
-                  onEachFeature={(feature, layer) => {
-                    const popup = createMapCardHTML({
-                      title: empireLayerConfig.ad117.title,
-                      description: empireLayerConfig.ad117.description,
-                    })
-                    layer.bindPopup(popup, {
-                      maxWidth: 300,
-                      className: "ad117-popup",
-                    })
-                  }}
-                />
-              )}
-
-              {/* AD 200 Empire Extent Layer */}
-              {isLayerVisible("ad200") && getLayerData("ad200") && (
-                <GeoJSON
-                  key="ad200-extent"
-                  data={getLayerData("ad200")!}
-                  style={empireLayerConfig.ad200.style}
-                  onEachFeature={(feature, layer) => {
-                    const popup = createMapCardHTML({
-                      title: empireLayerConfig.ad200.title,
-                      description: empireLayerConfig.ad200.description,
-                    })
-                    layer.bindPopup(popup, {
-                      maxWidth: 300,
-                      className: "ad200-popup",
-                    })
-                  }}
-                />
-              )}
+                return (
+                  <Source key={key} id={key} type="geojson" data={data}>
+                    <Layer
+                      id={`${key}-fill`}
+                      type="fill"
+                      paint={{
+                        "fill-color": layerConfig.style.fillColor,
+                        "fill-opacity": layerConfig.style.fillOpacity,
+                      }}
+                    />
+                    <Layer
+                      id={`${key}-line`}
+                      type="line"
+                      paint={{
+                        "line-color": layerConfig.style.lineColor,
+                        "line-width": layerConfig.style.lineWidth,
+                        "line-opacity": layerConfig.style.lineOpacity,
+                        "line-dasharray": layerConfig.style.lineDasharray,
+                      }}
+                    />
+                  </Source>
+                )
+              })}
 
               {/* Selected Provinces Layer */}
-              {provincesData && (
-                <GeoJSON
-                  key={`provinces-${selectedProvinces.length === 0 ? "none" : selectedProvinces.length === ROMAN_PROVINCES.length ? "all" : selectedProvinces.join("-")}`}
-                  data={(() => {
-                    // Filter provinces based on selection:
-                    // - Empty array [] = show no provinces
-                    // - Full array = show all provinces
-                    // - Partial array = show only selected provinces
-                    const filteredFeatures = provincesData.features.filter(
-                      (feature) => {
-                        const provinceName = feature.properties?.name as string
-                        return selectedProvinces.includes(provinceName)
-                      },
-                    )
-                    return {
-                      type: "FeatureCollection",
-                      features: filteredFeatures,
-                    } as GeoJSON.FeatureCollection
-                  })()}
-                  style={MAP_STYLES.provinces}
-                  onEachFeature={(feature, layer) => {
-                    if (feature.properties && "name" in feature.properties) {
-                      const props = feature.properties as { name: string }
-                      const name = props.name
-
-                      layer.on("click", (e: L.LeafletMouseEvent) => {
-                        const mapContainer = getMapContainer(e)
-                        if (!mapContainer) return
-
-                        const rect = mapContainer.getBoundingClientRect()
-                        const clickX = e.originalEvent.clientX - rect.left
-                        const clickY = e.originalEvent.clientY - rect.top
-
-                        setCustomPopup({
-                          isVisible: true,
-                          position: {
-                            x: rect.left + clickX,
-                            y: rect.top + clickY,
-                          },
-                          content: {
-                            title: name,
-                            // TODO: hook this up to a data file with info for provinces.
-                            description: "Roman Territory",
-                            className: "text-emerald-800",
-                          },
-                        })
-                      })
-                    }
-                  }}
-                />
+              {filteredProvincesGeoJSON && (
+                <Source
+                  id="provinces"
+                  type="geojson"
+                  data={filteredProvincesGeoJSON}
+                >
+                  <Layer
+                    id="provinces-fill"
+                    type="fill"
+                    paint={{
+                      "fill-color": MAP_STYLES.provinces.fillColor,
+                      "fill-opacity": MAP_STYLES.provinces.fillOpacity,
+                    }}
+                  />
+                  <Layer
+                    id="provinces-line"
+                    type="line"
+                    paint={{
+                      "line-color": MAP_STYLES.provinces.lineColor,
+                      "line-width": MAP_STYLES.provinces.lineWidth,
+                      "line-opacity": MAP_STYLES.provinces.lineOpacity,
+                      "line-dasharray": MAP_STYLES.provinces.lineDasharray,
+                    }}
+                  />
+                </Source>
               )}
 
               {/* Province Labels */}
@@ -1050,17 +941,14 @@ export const Map: React.FC<MapProps> = ({
                 provinceLabels.map((label) => (
                   <Marker
                     key={`label-${label.name}`}
-                    position={label.position}
-                    interactive={false}
-                    icon={
-                      new DivIcon({
-                        className: "province-label",
-                        html: `<div style="${PROVINCE_LABEL_STYLES.container}">${label.name.replace(/\s/, "\n")}</div>`,
-                        iconSize: undefined,
-                        iconAnchor: undefined,
-                      })
-                    }
-                  />
+                    longitude={label.lng}
+                    latitude={label.lat}
+                    anchor="center"
+                  >
+                    <div style={PROVINCE_LABEL_STYLES.container}>
+                      {label.name.replace(/\s/, "\n")}
+                    </div>
+                  </Marker>
                 ))}
 
               {/* Mint Markers */}
@@ -1071,51 +959,35 @@ export const Map: React.FC<MapProps> = ({
                   return (
                     <Marker
                       key={`mint-${mint.name}`}
-                      position={[mint.lat, mint.lng]}
-                      icon={
-                        isHighlighted
-                          ? new DivIcon({
-                              className: "highlighted-mint-marker",
-                              html: `<div class="mint-pin-wrapper" data-mint="${mint.name}">${createHighlightedMintHtml(mint.name)}</div>`,
-                              iconSize: [120, 60], // Larger to accommodate label
-                              iconAnchor: [60, 12], // Anchor at the center of the circle (24px circle, so 12px from top)
-                            })
-                          : new DivIcon({
-                              className: "mint-marker",
-                              html: `<div style="${MAP_STYLES.mintMarker.css}" data-mint="${mint.name}"></div>`,
-                              iconSize: MAP_STYLES.mintMarker.iconSize,
-                              iconAnchor: MAP_STYLES.mintMarker.iconAnchor,
-                            })
+                      longitude={mint.lng}
+                      latitude={mint.lat}
+                      anchor={isHighlighted ? "bottom" : "center"}
+                      onClick={(e) =>
+                        openPopup(
+                          e.originalEvent.clientX,
+                          e.originalEvent.clientY,
+                          {
+                            title: mint.name,
+                            subtitle: isHighlighted
+                              ? "This coin was struck here"
+                              : "",
+                            description: mint.flavour_text ?? "",
+                            className: isHighlighted
+                              ? "text-purple-900"
+                              : "text-blue-800",
+                          },
+                        )
                       }
-                      eventHandlers={{
-                        click: (e: L.LeafletMouseEvent) => {
-                          const mapContainer = getMapContainer(e)
-                          if (!mapContainer) return
-
-                          const rect = mapContainer.getBoundingClientRect()
-                          const clickX = e.originalEvent.clientX - rect.left
-                          const clickY = e.originalEvent.clientY - rect.top
-
-                          setCustomPopup({
-                            isVisible: true,
-                            position: {
-                              x: rect.left + clickX,
-                              y: rect.top + clickY,
-                            },
-                            content: {
-                              title: mint.name,
-                              subtitle: isHighlighted
-                                ? "This coin was struck here"
-                                : "",
-                              description: mint.flavour_text ?? "",
-                              className: isHighlighted
-                                ? "text-purple-900"
-                                : "text-blue-800",
-                            },
-                          })
-                        },
-                      }}
-                    />
+                    >
+                      {isHighlighted ? (
+                        <HighlightedMintSvg displayName={mint.name} />
+                      ) : (
+                        <div
+                          style={MAP_STYLES.mintMarker.style}
+                          data-mint={mint.name}
+                        />
+                      )}
+                    </Marker>
                   )
                 })}
 
@@ -1131,21 +1003,21 @@ export const Map: React.FC<MapProps> = ({
                   return (
                     <Marker
                       key={`custom-cluster-${item.id}`}
-                      position={[item.lat, item.lng]}
-                      zIndexOffset={800}
-                      icon={
-                        new DivIcon({
-                          className: "custom-map-cluster-marker",
-                          html: createClusterMarkerHtml(item.count),
-                          iconSize: item.count >= 10 ? [42, 42] : [38, 38],
-                          iconAnchor: item.count >= 10 ? [21, 21] : [19, 19],
-                        })
-                      }
-                      eventHandlers={{
-                        click: (e: L.LeafletMouseEvent) =>
-                          handleClusterClick(item, e),
+                      longitude={item.lng}
+                      latitude={item.lat}
+                      anchor="center"
+                      onClick={(e) => {
+                        const map = mapRef.current?.getMap()
+                        if (map) handleClusterClick(item, map)
+                        e.originalEvent.stopPropagation()
                       }}
-                    />
+                    >
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: createClusterMarkerHtml(item.count),
+                        }}
+                      />
+                    </Marker>
                   )
                 }
 
@@ -1154,30 +1026,40 @@ export const Map: React.FC<MapProps> = ({
                 return (
                   <Marker
                     key={marker.id}
-                    position={[marker.lat, marker.lng]}
-                    zIndexOffset={
-                      marker.zIndexOffset ?? (marker.isActive ? 1000 : 0)
-                    }
-                    icon={createCustomMarkerIcon(marker)}
-                    eventHandlers={{
-                      click: (e: L.LeafletMouseEvent) =>
-                        handleCustomMarkerClick(marker, e),
+                    longitude={marker.lng}
+                    latitude={marker.lat}
+                    anchor="bottom"
+                    onClick={(e) => {
+                      handleCustomMarkerClick(marker, e.originalEvent)
+                      e.originalEvent.stopPropagation()
                     }}
-                  />
+                  >
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: createCustomMarkerHtml(marker),
+                      }}
+                    />
+                  </Marker>
                 )
               })}
 
-              {spiderfiedCluster?.markers.map((item) => (
-                <Polyline
-                  key={`spider-leg-${item.marker.id}`}
-                  positions={item.leg}
-                  pathOptions={{
-                    color: "rgba(15, 23, 42, 0.55)",
-                    weight: 2,
-                    opacity: 0.9,
-                  }}
-                />
-              ))}
+              {spiderfiedCluster && (
+                <Source
+                  id="spider-legs"
+                  type="geojson"
+                  data={spiderLegsGeoJSON}
+                >
+                  <Layer
+                    id="spider-legs-line"
+                    type="line"
+                    paint={{
+                      "line-color": "rgba(15, 23, 42, 0.55)",
+                      "line-width": 2,
+                      "line-opacity": 0.9,
+                    }}
+                  />
+                </Source>
+              )}
 
               {spiderfiedCluster?.markers.map((item) => {
                 const marker = item.marker
@@ -1185,14 +1067,20 @@ export const Map: React.FC<MapProps> = ({
                 return (
                   <Marker
                     key={`spiderfied-${marker.id}`}
-                    position={item.position}
-                    zIndexOffset={1200 + (marker.zIndexOffset ?? 0)}
-                    icon={createSpiderfiedMarkerIcon(marker)}
-                    eventHandlers={{
-                      click: (e: L.LeafletMouseEvent) =>
-                        handleCustomMarkerClick(marker, e),
+                    longitude={item.position[1]}
+                    latitude={item.position[0]}
+                    anchor="bottom"
+                    onClick={(e) => {
+                      handleCustomMarkerClick(marker, e.originalEvent)
+                      e.originalEvent.stopPropagation()
                     }}
-                  />
+                  >
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: createSpiderfiedMarkerHtml(marker),
+                      }}
+                    />
+                  </Marker>
                 )
               })}
 
@@ -1207,37 +1095,38 @@ export const Map: React.FC<MapProps> = ({
                 isFinite(timelineEventMarker.lng) && (
                   <Marker
                     key={`timeline-event-${timelineEventMarker.year}`}
-                    position={[
-                      timelineEventMarker.lat,
-                      timelineEventMarker.lng,
-                    ]}
-                    icon={
-                      new DivIcon({
-                        className: "timeline-event-marker",
-                        html: `
+                    longitude={timelineEventMarker.lng}
+                    latitude={timelineEventMarker.lat}
+                    anchor="bottom"
+                    onClick={(e) =>
+                      openPopup(
+                        e.originalEvent.clientX,
+                        e.originalEvent.clientY,
+                        {
+                          title: "",
+                          description:
+                            timelineEventMarker.description ??
+                            "Timeline Event Location",
+                          className: "text-center",
+                        },
+                      )
+                    }
+                  >
+                    <div
+                      className="timeline-event-marker"
+                      dangerouslySetInnerHTML={{
+                        __html: `
                         <div class="timeline-event-marker-container">
                           <div class="timeline-event-label">${timelineEventMarker.name} (${formatYear(timelineEventMarker.year)})</div>
                           <div class="timeline-event-circle"></div>
                           <div class="timeline-event-tail"></div>
                         </div>
                       `,
-                        iconSize: [120, 60], // Width 120px, height 60px (label + circle + tail)
-                        iconAnchor: [60, 48], // Anchor at bottom center of tail
-                      })
-                    }
-                    eventHandlers={{
-                      click: (e: L.LeafletMouseEvent) =>
-                        openPopupFromMouseEvent(e, {
-                          title: "",
-                          description:
-                            timelineEventMarker.description ??
-                            "Timeline Event Location",
-                          className: "text-center",
-                        }),
-                    }}
-                  />
+                      }}
+                    />
+                  </Marker>
                 )}
-            </MapContainer>
+            </MapGL>
           </div>
         </div>
       </div>

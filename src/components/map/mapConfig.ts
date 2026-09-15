@@ -1,4 +1,11 @@
-import type { PathOptions } from "leaflet"
+export type EmpireLayerStyle = {
+  fillColor: string
+  fillOpacity: number
+  lineColor: string
+  lineWidth: number
+  lineOpacity: number
+  lineDasharray: [number, number]
+}
 
 export type EmpireLayerConfig = {
   id: string
@@ -8,9 +15,7 @@ export type EmpireLayerConfig = {
   description: string
   showProp?: boolean
   onChange?: (show: boolean) => void
-  color: string
-  fillColor: string
-  style: PathOptions
+  style: EmpireLayerStyle
 }
 
 export type EmpireLayerConfigMap = {
@@ -43,15 +48,13 @@ export const createEmpireLayerConfig = (
       "Roman Republic around 60 BCE, during the First Triumvirate (Caesar, Pompey, Crassus)",
     showProp: showBC60,
     onChange: onBC60Change,
-    color: "#8B4513",
-    fillColor: "#DEB887",
     style: {
-      color: "#8B4513",
-      weight: 2,
-      opacity: 0.8,
       fillColor: "#DEB887",
       fillOpacity: 0.15,
-      dashArray: "6, 3",
+      lineColor: "#8B4513",
+      lineWidth: 2,
+      lineOpacity: 0.8,
+      lineDasharray: [6, 3],
     },
   },
   ad14: {
@@ -62,15 +65,13 @@ export const createEmpireLayerConfig = (
     description: "Roman Empire at the death of Augustus in AD 14",
     showProp: showAD14,
     onChange: onAD14Change,
-    color: "#4169E1",
-    fillColor: "#87CEEB",
     style: {
-      color: "#4169E1",
-      weight: 2,
-      opacity: 0.8,
       fillColor: "#87CEEB",
       fillOpacity: 0.15,
-      dashArray: "5, 4",
+      lineColor: "#4169E1",
+      lineWidth: 2,
+      lineOpacity: 0.8,
+      lineDasharray: [5, 4],
     },
   },
   ad69: {
@@ -82,15 +83,13 @@ export const createEmpireLayerConfig = (
       "Roman Empire in AD 69, the Year of the Four Emperors (Galba, Otho, Vitellius, Vespasian)",
     showProp: showAD69,
     onChange: onAD69Change,
-    color: "#DC143C",
-    fillColor: "#FFB6C1",
     style: {
-      color: "#DC143C",
-      weight: 2,
-      opacity: 0.8,
       fillColor: "#FFB6C1",
       fillOpacity: 0.15,
-      dashArray: "4, 5",
+      lineColor: "#DC143C",
+      lineWidth: 2,
+      lineOpacity: 0.8,
+      lineDasharray: [4, 5],
     },
   },
   ad117: {
@@ -101,15 +100,13 @@ export const createEmpireLayerConfig = (
     description: "Roman Empire at its greatest extent under Trajan in AD 117",
     showProp: showAD117,
     onChange: onAD117Change,
-    color: "#228B22",
-    fillColor: "#90EE90",
     style: {
-      color: "#228B22",
-      weight: 2,
-      opacity: 0.8,
       fillColor: "#90EE90",
       fillOpacity: 0.15,
-      dashArray: "3, 6",
+      lineColor: "#228B22",
+      lineWidth: 2,
+      lineOpacity: 0.8,
+      lineDasharray: [3, 6],
     },
   },
   ad200: {
@@ -120,56 +117,47 @@ export const createEmpireLayerConfig = (
     description: "Roman Empire around AD 200, during the Severan dynasty",
     showProp: showAD200,
     onChange: onAD200Change,
-    color: "#FF8C00",
-    fillColor: "#FFE4B5",
     style: {
-      color: "#FF8C00",
-      weight: 2,
-      opacity: 0.8,
       fillColor: "#FFE4B5",
       fillOpacity: 0.15,
-      dashArray: "2, 7",
+      lineColor: "#FF8C00",
+      lineWidth: 2,
+      lineOpacity: 0.8,
+      lineDasharray: [2, 7],
     },
   },
 })
 
 // Map styling configurations
 export const MAP_STYLES = {
-  // Historical boundaries style
-  boundaries: {
-    color: "#8B4513", // Roman brown
-    weight: 2,
-    opacity: 0.8,
-    fillColor: "#DEB887",
-    fillOpacity: 0.1,
-  },
-
   // Province boundaries style
   provinces: {
-    color: "#7c3aed", // Purple border
-    weight: 2,
-    opacity: 0.8,
     fillColor: "#8b5cf6", // Purple fill
     fillOpacity: 0.2,
-    dashArray: "5, 5",
-  },
+    lineColor: "#7c3aed", // Purple border
+    lineWidth: 2,
+    lineOpacity: 0.8,
+    lineDasharray: [5, 5] as [number, number],
+  } satisfies EmpireLayerStyle,
 
-  // Mint marker style
+  // Mint marker style (plain dot, not the highlighted teardrop pin)
   mintMarker: {
-    css: `
-      width: 12px;
-      height: 12px;
-      background-color: #a78bfa;
-      border: 2px solid hsl(var(--map-label));
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    `,
-    iconSize: [12, 12] as [number, number],
-    iconAnchor: [6, 6] as [number, number],
+    style: {
+      width: "12px",
+      height: "12px",
+      backgroundColor: "#a78bfa",
+      border: "2px solid hsl(var(--map-label))",
+      borderRadius: "9999px",
+      boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+    },
   },
 } as const
 
-// Map bounds configuration
+// Map bounds configuration. Kept in [[lat, lng], [lat, lng]] shape (not
+// MapLibre's native [lng, lat]) because CoinDeepDive.tsx's
+// isWithinMapBounds destructures maxBounds positionally as
+// [[maxLat, minLng], [minLat, maxLng]] -- changing this shape would need a
+// matching change there too.
 export const MAP_BOUNDS = {
   // Roman Empire bounds with 500km buffer (approximate)
   // Extended from Atlantic to Mesopotamia, from Scotland to Sahara
@@ -177,43 +165,35 @@ export const MAP_BOUNDS = {
     [65.0, -15.0] as [number, number], // Northeast: Scotland + buffer, Atlantic + buffer
     [20, 55.0] as [number, number], // Southwest: North Africa + 200km extra south, Iraq + buffer
   ] as [[number, number], [number, number]],
-  maxBoundsViscosity: 1.0,
 }
 
-// Tile layer configuration
-export const TILE_LAYER_CONFIG = {
-  // Using CartoDB Dark Matter No Labels for darker, muted styling
-  url: "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png",
-  attribution:
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  // Custom styling to make it more muted
-  opacity: 0.5,
-} as const
+// MapLibre wants maxBounds as flat [west, south, east, north] -- derived
+// once from MAP_BOUNDS.maxBounds above rather than duplicating the values.
+export const MAP_BOUNDS_LNGLAT: [number, number, number, number] = [
+  MAP_BOUNDS.maxBounds[0][1], // west
+  MAP_BOUNDS.maxBounds[1][0], // south
+  MAP_BOUNDS.maxBounds[1][1], // east
+  MAP_BOUNDS.maxBounds[0][0], // north
+]
 
-// Leaflet icon fix for Next.js
-export const LEAFLET_ICON_CONFIG = {
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-} as const
+// MapLibre style URL -- OpenFreeMap's "dark" style: free, no API key, no
+// usage cap. Replaces the CartoDB raster tiles, which stopped serving
+// anonymous requests and now show an "API KEY REQUIRED" watermark instead.
+export const MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/dark"
 
 // Province label styling
 export const PROVINCE_LABEL_STYLES = {
-  container: `
-    border-radius: 4px;
-    padding: 2px 6px;
-    font-size: 12px;
-    font-weight: 600;
-    color: hsl(var(--map-label));
-    text-align: center;
-    white-space: pre;
-    line-height: 1.2;
-    width: max-content;
-    pointer-events: none;
-    transform: translateX(-40%) translateY(-50%);
-  `,
+  container: {
+    borderRadius: "4px",
+    padding: "2px 6px",
+    fontSize: "12px",
+    fontWeight: 600,
+    color: "hsl(var(--map-label))",
+    textAlign: "center",
+    whiteSpace: "pre",
+    lineHeight: 1.2,
+    width: "max-content",
+    pointerEvents: "none",
+  },
   minZoomLevel: 4,
 } as const

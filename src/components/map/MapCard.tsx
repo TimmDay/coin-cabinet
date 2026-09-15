@@ -60,29 +60,3 @@ export const MapCard: React.FC<MapCardProps> = ({
     </div>
   )
 }
-
-/**
- * Helper function to generate HTML string for Leaflet popups using MapCard structure
- */
-export const createMapCardHTML = (props: MapCardProps): string => {
-  const detailsHTML = props.details?.length
-    ? props.details
-        .map(
-          (detail) =>
-            `<p class="mb-1"><strong>${detail.label}:</strong> ${detail.value}</p>`,
-        )
-        .join("")
-    : ""
-
-  return `
-    <div class="p-3 min-w-0 ${props.className ?? ""}">
-      <h4 class="font-bold text-map-label text-base mb-2">
-        ${props.title}
-      </h4>
-      ${props.subtitle ? `<p class="text-sm text-gray-600 mb-2"><em>${props.subtitle}</em></p>` : ""}
-      ${props.description ? `<p class="text-sm text-gray-600 mb-2">${props.description}</p>` : ""}
-      ${detailsHTML ? `<div class="space-y-1">${detailsHTML}</div>` : ""}
-      ${props.notes ? `<p class="text-sm text-gray-600 mt-2 leading-relaxed">${props.notes}</p>` : ""}
-    </div>
-  `
-}
