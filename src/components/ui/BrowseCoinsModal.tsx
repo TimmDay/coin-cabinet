@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useMints } from "~/api/mints"
 import { prefetchCloudinaryImage } from "~/components/CloudinaryImage"
+import { useDragPan } from "~/hooks/useDragPan"
 import { useViewport } from "~/hooks/useViewport"
 import { formatYearRange } from "~/lib/utils/date-formatting"
 import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
@@ -91,6 +92,7 @@ export function BrowseCoinsModal({
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 }) // percentage values
   const [isFlipFading, setIsFlipFading] = useState(false)
   const imageRef = useRef<HTMLDivElement>(null)
+  const pan = useDragPan({ enabled: isZoomed, scale: 2.4, origin: zoomOrigin })
   const { isMobile } = useViewport()
   const deepDiveMessage = "DEEP DIVE"
 
@@ -139,7 +141,7 @@ export function BrowseCoinsModal({
   // Handle image zoom
   const handleImageClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!imageRef.current) return
+      if (!imageRef.current || pan.consumeDrag()) return
 
       if (isZoomed) {
         // If already zoomed, reset to normal
@@ -171,7 +173,7 @@ export function BrowseCoinsModal({
         setIsZoomed(true)
       }
     },
-    [isZoomed],
+    [isZoomed, pan],
   )
 
   // Handle navigation with slide out then slide in
@@ -401,9 +403,22 @@ export function BrowseCoinsModal({
             )}
 
             <div
-              className="relative cursor-pointer overflow-visible"
+              className={`relative overflow-visible ${
+                isZoomed
+                  ? pan.isDragging
+                    ? "cursor-grabbing"
+                    : "cursor-grab"
+                  : "cursor-pointer"
+              }`}
+              style={{
+                touchAction: isZoomed ? "none" : undefined,
+                transform: isZoomed
+                  ? `translate(${pan.offset.x}px, ${pan.offset.y}px)`
+                  : undefined,
+              }}
               onClick={handleImageClick}
               ref={imageRef}
+              {...pan.handlers}
             >
               {/* Current Image - wrapped in v-stacking container for btn beneath*/}
 

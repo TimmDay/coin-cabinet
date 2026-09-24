@@ -3,6 +3,8 @@
 import { getCldImageUrl } from "next-cloudinary"
 import { useEffect, useRef, useState } from "react"
 
+import { useDragPan } from "~/hooks/useDragPan"
+
 type ImageModalProps =
   | {
       isOpen: boolean
@@ -27,6 +29,11 @@ export function ImageModal(props: ImageModalProps) {
     "none",
   )
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 })
+  const pan = useDragPan({
+    enabled: zoomedImage !== "none",
+    scale: 3,
+    origin: zoomOrigin,
+  })
   const modalRef = useRef<HTMLDivElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
@@ -149,6 +156,7 @@ export function ImageModal(props: ImageModalProps) {
     imageIndex: "first" | "second" = "first",
   ) => {
     event.stopPropagation() // Prevent closing modal
+    if (pan.consumeDrag()) return // The click ended a pan, not a zoom toggle
 
     if (zoomedImage === imageIndex) {
       // If this image is already zoomed, zoom out
@@ -172,6 +180,26 @@ export function ImageModal(props: ImageModalProps) {
       onClose()
     }
   }
+
+  const panStyle = (which: "first" | "second"): React.CSSProperties =>
+    zoomedImage === which
+      ? {
+          translate: `${pan.offset.x}px ${pan.offset.y}px`,
+          touchAction: "none",
+          transitionDuration: pan.isDragging ? "0ms" : undefined,
+        }
+      : {}
+
+  // Only the zoomed image is draggable
+  const panHandlers = (which: "first" | "second") =>
+    zoomedImage === which ? pan.handlers : {}
+
+  const imageCursor = (which: "first" | "second") =>
+    zoomedImage === which
+      ? pan.isDragging
+        ? "cursor-grabbing"
+        : "cursor-grab"
+      : "cursor-pointer"
 
   if (!isOpen) return null
   if (!isPairVariant && !largeImageUrl) return null
@@ -251,12 +279,14 @@ export function ImageModal(props: ImageModalProps) {
                   ref={imageRef}
                   src={largeImageUrl1}
                   alt={"alt1" in props ? props.alt1 : ""}
-                  className={`relative max-h-full max-w-[47%] cursor-pointer object-contain transition-transform duration-300 ease-out ${
+                  className={`relative max-h-full max-w-[47%] object-contain ${imageCursor("first")} transition-transform duration-300 ease-out ${
                     zoomedImage === "first" ? "z-10 scale-300" : "z-0 scale-100"
                   }`}
                   style={{
+                    ...panStyle("first"),
                     transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
                   }}
+                  {...panHandlers("first")}
                   onClick={(e) => handleImageClick(e, "first")}
                   onLoad={() => setIsLoading(false)}
                   onError={() => setIsLoading(false)}
@@ -265,14 +295,16 @@ export function ImageModal(props: ImageModalProps) {
                   <img
                     src={largeImageUrl2}
                     alt={"alt2" in props && props.alt2 ? props.alt2 : ""}
-                    className={`relative max-h-full max-w-[47%] cursor-pointer object-contain transition-transform duration-300 ease-out ${
+                    className={`relative max-h-full max-w-[47%] object-contain ${imageCursor("second")} transition-transform duration-300 ease-out ${
                       zoomedImage === "second"
                         ? "z-10 scale-300"
                         : "z-0 scale-100"
                     }`}
                     style={{
+                      ...panStyle("second"),
                       transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
                     }}
+                    {...panHandlers("second")}
                     onClick={(e) => handleImageClick(e, "second")}
                     onLoad={() => setIsLoading(false)}
                     onError={() => setIsLoading(false)}
@@ -285,12 +317,14 @@ export function ImageModal(props: ImageModalProps) {
                 ref={imageRef}
                 src={largeImageUrl}
                 alt={alt}
-                className={`max-h-[95vh] max-w-[95vw] cursor-pointer object-contain transition-transform duration-300 ease-out sm:max-h-[90vh] sm:max-w-[90vw] ${
+                className={`max-h-[95vh] max-w-[95vw] object-contain ${imageCursor("first")} transition-transform duration-300 ease-out sm:max-h-[90vh] sm:max-w-[90vw] ${
                   zoomedImage === "first" ? "scale-300" : "scale-100"
                 }`}
                 style={{
+                  ...panStyle("first"),
                   transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
                 }}
+                {...panHandlers("first")}
                 onClick={(e) => handleImageClick(e, "first")}
                 onLoad={() => setIsLoading(false)}
                 onError={() => setIsLoading(false)}
