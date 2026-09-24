@@ -109,6 +109,8 @@ export function useDragPan({ enabled, scale, origin }: UseDragPanOptions) {
       onPointerMove,
       onPointerUp: endGesture,
       onPointerCancel: endGesture,
+      // Without this the browser starts a native image drag and cancels the pan
+      onDragStart: (e: React.DragEvent<HTMLElement>) => e.preventDefault(),
     },
   }
 }
