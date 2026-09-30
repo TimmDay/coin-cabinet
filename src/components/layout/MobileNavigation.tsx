@@ -240,9 +240,7 @@ export function MobileNavigation() {
               )}
             </button>
             {!isMainMenu && (
-              <h2 className="text-lg font-semibold text-slate-100">
-                {currentMenu?.title}
-              </h2>
+              <h2 className="text-lg font-semibold">{currentMenu?.title}</h2>
             )}
           </div>
         </div>

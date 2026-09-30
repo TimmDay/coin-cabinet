@@ -66,11 +66,11 @@ export function DevTools({ metadata, children }: DevToolsProps) {
 
         {isOpen && (
           <div className="absolute right-0 bottom-12 max-h-96 w-80 overflow-y-auto rounded-lg border border-slate-600 bg-slate-800 p-4 shadow-xl">
-            <h3 className="mb-3 font-bold text-white">Article Dev Tools</h3>
+            <h3 className="mb-3 font-bold">Article Dev Tools</h3>
 
             {/* Metadata info */}
             <div className="mb-4">
-              <h4 className="mb-2 font-medium text-slate-300">Metadata</h4>
+              <h4 className="mb-2 font-medium">Metadata</h4>
               <div className="space-y-1 text-xs">
                 <div className="text-slate-400">
                   Title:{" "}
@@ -93,9 +93,7 @@ export function DevTools({ metadata, children }: DevToolsProps) {
 
             {/* Component snippets */}
             <div>
-              <h4 className="mb-2 font-medium text-slate-300">
-                Quick Components
-              </h4>
+              <h4 className="mb-2 font-medium">Quick Components</h4>
               <div className="space-y-1">
                 {Object.entries(snippets).map(([name, snippet]) => (
                   <button

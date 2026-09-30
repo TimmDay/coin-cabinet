@@ -523,7 +523,7 @@ export function CoinInfoModal({
                 </div>
               )}
 
-              <h2 className="text-l mb-3 text-slate-400">
+              <h2 className="text-l mb-3">
                 {`${civ?.toUpperCase()}${civ_specific ? ` (${civ_specific})` : ""}${denomination ? ` ${denomination}` : ""}. ${formatYearRange(mint_year_earliest, mint_year_latest)}`}
               </h2>
 

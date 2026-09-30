@@ -5,9 +5,7 @@ export function EmbeddedBlogLinkCaracallaGeta() {
   return (
     <div className="mt-16 border-t border-slate-700 pt-12">
       <div className="text-center">
-        <h2 className="mb-4 text-2xl font-semibold text-slate-200">
-          Related Article
-        </h2>
+        <h2 className="mb-4 text-2xl font-semibold">Related Article</h2>
         <p className="mb-6 text-slate-400">
           Learn more about the historical context of this coin
         </p>

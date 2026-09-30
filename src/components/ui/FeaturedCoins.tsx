@@ -108,9 +108,7 @@ export function FeaturedCoins({
   return (
     <div className={`w-full ${className}`}>
       {title && (
-        <h2 className="mb-6 text-center text-2xl font-semibold text-slate-300">
-          {title}
-        </h2>
+        <h2 className="mb-6 text-center text-2xl font-semibold">{title}</h2>
       )}
 
       <div className="flex items-center justify-center gap-1 sm:gap-4 lg:gap-6">

@@ -79,7 +79,7 @@ export function PageTitle({
         className={
           isSomnus
             ? "somnus-title text-xl sm:text-2xl lg:text-3xl"
-            : "text-2xl font-light tracking-wide text-slate-300 sm:text-3xl lg:text-4xl"
+            : "text-2xl font-light tracking-wide sm:text-3xl lg:text-4xl"
         }
       >
         {words.map((word, index) => {

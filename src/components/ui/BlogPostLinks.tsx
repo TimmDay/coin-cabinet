@@ -33,9 +33,7 @@ export function BlogPostLinks({ routes }: BlogPostLinksProps) {
 
   return (
     <div className="mt-12 space-y-4">
-      <h3 className="mb-6 text-xl font-semibold text-slate-300">
-        Related Articles
-      </h3>
+      <h3 className="mb-6 text-xl font-semibold">Related Articles</h3>
       <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {routes.map((route, index) => {
           const normalizedRoute = ensureLeadingSlash(route)

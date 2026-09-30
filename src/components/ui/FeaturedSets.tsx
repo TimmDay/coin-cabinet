@@ -29,9 +29,7 @@ export function FeaturedSets({
 
   return (
     <div className={`w-full ${className}`}>
-      <h2 className="mb-6 text-center text-2xl font-semibold text-slate-300">
-        {title}
-      </h2>
+      <h2 className="mb-6 text-center text-2xl font-semibold">{title}</h2>
 
       <div className="flex flex-wrap items-start justify-center gap-4 sm:gap-6 lg:gap-8">
         {sets.map((set) => (
