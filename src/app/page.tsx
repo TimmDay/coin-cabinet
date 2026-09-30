@@ -23,7 +23,9 @@ export default function HomePage() {
 
       <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
         <div className="content-wrapper home">
-          <PageTitle subtitle="to the Somnus Collection">Welcome</PageTitle>
+          <PageTitle variant="somnus" subtitle="to the Somnus Collection">
+            Welcome
+          </PageTitle>
 
           {/* Featured Coins Section */}
           <div className="w-full max-w-4xl">

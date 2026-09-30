@@ -220,8 +220,8 @@ export default function HomeNavbar() {
         <MobileNavigation />
       </div>
 
-      {/* Large centered logo */}
-      <div className="flex justify-center">
+      {/* Large centered logo, nudged 8px right on desktop for visual alignment */}
+      <div className="flex justify-center lg:translate-x-2">
         <NextLink href={withFeatureQuery("/")} className="">
           <div className="flex h-32 w-32 cursor-pointer items-center justify-center lg:h-40 lg:w-40">
             <img

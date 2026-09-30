@@ -4,6 +4,20 @@
   --font-sans:
     var(--font-poppins), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Roman inscriptional capitals for headings. Also usable as `font-display`. */
+  --font-display: var(--font-cinzel), "Trajan Pro", Georgia, serif;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+  }
 }
 
 /* Z-Index Design System */
@@ -234,6 +248,25 @@ main {
     hsl(248 15% 9%) calc(var(--earth-r) + var(--nav-h) * 0.65),
     hsl(228 20% 7%) calc(var(--earth-r) + var(--nav-h))
   );
+}
+
+/* Somnus page title: Roman inscriptional capitals in a pale, sunset-warmed
+   cream, with a very faint shadow so the letters look cut into stone. The
+   subtitle is a soft classical serif in dusty rose-grey. Both stay muted so
+   the coin photos remain the focus. Opt in with <PageTitle variant="somnus">. */
+.somnus-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: hsl(32 20% 80%);
+  text-shadow: 0 1px 1px hsl(228 20% 4% / 0.7);
+}
+
+.somnus-subtitle {
+  font-family: var(--font-cormorant), Georgia, serif;
+  letter-spacing: 0.04em;
+  color: hsl(340 10% 62%);
 }
 
 /* Button styling inspired by Somnus */
