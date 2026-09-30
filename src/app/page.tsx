@@ -4,6 +4,7 @@ import HomeNavbar from "~/components/layout/HomeNavbar"
 import { FeaturedCoins } from "~/components/ui/FeaturedCoins"
 import { FeaturedSets } from "~/components/ui/FeaturedSets"
 import { PageTitle } from "~/components/ui/PageTitle"
+import { withQuips } from "~/components/ui/Quip"
 import { featuredSets } from "~/data/sets"
 import { useRandomCoins } from "~/hooks/useRandomCoins"
 import text from "./translations/homepage"
@@ -56,10 +57,10 @@ export default function HomePage() {
   )
 }
 
-function homePageText(text: string) {
+function homePageText(copy: string) {
   return (
     <p className="body-text mx-auto mb-6 text-justify text-xl whitespace-pre-line">
-      {text}
+      {withQuips(copy, text)}
     </p>
   )
 }
