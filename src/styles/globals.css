@@ -185,6 +185,57 @@ main {
   backdrop-filter: blur(8px);
 }
 
+/* Homepage header: a muted dusk sky. Deep indigo settles through plum and
+   dusty rose into a low copper glow at the horizon, which then fades away.
+   Saturation stays low and lightness stays at or under ~15% so the coin
+   photos below remain the brightest, most colourful thing on the page.
+
+   The horizon is the curve of the earth: the colour bands are rings of one
+   very large circle centred far below the page, so the centre of the header
+   keeps its current height while the outer sides sag lower. The circle is
+   sized from the viewport width so the sag scales with it (~1.6vw at the
+   edges: sag = half-width^2 / (2 * radius) with radius = 7.8 * width).
+
+   The gradient lives on ::before, which extends --sag below the nav box, so
+   the header grows only at the sides and content is not pushed down. It ends
+   in transparency, not a solid colour, so the overhang never hides content. */
+.somnus-nav-home {
+  /* Height of the nav box; keep in sync with the logo/padding in HomeNavbar. */
+  --nav-h: 208px;
+  --sag: 1.6vw;
+  --earth-r: 780vw;
+
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+@media (min-width: 1024px) {
+  .somnus-nav-home {
+    --nav-h: 256px;
+  }
+}
+
+.somnus-nav-home::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: calc(-1 * var(--sag));
+  left: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% calc(100% - var(--sag) + var(--earth-r)),
+    hsl(22 22% 15% / 0) var(--earth-r),
+    hsl(22 22% 15%) calc(var(--earth-r) + var(--nav-h) * 0.1),
+    hsl(340 14% 13%) calc(var(--earth-r) + var(--nav-h) * 0.24),
+    hsl(290 11% 11%) calc(var(--earth-r) + var(--nav-h) * 0.42),
+    hsl(248 15% 9%) calc(var(--earth-r) + var(--nav-h) * 0.65),
+    hsl(228 20% 7%) calc(var(--earth-r) + var(--nav-h))
+  );
+}
+
 /* Button styling inspired by Somnus */
 .somnus-button {
   background: hsl(var(--primary));
