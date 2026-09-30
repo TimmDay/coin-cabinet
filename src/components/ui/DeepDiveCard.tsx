@@ -60,7 +60,7 @@ export function DeepDiveCard({
       className={`bg-card w-full overflow-hidden rounded-lg border border-gray-500 px-6 pt-6 break-words ${className}`}
     >
       {/* Header Section */}
-      <h3 className="heading-accent mb-4 text-center text-xl font-bold tracking-widest uppercase">
+      <h3 className="mb-4 text-center text-xl font-bold tracking-widest uppercase">
         {title}
       </h3>
       {subtitle && (
@@ -78,7 +78,7 @@ export function DeepDiveCard({
           aria-label={isOpen ? "Collapse details" : "Expand details"}
         >
           <svg
-            className={`heading-accent h-6 w-6 transition-transform duration-200 ${
+            className={`text-heading h-6 w-6 transition-transform duration-200 ${
               isOpen ? "rotate-180" : ""
             }`}
             fill="none"
