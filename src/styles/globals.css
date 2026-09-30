@@ -4,6 +4,25 @@
   --font-sans:
     var(--font-poppins), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Roman inscriptional capitals for headings. Also usable as `font-display`. */
+  --font-display: var(--font-cinzel), "Trajan Pro", Georgia, serif;
+
+  /* One colour for every heading on the dark page: a pale cream warmed by the
+     sunset header. Also usable as `text-heading`. */
+  --color-heading: hsl(32 20% 80%);
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    color: var(--color-heading);
+  }
 }
 
 /* Z-Index Design System */
@@ -140,7 +159,6 @@ main {
 .coin-title {
   font-weight: 600;
   letter-spacing: -0.025em;
-  color: hsl(var(--primary));
 }
 
 .heading-accent {
@@ -183,6 +201,75 @@ main {
   background: hsl(var(--card));
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
+}
+
+/* Homepage header: a muted dusk sky. Deep indigo settles through plum and
+   dusty rose into a low copper glow at the horizon, which then fades away.
+   Saturation stays low and lightness stays at or under ~15% so the coin
+   photos below remain the brightest, most colourful thing on the page.
+
+   The horizon is the curve of the earth: the colour bands are rings of one
+   very large circle centred far below the page, so the centre of the header
+   keeps its current height while the outer sides sag lower. The circle is
+   sized from the viewport width so the sag scales with it (~1.6vw at the
+   edges: sag = half-width^2 / (2 * radius) with radius = 7.8 * width).
+
+   The gradient lives on ::before, which extends --sag below the nav box, so
+   the header grows only at the sides and content is not pushed down. It ends
+   in transparency, not a solid colour, so the overhang never hides content. */
+.somnus-nav-home {
+  /* Height of the nav box; keep in sync with the logo/padding in HomeNavbar. */
+  --nav-h: 208px;
+  --sag: 1.6vw;
+  --earth-r: 780vw;
+
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+@media (min-width: 1024px) {
+  .somnus-nav-home {
+    --nav-h: 256px;
+  }
+}
+
+.somnus-nav-home::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: calc(-1 * var(--sag));
+  left: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% calc(100% - var(--sag) + var(--earth-r)),
+    hsl(22 22% 15% / 0) var(--earth-r),
+    hsl(22 22% 15%) calc(var(--earth-r) + var(--nav-h) * 0.1),
+    hsl(340 14% 13%) calc(var(--earth-r) + var(--nav-h) * 0.24),
+    hsl(290 11% 11%) calc(var(--earth-r) + var(--nav-h) * 0.42),
+    hsl(248 15% 9%) calc(var(--earth-r) + var(--nav-h) * 0.65),
+    hsl(228 20% 7%) calc(var(--earth-r) + var(--nav-h))
+  );
+}
+
+/* Somnus page title: Roman inscriptional capitals in a pale, sunset-warmed
+   cream, with a very faint shadow so the letters look cut into stone. The
+   subtitle is a soft classical serif in dusty rose-grey. Both stay muted so
+   the coin photos remain the focus. Opt in with <PageTitle variant="somnus">. */
+.somnus-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 1px hsl(228 20% 4% / 0.7);
+}
+
+.somnus-subtitle {
+  font-family: var(--font-cormorant), Georgia, serif;
+  letter-spacing: 0.04em;
+  color: hsl(340 10% 62%);
 }
 
 /* Button styling inspired by Somnus */

@@ -10,9 +10,7 @@ type HeadingProps = {
  */
 export function H1({ children, className = "" }: HeadingProps) {
   return (
-    <h1 className={`mt-12 mb-6 text-3xl font-bold text-slate-100 ${className}`}>
-      {children}
-    </h1>
+    <h1 className={`mt-12 mb-6 text-3xl font-bold ${className}`}>{children}</h1>
   )
 }
 
@@ -22,9 +20,7 @@ export function H1({ children, className = "" }: HeadingProps) {
  */
 export function H2({ children, className = "" }: HeadingProps) {
   return (
-    <h2
-      className={`mt-10 mb-4 text-2xl font-semibold text-slate-200 ${className}`}
-    >
+    <h2 className={`mt-10 mb-4 text-2xl font-semibold ${className}`}>
       {children}
     </h2>
   )
@@ -36,9 +32,7 @@ export function H2({ children, className = "" }: HeadingProps) {
  */
 export function H3({ children, className = "" }: HeadingProps) {
   return (
-    <h3 className={`mt-8 mb-3 text-xl font-medium text-slate-300 ${className}`}>
-      {children}
-    </h3>
+    <h3 className={`mt-8 mb-3 text-xl font-medium ${className}`}>{children}</h3>
   )
 }
 
@@ -47,8 +41,6 @@ export function H3({ children, className = "" }: HeadingProps) {
  */
 export function H4({ children, className = "" }: HeadingProps) {
   return (
-    <h4 className={`mt-6 mb-2 text-lg font-medium text-slate-400 ${className}`}>
-      {children}
-    </h4>
+    <h4 className={`mt-6 mb-2 text-lg font-medium ${className}`}>{children}</h4>
   )
 }

@@ -92,7 +92,7 @@ export default function FeatureFlagsPage() {
                   className="somnus-card flex items-center justify-between p-6"
                 >
                   <div className="flex-1">
-                    <h3 className="text-foreground text-lg font-semibold">
+                    <h3 className="text-lg font-semibold">
                       {flag.displayName}
                     </h3>
                     <p className="text-muted-foreground mt-1">
@@ -138,7 +138,7 @@ export default function FeatureFlagsPage() {
           </div>
 
           <div className="somnus-card mt-8 p-6">
-            <h3 className="text-foreground mb-3 text-lg font-semibold">
+            <h3 className="mb-3 text-lg font-semibold">
               Alternative Activation
             </h3>
             <p className="text-muted-foreground text-sm">
@@ -154,9 +154,7 @@ export default function FeatureFlagsPage() {
           </div>
 
           <div className="somnus-card mt-8 p-6">
-            <h3 className="text-foreground mb-3 text-lg font-semibold">
-              Always Clean Up
-            </h3>
+            <h3 className="mb-3 text-lg font-semibold">Always Clean Up</h3>
             <p className="text-muted-foreground text-sm">
               If a feature has been shipped or deleted - clean up! Periodically
               search the code base for

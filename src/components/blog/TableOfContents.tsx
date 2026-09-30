@@ -94,9 +94,7 @@ export function TableOfContents() {
   return (
     <div className="sticky top-8">
       <div className="rounded-lg border border-slate-700/50 bg-slate-800/30 p-6 backdrop-blur-sm">
-        <h3 className="mb-4 text-lg font-semibold text-slate-200">
-          Table of Contents
-        </h3>
+        <h3 className="mb-4 text-lg font-semibold">Table of Contents</h3>
         <nav>
           <ul className="space-y-2">
             {tocItems.map((item) => (

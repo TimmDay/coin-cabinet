@@ -7,9 +7,9 @@ import { generateCoinUrl } from "~/lib/utils/url-helpers"
 
 // Shared CSS classes
 const COIN_CONTAINER_CLASSES =
-  "group max-w-[110px] flex-1 sm:max-w-[180px] lg:max-w-[200px]"
+  "group max-w-[154px] flex-1 sm:max-w-[252px] lg:max-w-[250px]"
 const COIN_IMAGE_CONTAINER_CLASSES =
-  "flex aspect-square min-h-[100px] w-full items-center justify-center sm:min-h-[150px] lg:min-h-[180px]"
+  "flex aspect-square min-h-[140px] w-full items-center justify-center sm:min-h-[210px] lg:min-h-[225px]"
 const LOADING_DOTS_CLASSES = "text-xs text-slate-800"
 
 type FeaturedCoin = {
@@ -72,8 +72,8 @@ function FeaturedCoinImage({
           >
             <CloudinaryImage
               src={coin.obverseImageId ?? undefined}
-              width={200}
-              height={200}
+              width={280}
+              height={280}
               alt={`${coin.civ} ${coin.denomination}`}
               onLoad={() => setImageLoaded(true)}
             />
@@ -108,9 +108,7 @@ export function FeaturedCoins({
   return (
     <div className={`w-full ${className}`}>
       {title && (
-        <h2 className="mb-6 text-center text-2xl font-semibold text-slate-300">
-          {title}
-        </h2>
+        <h2 className="mb-6 text-center text-2xl font-semibold">{title}</h2>
       )}
 
       <div className="flex items-center justify-center gap-1 sm:gap-4 lg:gap-6">

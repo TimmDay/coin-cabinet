@@ -36,7 +36,7 @@ export function SetPreviewCard({
         )}
       </div>
 
-      <h3 className="mb-3 text-xl font-semibold text-slate-200 transition-colors group-hover:text-amber-300">
+      <h3 className="mb-3 text-xl font-semibold transition-colors group-hover:text-amber-300">
         {name}
       </h3>
 

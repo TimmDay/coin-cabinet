@@ -211,7 +211,7 @@ export default function HomeNavbar() {
 
   return (
     <nav
-      className="somnus-nav-home z-overlay relative right-1/2 left-1/2 mr-[-50vw] ml-[-50vw] flex w-screen flex-col items-center justify-center px-4 py-4 sm:px-6 lg:h-auto lg:px-8 lg:py-6"
+      className="somnus-nav-home z-overlay relative right-1/2 left-1/2 mr-[-50vw] ml-[-50vw] flex w-screen flex-col items-center justify-center px-4 py-10 sm:px-6 lg:h-auto lg:px-8 lg:py-12"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -220,8 +220,8 @@ export default function HomeNavbar() {
         <MobileNavigation />
       </div>
 
-      {/* Large centered logo */}
-      <div className="flex justify-center pt-8 lg:mb-6 lg:pt-0">
+      {/* Large centered logo, nudged 8px right on desktop for visual alignment */}
+      <div className="flex justify-center lg:translate-x-2">
         <NextLink href={withFeatureQuery("/")} className="">
           <div className="flex h-32 w-32 cursor-pointer items-center justify-center lg:h-40 lg:w-40">
             <img
@@ -234,7 +234,7 @@ export default function HomeNavbar() {
       </div>
 
       {/* Centered navigation items */}
-      <div className="hidden w-full items-center justify-center lg:flex">
+      <div className="hidden lg:absolute lg:top-6 lg:right-8 lg:flex lg:items-center">
         <div className="flex flex-wrap items-center justify-center gap-x-8">
           {visibleNavItems.map((item) => {
             const itemIsActive = pathname === item.href
@@ -278,7 +278,7 @@ export default function HomeNavbar() {
 
                   {openMainDropdown === item.name && (
                     <div
-                      className="somnus-card z-dropdown absolute top-full left-0 min-w-max shadow-lg"
+                      className="somnus-card z-dropdown absolute top-full right-0 min-w-max shadow-lg"
                       onMouseEnter={() => handleMainDropdownEnter(item.name)}
                       onMouseLeave={handleMainDropdownLeave}
                     >
@@ -352,7 +352,7 @@ export default function HomeNavbar() {
                             getSubmenuType(submenuItem.name) &&
                             openSubmenu === getSubmenuType(submenuItem.name) ? (
                               <div
-                                className="somnus-card z-dropdown absolute top-0 left-full ml-1 min-w-max shadow-lg"
+                                className="somnus-card z-dropdown absolute top-0 right-full mr-1 min-w-max shadow-lg"
                                 onMouseEnter={() => {
                                   const submenuType = getSubmenuType(
                                     submenuItem.name,

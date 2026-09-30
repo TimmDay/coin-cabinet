@@ -101,9 +101,7 @@ export function CoinComparison({
   return (
     <div className={`my-8 ${className}`}>
       {title && (
-        <h4 className="mb-4 text-center text-lg font-medium text-slate-300">
-          {title}
-        </h4>
+        <h4 className="mb-4 text-center text-lg font-medium">{title}</h4>
       )}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>

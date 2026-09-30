@@ -4,6 +4,7 @@ import HomeNavbar from "~/components/layout/HomeNavbar"
 import { FeaturedCoins } from "~/components/ui/FeaturedCoins"
 import { FeaturedSets } from "~/components/ui/FeaturedSets"
 import { PageTitle } from "~/components/ui/PageTitle"
+import { withQuips } from "~/components/ui/Quip"
 import { featuredSets } from "~/data/sets"
 import { useRandomCoins } from "~/hooks/useRandomCoins"
 import text from "./translations/homepage"
@@ -23,7 +24,9 @@ export default function HomePage() {
 
       <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
         <div className="content-wrapper home">
-          <PageTitle subtitle="to the Somnus Collection">Welcome</PageTitle>
+          <PageTitle variant="somnus" subtitle="to the Somnus Collection">
+            Welcome
+          </PageTitle>
 
           {/* Featured Coins Section */}
           <div className="w-full max-w-4xl">
@@ -54,10 +57,10 @@ export default function HomePage() {
   )
 }
 
-function homePageText(text: string) {
+function homePageText(copy: string) {
   return (
     <p className="body-text mx-auto mb-6 text-justify text-xl whitespace-pre-line">
-      {text}
+      {withQuips(copy, text)}
     </p>
   )
 }

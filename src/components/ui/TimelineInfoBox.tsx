@@ -51,7 +51,7 @@ export function TimelineInfoBox({
           <ChevronLeft className="h-4 w-4 text-slate-300" />
         </button>
 
-        <h3 className="pt-1 text-center text-lg leading-tight font-semibold tracking-tight text-slate-200 sm:text-xl">
+        <h3 className="pt-1 text-center text-lg leading-tight font-semibold tracking-tight sm:text-xl">
           {event.name}
         </h3>
 
