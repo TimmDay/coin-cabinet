@@ -2,12 +2,18 @@
 
 import { CldImage } from "next-cloudinary"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
 type SetPreviewCardProps = {
   name: string
   href: string
   description: string
-  image?: string
+  /**
+   * The set's image, or a list to choose from. With a list, the first is
+   * shown on the server and on the first client render (so they match), and
+   * a random one replaces it after the page loads.
+   */
+  image?: string | readonly string[]
   /** Show the whole description instead of clamping it to three lines */
   fullDescription?: boolean
   /** Sizing from the parent (a grid cell, or a flex item in a row) */
@@ -29,6 +35,20 @@ export function SetPreviewCard({
   fullDescription = false,
   className = "",
 }: SetPreviewCardProps) {
+  const candidates = typeof image === "string" ? [image] : (image ?? [])
+  const [shown, setShown] = useState<string | undefined>(candidates[0])
+  // With several candidates, hold the image back until the random pick is
+  // made, so it never visibly swaps from one picture to another.
+  const [ready, setReady] = useState(candidates.length <= 1)
+
+  useEffect(() => {
+    if (candidates.length > 1) {
+      setShown(candidates[Math.floor(Math.random() * candidates.length)])
+      setReady(true)
+    }
+    // candidates comes from a constant list, so its length is the only input
+  }, [candidates.length])
+
   return (
     <Link
       href={href}
@@ -36,14 +56,14 @@ export function SetPreviewCard({
     >
       <div className="bg-night border-line group-hover:border-moonlight/50 flex h-full flex-col rounded-lg border p-4 transition-colors">
         <div className="from-line/50 to-field mb-3 flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br">
-          {image ? (
+          {shown ? (
             <div className="relative h-full w-full">
               <CldImage
-                src={image}
+                src={shown}
                 alt={`${name} collection preview`}
                 width={400}
                 height={400}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className={`h-full w-full object-cover transition-[transform,opacity] duration-300 group-hover:scale-105 ${ready ? "opacity-100" : "opacity-0"}`}
               />
               {/* 40% dark overlay to dim the image */}
               <div className="absolute inset-0 bg-black/40" />

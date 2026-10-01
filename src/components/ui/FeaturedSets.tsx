@@ -6,7 +6,8 @@ type FeaturedSet = {
   name: string
   href: string
   description: string
-  image?: string
+  /** One image, or several to pick from after the page loads */
+  image?: string | readonly string[]
 }
 
 type FeaturedSetsProps = {
