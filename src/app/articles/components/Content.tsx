@@ -28,11 +28,11 @@ export function Quote({
 }: QuoteProps) {
   return (
     <blockquote
-      className={`my-6 border-l-4 bg-slate-800/30 py-4 pl-6 text-slate-200 italic ${className}`}
+      className={`border-bronze bg-dusk text-ink my-6 border-l-4 py-4 pl-6 italic ${className}`}
     >
       <div className="mb-2 text-lg leading-relaxed">"{children}"</div>
       {(author || source) && (
-        <cite className="text-sm text-slate-400 not-italic">
+        <cite className="text-ink-soft text-sm not-italic">
           — {author}
           {source && `, ${source}`}
         </cite>
@@ -55,10 +55,10 @@ export function Callout({
   className = "",
 }: CalloutProps) {
   const styles = {
-    info: "border-blue-500 bg-blue-900/20 text-blue-100",
-    warning: "border-yellow-500 bg-yellow-900/20 text-yellow-100",
-    success: "border-green-500 bg-green-900/20 text-green-100",
-    error: "border-red-500 bg-red-900/20 text-red-100",
+    info: "border-bronze bg-dusk text-ink",
+    warning: "border-amber-500/70 bg-amber-950/30 text-amber-100",
+    success: "border-emerald-600/70 bg-emerald-950/30 text-emerald-100",
+    error: "border-red-600/70 bg-red-950/30 text-red-100",
   }
 
   const icons = {
@@ -107,22 +107,22 @@ export function Timeline({ events, className = "" }: TimelineProps) {
     <div className={`my-8 ${className}`}>
       <div className="relative">
         {/* Timeline line */}
-        <div className="absolute top-0 bottom-0 left-4 w-0.5 bg-slate-600"></div>
+        <div className="bg-dusk-edge absolute top-0 bottom-0 left-4 w-0.5"></div>
 
         {events.map((event, index) => (
           <div key={index} className="relative mb-6 flex items-start last:mb-0">
             {/* Timeline dot */}
-            <div className="relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-slate-900">
+            <div className="bg-bronze text-night relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold">
               {index + 1}
             </div>
 
             {/* Event content */}
             <div className="ml-4 flex-1">
-              <div className="mb-1 text-sm text-slate-400">{event.date}</div>
-              <div className="mb-2 text-lg font-medium text-slate-200">
+              <div className="text-ink-soft mb-1 text-sm">{event.date}</div>
+              <div className="text-ink mb-2 text-lg font-medium">
                 {event.title}
               </div>
-              <div className="text-sm leading-relaxed text-slate-300">
+              <div className="text-ink text-sm leading-relaxed">
                 {event.description}
               </div>
             </div>

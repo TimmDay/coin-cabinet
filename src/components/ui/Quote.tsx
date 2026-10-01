@@ -25,10 +25,10 @@ export function Quote({ quote, attribution, link }: QuoteProps) {
         onClick={handleClick}
         aria-label={`Read more about this quote by ${attribution}`}
       >
-        <blockquote className="mb-4 text-lg text-slate-300 italic">
+        <blockquote className="text-ink mb-4 text-lg italic">
           &quot;{quote}&quot;
         </blockquote>
-        <cite className="text-sm text-slate-400 not-italic">
+        <cite className="text-ink-soft text-sm not-italic">
           — {attribution}
         </cite>
       </button>
@@ -37,10 +37,10 @@ export function Quote({ quote, attribution, link }: QuoteProps) {
 
   return (
     <div className={containerClasses}>
-      <blockquote className="mb-4 text-lg text-slate-300 italic">
+      <blockquote className="text-ink mb-4 text-lg italic">
         &quot;{quote}&quot;
       </blockquote>
-      <cite className="text-sm text-slate-400 not-italic">— {attribution}</cite>
+      <cite className="text-ink-soft text-sm not-italic">— {attribution}</cite>
     </div>
   )
 }

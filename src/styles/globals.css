@@ -56,6 +56,11 @@
      4.5:1 AA minimum. */
   --color-field-muted: oklch(64% 0.04 256.788);
 
+  /* Warm secondary text for content pages (articles): the same cream as
+     --color-ink, dimmed (about 7.9:1 on the page). The cool greys
+     (moonlight, field-muted) stay for night surfaces and UI chrome. */
+  --color-ink-soft: hsl(32 10% 62%);
+
   /* Dusty rose-grey: page subtitles and the accent word of page titles. */
   --color-subtitle: hsl(340 10% 62%);
 

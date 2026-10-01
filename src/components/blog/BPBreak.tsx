@@ -36,7 +36,7 @@ export function BPBreak({
       className={`clear-both flex w-full items-center justify-center ${heightClass} ${className}`}
     >
       {border && (
-        <div className="h-px w-[300px] bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
+        <div className="via-dusk-edge h-px w-[300px] bg-gradient-to-r from-transparent to-transparent" />
       )}
     </div>
   )

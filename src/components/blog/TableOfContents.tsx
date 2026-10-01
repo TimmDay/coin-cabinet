@@ -90,7 +90,7 @@ export function TableOfContents() {
 
   return (
     <div className="sticky top-8">
-      <div className="rounded-lg border border-slate-700/50 bg-slate-800/30 p-6 backdrop-blur-sm">
+      <div className="border-dusk-edge/60 bg-dusk rounded-lg border p-6">
         <h3 className="mb-4 text-lg font-semibold">Table of Contents</h3>
         <nav>
           <ul className="space-y-2">
@@ -109,10 +109,10 @@ export function TableOfContents() {
               >
                 <Link
                   href={`#${item.id}`}
-                  className={`block text-sm transition-colors duration-200 hover:text-slate-200 ${
+                  className={`hover:text-bronze-light block text-sm transition-colors duration-200 ${
                     activeId === item.id
-                      ? "font-medium text-slate-200"
-                      : "text-slate-400"
+                      ? "text-bronze-light font-medium"
+                      : "text-ink-soft"
                   }`}
                   onClick={(e) => {
                     e.preventDefault()

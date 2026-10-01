@@ -107,8 +107,13 @@ Each step is its own commit. Steps 1 to 3 change nothing visible.
    - [x] Set cards: one `SetPreviewCard` (night surface, grey edge, dimmed
      image, Cinzel name) now serves both the homepage Featured Sets and
      /cabinet. `.somnus-card` is gone.
-   - [ ] Other form controls, articles. Map and deep dive have their own
-     branches.
+   - [x] Articles (the sunset side: warm is allowed): the table of contents,
+     Aside, Quote, Callout and Timeline are dusk panels with bronze accents,
+     body and captions use `ink` and the new warm `ink-soft`, and the
+     breadcrumb is cool chrome. Not touched, on purpose:
+     `EmbeddedBlogLinkCaracallaGeta` (shown on coin pages: deep dive) and
+     the dev-only `DevTools` panel.
+   - [ ] Other form controls. Map and deep dive have their own branches.
 5. [ ] Map colours from one `colors.ts`.
 6. [ ] Resolve the 4 `dark:` variants. Tailwind's default `dark` variant
    follows the OS setting, so they do fire. Keep the dark value as the base.

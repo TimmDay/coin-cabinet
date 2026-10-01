@@ -11,9 +11,7 @@ type ParagraphProps = {
  */
 export function P({ children, className = "" }: ParagraphProps) {
   return (
-    <p className={`mb-4 leading-relaxed text-slate-300 ${className}`}>
-      {children}
-    </p>
+    <p className={`text-ink mb-4 leading-relaxed ${className}`}>{children}</p>
   )
 }
 
@@ -24,7 +22,7 @@ export function P({ children, className = "" }: ParagraphProps) {
 export function Lead({ children, className = "" }: ParagraphProps) {
   return (
     <p
-      className={`mb-6 text-lg leading-relaxed font-light text-slate-200 ${className}`}
+      className={`text-ink mb-6 text-lg leading-relaxed font-light ${className}`}
     >
       {children}
     </p>
