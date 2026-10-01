@@ -216,9 +216,15 @@ export function DeepDiveCardsSection({
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4">
-      <div className="columns-1 gap-4 md:columns-2">
+      {/* A grid, not CSS columns. Each card is three subgrid rows (header,
+          toggle, footer), so the cards of a row share those row heights: with
+          the accordions closed their tops, chevrons and footers all line up.
+          The wrapper is display: contents so the card is the grid item. The
+          gap between rows of cards is the cards' bottom margin: a row gap would
+          also open up inside every card. */}
+      <div className="grid grid-cols-1 gap-x-4 md:grid-cols-2">
         {cardsToRender.map((card) => (
-          <div key={card.id} className="mb-4 break-inside-avoid">
+          <div key={card.id} className="contents">
             {card.component}
           </div>
         ))}

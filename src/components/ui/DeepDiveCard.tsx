@@ -56,104 +56,114 @@ export function DeepDiveCard({
   const hasExpandableContent = primaryInfo || secondaryInfo || image
 
   return (
+    // Three rows: header, toggle with its content, footer. Inside the
+    // grid in DeepDiveCardsSection they are subgrid rows, shared with the
+    // card beside this one, so the chevrons and footers of a row line up with
+    // the accordions closed. Anywhere else the three rows just stack.
     <div
-      className={`w-full overflow-hidden rounded-lg border border-gray-500 px-6 pt-6 break-words ${className}`}
+      className={`row-span-3 mb-4 grid w-full grid-rows-subgrid overflow-hidden rounded-lg border border-gray-500 px-6 pt-6 break-words ${className}`}
     >
       {/* Header Section */}
-      <h3 className="mb-4 text-center text-xl font-bold tracking-widest uppercase">
-        {title}
-      </h3>
-      {subtitle && (
-        <p className="mb-4 text-center text-sm whitespace-pre-line text-gray-400">
-          {subtitle}
-        </p>
-      )}
-
-      {/* Accordion Toggle - only show if there's content to expand */}
-      {hasExpandableContent && (
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="mb-4 flex w-full items-center justify-center rounded text-sm font-medium transition-colors"
-          aria-expanded={isOpen}
-          aria-label={isOpen ? "Collapse details" : "Expand details"}
-        >
-          <svg
-            className={`text-ink h-6 w-6 transition-transform duration-200 ${
-              isOpen ? "rotate-180" : ""
-            }`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
-      )}
-
-      {/* Accordion Content - Info Area */}
-      <div
-        className={`space-y-4 overflow-hidden pb-4 transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-[1500px] opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        {/* Primary Info */}
-        {primaryInfo && (
-          <p className="text-center text-sm leading-relaxed text-gray-400">
-            {primaryInfo}
+      <div>
+        <h3 className="mb-4 text-center text-xl font-bold tracking-widest uppercase">
+          {title}
+        </h3>
+        {subtitle && (
+          <p className="mb-4 text-center text-sm whitespace-pre-line text-gray-400">
+            {subtitle}
           </p>
-        )}
-
-        {/* Secondary Info */}
-        {secondaryInfo && (
-          <p className="text-center text-sm leading-relaxed text-gray-400">
-            {secondaryInfo}
-          </p>
-        )}
-
-        {/* Image */}
-        {image && (
-          <div className="mt-4">
-            <div className="group relative flex w-full items-center justify-center overflow-hidden rounded-lg shadow-sm">
-              <CloudinaryImage
-                src={image}
-                alt={altText || ""}
-                width={400}
-                height={400}
-              />
-              {/* Tooltip on hover */}
-              {altText && (
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-xs -translate-x-1/2 rounded-lg bg-slate-900/95 px-3 py-2 text-xs text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100">
-                  <div className="text-center whitespace-pre-line">
-                    {altText}
-                  </div>
-                  {/* Arrow pointing down */}
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900/95"></div>
-                </div>
-              )}
-            </div>
-            {/* Caption */}
-            {caption && (
-              <p className="mt-3 text-center text-xs leading-relaxed text-gray-400 italic">
-                {caption}
-              </p>
-            )}
-          </div>
         )}
       </div>
 
-      {/* Footer */}
-      {footer && (
-        <div className="flex items-center justify-center border-t border-gray-500 pt-5 pb-5">
-          <p className="text-center text-xs whitespace-pre-line text-gray-400">
-            {footer}
-          </p>
+      <div>
+        {/* Accordion Toggle - only show if there's content to expand */}
+        {hasExpandableContent && (
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="mb-4 flex w-full items-center justify-center rounded text-sm font-medium transition-colors"
+            aria-expanded={isOpen}
+            aria-label={isOpen ? "Collapse details" : "Expand details"}
+          >
+            <svg
+              className={`text-ink h-6 w-6 transition-transform duration-200 ${
+                isOpen ? "rotate-180" : ""
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+        )}
+
+        {/* Accordion Content - Info Area */}
+        <div
+          className={`space-y-4 overflow-hidden pb-4 transition-all duration-300 ease-in-out ${
+            isOpen ? "max-h-[1500px] opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          {/* Primary Info */}
+          {primaryInfo && (
+            <p className="text-center text-sm leading-relaxed text-gray-400">
+              {primaryInfo}
+            </p>
+          )}
+
+          {/* Secondary Info */}
+          {secondaryInfo && (
+            <p className="text-center text-sm leading-relaxed text-gray-400">
+              {secondaryInfo}
+            </p>
+          )}
+
+          {/* Image */}
+          {image && (
+            <div className="mt-4">
+              <div className="group relative flex w-full items-center justify-center overflow-hidden rounded-lg shadow-sm">
+                <CloudinaryImage
+                  src={image}
+                  alt={altText || ""}
+                  width={400}
+                  height={400}
+                />
+                {/* Tooltip on hover */}
+                {altText && (
+                  <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-xs -translate-x-1/2 rounded-lg bg-slate-900/95 px-3 py-2 text-xs text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100">
+                    <div className="text-center whitespace-pre-line">
+                      {altText}
+                    </div>
+                    {/* Arrow pointing down */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900/95"></div>
+                  </div>
+                )}
+              </div>
+              {/* Caption */}
+              {caption && (
+                <p className="mt-3 text-center text-xs leading-relaxed text-gray-400 italic">
+                  {caption}
+                </p>
+              )}
+            </div>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Footer (an empty third row when there is none, so rows stay shared) */}
+      <div>
+        {footer && (
+          <div className="flex items-center justify-center border-t border-gray-500 pt-5 pb-5">
+            <p className="text-center text-xs whitespace-pre-line text-gray-400">
+              {footer}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
