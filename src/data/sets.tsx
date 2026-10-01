@@ -21,7 +21,7 @@ const severanSet = {
   name: "Severan Dynasty",
   href: "/cabinet/severan-dynasty",
   description:
-    "Coins from the Severan period (193-235 AD), featuring the imperial family that ruled during a time of military expansion and architectural achievement.",
+    "The African Emperor, the Syrian Empress, two loving brothers and three Julias.",
   image: severanImages,
 }
 
@@ -29,7 +29,7 @@ const gordySet = {
   name: "Gordy Boys",
   href: "/cabinet/gordy-boys",
   description:
-    "From the ashes of the Thrax panic rose Gordian III. Many coins were minted. The Crisis was underway.",
+    "The boy who was chosen. Many coins were minted. Nothing could possiblay go wrong.",
   image: gordyImages,
 }
 
@@ -37,7 +37,10 @@ const imperialWomenSet = {
   name: "Imperial Women",
   href: "/cabinet/imperial-women",
   description:
-    "Celebrating the powerful women of the Roman Empire through their numismatic representations and imperial portraiture.",
+    // From this moment the country was transformed, and all things became subject to the control of a woman...
+    "Hers was a rigorous, almost masculine despotism.",
+  // Subject: Agrippina the Younger, wife of Claudius and mother of Nero.
+  // Source: Tacitus, The Annals, Book 12, Chapter 7.
   image: imperialWomenImages,
 }
 
