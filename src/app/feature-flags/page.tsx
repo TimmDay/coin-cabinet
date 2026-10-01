@@ -8,6 +8,11 @@ import {
 } from "~/lib/feature-flags"
 import { clearFeatureFlags, setFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 
+// The look the old card class gave these panels: a raised surface with a grey
+// edge, a soft shadow, and a faint gold edge on hover.
+const CARD_CLASSES =
+  "rounded-md border border-line bg-surface-raised shadow-[0_1px_3px_0_rgb(0_0_0/0.1),0_1px_2px_0_rgb(0_0_0/0.06)] transition-all duration-200 hover:border-accent/30 hover:shadow-[0_4px_6px_-1px_rgb(0_0_0/0.1),0_2px_4px_-1px_rgb(0_0_0/0.06)]"
+
 export default function FeatureFlagsPage() {
   const [enabledFlags, setEnabledFlags] = useState<Record<string, boolean>>({})
   const [isLoading, setIsLoading] = useState(true)
@@ -87,7 +92,7 @@ export default function FeatureFlagsPage() {
               return (
                 <div
                   key={flag.name}
-                  className="somnus-card flex items-center justify-between p-6"
+                  className={`${CARD_CLASSES} flex items-center justify-between p-6`}
                 >
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold">
@@ -133,7 +138,7 @@ export default function FeatureFlagsPage() {
             })}
           </div>
 
-          <div className="somnus-card mt-8 p-6">
+          <div className={`${CARD_CLASSES} mt-8 p-6`}>
             <h3 className="mb-3 text-lg font-semibold">
               Alternative Activation
             </h3>
@@ -145,7 +150,7 @@ export default function FeatureFlagsPage() {
             </p>
           </div>
 
-          <div className="somnus-card mt-8 p-6">
+          <div className={`${CARD_CLASSES} mt-8 p-6`}>
             <h3 className="mb-3 text-lg font-semibold">Always Clean Up</h3>
             <p className="text-sm">
               If a feature has been shipped or deleted - clean up! Periodically

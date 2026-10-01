@@ -119,24 +119,6 @@ main {
   outline: none;
 }
 
-/* Elegant card styling */
-.somnus-card {
-  background: var(--color-surface-raised);
-  border: 1px solid var(--color-line);
-  border-radius: 0.375rem;
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease;
-}
-
-.somnus-card:hover {
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
-}
-
 /* Nav bar on every page except the homepage: the same sky as the homepage
    header, flat. The glow near the bottom edge fades out over its last ~30px
    (the same soft blur as the homepage), so the bar melts into the page. The
