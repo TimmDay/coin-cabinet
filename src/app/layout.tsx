@@ -1,5 +1,5 @@
 import { type Metadata } from "next"
-import { Cinzel, Cormorant_Garamond, Poppins } from "next/font/google"
+import { Alegreya, Cinzel, Cormorant_Garamond } from "next/font/google"
 import Navbar from "~/components/layout/Navbar"
 import { PageWrapper } from "~/components/layout/PageWrapper"
 import { ReactQueryProvider } from "~/components/providers/react-query-provider"
@@ -11,12 +11,6 @@ export const metadata: Metadata = {
   description: "The Somnus Coin Collection",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 }
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-poppins",
-})
 
 // Roman inscriptional capitals for headings (variable font, so every weight
 // a heading asks for is real, not a synthesized bold).
@@ -33,13 +27,20 @@ const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
 })
 
+// Calligraphic text serif, open and readable: the body font for the whole app
+// (set as --font-sans in globals.css).
+const alegreya = Alegreya({
+  subsets: ["latin"],
+  variable: "--font-alegreya",
+})
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${cinzel.variable} ${cormorant.variable}`}
+      className={`${cinzel.variable} ${cormorant.variable} ${alegreya.variable}`}
     >
       <body>
         <ReactQueryProvider>

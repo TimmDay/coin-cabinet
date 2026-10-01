@@ -59,7 +59,7 @@ export default function HomePage() {
 
 function homePageText(copy: string) {
   return (
-    <p className="body-text mx-auto mb-6 text-justify text-xl whitespace-pre-line">
+    <p className="body-text mx-auto mb-6 text-left text-[1.5rem] whitespace-pre-line">
       {withQuips(copy, text)}
     </p>
   )

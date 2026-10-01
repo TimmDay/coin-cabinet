@@ -6,8 +6,10 @@ import CloudinaryImage from "~/components/CloudinaryImage"
 import { generateCoinUrl } from "~/lib/utils/url-helpers"
 
 // Shared CSS classes
+// min-w-0 lets the coins shrink below their max width on narrow screens, so
+// three of them fit the row instead of overflowing and getting clipped.
 const COIN_CONTAINER_CLASSES =
-  "group max-w-[154px] flex-1 sm:max-w-[252px] lg:max-w-[250px]"
+  "group max-w-[154px] min-w-0 flex-1 sm:max-w-[252px] lg:max-w-[250px]"
 const COIN_IMAGE_CONTAINER_CLASSES =
   "flex aspect-square min-h-[140px] w-full items-center justify-center sm:min-h-[210px] lg:min-h-[225px]"
 const LOADING_DOTS_CLASSES = "text-xs text-slate-800"
