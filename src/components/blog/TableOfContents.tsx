@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { uniqueHeadingId } from "~/lib/utils/heading-ids"
 
 type TocItem = {
   id: string
@@ -16,18 +17,14 @@ export function TableOfContents() {
   useEffect(() => {
     // Generate TOC from headings in the document
     const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6")
+    const usedIds = new Set<string>()
     const items: TocItem[] = Array.from(headings).map((heading) => {
       const text = heading.textContent || ""
-      let id = heading.id
 
-      // If heading doesn't have an id, create one
-      if (!id) {
-        id = text
-          .toLowerCase()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/\s+/g, "-")
-        heading.id = id
-      }
+      // Every heading gets an id no other heading has (two "Historical
+      // Context" boxes would otherwise share one, and so would their keys)
+      const id = uniqueHeadingId(text, heading.id, usedIds)
+      heading.id = id
 
       return {
         id,
@@ -93,7 +90,7 @@ export function TableOfContents() {
 
   return (
     <div className="sticky top-8">
-      <div className="rounded-lg border border-slate-700/50 bg-slate-800/30 p-6 backdrop-blur-sm">
+      <div className="border-line bg-surface-raised rounded-lg border p-6">
         <h3 className="mb-4 text-lg font-semibold">Table of Contents</h3>
         <nav>
           <ul className="space-y-2">
@@ -112,10 +109,10 @@ export function TableOfContents() {
               >
                 <Link
                   href={`#${item.id}`}
-                  className={`block text-sm transition-colors duration-200 hover:text-slate-200 ${
+                  className={`hover:text-bronze-light block text-sm transition-colors duration-200 ${
                     activeId === item.id
-                      ? "font-medium text-slate-200"
-                      : "text-slate-400"
+                      ? "text-bronze-light font-medium"
+                      : "text-ink-soft"
                   }`}
                   onClick={(e) => {
                     e.preventDefault()

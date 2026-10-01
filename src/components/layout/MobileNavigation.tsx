@@ -223,13 +223,16 @@ export function MobileNavigation() {
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation"
+        // Closed, the panel is only slid off-screen: without inert its links
+        // stay reachable by Tab and the dialog stays "open" to assistive tech.
+        inert={!isOpen}
       >
         {/* Header */}
         <div className="border-dusk-edge/60 flex items-center justify-between border-b p-4">
           <div className="flex items-center space-x-3">
             <button
               onClick={isMainMenu ? closeMenu : goBack}
-              className="text-heading hover:bg-dusk-edge/30 hover:text-bronze-light focus-visible:ring-bronze-light/70 flex h-8 w-8 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none"
+              className="text-ink hover:bg-dusk-edge/30 hover:text-bronze-light focus-visible:ring-bronze-light/70 flex h-8 w-8 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none"
               aria-label={isMainMenu ? "Close navigation" : "Go back"}
               disabled={isAnimating}
             >
@@ -296,7 +299,7 @@ export function MobileNavigation() {
                           "focus-visible:ring-bronze-light/70 flex w-full items-center justify-between rounded-lg p-3 text-left transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none",
                           isActive
                             ? "bg-bronze/15 text-bronze-light"
-                            : "text-heading hover:bg-dusk-edge/30 hover:text-bronze-light",
+                            : "text-ink hover:bg-dusk-edge/30 hover:text-bronze-light",
                         )}
                         style={{
                           pointerEvents: isAnimating ? "none" : "auto",
@@ -325,7 +328,7 @@ export function MobileNavigation() {
       {/* Mobile burger button - only show on mobile */}
       <button
         onClick={openMenu}
-        className="text-heading hover:text-bronze-light focus-visible:ring-bronze-light/70 flex items-center justify-center rounded-full p-2 focus-visible:ring-2 focus-visible:outline-none lg:hidden"
+        className="text-ink hover:text-bronze-light focus-visible:ring-bronze-light/70 flex items-center justify-center rounded-full p-2 focus-visible:ring-2 focus-visible:outline-none lg:hidden"
         aria-label="Open navigation menu"
         aria-expanded={isOpen}
       >

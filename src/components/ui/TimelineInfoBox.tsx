@@ -75,7 +75,7 @@ export function TimelineInfoBox({
       {/* Event Details - Scrollable */}
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
         <div className="mb-6">
-          <p className="heading-accent text-center text-base font-medium sm:text-lg">
+          <p className="text-accent text-center text-base font-medium sm:text-lg">
             {formatYear(event.year)}
           </p>
         </div>

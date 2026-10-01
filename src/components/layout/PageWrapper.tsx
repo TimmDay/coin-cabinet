@@ -15,7 +15,7 @@ export function PageWrapper({ children }: PageWrapperProps) {
     pathname.startsWith("/cabinet/") && pathname !== "/cabinet"
 
   return (
-    <div className="bg-background flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col">
       {/* Breadcrumb - positioned under header, above page content */}
       {!isHomePage && !isCoinDeepDivePage && (
         <div className="flex w-full justify-center pt-8 pb-6 md:pb-12">

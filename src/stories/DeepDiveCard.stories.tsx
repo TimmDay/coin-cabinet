@@ -130,7 +130,7 @@ export const FlexLayout: Story = {
   render: () => (
     <div className="w-full space-y-4">
       {/* Simulate map area */}
-      <div className="bg-muted/30 border-border text-foreground flex h-72 w-full items-center justify-center rounded-lg border text-lg">
+      <div className="flex h-72 w-full items-center justify-center rounded-lg border text-lg">
         Map Area (100% width)
       </div>
 

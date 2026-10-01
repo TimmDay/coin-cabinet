@@ -8,15 +8,14 @@ import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { FilterSelect } from "~/components/ui/FilterSelect"
 import { FilterYear } from "~/components/ui/FilterYear"
 import { SearchBar } from "~/components/ui/SearchBar"
+import { coinMatchesSearch } from "~/lib/utils/coin-search"
+import { overlapsYearRange } from "~/lib/utils/mint-year"
 import {
   ViewModeControls,
   type ClickMode,
 } from "~/components/ui/ViewModeControls"
 import { useDeityOptions } from "~/hooks/useDeityOptions"
-import {
-  civilizationOptions,
-  denominationOptions,
-} from "~/lib/constants/coin-options"
+import { civilizationOptions } from "~/lib/constants/coin-options"
 import { generateCoinUrl } from "~/lib/utils/url-helpers"
 
 type CoinGridProps = {
@@ -45,12 +44,11 @@ export function CoinGrid({
 
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Year filter state
+  // Year filter state: a coin matches if its mint range overlaps the range
   const [yearStart, setYearStart] = useState<string>("")
   const [yearEnd, setYearEnd] = useState<string>("")
 
-  // Denomination and civilization filter state
-  const [filterDenomination, setFilterDenomination] = useState<string>("")
+  // Civilization filter state (denominations are found through the search box)
   const [filterCivilization, setFilterCivilization] = useState<string>("")
 
   // Fetch coins from database (already filtered for obverse images at DB level)
@@ -75,7 +73,6 @@ export function CoinGrid({
       let matchesCiv = true
       let matchesSearch = true
       let matchesYearRange = true
-      let matchesDenomination = true
       let matchesCivilization = true
 
       if (filterSet) {
@@ -86,57 +83,31 @@ export function CoinGrid({
         matchesCiv = coin.civ === filterCiv
       }
 
-      // Apply denomination filter from dropdown
-      if (showSearch && filterDenomination) {
-        matchesDenomination = coin.denomination === filterDenomination
-      }
-
       // Apply civilization filter from dropdown
       if (showSearch && filterCivilization) {
         matchesCivilization = coin.civ === filterCivilization
       }
 
-      // Apply search filter if search is enabled and query exists
+      // Apply search filter: name, denomination, legends or deity names
       if (showSearch && searchQuery.trim()) {
-        const query = searchQuery.toLowerCase()
-
-        // Get deity names for this coin
         const deityNames = (coin.deity_id ?? [])
           .map((id) => deityMap.get(id) ?? "")
           .filter(Boolean)
           .join(" ")
 
-        matchesSearch = [
-          coin.nickname ?? "",
-          coin.denomination ?? "",
-          coin.legend_o ?? "",
-          coin.legend_r ?? "",
-          deityNames,
-        ].some((field) => field.toLowerCase().includes(query))
+        matchesSearch = coinMatchesSearch(coin, deityNames, searchQuery)
       }
 
-      // Apply year range filter
+      // Apply year range filter: the coin's mint range must overlap it
       if (showSearch && (yearStart || yearEnd)) {
-        const startYear = yearStart ? parseInt(yearStart, 10) : null
-        const endYear = yearEnd ? parseInt(yearEnd, 10) : null
-
-        const coinYearEarliest = coin.mint_year_earliest ?? null
-        const coinYearLatest = coin.mint_year_latest ?? null
-
-        // A coin matches if either of its years falls within the range
-        if (startYear !== null && !isNaN(startYear)) {
-          const hasYearAfterStart =
-            (coinYearEarliest !== null && coinYearEarliest >= startYear) ||
-            (coinYearLatest !== null && coinYearLatest >= startYear)
-          if (!hasYearAfterStart) matchesYearRange = false
-        }
-
-        if (endYear !== null && !isNaN(endYear)) {
-          const hasYearBeforeEnd =
-            (coinYearEarliest !== null && coinYearEarliest <= endYear) ||
-            (coinYearLatest !== null && coinYearLatest <= endYear)
-          if (!hasYearBeforeEnd) matchesYearRange = false
-        }
+        const start = yearStart ? parseInt(yearStart, 10) : NaN
+        const end = yearEnd ? parseInt(yearEnd, 10) : NaN
+        matchesYearRange = overlapsYearRange(
+          coin.mint_year_earliest,
+          coin.mint_year_latest,
+          isNaN(start) ? null : start,
+          isNaN(end) ? null : end,
+        )
       }
 
       return (
@@ -144,7 +115,6 @@ export function CoinGrid({
         matchesCiv &&
         matchesSearch &&
         matchesYearRange &&
-        matchesDenomination &&
         matchesCivilization
       )
     })
@@ -249,17 +219,23 @@ export function CoinGrid({
     <>
       {/* Controls row */}
       {showSearch ? (
-        <div className="flex flex-col items-center gap-3">
+        <div className="mb-12 flex flex-col items-center gap-3">
           <ViewModeControls
+            fill
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             clickMode={clickMode}
             onClickModeChange={setClickMode}
           />
-          <SearchBar value={searchQuery} onChange={setSearchQuery} />
-
-          {/* Year filters row */}
-          <div className="flex w-80 gap-2">
+          {/* Search, the two year boxes and civilisation as four equal cells
+              under the toggles: one row from tablet up, with the centre gap
+              lined up with the toggles' gap. Search also finds denominations
+              ("denarius"). On phones the search and civilisation get a row
+              each and the years pair up. */}
+          <div className="grid w-80 max-w-full grid-cols-2 gap-2 md:w-[40rem] md:grid-cols-4">
+            <div className="col-span-2 md:col-span-1">
+              <SearchBar value={searchQuery} onChange={setSearchQuery} />
+            </div>
             <FilterYear
               id="year-start"
               value={yearStart}
@@ -274,35 +250,27 @@ export function CoinGrid({
               placeholder="Year end"
               label="Year end"
             />
-          </div>
-
-          {/* Denomination and Civilization filters row */}
-          <div className="flex w-80 gap-2">
-            <FilterSelect
-              id="filter-denomination"
-              value={filterDenomination}
-              onChange={setFilterDenomination}
-              options={denominationOptions}
-              placeholder="Denomination"
-              label="Denomination"
-            />
-            <FilterSelect
-              id="filter-civilization"
-              value={filterCivilization}
-              onChange={setFilterCivilization}
-              options={civilizationOptions}
-              placeholder="Civilisation"
-              label="Civilisation"
-            />
+            <div className="col-span-2 md:col-span-1">
+              <FilterSelect
+                id="filter-civilization"
+                value={filterCivilization}
+                onChange={setFilterCivilization}
+                options={civilizationOptions}
+                placeholder="Civilisation"
+                label="Civilisation"
+              />
+            </div>
           </div>
         </div>
       ) : (
-        <ViewModeControls
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          clickMode={clickMode}
-          onClickModeChange={setClickMode}
-        />
+        <div className="mb-8">
+          <ViewModeControls
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            clickMode={clickMode}
+            onClickModeChange={setClickMode}
+          />
+        </div>
       )}
 
       {/* Loading state */}

@@ -8,6 +8,11 @@ import {
 } from "~/lib/feature-flags"
 import { clearFeatureFlags, setFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 
+// The look the old card class gave these panels: a raised surface with a grey
+// edge, a soft shadow, and a faint gold edge on hover.
+const CARD_CLASSES =
+  "rounded-md border border-line bg-surface-raised shadow-[0_1px_3px_0_rgb(0_0_0/0.1),0_1px_2px_0_rgb(0_0_0/0.06)] transition-all duration-200 hover:border-accent/30 hover:shadow-[0_4px_6px_-1px_rgb(0_0_0/0.1),0_2px_4px_-1px_rgb(0_0_0/0.06)]"
+
 export default function FeatureFlagsPage() {
   const [enabledFlags, setEnabledFlags] = useState<Record<string, boolean>>({})
   const [isLoading, setIsLoading] = useState(true)
@@ -48,21 +53,19 @@ export default function FeatureFlagsPage() {
 
   if (isLoading) {
     return (
-      <main className="bg-background min-h-screen p-6 md:p-8">
+      <main className="min-h-screen p-6 md:p-8">
         <div className="mx-auto max-w-4xl">
           <PageTitle subtitle="Manage development and experimental features">
             Feature Flags
           </PageTitle>
-          <div className="text-muted-foreground mt-8 text-center">
-            Loading feature flags...
-          </div>
+          <div className="mt-8 text-center">Loading feature flags...</div>
         </div>
       </main>
     )
   }
 
   return (
-    <main className="bg-background min-h-screen p-6 md:p-8">
+    <main className="min-h-screen p-6 md:p-8">
       <div className="mx-auto max-w-4xl">
         <PageTitle subtitle="Manage development and experimental features">
           Feature Flags
@@ -70,13 +73,13 @@ export default function FeatureFlagsPage() {
 
         <div className="mt-8">
           <div className="mb-6 flex items-center justify-between">
-            <p className="text-muted-foreground">
+            <p>
               Enable or disable experimental flags. Hit refresh for it to take
               effect.
             </p>
             <button
               onClick={handleClearAllFlags}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md px-4 py-2 transition-colors"
+              className="rounded-md px-4 py-2 transition-colors"
             >
               Clear All Flags
             </button>
@@ -89,15 +92,13 @@ export default function FeatureFlagsPage() {
               return (
                 <div
                   key={flag.name}
-                  className="somnus-card flex items-center justify-between p-6"
+                  className={`${CARD_CLASSES} flex items-center justify-between p-6`}
                 >
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold">
                       {flag.displayName}
                     </h3>
-                    <p className="text-muted-foreground mt-1">
-                      {flag.description}
-                    </p>
+                    <p className="mt-1">{flag.description}</p>
                     <div className="mt-2 flex items-center gap-2">
                       <span className="text-sm font-medium">Status:</span>
                       <span
@@ -118,7 +119,7 @@ export default function FeatureFlagsPage() {
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none ${
                         isEnabled
                           ? "bg-green-500 focus:ring-green-500"
-                          : "focus:ring-primary bg-gray-200 dark:bg-gray-700"
+                          : "bg-gray-200 dark:bg-gray-700"
                       }`}
                       role="switch"
                       aria-checked={isEnabled}
@@ -137,31 +138,25 @@ export default function FeatureFlagsPage() {
             })}
           </div>
 
-          <div className="somnus-card mt-8 p-6">
+          <div className={`${CARD_CLASSES} mt-8 p-6`}>
             <h3 className="mb-3 text-lg font-semibold">
               Alternative Activation
             </h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm">
               Feature flags can also be enabled by adding{" "}
-              <code className="bg-muted text-foreground rounded px-1 py-0.5">
-                ?feat=flagname
-              </code>{" "}
-              to any URL. For example:{" "}
-              <code className="bg-muted text-foreground rounded px-1 py-0.5">
-                ?feat=dev
-              </code>
+              <code className="rounded px-1 py-0.5">?feat=flagname</code> to any
+              URL. For example:{" "}
+              <code className="rounded px-1 py-0.5">?feat=dev</code>
             </p>
           </div>
 
-          <div className="somnus-card mt-8 p-6">
+          <div className={`${CARD_CLASSES} mt-8 p-6`}>
             <h3 className="mb-3 text-lg font-semibold">Always Clean Up</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm">
               If a feature has been shipped or deleted - clean up! Periodically
               search the code base for
-              <code className="bg-muted text-foreground rounded px-1 py-0.5">
-                FeatureFlag
-              </code>{" "}
-              to find all instances in which the hook has been used.
+              <code className="rounded px-1 py-0.5">FeatureFlag</code> to find
+              all instances in which the hook has been used.
             </p>
           </div>
         </div>

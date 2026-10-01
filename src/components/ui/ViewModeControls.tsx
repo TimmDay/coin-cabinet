@@ -2,127 +2,123 @@ type ViewMode = "obverse" | "reverse" | "both"
 type ClickMode = "browse" | "dive"
 
 type ViewModeControlsProps = {
+  /**
+   * Line the toggles up with the filters under them (the coin grid). The
+   * pills always share the full width of the filters column, side by side
+   * (they wrap only when the screen is too narrow for both). From tablet (md)
+   * up they become two equal columns whose gap lines up with a gap in a row
+   * of four equal cells.
+   */
+  fill?: boolean
   viewMode: ViewMode
   onViewModeChange: (mode: ViewMode) => void
   clickMode?: ClickMode
   onClickModeChange?: (mode: ClickMode) => void
 }
 
+type SegmentedControlProps<T extends string> = {
+  /** Name of the group: read by screen readers, hidden visually */
+  legend: string
+  /** Radio group name */
+  name: string
+  /** Share the full width of the column */
+  fill?: boolean
+  options: readonly { value: T; label: string }[]
+  value: T
+  onChange: (value: T) => void
+}
+
+/**
+ * A pill of radio buttons. Real radios under the visible labels, so arrow
+ * keys, grouping and state work natively; the fieldset names the group, and
+ * the focused option gets a visible moonlight ring.
+ */
+function SegmentedControl<T extends string>({
+  legend,
+  name,
+  fill = false,
+  options,
+  value,
+  onChange,
+}: SegmentedControlProps<T>) {
+  return (
+    <fieldset
+      className={`border-line bg-field flex items-center rounded-full border p-1 ${fill ? "flex-1 md:w-full" : ""}`}
+    >
+      <legend className="sr-only">{legend}</legend>
+      {options.map((option) => (
+        <label
+          key={option.value}
+          className={`relative cursor-pointer ${fill ? "flex-1" : ""}`}
+        >
+          <input
+            type="radio"
+            name={name}
+            value={option.value}
+            checked={value === option.value}
+            onChange={() => onChange(option.value)}
+            className="peer sr-only"
+          />
+          <div
+            className={`peer-focus-visible:ring-moonlight/70 font-display rounded-full px-2 py-2 text-center text-sm tracking-wide uppercase transition-colors duration-200 peer-focus-visible:ring-2 md:px-4 md:tracking-widest ${
+              value === option.value
+                ? "bg-line text-ink"
+                : "text-field-muted hover:bg-line/50 hover:text-ink"
+            }`}
+          >
+            {option.label}
+          </div>
+        </label>
+      ))}
+    </fieldset>
+  )
+}
+
+const VIEW_MODE_OPTIONS = [
+  { value: "obverse", label: "Obv" },
+  { value: "reverse", label: "Rev" },
+  { value: "both", label: "Both" },
+] as const
+
+const CLICK_MODE_OPTIONS = [
+  { value: "browse", label: "Browse" },
+  { value: "dive", label: "Dive" },
+] as const
+
 export function ViewModeControls({
+  fill = false,
   viewMode,
   onViewModeChange,
   clickMode = "dive",
   onClickModeChange,
 }: ViewModeControlsProps) {
   return (
-    <div className="z-controls mt-6 flex justify-center">
-      <div className="flex items-center gap-4">
-        {/* View Mode Toggle */}
-        <div className="flex items-center rounded-full border border-slate-700/30 bg-slate-900/40 p-1 backdrop-blur-sm">
-          <label className="group relative cursor-pointer">
-            <input
-              type="radio"
-              name="viewMode"
-              value="obverse"
-              checked={viewMode === "obverse"}
-              onChange={(e) => onViewModeChange(e.target.value as ViewMode)}
-              className="peer sr-only"
-            />
-            <div
-              className={`w-14 rounded-full py-2 text-center text-sm font-medium transition-all duration-200 ${
-                viewMode === "obverse"
-                  ? "bg-slate-700/50 text-slate-500 shadow-sm"
-                  : "text-slate-500 hover:bg-slate-800/30 hover:text-slate-400"
-              }`}
-            >
-              Obv
-            </div>
-          </label>
+    <div
+      className={`z-controls mt-6 flex justify-center ${fill ? "w-80 max-w-full md:w-[40rem]" : ""}`}
+    >
+      <div
+        className={`flex flex-wrap items-center justify-center gap-2 ${
+          fill ? "w-full md:grid md:grid-cols-2" : "sm:gap-4"
+        }`}
+      >
+        <SegmentedControl
+          legend="Coin side to show"
+          name="viewMode"
+          fill={fill}
+          options={VIEW_MODE_OPTIONS}
+          value={viewMode}
+          onChange={onViewModeChange}
+        />
 
-          <label className="group relative cursor-pointer">
-            <input
-              type="radio"
-              name="viewMode"
-              value="reverse"
-              checked={viewMode === "reverse"}
-              onChange={(e) => onViewModeChange(e.target.value as ViewMode)}
-              className="peer sr-only"
-            />
-            <div
-              className={`w-14 rounded-full py-2 text-center text-sm font-medium transition-all duration-200 ${
-                viewMode === "reverse"
-                  ? "bg-slate-700/50 text-slate-500 shadow-sm"
-                  : "text-slate-500 hover:bg-slate-800/30 hover:text-slate-400"
-              }`}
-            >
-              Rev
-            </div>
-          </label>
-
-          <label className="group relative cursor-pointer">
-            <input
-              type="radio"
-              name="viewMode"
-              value="both"
-              checked={viewMode === "both"}
-              onChange={(e) => onViewModeChange(e.target.value as ViewMode)}
-              className="peer sr-only"
-            />
-            <div
-              className={`w-14 rounded-full py-2 text-center text-sm font-medium transition-all duration-200 ${
-                viewMode === "both"
-                  ? "bg-slate-700/50 text-slate-500 shadow-sm"
-                  : "text-slate-500 hover:bg-slate-800/30 hover:text-slate-400"
-              }`}
-            >
-              Both
-            </div>
-          </label>
-        </div>
-
-        {/* Click Mode Toggle */}
         {onClickModeChange && (
-          <div className="flex items-center rounded-full border border-slate-700/30 bg-slate-900/40 p-1 backdrop-blur-sm">
-            <label className="group relative cursor-pointer">
-              <input
-                type="radio"
-                name="clickMode"
-                value="browse"
-                checked={clickMode === "browse"}
-                onChange={(e) => onClickModeChange(e.target.value as ClickMode)}
-                className="peer sr-only"
-              />
-              <div
-                className={`w-16 rounded-full py-2 text-center text-sm font-medium transition-all duration-200 ${
-                  clickMode === "browse"
-                    ? "bg-slate-700/50 text-slate-500 shadow-sm"
-                    : "text-slate-500 hover:bg-slate-800/30 hover:text-slate-400"
-                }`}
-              >
-                Browse
-              </div>
-            </label>
-
-            <label className="group relative cursor-pointer">
-              <input
-                type="radio"
-                name="clickMode"
-                value="dive"
-                checked={clickMode === "dive"}
-                onChange={(e) => onClickModeChange(e.target.value as ClickMode)}
-                className="peer sr-only"
-              />
-              <div
-                className={`w-16 rounded-full py-2 text-center text-sm font-medium transition-all duration-200 ${
-                  clickMode === "dive"
-                    ? "bg-slate-700/50 text-slate-500 shadow-sm"
-                    : "text-slate-500 hover:bg-slate-800/30 hover:text-slate-400"
-                }`}
-              >
-                Dive
-              </div>
-            </label>
-          </div>
+          <SegmentedControl
+            legend="What clicking a coin does"
+            name="clickMode"
+            fill={fill}
+            options={CLICK_MODE_OPTIONS}
+            value={clickMode}
+            onChange={onClickModeChange}
+          />
         )}
       </div>
     </div>

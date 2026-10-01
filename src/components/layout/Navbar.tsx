@@ -273,7 +273,7 @@ export default function Navbar() {
                       "font-display inline-flex items-center border-b-2 px-1 pt-1 text-base font-normal tracking-widest uppercase transition-colors duration-200",
                       itemIsActive
                         ? "border-bronze text-bronze-light"
-                        : "hover:border-bronze/60 text-heading hover:text-bronze-light border-transparent",
+                        : "hover:border-bronze/60 text-ink hover:text-bronze-light border-transparent",
                     )}
                     aria-expanded={openMainDropdown === item.name}
                     aria-haspopup="menu"
@@ -301,7 +301,7 @@ export default function Navbar() {
                             submenuItem.hasSubmenu ? (
                               <NextLink
                                 href={withFeatureQuery(submenuItem.href)}
-                                className="font-display text-heading hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
+                                className="font-display text-ink hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
                                 onMouseEnter={() => {
                                   const submenuType = getSubmenuType(
                                     submenuItem.name,
@@ -344,7 +344,7 @@ export default function Navbar() {
                             ) : (
                               <NextLink
                                 href={withFeatureQuery(submenuItem.href)}
-                                className="font-display text-heading hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
+                                className="font-display text-ink hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
                                 onClick={(e) => {
                                   if (e.button === 0) {
                                     e.preventDefault()
@@ -386,7 +386,7 @@ export default function Navbar() {
                                       <NextLink
                                         key={nestedItem.name}
                                         href={withFeatureQuery(nestedItem.href)}
-                                        className="font-display text-heading hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
+                                        className="font-display text-ink hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
                                         onClick={(e) => {
                                           if (e.button === 0) {
                                             e.preventDefault()
@@ -428,7 +428,7 @@ export default function Navbar() {
                   "font-display border-b-2 px-1 pt-1 text-base font-normal tracking-widest uppercase transition-colors duration-200",
                   itemIsActive
                     ? "border-bronze text-bronze-light"
-                    : "hover:border-bronze/60 text-heading hover:text-bronze-light border-transparent",
+                    : "hover:border-bronze/60 text-ink hover:text-bronze-light border-transparent",
                 )}
               >
                 {item.name}

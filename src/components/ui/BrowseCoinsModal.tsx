@@ -14,6 +14,10 @@ import { generateCoinUrl } from "~/lib/utils/url-helpers"
 import { IconButton } from "./IconButton"
 import { InfoTooltip } from "./InfoTooltip"
 
+// FLIP and DEEP DIVE: Cinzel capitals on a field surface with a grey edge.
+const MODAL_BUTTON_CLASSES =
+  "font-display cursor-pointer rounded-md border border-line bg-field px-6 py-2 text-sm font-medium tracking-widest text-moonlight-bright uppercase transition-colors duration-200 hover:border-moonlight/50 hover:bg-line/50 focus-visible:ring-2 focus-visible:ring-moonlight/70 focus-visible:outline-none"
+
 type BrowseCoinsModalProps = {
   isOpen: boolean
   onClose: () => void
@@ -313,6 +317,37 @@ export function BrowseCoinsModal({
     }
   }, [isOpen, onClose, handlePrevious, handleNext, handleFlip])
 
+  // Dialog focus: move into the modal when it opens, hand focus back to the
+  // coin that opened it when it closes.
+  const dialogRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!isOpen) return
+    const opener = document.activeElement as HTMLElement | null
+    dialogRef.current?.focus()
+    return () => opener?.focus()
+  }, [isOpen])
+
+  // Keep Tab inside the modal while it is open.
+  const trapTab = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Tab") return
+    const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    )
+    if (!focusable?.length) {
+      event.preventDefault()
+      return
+    }
+    const first = focusable[0]!
+    const last = focusable[focusable.length - 1]!
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first.focus()
+    }
+  }
+
   if (!isOpen) return null
 
   // Build specs line (diameter | mass | die axis) using utility function
@@ -326,12 +361,23 @@ export function BrowseCoinsModal({
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto py-4 lg:items-center lg:py-0">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        className="bg-night/90 absolute inset-0 backdrop-blur-sm"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Modal Content */}
-      <div className="relative z-10 flex min-h-full w-full max-w-7xl p-4 lg:max-h-[90vh] lg:min-h-0 lg:p-4">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={
+          nickname?.trim() ? `${nickname.trim()}, coin details` : "Coin details"
+        }
+        tabIndex={-1}
+        onKeyDown={trapTab}
+        className="relative z-10 flex min-h-full w-full max-w-7xl p-4 focus:outline-none lg:max-h-[90vh] lg:min-h-0 lg:p-4"
+      >
         {/* Close Button */}
         <IconButton
           icon={X}
@@ -468,7 +514,7 @@ export function BrowseCoinsModal({
           </div>
 
           {/* Bottom/Right Side - Information Panel */}
-          <div className="-mx-4 -mb-4 bg-black p-6 backdrop-blur-sm lg:mx-0 lg:-mr-8 lg:mb-0 lg:max-h-[80vh] lg:flex-1 lg:overflow-y-auto lg:rounded-lg lg:p-8">
+          <div className="bg-night -mx-4 -mb-4 p-6 backdrop-blur-sm lg:mx-0 lg:-mr-8 lg:mb-0 lg:max-h-[80vh] lg:flex-1 lg:overflow-y-auto lg:rounded-lg lg:p-8">
             <div
               className={`text-center transition-opacity duration-200 ${
                 isTransitioning ? "opacity-0" : "opacity-100"
@@ -477,10 +523,7 @@ export function BrowseCoinsModal({
               {/* Mobile Buttons - Flip and Deep Dive side by side */}
               {isMobile && (
                 <div className="mb-6 flex items-center justify-center gap-4">
-                  <button
-                    onClick={handleFlip}
-                    className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
-                  >
+                  <button onClick={handleFlip} className={MODAL_BUTTON_CLASSES}>
                     FLIP
                   </button>
 
@@ -521,7 +564,7 @@ export function BrowseCoinsModal({
                         // Fallback timeout in case detection fails
                         setTimeout(() => onClose(), 3000)
                       }}
-                      className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
+                      className={MODAL_BUTTON_CLASSES}
                     >
                       {deepDiveMessage}
                     </button>
@@ -529,40 +572,37 @@ export function BrowseCoinsModal({
                 </div>
               )}
 
-              <h2 className="text-l mb-3">
+              <h2 className="text-moonlight-bright text-l mb-3">
                 {`${civ?.toUpperCase()}${civ_specific ? ` (${civ_specific})` : ""}${denomination ? ` ${denomination}` : ""}. ${mint}. ${formatYearRange(mint_year_earliest, mint_year_latest)}`}
               </h2>
 
               {/* Physical Properties Line */}
-              <p className="mb-4 text-base text-slate-400">{specs}</p>
+              <p className="text-moonlight mb-4 text-base">{specs}</p>
 
               {/* Legend */}
               <p
-                className={`mb-3 text-3xl text-slate-400 uppercase transition-opacity duration-150 ease-in-out ${isFlipFading ? "opacity-0" : "opacity-100"}`}
+                className={`text-moonlight-bright mb-3 text-3xl uppercase transition-opacity duration-150 ease-in-out ${isFlipFading ? "opacity-0" : "opacity-100"}`}
               >
                 {isReverse ? legend_r : legend_o}
               </p>
 
               {/* Description */}
               <p
-                className={`mt-2 text-base text-slate-400 transition-opacity duration-150 ease-in-out ${isFlipFading ? "opacity-0" : "opacity-100"}`}
+                className={`text-moonlight mt-2 text-base transition-opacity duration-150 ease-in-out ${isFlipFading ? "opacity-0" : "opacity-100"}`}
               >
                 {isReverse ? desc_r : desc_o}
               </p>
 
               {/* Reference */}
               <div className="mt-4">
-                <span className="text-sm text-slate-400">{reference}</span>
+                <span className="text-moonlight text-sm">{reference}</span>
               </div>
 
               {/* Action Buttons - Desktop only */}
               {!isMobile && (
                 <div className="relative mt-6 flex items-center justify-center gap-4">
                   {/* Flip Button - centered */}
-                  <button
-                    onClick={handleFlip}
-                    className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
-                  >
+                  <button onClick={handleFlip} className={MODAL_BUTTON_CLASSES}>
                     FLIP
                   </button>
 
@@ -603,7 +643,7 @@ export function BrowseCoinsModal({
                         // Fallback timeout in case detection fails
                         setTimeout(() => onClose(), 3000)
                       }}
-                      className="cursor-pointer rounded-md border border-slate-600/50 bg-slate-700/50 px-6 py-2 text-sm font-medium tracking-wider text-slate-300 transition-all duration-200 hover:border-slate-500/50 hover:bg-slate-600/50 hover:text-slate-200"
+                      className={MODAL_BUTTON_CLASSES}
                     >
                       {deepDiveMessage}
                     </button>

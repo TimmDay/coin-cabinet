@@ -14,7 +14,7 @@ type LoadingProps = {
  */
 export function Loading({
   message = "Loading...",
-  className = "coin-description text-xl",
+  className = "leading-[1.7] text-ink-muted text-xl",
   variant = "admin",
 }: LoadingProps) {
   // Component-level loading (for use within existing layouts)

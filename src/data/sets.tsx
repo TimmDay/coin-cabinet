@@ -1,3 +1,8 @@
+// Each set lists candidate images. The server and the first client render
+// both show the first one (so they always match); SetPreviewCard then swaps in
+// a random one after the page loads. Picking at random here, at module load,
+// made the server and browser disagree and React warned about a hydration
+// mismatch.
 const severanImages = [
   "z_severan_Tondo-Altes_Museum-Berlin-Germany_2017__bg",
   "z_caracalla-geta-jacques-pajou",
@@ -16,24 +21,27 @@ const severanSet = {
   name: "Severan Dynasty",
   href: "/cabinet/severan-dynasty",
   description:
-    "Coins from the Severan period (193-235 AD), featuring the imperial family that ruled during a time of military expansion and architectural achievement.",
-  image: pickRandomImage(severanImages),
+    "The African Emperor, the Syrian Empress, two loving brothers and three Julias.",
+  image: severanImages,
 }
 
 const gordySet = {
   name: "Gordy Boys",
   href: "/cabinet/gordy-boys",
   description:
-    "From the ashes of the Thrax panic rose Gordian III. Many coins were minted. The Crisis was underway.",
-  image: pickRandomImage(gordyImages),
+    "The boy who was chosen. Many coins were minted. Nothing could possiblay go wrong.",
+  image: gordyImages,
 }
 
 const imperialWomenSet = {
   name: "Imperial Women",
   href: "/cabinet/imperial-women",
   description:
-    "Celebrating the powerful women of the Roman Empire through their numismatic representations and imperial portraiture.",
-  image: pickRandomImage(imperialWomenImages),
+    // From this moment the country was transformed, and all things became subject to the control of a woman...
+    "Hers was a rigorous, almost masculine despotism.",
+  // Subject: Agrippina the Younger, wife of Claudius and mother of Nero.
+  // Source: Tacitus, The Annals, Book 12, Chapter 7.
+  image: imperialWomenImages,
 }
 
 const crisisSet = {
@@ -41,35 +49,35 @@ const crisisSet = {
   href: "/cabinet/crisis",
   description:
     "Turmoil in the Crisis of the Third Century. A rapid succession of emperors and usurpers and their coins reflect the political instability and economic chaos.",
-  image: pickRandomImage(crisisImages),
+  image: crisisImages,
 }
 const tetrachySet = {
   name: "Tetrachy",
   href: "/cabinet/tetrachy",
   description:
     "Coins from Diocletian's revolutionary four-ruler system that stabilized the empire and reformed its administration.",
-  image: pickRandomImage(tetrachyImages),
+  image: tetrachyImages,
 }
 const constantinianSet = {
   name: "Constantinian",
   href: "/cabinet/constantinian",
   description:
     "The transformative period of Constantine the Great, including the first Christian symbols on Roman coinage.",
-  image: pickRandomImage(constantinianImages),
+  image: constantinianImages,
 }
 const detectorFindsSet = {
   name: "Detector Finds",
   href: "/cabinet/detector-finds",
   description:
     "Coins recovered through detector finds, with provenance details that add context to where and how they were discovered.",
-  image: pickRandomImage(detectorFindsImages),
+  image: detectorFindsImages,
 }
 
 const adoptiveEmperorsSet = {
   name: "The Adoptive Emperors",
   href: "/cabinet/adoptive-emperors",
   description: "Five guys kept things pretty peaceful for 84 years.",
-  image: pickRandomImage(adoptiveEmperorsImages),
+  image: adoptiveEmperorsImages,
 }
 
 const silverEmperorsSet = {
@@ -77,7 +85,7 @@ const silverEmperorsSet = {
   href: "/cabinet/silver-emperors",
   description:
     "The cleanest silver observe for each emperor in the Somnus Collection",
-  image: pickRandomImage([]),
+  image: [],
 }
 
 export const featuredSets = [severanSet, gordySet, imperialWomenSet]
@@ -93,7 +101,3 @@ export const romanSets = [
   imperialWomenSet,
   silverEmperorsSet,
 ]
-
-function pickRandomImage(images: string[]) {
-  return images[Math.floor(Math.random() * images.length)]
-}

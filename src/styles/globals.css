@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme {
+@theme static {
   /* Body font for the whole app: Alegreya, a calligraphic text serif. The
      generic fallback stays sans-serif-free on purpose: a serif fallback keeps
      the page looking right while the font loads. */
@@ -11,9 +11,58 @@
   /* Roman inscriptional capitals for headings. Also usable as `font-display`. */
   --font-display: var(--font-cinzel), "Trajan Pro", Georgia, serif;
 
-  /* Headings share the body text colour: a pale cream warmed by the sunset
-     header. Change --foreground below to retint both. Also `text-heading`. */
-  --color-heading: hsl(var(--foreground));
+  /* Soft classical serif for page subtitles: `font-subtitle`. */
+  --font-subtitle: var(--font-cormorant), Georgia, serif;
+
+  /* Role tokens. Named by what they are for, not by hue, so a retint is one
+     line. Utilities: bg-surface, bg-surface-raised, bg-surface-muted,
+     border-line, text-ink, text-ink-muted, text-accent, text-map-label.
+     Headings use text-ink too.
+     `static` keeps every token in the output, so TypeScript strings (the
+     map colours) can use them as var(--color-*). */
+  --color-surface: hsl(220 15% 8%); /* page background */
+  --color-surface-raised: hsl(215 20% 12%); /* cards, non-home nav bar */
+  --color-surface-muted: hsl(215 15% 15%); /* inset areas, scrollbar track */
+  --color-line: hsl(215 15% 22%); /* borders and dividers */
+  --color-ink: hsl(32 20% 80%); /* body text: pale warm cream */
+  --color-ink-muted: hsl(210 10% 65%); /* secondary text */
+  --color-accent: hsl(36 45% 50%); /* legacy gold; to merge into bronze */
+  --color-map-label: hsl(273 46% 33%); /* map labels and popup titles */
+
+  /* The header sky, top to bottom: deep indigo, plum, mauve, dusty rose, then
+     the copper glow at the horizon. Shared by the homepage header (curved)
+     and every other page's nav bar (flat). */
+  --color-sky-top: hsl(228 20% 7%);
+  --color-sky-high: hsl(248 15% 9%);
+  --color-sky-mid: hsl(290 11% 11%);
+  --color-sky-low: hsl(340 14% 13%);
+  --color-sky-glow: hsl(22 22% 15%);
+
+  /* The footer is night, not sunset: darker than the page, with grey
+     moonlight text. Utilities: bg-night, text-moonlight. */
+  --color-night: hsl(228 22% 5%);
+  --color-moonlight: oklch(70.4% 0.04 256.788);
+
+  /* Primary text on night surfaces (the browse modal): a light cool grey, so
+     the whole panel stays in one cool temperature and the coin photo is the
+     only warm thing on screen. moonlight is its secondary text. */
+  --color-moonlight-bright: oklch(86% 0.02 256.788);
+
+  /* Form fields sit a touch lighter than the page (surface is 8% lightness). */
+  --color-field: hsl(218 17% 10%);
+
+  /* Muted text on form fields (placeholders, unselected toggles): 5.3:1 on
+     --color-field, a notch darker than moonlight but still well above the
+     4.5:1 AA minimum. */
+  --color-field-muted: oklch(64% 0.04 256.788);
+
+  /* Warm secondary text for content pages (articles): the same cream as
+     --color-ink, dimmed (about 7.9:1 on the page). The cool greys
+     (moonlight, field-muted) stay for night surfaces and UI chrome. */
+  --color-ink-soft: hsl(32 10% 62%);
+
+  /* Dusty rose-grey: page subtitles and the accent word of page titles. */
+  --color-subtitle: hsl(340 10% 62%);
 
   /* Roman sunset surfaces and accents, used by popovers and cards that sit
      on the dark page. Dusk is a deep wine-brown; its edge and the bronze
@@ -33,99 +82,29 @@
   h5,
   h6 {
     font-family: var(--font-display);
-    color: var(--color-heading);
+    color: var(--color-ink);
   }
 }
 
 /* Z-Index Design System */
 :root {
   /* Semantic z-index scale for proper layering */
-  --z-base: 1;
-  --z-sticky: 10;
   --z-controls: 20;
   --z-overlay: 30;
   --z-dropdown: 40;
   --z-tooltip: 60;
-  --z-notification: 70;
   --z-mobile-nav: 80;
   --z-map-popup: 1000;
   --z-modal: 1100;
 }
 
-/* Somnus Collection Inspired Color Palette */
-:root {
-  /* Primary - Deep slate blue/navy inspired by Somnus */
-  --background: 220 15% 8%; /* Much darker, closer to black */
-  --foreground: 32 20% 80%; /* Pale warm cream, shared by body text and headings */
-
-  /* Cards and surfaces */
-  --card: 215 20% 12%; /* Slightly lighter than background, more slate-like */
-  --card-foreground: 210 15% 96%;
-  --popover: 215 20% 12%;
-  --popover-foreground: 210 15% 96%;
-
-  /* Primary accent - Warm bronze/gold inspired by ancient coins */
-  --primary: 36 45% 50%; /* Rich bronze/gold */
-  --primary-foreground: 217 25% 14%;
-
-  /* Secondary - Muted slate */
-  --secondary: 215 18% 18%; /* Darker slate tone */
-  --secondary-foreground: 210 15% 85%;
-
-  /* Muted elements */
-  --muted: 215 15% 15%; /* Adjusted for new darker background */
-  --muted-foreground: 210 10% 65%; /* Muted text */
-
-  /* Accent - Warm copper/amber tones */
-  --accent: 25 55% 45%; /* Warm copper accent */
-  --accent-foreground: 210 15% 96%;
-
-  /* Auth accent - Purple accent for auth-related elements */
-  --auth-accent: 273 76% 76%; /* Purple-300 equivalent */
-  --auth-accent-foreground: 210 15% 96%;
-
-  /* Destructive - Warm red that fits the palette */
-  --destructive: 0 65% 55%;
-  --destructive-foreground: 210 15% 96%;
-
-  /* Borders and inputs */
-  --border: 215 15% 22%; /* Subtle border color adjusted for darker bg */
-  --input: 215 15% 22%; /* Input background */
-  --ring: 36 45% 50%; /* Focus ring matches primary */
-
-  /* Map theming colors */
-  --map-label: 273 46% 33%; /* Purple for map labels and popup titles - #6b21a8 */
-
-  --radius: 0.375rem; /* Slightly smaller radius for elegance */
-}
-
-/* Light mode override for better coin photo visibility when needed */
-.light-mode {
-  --background: 210 15% 97%;
-  --foreground: 217 25% 14%;
-  --card: 0 0% 100%;
-  --card-foreground: 217 25% 14%;
-  --border: 216 15% 85%;
-}
-
-/* Custom styles inspired by Somnus Collection */
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: var(--color-surface);
+  color: var(--color-ink);
   font-feature-settings:
     "rlig" 1,
     "calt" 1;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
-  margin: 0;
-  padding: 0;
   overflow-x: hidden; /* Prevent horizontal scroll */
-}
-
-/* Ensure no unwanted borders or margins */
-* {
-  box-sizing: border-box;
 }
 
 /* Hide native number input spinners */
@@ -145,73 +124,20 @@ main {
   outline: none;
 }
 
-/* Auth accent utility classes */
-.text-auth-accent {
-  color: hsl(var(--auth-accent));
-}
-
-.bg-auth-accent {
-  background-color: hsl(var(--auth-accent));
-}
-
-.bg-auth-accent\/90 {
-  background-color: hsl(var(--auth-accent) / 0.9);
-}
-
-.ring-auth-accent {
-  --tw-ring-color: hsl(var(--auth-accent));
-}
-
-/* Map label utility classes */
-.text-map-label {
-  color: hsl(var(--map-label));
-}
-
-/* Enhanced typography for numismatic content */
-.coin-title {
-  font-weight: 600;
-  letter-spacing: -0.025em;
-}
-
-.heading-accent {
-  color: hsl(var(--primary));
-}
-
-.coin-description {
-  line-height: 1.7;
-  color: hsl(var(--muted-foreground));
-}
-
-.body-text {
-  font-size: 1rem;
-  line-height: 1.8;
-  letter-spacing: 0.015em;
-}
-
-/* Elegant card styling */
-.somnus-card {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius);
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease;
-}
-
-.somnus-card:hover {
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border-color: hsl(var(--primary) / 0.3);
-}
-
-/* Navigation styling to match Somnus aesthetic */
-.somnus-nav,
-.somnus-nav-home {
-  background: hsl(var(--card));
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+/* Nav bar on every page except the homepage: the same sky as the homepage
+   header, flat. The glow near the bottom edge fades out over its last ~30px
+   (the same soft blur as the homepage), so the bar melts into the page. The
+   homepage header (.somnus-nav-home) curves it. */
+.somnus-nav {
+  background: linear-gradient(
+    to bottom,
+    var(--color-sky-top) 0%,
+    var(--color-sky-high) 25%,
+    var(--color-sky-mid) 42%,
+    var(--color-sky-low) calc(100% - 30px),
+    var(--color-sky-glow) calc(100% - 14px),
+    transparent 100%
+  );
 }
 
 /* Homepage header: a muted dusk sky. Deep indigo settles through plum and
@@ -256,57 +182,13 @@ main {
   pointer-events: none;
   background: radial-gradient(
     circle at 50% calc(100% - var(--sag) + var(--earth-r)),
-    hsl(22 22% 15% / 0) var(--earth-r),
-    hsl(22 22% 15%) calc(var(--earth-r) + var(--nav-h) * 0.1),
-    hsl(340 14% 13%) calc(var(--earth-r) + var(--nav-h) * 0.24),
-    hsl(290 11% 11%) calc(var(--earth-r) + var(--nav-h) * 0.42),
-    hsl(248 15% 9%) calc(var(--earth-r) + var(--nav-h) * 0.65),
-    hsl(228 20% 7%) calc(var(--earth-r) + var(--nav-h))
+    transparent var(--earth-r),
+    var(--color-sky-glow) calc(var(--earth-r) + var(--nav-h) * 0.1),
+    var(--color-sky-low) calc(var(--earth-r) + var(--nav-h) * 0.24),
+    var(--color-sky-mid) calc(var(--earth-r) + var(--nav-h) * 0.42),
+    var(--color-sky-high) calc(var(--earth-r) + var(--nav-h) * 0.65),
+    var(--color-sky-top) calc(var(--earth-r) + var(--nav-h))
   );
-}
-
-/* Somnus page title: Roman inscriptional capitals in a pale, sunset-warmed
-   cream, with a very faint shadow so the letters look cut into stone. The
-   subtitle is a soft classical serif in dusty rose-grey. Both stay muted so
-   the coin photos remain the focus. Opt in with <PageTitle variant="somnus">. */
-.somnus-title {
-  font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  text-shadow: 0 1px 1px hsl(228 20% 4% / 0.7);
-}
-
-.somnus-subtitle {
-  font-family: var(--font-cormorant), Georgia, serif;
-  letter-spacing: 0.04em;
-  color: hsl(340 10% 62%);
-}
-
-/* Button styling inspired by Somnus */
-.somnus-button {
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  border: none;
-  border-radius: var(--radius);
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.somnus-button:hover {
-  background: hsl(var(--primary) / 0.9);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.somnus-button-secondary {
-  background: hsl(var(--secondary));
-  color: hsl(var(--secondary-foreground));
-  border: 1px solid hsl(var(--border));
-}
-
-.somnus-button-secondary:hover {
-  background: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
 }
 
 /* Carousel slide animations */
@@ -329,12 +211,6 @@ main {
 }
 
 /* Semantic Z-Index Utility Classes */
-.z-base {
-  z-index: var(--z-base);
-}
-.z-sticky {
-  z-index: var(--z-sticky);
-}
 .z-controls {
   z-index: var(--z-controls);
 }
@@ -353,9 +229,6 @@ main {
 .z-tooltip {
   z-index: var(--z-tooltip);
 }
-.z-notification {
-  z-index: var(--z-notification);
-}
 
 .z-mobile-nav {
   z-index: var(--z-mobile-nav);
@@ -366,26 +239,26 @@ main {
   clip-path: polygon(25px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 25px);
 }
 
-/* Aside icon with primary color theme */
-.aside-icon-torch {
+/* Aside icons: tinted to the amber accent with a filter chain */
+.aside-icon-torch,
+.aside-icon-gladius {
   position: absolute;
-  top: 1px;
   left: 12px;
   filter: brightness(0) saturate(100%) invert(53%) sepia(96%) saturate(1480%)
     hue-rotate(21deg) brightness(101%) contrast(91%);
 }
 
+.aside-icon-torch {
+  top: 1px;
+}
+
 .aside-icon-gladius {
-  position: absolute;
   top: 10px;
-  left: 12px;
-  filter: brightness(0) saturate(100%) invert(53%) sepia(96%) saturate(1480%)
-    hue-rotate(21deg) brightness(101%) contrast(91%);
 }
 
 /* Aside icon background matching body */
 .aside-icon-bg {
-  background-color: hsl(var(--background));
+  background-color: var(--color-surface);
 }
 
 /* Custom scrollbar styles - subtle and dark */
@@ -394,23 +267,24 @@ main {
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
+  background: var(--color-surface-muted);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
+  background: color-mix(in srgb, var(--color-ink-muted) 30%, transparent);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: color-mix(in srgb, var(--color-ink-muted) 50%, transparent);
 }
 
 /* Firefox scrollbar styles */
 * {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--muted));
+  scrollbar-color: color-mix(in srgb, var(--color-ink-muted) 30%, transparent)
+    var(--color-surface-muted);
 }
 
 /* Mobile navigation opacity styles */
@@ -465,97 +339,9 @@ main {
   }
 }
 
-/* Leaflet control styling - darken zoom controls and attribution */
-.leaflet-control-zoom {
-  background: hsl(var(--card)) !important;
-  border: 1px solid hsl(var(--border)) !important;
-  border-radius: var(--radius) !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-}
-
-.leaflet-control-zoom a {
-  background: hsl(var(--card)) !important;
-  color: hsl(var(--foreground)) !important;
-  border: none !important;
-  border-radius: 0 !important;
-  text-decoration: none !important;
-  font-size: 16px !important;
-  line-height: 26px !important;
-  width: 26px !important;
-  height: 26px !important;
-  text-align: center !important;
-}
-
-.leaflet-control-zoom a:hover {
-  background: hsl(var(--accent)) !important;
-  color: hsl(var(--accent-foreground)) !important;
-}
-
-.leaflet-control-zoom a:first-child {
-  border-top-left-radius: var(--radius) !important;
-  border-top-right-radius: var(--radius) !important;
-}
-
-.leaflet-control-zoom a:last-child {
-  border-bottom-left-radius: var(--radius) !important;
-  border-bottom-right-radius: var(--radius) !important;
-}
-
-/* Leaflet attribution styling - darken and blend with theme */
-.leaflet-control-attribution {
-  background: hsl(var(--card) / 0.9) !important;
-  color: hsl(var(--muted-foreground)) !important;
-  border: 1px solid hsl(var(--border)) !important;
-  font-size: 11px !important;
-  padding: 2px 5px !important;
-  -webkit-backdrop-filter: blur(4px) !important;
-  backdrop-filter: blur(4px) !important;
-}
-
-.leaflet-control-attribution a {
-  color: hsl(var(--muted-foreground)) !important;
-  text-decoration: none !important;
-}
-
-.leaflet-control-attribution a:hover {
-  color: hsl(var(--foreground)) !important;
-  text-decoration: underline !important;
-}
-
 /* iOS Safe Area Support - ensure content doesn't get hidden behind iOS UI */
 @supports (padding: env(safe-area-inset-top)) {
   .safe-area-inset-top {
     padding-top: env(safe-area-inset-top);
   }
-
-  .pb-safe {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
-  }
-
-  .pb-safe-extra {
-    padding-bottom: max(1.5rem, calc(env(safe-area-inset-bottom) + 0.5rem));
-  }
-}
-
-/* Fallback for browsers that don't support env() */
-.pb-safe {
-  padding-bottom: 1rem;
-}
-
-.pb-safe-extra {
-  padding-bottom: 1.5rem;
-}
-
-/* Mobile form actions that extend beyond viewport to eliminate gaps */
-.mobile-form-actions {
-  bottom: -2rem;
-}
-
-.mobile-form-actions-padding {
-  padding-bottom: max(3rem, calc(env(safe-area-inset-bottom) + 2rem));
-}
-
-/* Fallback for browsers that don't support env() */
-.mobile-form-actions-padding {
-  padding-bottom: 3rem;
 }

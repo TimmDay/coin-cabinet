@@ -24,8 +24,6 @@ Versions below reflect `package.json` at the time of writing. Run
 |---|---|---|---|
 | `@supabase/supabase-js` | ^2.116.0 | Postgres client (query builder, RLS-aware auth context) against the Supabase-hosted DB. | Drizzle or Prisma talking directly to the Postgres connection string, bypassing Supabase's client layer — bigger migration, would also mean re-implementing RLS-aware auth context manually. |
 | `@supabase/ssr` | ^0.8.0 | Cookie-based Supabase client for Next.js server components/route handlers. | Would need a hand-rolled cookie-forwarding client if dropped. |
-| `@supabase/auth-ui-react` | ^0.4.7 | Prebuilt login form UI. | **Currently unused** — no imports found anywhere in `src/`. Left over from before the admin/auth surface was removed; candidate for deletion rather than replacement. |
-| `@supabase/auth-ui-shared` | ^0.1.8 | Theming helper for `auth-ui-react`. | Same as above — unused, drop alongside it. |
 | `@tanstack/react-query` | ^5.102.8 | Client-side data fetching, caching, and request de-duplication. | SWR is the closest equivalent; would mean rewriting every `useQuery` hook in `src/api/`. |
 | `@tanstack/react-query-devtools` | ^5.102.8 | Dev-only devtools panel for React Query. | None needed — trivial to remove if it were ever a burden. |
 | `@t3-oss/env-nextjs` | ^0.12.0 | Validates env vars against a Zod schema at build/boot time (`src/env.js`), catching missing config before runtime. | Hand-rolled `zod.parse(process.env)` — this package is a thin, low-risk wrapper around that. |
@@ -36,21 +34,11 @@ Versions below reflect `package.json` at the time of writing. Run
 
 | Package | Version | Purpose | Alternatives |
 |---|---|---|---|
-| `@radix-ui/react-navigation-menu` | ^1.2.22 | Accessible, unstyled nav-menu primitive (keyboard nav, focus management) behind the site's dropdown navigation. | Headless UI, Ariakit, or a hand-rolled `<nav>` with manual ARIA — Radix was chosen for its accessibility guarantees out of the box. |
-| `@radix-ui/react-slot` | ^1.3.3 | Enables the `asChild` polymorphic-component pattern used by a few UI components. | Manual `React.forwardRef` composition — more boilerplate per component. |
-| `class-variance-authority` | ^0.7.1 | Defines Tailwind class variants (size/intent/etc.) for components in a structured, typed way. | Hand-written conditional class strings; cva just keeps that consistent as components grow. |
 | `clsx` | ^2.1.1 | Conditionally joins className strings. | `classnames` (near-identical, clsx is the smaller/faster fork). |
 | `tailwind-merge` | ^3.6.0 | Resolves conflicting Tailwind utility classes when composing className props (e.g. a caller's `p-4` overriding a component's default `p-2`). | Without it, conflicting classes silently duplicate in the DOM and whichever Tailwind emits last in the stylesheet wins — used everywhere `cn()` is used. |
 | `tailwindcss` / `@tailwindcss/postcss` | ^4.3.3 | Utility-first CSS framework and its PostCSS integration. | Vanilla CSS Modules or another utility framework (UnoCSS) — would touch nearly every component file. |
 | `postcss` | ^8.5.28 | CSS transform pipeline Tailwind runs on. | Required transitively by Tailwind; not independently replaceable. |
-| `lucide-react` | ^0.544.0 | Icon set used across the nav, forms, and cards. | Heroicons or react-icons — icon components are used by name, so swapping is mechanical but touches many files. |
-
-## Forms
-
-| Package | Version | Purpose | Alternatives |
-|---|---|---|---|
-| `react-hook-form` | ^7.87.0 | Form state, validation wiring, and submit handling. | Formik — heavier and slower for large forms; RHF was chosen for its uncontrolled-input performance. |
-| `@hookform/resolvers` | ^5.9.1 | Adapter that lets `react-hook-form` validate against Zod schemas. | Only needed as long as both RHF and Zod are in use; dropping either drops this too. |
+| `lucide-react` | ^0.544.0 | Icon set used across the nav, filters, and cards. | Heroicons or react-icons — icon components are used by name, so swapping is mechanical but touches many files. |
 
 ## Maps
 
@@ -82,13 +70,10 @@ Versions below reflect `package.json` at the time of writing. Run
 | `@storybook/addon-a11y` | ^9.1.20 | Flags accessibility issues on components inside Storybook. | axe-core run standalone in CI instead. |
 | `@storybook/addon-onboarding` | ^9.1.20 | First-run Storybook tutorial UI. | Safe to remove — not used once the team is past onboarding. |
 | `@chromatic-com/storybook` | ^4.1.3 | Visual regression testing service integration for Storybook. | Percy, or dropping visual regression testing entirely. |
-| `eslint-plugin-storybook` | ^9.1.20 | Lint rules specific to `.stories.tsx` files. | Tied to Storybook; drop together. |
 | `eslint` | ^9.39.5 | Linter core. | Biome — a newer, faster all-in-one linter/formatter; would replace both eslint and (partially) prettier. |
 | `eslint-config-next` | ^16.3.4 | Next.js's recommended ESLint rule set. | Hand-assembled rule config — this exists specifically to avoid that. |
-| `@eslint/eslintrc` | ^3.3.7 | Compatibility shim letting flat-config ESLint load any remaining legacy `.eslintrc`-style config/plugins. | Only needed until every plugin in use ships native flat-config support. |
 | `typescript-eslint` | ^8.70.0 | TypeScript-aware lint rules. | Required as long as eslint + TypeScript are both in use. |
 | `prettier` | ^3.9.6 | Code formatter. | Biome (see eslint entry) — would consolidate two tools into one. |
 | `prettier-plugin-tailwindcss` | ^0.6.14 | Sorts Tailwind utility classes into a canonical order on format. | Manual class ordering — error-prone at this project's component count. |
-| `tsx` | ^4.23.13 | Runs TypeScript files directly without a separate compile step. | **No script in this repo currently invokes it directly** — likely a transitive need of tooling above, or a leftover from scaffolding. Worth confirming before assuming it's load-bearing. |
 | `@types/node` | ^20.19.43 | Node.js type definitions. | Pinned to the Node major version this project targets. |
 | `@types/react` / `@types/react-dom` | ^19.3.0 | Type definitions for React. | Tied to whichever React major is installed. |

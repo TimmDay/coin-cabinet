@@ -26,8 +26,7 @@ export function BPImage({
   className = "",
 }: BPImageProps) {
   const baseImageClasses = "rounded-lg shadow-lg"
-  const baseCaptionClasses =
-    "mt-3 text-sm text-slate-400 italic leading-relaxed"
+  const baseCaptionClasses = "mt-3 text-sm text-ink-soft italic leading-relaxed"
 
   // Function to calculate optimal image dimensions based on layout
   const getOptimalDimensions = (layoutType: string) => {

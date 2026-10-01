@@ -258,10 +258,10 @@ export default function HomeNavbar() {
                     }}
                     onKeyDown={(e) => handleKeyDown(e, item.name)}
                     className={cn(
-                      "inline-flex items-center border-b-2 px-1 pt-1 font-display text-base font-normal tracking-widest uppercase transition-colors duration-200",
+                      "font-display inline-flex items-center border-b-2 px-1 pt-1 text-base font-normal tracking-widest uppercase transition-colors duration-200",
                       itemIsActive
                         ? "border-bronze text-bronze-light"
-                        : "hover:border-bronze/60 text-heading hover:text-bronze-light border-transparent",
+                        : "hover:border-bronze/60 text-ink hover:text-bronze-light border-transparent",
                     )}
                     aria-expanded={openMainDropdown === item.name}
                     aria-haspopup="menu"
@@ -278,7 +278,7 @@ export default function HomeNavbar() {
 
                   {openMainDropdown === item.name && (
                     <div
-                      className="bg-dusk border-dusk-edge/60 z-dropdown rounded-lg border absolute top-full right-0 min-w-max shadow-lg"
+                      className="bg-dusk border-dusk-edge/60 z-dropdown absolute top-full right-0 min-w-max rounded-lg border shadow-lg"
                       onMouseEnter={() => handleMainDropdownEnter(item.name)}
                       onMouseLeave={handleMainDropdownLeave}
                     >
@@ -289,7 +289,7 @@ export default function HomeNavbar() {
                             submenuItem.hasSubmenu ? (
                               <NextLink
                                 href={withFeatureQuery(submenuItem.href)}
-                                className="flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left font-display text-base font-normal tracking-widest whitespace-nowrap uppercase text-heading transition-colors duration-150 hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light focus:outline-none"
+                                className="font-display text-ink hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
                                 onMouseEnter={() => {
                                   const submenuType = getSubmenuType(
                                     submenuItem.name,
@@ -310,7 +310,9 @@ export default function HomeNavbar() {
                                 onClick={(e) => {
                                   if (e.button === 0) {
                                     e.preventDefault()
-                                    router.push(withFeatureQuery(submenuItem.href))
+                                    router.push(
+                                      withFeatureQuery(submenuItem.href),
+                                    )
                                     setOpenMainDropdown(null)
                                     setOpenSubmenu(null)
                                   }
@@ -323,18 +325,20 @@ export default function HomeNavbar() {
                               >
                                 <span>{submenuItem.name}</span>
                                 <ChevronRight
-                                  className="h-3 w-3 text-bronze"
+                                  className="text-bronze h-3 w-3"
                                   aria-hidden="true"
                                 />
                               </NextLink>
                             ) : (
                               <NextLink
                                 href={withFeatureQuery(submenuItem.href)}
-                                className="block w-full cursor-pointer rounded-md px-3 py-2 text-left font-display text-base font-normal tracking-widest whitespace-nowrap uppercase text-heading transition-colors duration-150 hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light focus:outline-none"
+                                className="font-display text-ink hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
                                 onClick={(e) => {
                                   if (e.button === 0) {
                                     e.preventDefault()
-                                    router.push(withFeatureQuery(submenuItem.href))
+                                    router.push(
+                                      withFeatureQuery(submenuItem.href),
+                                    )
                                     setOpenMainDropdown(null)
                                     setOpenSubmenu(null)
                                   }
@@ -352,7 +356,7 @@ export default function HomeNavbar() {
                             getSubmenuType(submenuItem.name) &&
                             openSubmenu === getSubmenuType(submenuItem.name) ? (
                               <div
-                                className="bg-dusk border-dusk-edge/60 z-dropdown rounded-lg border absolute top-0 right-full mr-1 min-w-max shadow-lg"
+                                className="bg-dusk border-dusk-edge/60 z-dropdown absolute top-0 right-full mr-1 min-w-max rounded-lg border shadow-lg"
                                 onMouseEnter={() => {
                                   const submenuType = getSubmenuType(
                                     submenuItem.name,
@@ -370,11 +374,13 @@ export default function HomeNavbar() {
                                       <NextLink
                                         key={nestedItem.name}
                                         href={withFeatureQuery(nestedItem.href)}
-                                        className="block w-full cursor-pointer rounded-md px-3 py-2 text-left font-display text-base font-normal tracking-widest whitespace-nowrap uppercase text-heading transition-colors duration-150 hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light focus:outline-none"
+                                        className="font-display text-ink hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
                                         onClick={(e) => {
                                           if (e.button === 0) {
                                             e.preventDefault()
-                                            router.push(withFeatureQuery(nestedItem.href))
+                                            router.push(
+                                              withFeatureQuery(nestedItem.href),
+                                            )
                                             setOpenMainDropdown(null)
                                             setOpenSubmenu(null)
                                           }
@@ -407,10 +413,10 @@ export default function HomeNavbar() {
                 key={item.name}
                 href={withFeatureQuery(item.href)}
                 className={cn(
-                  "border-b-2 px-1 pt-1 font-display text-base font-normal tracking-widest uppercase transition-colors duration-200",
+                  "font-display border-b-2 px-1 pt-1 text-base font-normal tracking-widest uppercase transition-colors duration-200",
                   itemIsActive
                     ? "border-bronze text-bronze-light"
-                    : "hover:border-bronze/60 text-heading hover:text-bronze-light border-transparent",
+                    : "hover:border-bronze/60 text-ink hover:text-bronze-light border-transparent",
                 )}
               >
                 {item.name}

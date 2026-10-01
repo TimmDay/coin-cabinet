@@ -18,7 +18,9 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
       <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
         <div className="content-wrapper">
           <div className="text-center">
-            <p className="coin-description text-xl">Loading coin details...</p>
+            <p className="text-ink-muted text-xl leading-[1.7]">
+              Loading coin details...
+            </p>
           </div>
         </div>
       </main>
