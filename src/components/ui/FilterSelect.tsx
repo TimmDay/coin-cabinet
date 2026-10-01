@@ -14,7 +14,7 @@ type FilterSelectProps = {
 }
 
 const OPTION_CLASSES =
-  "w-full px-4 py-2.5 text-left text-base focus-visible:bg-dusk-edge/30 focus-visible:outline-none"
+  "w-full px-4 py-2.5 text-left text-base focus-visible:bg-line/60 focus-visible:outline-none"
 
 /**
  * A select built as a disclosure: a button that shows the current choice and
@@ -92,26 +92,24 @@ export function FilterSelect({
         </span>
         <span
           aria-hidden={!selectedOption}
-          className={`block truncate ${selectedOption ? "text-ink" : "text-ink-muted"}`}
+          className={`block truncate ${selectedOption ? "text-ink" : "text-moonlight"}`}
         >
           {selectedOption?.label ?? placeholder}
         </span>
       </button>
       <ChevronDown
-        className={`text-bronze pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        className={`text-moonlight pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
         aria-hidden="true"
       />
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="bg-dusk border-dusk-edge/60 z-dropdown absolute mt-1 max-h-60 w-full overflow-auto rounded-lg border shadow-lg">
+        <div className="bg-surface-raised border-line z-dropdown absolute mt-1 max-h-60 w-full overflow-auto rounded-lg border shadow-lg">
           <button
             type="button"
             aria-current={!value ? "true" : undefined}
             className={`${OPTION_CLASSES} ${
-              !value
-                ? "bg-bronze/15 text-bronze-light"
-                : "text-ink-muted hover:bg-dusk-edge/30"
+              !value ? "bg-line text-ink" : "text-moonlight hover:bg-line/50"
             }`}
             onClick={() => handleSelect("")}
           >
@@ -124,8 +122,8 @@ export function FilterSelect({
               aria-current={value === option.value ? "true" : undefined}
               className={`${OPTION_CLASSES} ${
                 value === option.value
-                  ? "bg-bronze/15 text-bronze-light"
-                  : "text-ink hover:bg-dusk-edge/30"
+                  ? "bg-line text-ink"
+                  : "text-ink hover:bg-line/50"
               }`}
               onClick={() => handleSelect(option.value)}
             >

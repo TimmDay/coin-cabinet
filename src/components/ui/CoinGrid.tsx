@@ -249,7 +249,7 @@ export function CoinGrid({
     <>
       {/* Controls row */}
       {showSearch ? (
-        <div className="flex flex-col items-center gap-3">
+        <div className="mb-12 flex flex-col items-center gap-3">
           <ViewModeControls
             viewMode={viewMode}
             onViewModeChange={setViewMode}
@@ -297,12 +297,14 @@ export function CoinGrid({
           </div>
         </div>
       ) : (
-        <ViewModeControls
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          clickMode={clickMode}
-          onClickModeChange={setClickMode}
-        />
+        <div className="mb-8">
+          <ViewModeControls
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            clickMode={clickMode}
+            onClickModeChange={setClickMode}
+          />
+        </div>
       )}
 
       {/* Loading state */}

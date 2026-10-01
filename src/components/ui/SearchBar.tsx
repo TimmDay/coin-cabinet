@@ -25,7 +25,7 @@ export function SearchBar({
         className={FILTER_CONTROL_CLASSES}
       />
       <svg
-        className="text-bronze pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"
+        className="text-moonlight pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

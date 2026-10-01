@@ -34,7 +34,7 @@ export function FilterYear({
       <button
         type="button"
         onClick={() => onChange("")}
-        className="text-bronze hover:text-bronze-light focus-visible:ring-bronze-light/70 absolute top-1/2 right-3 -translate-y-1/2 rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none"
+        className="text-moonlight hover:text-ink focus-visible:ring-moonlight/70 absolute top-1/2 right-3 -translate-y-1/2 rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none"
         aria-label={`Clear ${label}`}
       >
         <Calendar className="h-4 w-4" aria-hidden="true" />

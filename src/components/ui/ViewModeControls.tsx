@@ -21,7 +21,7 @@ type SegmentedControlProps<T extends string> = {
 /**
  * A pill of radio buttons. Real radios under the visible labels, so arrow
  * keys, grouping and state work natively; the fieldset names the group, and
- * the focused option gets a visible bronze ring.
+ * the focused option gets a visible moonlight ring.
  */
 function SegmentedControl<T extends string>({
   legend,
@@ -31,7 +31,7 @@ function SegmentedControl<T extends string>({
   onChange,
 }: SegmentedControlProps<T>) {
   return (
-    <fieldset className="border-dusk-edge/60 bg-dusk flex items-center rounded-full border p-1">
+    <fieldset className="border-line bg-surface-raised flex items-center rounded-full border p-1">
       <legend className="sr-only">{legend}</legend>
       {options.map((option) => (
         <label key={option.value} className="relative cursor-pointer">
@@ -44,10 +44,10 @@ function SegmentedControl<T extends string>({
             className="peer sr-only"
           />
           <div
-            className={`peer-focus-visible:ring-bronze-light/70 rounded-full px-4 py-2 text-center text-base transition-colors duration-200 peer-focus-visible:ring-2 ${
+            className={`peer-focus-visible:ring-moonlight/70 rounded-full px-4 py-2 text-center text-base transition-colors duration-200 peer-focus-visible:ring-2 ${
               value === option.value
-                ? "bg-bronze/20 text-bronze-light"
-                : "text-ink-muted hover:bg-dusk-edge/30 hover:text-ink"
+                ? "bg-line text-ink"
+                : "text-moonlight hover:bg-line/50 hover:text-ink"
             }`}
           >
             {option.label}
