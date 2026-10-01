@@ -98,6 +98,7 @@ export function CoinRow({
                     width={480}
                     height={480}
                     priority={priority && currentMobileImageIndex === 0}
+                    trim
                   />
                 )}
               </div>
