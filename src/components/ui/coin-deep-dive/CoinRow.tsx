@@ -4,6 +4,7 @@ import { useState } from "react"
 import CloudinaryImage from "~/components/CloudinaryImage"
 import { FormattedLegendExpanded } from "~/components/FormattedLegendExpanded"
 import type { Device } from "~/database/schema-devices"
+import { CoinClockTips, DEMO_CLOCK_NOTES } from "./CoinClockTips"
 import { DescriptionWithDeviceHighlights } from "./DescriptionWithDeviceHighlights"
 import { ImageModal } from "./ImageModal"
 
@@ -102,39 +103,12 @@ export function CoinRow({
               </div>
             </div>
 
-            {/* Mini-image buttons for switching (only show if there are multiple images, mobile/tablet only) */}
-            {availableImages.length > 1 && (
-              <div className="absolute top-2 right-2 flex translate-x-1/2 flex-col gap-1 lg:hidden">
-                {availableImages.map(
-                  (image, index) =>
-                    index !== currentMobileImageIndex && (
-                      <button
-                        key={index}
-                        className="artemis-card flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-slate-600 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setCurrentMobileImageIndex(index)
-                        }}
-                        aria-label={`Switch to ${image.label} image`}
-                      >
-                        <div className="h-full w-full overflow-hidden rounded-full">
-                          <CloudinaryImage
-                            src={image.src}
-                            alt={`${image.label} thumbnail`}
-                            width={44}
-                            height={44}
-                          />
-                        </div>
-                      </button>
-                    ),
-                )}
-              </div>
-            )}
+            <CoinClockTips notes={DEMO_CLOCK_NOTES} />
           </div>
         </div>
 
         {/* Text content */}
-        {hasAnyText && (
+        {(hasAnyText || availableImages.length > 1) && (
           <div className="flex flex-col space-y-2 text-center lg:w-[420px] xl:w-[480px]">
             {legendExpanded && (
               <p className="font-display text-lg tracking-wide break-words text-slate-400 xl:text-xl">
@@ -164,9 +138,9 @@ export function CoinRow({
               </p>
             )}
 
-            {/* Switcher buttons for desktop */}
+            {/* Switcher buttons for alternate images */}
             {availableImages.length > 1 && (
-              <div className="mt-4 hidden flex-row justify-center gap-2 lg:flex">
+              <div className="mt-4 flex flex-row justify-center gap-2">
                 {availableImages.map((image, index) => (
                   <button
                     key={index}
