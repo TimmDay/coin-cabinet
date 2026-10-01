@@ -83,8 +83,9 @@ Each step is its own commit. Steps 1 to 3 change nothing visible.
    - [ ] Move the remaining custom classes (`.coin-description`,
      `.coin-title`, `.heading-accent`, `.somnus-*`) into utilities or
      `@layer components`.
-3. [ ] Foundation: role tokens in `@theme static` with the same values,
-   repoint every consumer, delete the `:root` triplets.
+3. [x] Foundation: role tokens in `@theme static` with the same values,
+   repoint every consumer, delete the `:root` triplets. Done. The old
+   `--background`, `--card`, `--primary` and friends no longer exist.
 4. [ ] Per-area visual passes, one at a time, each reviewed by eye: non-home
    nav bar, cards and modals, filters and form controls, articles, map,
    deep dive.

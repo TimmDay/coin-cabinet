@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme {
+@theme static {
   /* Body font for the whole app: Alegreya, a calligraphic text serif. The
      generic fallback stays sans-serif-free on purpose: a serif fallback keeps
      the page looking right while the font loads. */
@@ -11,9 +11,22 @@
   /* Roman inscriptional capitals for headings. Also usable as `font-display`. */
   --font-display: var(--font-cinzel), "Trajan Pro", Georgia, serif;
 
-  /* Headings share the body text colour: a pale cream warmed by the sunset
-     header. Change --foreground below to retint both. Also `text-heading`. */
-  --color-heading: hsl(var(--foreground));
+  /* Role tokens. Named by what they are for, not by hue, so a retint is one
+     line. Utilities: bg-surface, bg-surface-raised, bg-surface-muted,
+     border-line, text-ink, text-ink-muted, text-accent, text-map-label.
+     `static` keeps every token in the output, so TypeScript strings (the
+     map colours) can use them as var(--color-*). */
+  --color-surface: hsl(220 15% 8%); /* page background */
+  --color-surface-raised: hsl(215 20% 12%); /* cards, non-home nav bar */
+  --color-surface-muted: hsl(215 15% 15%); /* inset areas, scrollbar track */
+  --color-line: hsl(215 15% 22%); /* borders and dividers */
+  --color-ink: hsl(32 20% 80%); /* body text: pale warm cream */
+  --color-ink-muted: hsl(210 10% 65%); /* secondary text */
+  --color-accent: hsl(36 45% 50%); /* legacy gold; to merge into bronze */
+  --color-map-label: hsl(273 46% 33%); /* map labels and popup titles */
+
+  /* Headings share the body text colour. Also `text-heading`. */
+  --color-heading: var(--color-ink);
 
   /* Roman sunset surfaces and accents, used by popovers and cards that sit
      on the dark page. Dusk is a deep wine-brown; its edge and the bronze
@@ -49,53 +62,10 @@
   --z-modal: 1100;
 }
 
-/* Somnus Collection Inspired Color Palette */
-:root {
-  /* Primary - Deep slate blue/navy inspired by Somnus */
-  --background: 220 15% 8%; /* Much darker, closer to black */
-  --foreground: 32 20% 80%; /* Pale warm cream, shared by body text and headings */
-
-  /* Cards and surfaces */
-  --card: 215 20% 12%; /* Slightly lighter than background, more slate-like */
-  --card-foreground: 210 15% 96%;
-  --popover: 215 20% 12%;
-  --popover-foreground: 210 15% 96%;
-
-  /* Primary accent - Warm bronze/gold inspired by ancient coins */
-  --primary: 36 45% 50%; /* Rich bronze/gold */
-  --primary-foreground: 217 25% 14%;
-
-  /* Secondary - Muted slate */
-  --secondary: 215 18% 18%; /* Darker slate tone */
-  --secondary-foreground: 210 15% 85%;
-
-  /* Muted elements */
-  --muted: 215 15% 15%; /* Adjusted for new darker background */
-  --muted-foreground: 210 10% 65%; /* Muted text */
-
-  /* Accent - Warm copper/amber tones */
-  --accent: 25 55% 45%; /* Warm copper accent */
-  --accent-foreground: 210 15% 96%;
-
-  /* Destructive - Warm red that fits the palette */
-  --destructive: 0 65% 55%;
-  --destructive-foreground: 210 15% 96%;
-
-  /* Borders and inputs */
-  --border: 215 15% 22%; /* Subtle border color adjusted for darker bg */
-  --input: 215 15% 22%; /* Input background */
-  --ring: 36 45% 50%; /* Focus ring matches primary */
-
-  /* Map theming colors */
-  --map-label: 273 46% 33%; /* Purple for map labels and popup titles - #6b21a8 */
-
-  --radius: 0.375rem; /* Slightly smaller radius for elegance */
-}
-
 /* Custom styles inspired by Somnus Collection */
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: var(--color-surface);
+  color: var(--color-ink);
   font-feature-settings:
     "rlig" 1,
     "calt" 1;
@@ -124,11 +94,6 @@ main {
   outline: none;
 }
 
-/* Map label utility classes */
-.text-map-label {
-  color: hsl(var(--map-label));
-}
-
 /* Enhanced typography for numismatic content */
 .coin-title {
   font-weight: 600;
@@ -136,19 +101,19 @@ main {
 }
 
 .heading-accent {
-  color: hsl(var(--primary));
+  color: var(--color-accent);
 }
 
 .coin-description {
   line-height: 1.7;
-  color: hsl(var(--muted-foreground));
+  color: var(--color-ink-muted);
 }
 
 /* Elegant card styling */
 .somnus-card {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-line);
+  border-radius: 0.375rem;
   box-shadow:
     0 1px 3px 0 rgba(0, 0, 0, 0.1),
     0 1px 2px 0 rgba(0, 0, 0, 0.06);
@@ -159,13 +124,13 @@ main {
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border-color: hsl(var(--primary) / 0.3);
+  border-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
 }
 
 /* Navigation styling to match Somnus aesthetic */
 .somnus-nav,
 .somnus-nav-home {
-  background: hsl(var(--card));
+  background: var(--color-surface-raised);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
@@ -306,7 +271,7 @@ main {
 
 /* Aside icon background matching body */
 .aside-icon-bg {
-  background-color: hsl(var(--background));
+  background-color: var(--color-surface);
 }
 
 /* Custom scrollbar styles - subtle and dark */
@@ -315,23 +280,24 @@ main {
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
+  background: var(--color-surface-muted);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
+  background: color-mix(in srgb, var(--color-ink-muted) 30%, transparent);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: color-mix(in srgb, var(--color-ink-muted) 50%, transparent);
 }
 
 /* Firefox scrollbar styles */
 * {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--muted));
+  scrollbar-color: color-mix(in srgb, var(--color-ink-muted) 30%, transparent)
+    var(--color-surface-muted);
 }
 
 /* Mobile navigation opacity styles */
