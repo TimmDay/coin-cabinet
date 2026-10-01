@@ -71,6 +71,19 @@ function sanitizeCssDimension(value: string, fallback: string): string {
   return /^[0-9a-zA-Z.%(),\s-]+$/.test(value) ? value : fallback
 }
 
+// Start with the attribution ("i" button: OpenFreeMap, OpenStreetMap,
+// MapLibre) closed. MapLibre's compact attribution control opens itself
+// when it is added and only closes on the first drag, with no option to
+// start closed, so do what that drag handler does: drop the "show" class.
+// The credit stays one click away on the button. The control keeps its
+// "maplibregl-compact" class, so a later resize will not reopen it.
+function collapseAttribution(map: MapLibreMap) {
+  map
+    .getContainer()
+    .querySelector(".maplibregl-ctrl-attrib")
+    ?.classList.remove("maplibregl-compact-show")
+}
+
 // Hide the basemap style's own modern place-name labels (cities, towns,
 // countries, ...) -- they're anachronistic clutter next to a Roman
 // province overlay. Matched by source-layer rather than a hardcoded list
@@ -866,6 +879,7 @@ export const Map: React.FC<MapProps> = ({
                 setMapLoaded(true)
                 updateViewportBounds(e.target)
                 hideModernPlaceLabels(e.target)
+                collapseAttribution(e.target)
               }}
               onZoomEnd={(e) => {
                 setCurrentZoom(e.viewState.zoom)
