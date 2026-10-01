@@ -30,12 +30,14 @@ export function FeaturedSets({
     <div className={`w-full ${className}`}>
       <h2 className="mb-6 text-center text-2xl font-semibold">{title}</h2>
 
-      <div className="flex flex-wrap items-start justify-center gap-4 sm:gap-6 lg:gap-8">
+      {/* Three across from tablet up, a single stacked column below: never a
+          2+1 wrap. auto-rows-fr keeps every card the same height. */}
+      <div className="grid auto-rows-fr grid-cols-1 justify-items-center gap-4 md:grid-cols-3 lg:gap-8">
         {sets.map((set) => (
           <SetPreviewCard
             key={set.name}
             {...set}
-            className="max-w-[280px] min-w-[200px] flex-1 sm:max-w-[300px] sm:min-w-[220px]"
+            className="w-full max-w-[280px] sm:max-w-[300px]"
           />
         ))}
       </div>

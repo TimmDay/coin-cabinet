@@ -16,7 +16,9 @@ type SetPreviewCardProps = {
 
 /**
  * A set's card: a near-black night surface with a grey edge, the set's image
- * (dimmed 40%), its name in Cinzel capitals and a short description. Used for
+ * (dimmed 40%), its name in Cinzel capitals and a short description (always
+ * three lines tall unless fullDescription, so cards match however little text
+ * one has). Used for
  * the Featured Sets on the homepage and the grid on /cabinet.
  */
 export function SetPreviewCard({
@@ -55,7 +57,7 @@ export function SetPreviewCard({
         <div className="text-center">
           <h3 className="mb-2 text-base tracking-widest uppercase">{name}</h3>
           <p
-            className={`text-ink/75 text-base leading-relaxed ${fullDescription ? "" : "line-clamp-3"}`}
+            className={`text-ink/75 text-base leading-relaxed ${fullDescription ? "" : "line-clamp-3 min-h-[4.875rem]"}`}
           >
             {description}
           </p>
