@@ -78,6 +78,7 @@ export function Quip({ children, label = "More info" }: QuipProps) {
   const wrapperRef = useRef<HTMLSpanElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const popoverRef = useRef<HTMLSpanElement>(null)
+  const boxRef = useRef<HTMLSpanElement>(null)
 
   const dismiss = useCallback(() => {
     setHovered(false)
@@ -109,11 +110,37 @@ export function Quip({ children, label = "More info" }: QuipProps) {
     }
   }, [open, dismiss])
 
-  // Keep the popover inside the viewport. Measured before paint, so there is
-  // no flicker.
+  // Fit the box to its text, then keep it inside the viewport. Measured before
+  // paint, so there is no flicker.
   useLayoutEffect(() => {
     const popover = popoverRef.current
-    if (!open || !popover) return
+    const box = boxRef.current
+    if (!open || !popover || !box) return
+
+    // When text wraps at the width cap, the box stays at the cap and the
+    // longest line is shorter, leaving dead space on the right. CSS cannot
+    // shrink a box to its wrapped text, so measure the widest line and set
+    // the width to match. text-balance evens the lines out first.
+    box.style.width = ""
+    const range = document.createRange()
+    range.selectNodeContents(box)
+    const lineWidths = Array.from(range.getClientRects?.() ?? []).map(
+      (r) => r.width,
+    )
+    const widest = Math.max(0, ...lineWidths)
+    if (widest > 0) {
+      const style = getComputedStyle(box)
+      const chrome =
+        parseFloat(style.paddingLeft) +
+        parseFloat(style.paddingRight) +
+        parseFloat(style.borderLeftWidth) +
+        parseFloat(style.borderRightWidth)
+      // +1px of slack so sub-pixel rounding cannot re-wrap the last word.
+      const fitted = Math.ceil(widest + chrome) + 1
+      if (fitted < box.getBoundingClientRect().width) {
+        box.style.width = `${fitted}px`
+      }
+    }
 
     const rect = popover.getBoundingClientRect()
     const overflow = rect.right - (window.innerWidth - VIEWPORT_MARGIN)
@@ -163,7 +190,10 @@ export function Quip({ children, label = "More info" }: QuipProps) {
             tabIndex={-1}
             className="z-tooltip absolute bottom-full left-1/2 block w-max max-w-[min(20rem,calc(100vw-2rem))] pb-2 focus:outline-none"
           >
-            <span className="text-heading border-dusk-edge/70 bg-dusk/96 block rounded-lg border px-4 py-3 text-left text-lg leading-relaxed font-normal whitespace-normal shadow-lg backdrop-blur-sm">
+            <span
+              ref={boxRef}
+              className="text-heading border-dusk-edge/70 bg-dusk/96 block rounded-lg border px-4 py-3 text-left text-lg leading-relaxed font-normal text-balance whitespace-normal shadow-lg backdrop-blur-sm"
+            >
               {children}
             </span>
           </span>
