@@ -270,10 +270,10 @@ export default function Navbar() {
                     }}
                     onKeyDown={(e) => handleKeyDown(e, item.name)}
                     className={cn(
-                      "inline-flex items-center border-b-2 px-1 pt-1 text-base font-normal transition-colors duration-200",
+                      "font-display inline-flex items-center border-b-2 px-1 pt-1 text-base font-normal tracking-widest uppercase transition-colors duration-200",
                       itemIsActive
-                        ? "border-transparent text-slate-500"
-                        : "hover:border-primary/50 border-transparent text-slate-300 hover:text-slate-500",
+                        ? "border-bronze text-bronze-light"
+                        : "hover:border-bronze/60 text-heading hover:text-bronze-light border-transparent",
                     )}
                     aria-expanded={openMainDropdown === item.name}
                     aria-haspopup="menu"
@@ -290,7 +290,7 @@ export default function Navbar() {
 
                   {openMainDropdown === item.name && (
                     <div
-                      className="somnus-card z-dropdown absolute top-full left-0 min-w-max shadow-lg"
+                      className="bg-dusk border-dusk-edge/60 z-dropdown absolute top-full left-0 min-w-max rounded-lg border shadow-lg"
                       onMouseEnter={() => handleMainDropdownEnter(item.name)}
                       onMouseLeave={handleMainDropdownLeave}
                     >
@@ -301,7 +301,7 @@ export default function Navbar() {
                             submenuItem.hasSubmenu ? (
                               <NextLink
                                 href={withFeatureQuery(submenuItem.href)}
-                                className="flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                                className="font-display text-heading hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
                                 onMouseEnter={() => {
                                   const submenuType = getSubmenuType(
                                     submenuItem.name,
@@ -322,7 +322,9 @@ export default function Navbar() {
                                 onClick={(e) => {
                                   if (e.button === 0) {
                                     e.preventDefault()
-                                    router.push(withFeatureQuery(submenuItem.href))
+                                    router.push(
+                                      withFeatureQuery(submenuItem.href),
+                                    )
                                     setOpenMainDropdown(null)
                                     setOpenSubmenu(null)
                                   }
@@ -335,18 +337,20 @@ export default function Navbar() {
                               >
                                 <span>{submenuItem.name}</span>
                                 <ChevronRight
-                                  className="h-3 w-3 text-gray-400"
+                                  className="text-bronze h-3 w-3"
                                   aria-hidden="true"
                                 />
                               </NextLink>
                             ) : (
                               <NextLink
                                 href={withFeatureQuery(submenuItem.href)}
-                                className="block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                                className="font-display text-heading hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
                                 onClick={(e) => {
                                   if (e.button === 0) {
                                     e.preventDefault()
-                                    router.push(withFeatureQuery(submenuItem.href))
+                                    router.push(
+                                      withFeatureQuery(submenuItem.href),
+                                    )
                                     setOpenMainDropdown(null)
                                     setOpenSubmenu(null)
                                   }
@@ -364,7 +368,7 @@ export default function Navbar() {
                             getSubmenuType(submenuItem.name) &&
                             openSubmenu === getSubmenuType(submenuItem.name) ? (
                               <div
-                                className="somnus-card z-dropdown absolute top-0 left-full ml-1 min-w-max shadow-lg"
+                                className="bg-dusk border-dusk-edge/60 z-dropdown absolute top-0 left-full ml-1 min-w-max rounded-lg border shadow-lg"
                                 onMouseEnter={() => {
                                   const submenuType = getSubmenuType(
                                     submenuItem.name,
@@ -382,11 +386,13 @@ export default function Navbar() {
                                       <NextLink
                                         key={nestedItem.name}
                                         href={withFeatureQuery(nestedItem.href)}
-                                        className="block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                                        className="font-display text-heading hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
                                         onClick={(e) => {
                                           if (e.button === 0) {
                                             e.preventDefault()
-                                            router.push(withFeatureQuery(nestedItem.href))
+                                            router.push(
+                                              withFeatureQuery(nestedItem.href),
+                                            )
                                             setOpenMainDropdown(null)
                                             setOpenSubmenu(null)
                                           }
@@ -419,10 +425,10 @@ export default function Navbar() {
                 key={item.name}
                 href={withFeatureQuery(item.href)}
                 className={cn(
-                  "border-b-2 px-1 pt-1 text-base font-normal transition-colors duration-200",
+                  "font-display border-b-2 px-1 pt-1 text-base font-normal tracking-widest uppercase transition-colors duration-200",
                   itemIsActive
-                    ? "border-transparent text-slate-500"
-                    : "hover:border-primary/50 border-transparent text-slate-300 hover:text-slate-500",
+                    ? "border-bronze text-bronze-light"
+                    : "hover:border-bronze/60 text-heading hover:text-bronze-light border-transparent",
                 )}
               >
                 {item.name}

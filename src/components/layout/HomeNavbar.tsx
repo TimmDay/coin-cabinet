@@ -258,10 +258,10 @@ export default function HomeNavbar() {
                     }}
                     onKeyDown={(e) => handleKeyDown(e, item.name)}
                     className={cn(
-                      "inline-flex items-center border-b-2 px-1 pt-1 text-base font-normal transition-colors duration-200",
+                      "inline-flex items-center border-b-2 px-1 pt-1 font-display text-base font-normal tracking-widest uppercase transition-colors duration-200",
                       itemIsActive
-                        ? "border-transparent text-slate-500"
-                        : "hover:border-primary/50 border-transparent text-slate-300 hover:text-slate-500",
+                        ? "border-bronze text-bronze-light"
+                        : "hover:border-bronze/60 text-heading hover:text-bronze-light border-transparent",
                     )}
                     aria-expanded={openMainDropdown === item.name}
                     aria-haspopup="menu"
@@ -278,7 +278,7 @@ export default function HomeNavbar() {
 
                   {openMainDropdown === item.name && (
                     <div
-                      className="somnus-card z-dropdown absolute top-full right-0 min-w-max shadow-lg"
+                      className="bg-dusk border-dusk-edge/60 z-dropdown rounded-lg border absolute top-full right-0 min-w-max shadow-lg"
                       onMouseEnter={() => handleMainDropdownEnter(item.name)}
                       onMouseLeave={handleMainDropdownLeave}
                     >
@@ -289,7 +289,7 @@ export default function HomeNavbar() {
                             submenuItem.hasSubmenu ? (
                               <NextLink
                                 href={withFeatureQuery(submenuItem.href)}
-                                className="flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                                className="flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left font-display text-base font-normal tracking-widest whitespace-nowrap uppercase text-heading transition-colors duration-150 hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light focus:outline-none"
                                 onMouseEnter={() => {
                                   const submenuType = getSubmenuType(
                                     submenuItem.name,
@@ -323,14 +323,14 @@ export default function HomeNavbar() {
                               >
                                 <span>{submenuItem.name}</span>
                                 <ChevronRight
-                                  className="h-3 w-3 text-gray-400"
+                                  className="h-3 w-3 text-bronze"
                                   aria-hidden="true"
                                 />
                               </NextLink>
                             ) : (
                               <NextLink
                                 href={withFeatureQuery(submenuItem.href)}
-                                className="block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                                className="block w-full cursor-pointer rounded-md px-3 py-2 text-left font-display text-base font-normal tracking-widest whitespace-nowrap uppercase text-heading transition-colors duration-150 hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light focus:outline-none"
                                 onClick={(e) => {
                                   if (e.button === 0) {
                                     e.preventDefault()
@@ -352,7 +352,7 @@ export default function HomeNavbar() {
                             getSubmenuType(submenuItem.name) &&
                             openSubmenu === getSubmenuType(submenuItem.name) ? (
                               <div
-                                className="somnus-card z-dropdown absolute top-0 right-full mr-1 min-w-max shadow-lg"
+                                className="bg-dusk border-dusk-edge/60 z-dropdown rounded-lg border absolute top-0 right-full mr-1 min-w-max shadow-lg"
                                 onMouseEnter={() => {
                                   const submenuType = getSubmenuType(
                                     submenuItem.name,
@@ -370,7 +370,7 @@ export default function HomeNavbar() {
                                       <NextLink
                                         key={nestedItem.name}
                                         href={withFeatureQuery(nestedItem.href)}
-                                        className="block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal whitespace-nowrap text-slate-300 transition-colors duration-150 hover:bg-amber-500/10 hover:text-amber-300 focus:bg-amber-500/10 focus:text-amber-300 focus:outline-none"
+                                        className="block w-full cursor-pointer rounded-md px-3 py-2 text-left font-display text-base font-normal tracking-widest whitespace-nowrap uppercase text-heading transition-colors duration-150 hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light focus:outline-none"
                                         onClick={(e) => {
                                           if (e.button === 0) {
                                             e.preventDefault()
@@ -407,10 +407,10 @@ export default function HomeNavbar() {
                 key={item.name}
                 href={withFeatureQuery(item.href)}
                 className={cn(
-                  "border-b-2 px-1 pt-1 text-base font-normal transition-colors duration-200",
+                  "border-b-2 px-1 pt-1 font-display text-base font-normal tracking-widest uppercase transition-colors duration-200",
                   itemIsActive
-                    ? "border-transparent text-slate-500"
-                    : "hover:border-primary/50 border-transparent text-slate-300 hover:text-slate-500",
+                    ? "border-bronze text-bronze-light"
+                    : "hover:border-bronze/60 text-heading hover:text-bronze-light border-transparent",
                 )}
               >
                 {item.name}
