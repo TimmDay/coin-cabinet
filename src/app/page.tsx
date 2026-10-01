@@ -40,7 +40,6 @@ export default function HomePage() {
           <div className="max-w-[580px]">
             <div className="mx-auto max-w-3xl justify-center lg:max-w-4xl">
               {homePageText(text.welcome)}
-              {homePageText(text.thanks)}
             </div>
           </div>
 
@@ -48,6 +47,8 @@ export default function HomePage() {
           <div className="w-full max-w-4xl">
             <FeaturedSets sets={featuredSets} />
           </div>
+
+          <div className="max-w-[580px]">{homePageText(text.thanks)}</div>
           {/* <div> */}
           {/* \TODO: contact form */}
           {/* </div> */}
