@@ -36,10 +36,10 @@ export function FeaturedSets({
           <Link
             key={set.name}
             href={set.href}
-            className="group max-w-[280px] min-w-[200px] flex-1 transition-transform hover:scale-105 sm:max-w-[300px] sm:min-w-[220px]"
+            className="group focus-visible:ring-bronze-light/70 max-w-[280px] min-w-[200px] flex-1 rounded-lg transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:outline-none motion-reduce:transition-none motion-reduce:hover:scale-100 sm:max-w-[300px] sm:min-w-[220px]"
           >
-            <div className="flex flex-col rounded-lg border border-slate-700/50 bg-slate-800/30 p-4 transition-colors hover:border-slate-600/70">
-              <div className="mb-3 flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-700/20">
+            <div className="bg-dusk border-dusk-edge/60 group-hover:border-bronze flex flex-col rounded-lg border p-4 transition-colors">
+              <div className="from-dusk-edge/40 to-dusk mb-3 flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br">
                 {set.image ? (
                   <div className="relative h-full w-full">
                     <CldImage
@@ -53,16 +53,16 @@ export function FeaturedSets({
                     <div className="absolute inset-0 bg-black/40" />
                   </div>
                 ) : (
-                  <div className="px-2 text-center text-sm font-medium text-amber-300/60">
+                  <div className="text-bronze px-2 text-center text-sm font-medium">
                     {set.name}
                   </div>
                 )}
               </div>
               <div className="text-center">
-                <p className="mb-2 text-sm font-medium text-slate-300">
+                <h3 className="group-hover:text-bronze-light mb-2 text-base tracking-widest uppercase transition-colors">
                   {set.name}
-                </p>
-                <p className="line-clamp-3 text-xs leading-relaxed text-slate-400">
+                </h3>
+                <p className="text-heading/75 line-clamp-3 text-base leading-relaxed">
                   {set.description}
                 </p>
               </div>
