@@ -16,8 +16,7 @@ export default function HomePage() {
     <>
       {/* Hide the root layout navbar and use HomeNavbar instead */}
       <style jsx global>{`
-        .somnus-nav,
-        .somnus-footer {
+        .somnus-nav {
           display: none;
         }
       `}</style>
