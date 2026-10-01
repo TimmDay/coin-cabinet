@@ -182,12 +182,6 @@ main {
   color: hsl(var(--muted-foreground));
 }
 
-.body-text {
-  font-size: 1rem;
-  line-height: 1.8;
-  letter-spacing: 0.015em;
-}
-
 /* Elegant card styling */
 .somnus-card {
   background: hsl(var(--card));
