@@ -28,6 +28,15 @@
   /* Headings share the body text colour. Also `text-heading`. */
   --color-heading: var(--color-ink);
 
+  /* The header sky, top to bottom: deep indigo, plum, mauve, dusty rose, then
+     the copper glow at the horizon. Shared by the homepage header (curved)
+     and every other page's nav bar (flat). */
+  --color-sky-top: hsl(228 20% 7%);
+  --color-sky-high: hsl(248 15% 9%);
+  --color-sky-mid: hsl(290 11% 11%);
+  --color-sky-low: hsl(340 14% 13%);
+  --color-sky-glow: hsl(22 22% 15%);
+
   /* Roman sunset surfaces and accents, used by popovers and cards that sit
      on the dark page. Dusk is a deep wine-brown; its edge and the bronze
      tones echo the copper glow of the homepage header.
@@ -128,11 +137,19 @@ main {
 }
 
 /* Navigation styling to match Somnus aesthetic */
-.somnus-nav,
-.somnus-nav-home {
-  background: var(--color-surface-raised);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+/* Nav bar on every page except the homepage: the same sky as the homepage
+   header, flat. The glow near the bottom edge fades out over its last ~30px
+   (the same soft blur as the homepage), so the bar melts into the page. The homepage header (.somnus-nav-home) curves it. */
+.somnus-nav {
+  background: linear-gradient(
+    to bottom,
+    var(--color-sky-top) 0%,
+    var(--color-sky-high) 25%,
+    var(--color-sky-mid) 42%,
+    var(--color-sky-low) calc(100% - 30px),
+    var(--color-sky-glow) calc(100% - 14px),
+    transparent 100%
+  );
 }
 
 /* Homepage header: a muted dusk sky. Deep indigo settles through plum and
@@ -177,12 +194,12 @@ main {
   pointer-events: none;
   background: radial-gradient(
     circle at 50% calc(100% - var(--sag) + var(--earth-r)),
-    hsl(22 22% 15% / 0) var(--earth-r),
-    hsl(22 22% 15%) calc(var(--earth-r) + var(--nav-h) * 0.1),
-    hsl(340 14% 13%) calc(var(--earth-r) + var(--nav-h) * 0.24),
-    hsl(290 11% 11%) calc(var(--earth-r) + var(--nav-h) * 0.42),
-    hsl(248 15% 9%) calc(var(--earth-r) + var(--nav-h) * 0.65),
-    hsl(228 20% 7%) calc(var(--earth-r) + var(--nav-h))
+    transparent var(--earth-r),
+    var(--color-sky-glow) calc(var(--earth-r) + var(--nav-h) * 0.1),
+    var(--color-sky-low) calc(var(--earth-r) + var(--nav-h) * 0.24),
+    var(--color-sky-mid) calc(var(--earth-r) + var(--nav-h) * 0.42),
+    var(--color-sky-high) calc(var(--earth-r) + var(--nav-h) * 0.65),
+    var(--color-sky-top) calc(var(--earth-r) + var(--nav-h))
   );
 }
 

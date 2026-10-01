@@ -86,9 +86,11 @@ Each step is its own commit. Steps 1 to 3 change nothing visible.
 3. [x] Foundation: role tokens in `@theme static` with the same values,
    repoint every consumer, delete the `:root` triplets. Done. The old
    `--background`, `--card`, `--primary` and friends no longer exist.
-4. [ ] Per-area visual passes, one at a time, each reviewed by eye: non-home
-   nav bar, cards and modals, filters and form controls, articles, map,
-   deep dive.
+4. [ ] Per-area visual passes, one at a time, each reviewed by eye:
+   - [x] Nav bar on every page: the homepage sky (shared `--color-sky-*`
+     tokens), flat, with the same soft glow at the bottom edge.
+   - [ ] Cards and modals, filters and form controls, articles, map, deep
+     dive.
 5. [ ] Map colours from one `colors.ts`.
 6. [ ] Resolve the 4 `dark:` variants. Tailwind's default `dark` variant
    follows the OS setting, so they do fire. Keep the dark value as the base.
