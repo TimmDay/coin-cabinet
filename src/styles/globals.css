@@ -1,19 +1,28 @@
 @import "tailwindcss";
 
 @theme {
+  /* Body font for the whole app: Alegreya, a calligraphic text serif. The
+     generic fallback stays sans-serif-free on purpose: a serif fallback keeps
+     the page looking right while the font loads. */
   --font-sans:
-    var(--font-poppins), ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    var(--font-alegreya), Georgia, ui-serif, serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   /* Roman inscriptional capitals for headings. Also usable as `font-display`. */
   --font-display: var(--font-cinzel), "Trajan Pro", Georgia, serif;
 
-  /* Readable serif for running prose. Also usable as `font-prose`. */
-  --font-prose: var(--font-alegreya), Georgia, serif;
+  /* Headings share the body text colour: a pale cream warmed by the sunset
+     header. Change --foreground below to retint both. Also `text-heading`. */
+  --color-heading: hsl(var(--foreground));
 
-  /* One colour for every heading on the dark page: a pale cream warmed by the
-     sunset header. Also usable as `text-heading`. */
-  --color-heading: hsl(32 20% 80%);
+  /* Roman sunset surfaces and accents, used by popovers and cards that sit
+     on the dark page. Dusk is a deep wine-brown; its edge and the bronze
+     tones echo the copper glow of the homepage header.
+     Utilities: bg-dusk, border-dusk-edge, text-bronze, text-bronze-light. */
+  --color-dusk: hsl(345 20% 10%);
+  --color-dusk-edge: hsl(22 26% 28%);
+  --color-bronze: hsl(22 24% 48%);
+  --color-bronze-light: hsl(30 35% 68%);
 }
 
 @layer base {
@@ -47,7 +56,7 @@
 :root {
   /* Primary - Deep slate blue/navy inspired by Somnus */
   --background: 220 15% 8%; /* Much darker, closer to black */
-  --foreground: 210 12% 88%; /* Less bright, softer off-white */
+  --foreground: 32 20% 80%; /* Pale warm cream, shared by body text and headings */
 
   /* Cards and surfaces */
   --card: 215 20% 12%; /* Slightly lighter than background, more slate-like */
@@ -174,11 +183,9 @@ main {
 }
 
 .body-text {
-  font-family: var(--font-prose);
   font-size: 1rem;
   line-height: 1.8;
   letter-spacing: 0.015em;
-  color: var(--color-heading);
 }
 
 /* Elegant card styling */
