@@ -37,6 +37,11 @@
   --color-sky-low: hsl(340 14% 13%);
   --color-sky-glow: hsl(22 22% 15%);
 
+  /* The footer is night, not sunset: darker than the page, with grey
+     moonlight text. Utilities: bg-night, text-moonlight. */
+  --color-night: hsl(228 22% 5%);
+  --color-moonlight: oklch(70.4% 0.04 256.788);
+
   /* Roman sunset surfaces and accents, used by popovers and cards that sit
      on the dark page. Dusk is a deep wine-brown; its edge and the bronze
      tones echo the copper glow of the homepage header.
