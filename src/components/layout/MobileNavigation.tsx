@@ -217,7 +217,7 @@ export function MobileNavigation() {
       {/* Slide-in menu */}
       <div
         className={cn(
-          "z-mobile-nav fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-slate-900 shadow-2xl transition-transform duration-300 ease-out lg:hidden",
+          "z-mobile-nav bg-dusk fixed top-0 left-0 h-full w-80 max-w-[85vw] shadow-2xl transition-transform duration-300 ease-out lg:hidden",
           isOpen ? "translate-x-0" : "-translate-x-full",
         )}
         role="dialog"
@@ -225,11 +225,11 @@ export function MobileNavigation() {
         aria-label="Mobile navigation"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-700 p-4">
+        <div className="border-dusk-edge/60 flex items-center justify-between border-b p-4">
           <div className="flex items-center space-x-3">
             <button
               onClick={isMainMenu ? closeMenu : goBack}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-slate-300 transition-colors hover:bg-slate-800 hover:text-slate-100"
+              className="text-heading hover:bg-dusk-edge/30 hover:text-bronze-light focus-visible:ring-bronze-light/70 flex h-8 w-8 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none"
               aria-label={isMainMenu ? "Close navigation" : "Go back"}
               disabled={isAnimating}
             >
@@ -293,18 +293,20 @@ export function MobileNavigation() {
                           }
                         }}
                         className={cn(
-                          "flex w-full items-center justify-between rounded-lg p-3 text-left transition-colors duration-200",
+                          "focus-visible:ring-bronze-light/70 flex w-full items-center justify-between rounded-lg p-3 text-left transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none",
                           isActive
-                            ? "bg-amber-500/20 text-amber-300"
-                            : "text-slate-300 hover:bg-slate-800 hover:text-slate-100",
+                            ? "bg-bronze/15 text-bronze-light"
+                            : "text-heading hover:bg-dusk-edge/30 hover:text-bronze-light",
                         )}
                         style={{
                           pointerEvents: isAnimating ? "none" : "auto",
                         }}
                       >
-                        <span className="font-medium">{item.name}</span>
+                        <span className="font-display text-base font-medium tracking-widest uppercase">
+                          {item.name}
+                        </span>
                         {item.hasSubmenu && (
-                          <ChevronRight className="h-4 w-4 text-slate-400" />
+                          <ChevronRight className="text-bronze h-4 w-4" />
                         )}
                       </NextLink>
                     )
@@ -323,7 +325,7 @@ export function MobileNavigation() {
       {/* Mobile burger button - only show on mobile */}
       <button
         onClick={openMenu}
-        className="flex items-center justify-center p-2 text-slate-300 hover:text-slate-100 lg:hidden"
+        className="text-heading hover:text-bronze-light focus-visible:ring-bronze-light/70 flex items-center justify-center rounded-full p-2 focus-visible:ring-2 focus-visible:outline-none lg:hidden"
         aria-label="Open navigation menu"
         aria-expanded={isOpen}
       >
