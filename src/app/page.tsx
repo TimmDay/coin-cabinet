@@ -59,7 +59,7 @@ export default function HomePage() {
 
 function homePageText(copy: string) {
   return (
-    <p className="mx-auto mb-6 text-left text-[1.125rem] leading-[1.8] tracking-[0.015em] whitespace-pre-line">
+    <p className="mx-auto mb-6 text-left text-[1.125rem] leading-[1.8] tracking-[0.015em]">
       {withQuips(copy, text)}
     </p>
   )
