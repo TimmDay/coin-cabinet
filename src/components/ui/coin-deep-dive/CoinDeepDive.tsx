@@ -329,35 +329,37 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
 
   return (
     <section className="w-full space-y-8 md:space-y-12 md:overflow-x-hidden">
-      {/* Coin Row Components */}
-      {coin.image_link_o && (
-        <CoinRow
-          side="obverse"
-          imageLink={coin.image_link_o}
-          imageLinkAltlight={coin.image_link_altlight_o}
-          imageLinkSketch={coin.image_link_sketch_o}
-          legendExpanded={coin.legend_o_expanded || coin.legend_o}
-          legendTranslation={coin.legend_o_translation}
-          description={coin.desc_o}
-          flavourText={coin.flavour_obv}
-          devices={obvDevices}
-          priority={true}
-        />
-      )}
+      {/* Obverse and reverse: stacked on small screens, side by side on desktop */}
+      <div className="flex flex-col gap-8 md:gap-12 lg:flex-row lg:items-start lg:justify-center lg:gap-12">
+        {coin.image_link_o && (
+          <CoinRow
+            side="obverse"
+            imageLink={coin.image_link_o}
+            imageLinkAltlight={coin.image_link_altlight_o}
+            imageLinkSketch={coin.image_link_sketch_o}
+            legendExpanded={coin.legend_o_expanded || coin.legend_o}
+            legendTranslation={coin.legend_o_translation}
+            description={coin.desc_o}
+            flavourText={coin.flavour_obv}
+            devices={obvDevices}
+            priority={true}
+          />
+        )}
 
-      {coin.image_link_r && (
-        <CoinRow
-          side="reverse"
-          imageLink={coin.image_link_r}
-          imageLinkAltlight={coin.image_link_altlight_r}
-          imageLinkSketch={coin.image_link_sketch_r}
-          legendExpanded={coin.legend_r_expanded || coin.legend_r}
-          legendTranslation={coin.legend_r_translation}
-          description={coin.desc_r}
-          flavourText={coin.flavour_rev}
-          devices={revDevices}
-        />
-      )}
+        {coin.image_link_r && (
+          <CoinRow
+            side="reverse"
+            imageLink={coin.image_link_r}
+            imageLinkAltlight={coin.image_link_altlight_r}
+            imageLinkSketch={coin.image_link_sketch_r}
+            legendExpanded={coin.legend_r_expanded || coin.legend_r}
+            legendTranslation={coin.legend_r_translation}
+            description={coin.desc_r}
+            flavourText={coin.flavour_rev}
+            devices={revDevices}
+          />
+        )}
+      </div>
 
       {/* Map Section */}
       {shouldShowMap && (

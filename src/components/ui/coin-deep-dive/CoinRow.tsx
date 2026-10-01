@@ -75,7 +75,7 @@ export function CoinRow({
   return (
     <div className="mx-auto max-w-7xl">
       {/* All screen sizes: Single Image with Mini-Image Buttons */}
-      <div className="flex flex-col space-y-4 lg:flex-row lg:flex-wrap lg:items-center lg:justify-center lg:gap-8 lg:space-y-0">
+      <div className="flex flex-col space-y-4 lg:items-center lg:space-y-6">
         {/* Images Section */}
         <div className="flex justify-center px-2 lg:flex-shrink-0 lg:px-0">
           <div className="relative w-full max-w-md lg:h-[420px] lg:w-[420px] lg:max-w-none xl:h-[480px] xl:w-[480px]">
@@ -135,7 +135,7 @@ export function CoinRow({
 
         {/* Text content */}
         {hasAnyText && (
-          <div className="flex flex-col space-y-2 text-center lg:w-[420px] lg:justify-center xl:w-[480px]">
+          <div className="flex flex-col space-y-2 text-center lg:w-[420px] xl:w-[480px]">
             {legendExpanded && (
               <p className="font-display text-lg tracking-wide break-words text-slate-400 xl:text-xl">
                 <FormattedLegendExpanded text={legendExpanded} />
