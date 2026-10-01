@@ -1,5 +1,5 @@
 import { type Metadata } from "next"
-import { Cinzel, Cormorant_Garamond, Poppins } from "next/font/google"
+import { Alegreya, Cinzel, Cormorant_Garamond, Poppins } from "next/font/google"
 import Navbar from "~/components/layout/Navbar"
 import { PageWrapper } from "~/components/layout/PageWrapper"
 import { ReactQueryProvider } from "~/components/providers/react-query-provider"
@@ -33,13 +33,19 @@ const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
 })
 
+// Calligraphic text serif, open and readable, for the homepage body copy.
+const alegreya = Alegreya({
+  subsets: ["latin"],
+  variable: "--font-alegreya",
+})
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${cinzel.variable} ${cormorant.variable}`}
+      className={`${poppins.variable} ${cinzel.variable} ${cormorant.variable} ${alegreya.variable}`}
     >
       <body>
         <ReactQueryProvider>

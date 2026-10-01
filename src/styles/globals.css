@@ -8,6 +8,9 @@
   /* Roman inscriptional capitals for headings. Also usable as `font-display`. */
   --font-display: var(--font-cinzel), "Trajan Pro", Georgia, serif;
 
+  /* Readable serif for running prose. Also usable as `font-prose`. */
+  --font-prose: var(--font-alegreya), Georgia, serif;
+
   /* One colour for every heading on the dark page: a pale cream warmed by the
      sunset header. Also usable as `text-heading`. */
   --color-heading: hsl(32 20% 80%);
@@ -171,10 +174,11 @@ main {
 }
 
 .body-text {
+  font-family: var(--font-prose);
   font-size: 1rem;
   line-height: 1.8;
   letter-spacing: 0.015em;
-  color: hsl(var(--muted-foreground));
+  color: var(--color-heading);
 }
 
 /* Elegant card styling */
