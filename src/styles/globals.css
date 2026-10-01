@@ -42,6 +42,11 @@
   --color-night: hsl(228 22% 5%);
   --color-moonlight: oklch(70.4% 0.04 256.788);
 
+  /* Primary text on night surfaces (the browse modal): a light cool grey, so
+     the whole panel stays in one cool temperature and the coin photo is the
+     only warm thing on screen. moonlight is its secondary text. */
+  --color-moonlight-bright: oklch(86% 0.02 256.788);
+
   /* Form fields sit a touch lighter than the page (surface is 8% lightness). */
   --color-field: hsl(218 17% 10%);
 

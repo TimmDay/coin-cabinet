@@ -97,7 +97,9 @@ Each step is its own commit. Steps 1 to 3 change nothing visible.
    - [x] Modals: the browse modal (the pop-up in "Browse" click mode) uses
      the night surface, cream text, Cinzel buttons and the field/line/
      moonlight palette, and is a proper dialog (role and name, focus moves in
-     and back, Tab stays inside). The unused CoinInfoModal was deleted.
+     and back, Tab stays inside). Its text is all cool grey (`moonlight-bright`
+     and `moonlight`), so the coin photo is the only warm thing on screen. The
+     unused CoinInfoModal was deleted.
      `ImageModal` belongs to the deep dive pass and the drawers to the map
      pass.
    - [ ] Cards, other form controls, articles. Map and deep dive have their

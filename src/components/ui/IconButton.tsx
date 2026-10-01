@@ -15,7 +15,7 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
     ref,
   ) => {
     const baseClasses =
-      "flex items-center justify-center cursor-pointer rounded-full border border-line bg-field/80 text-ink transition-colors hover:bg-line/60 focus-visible:ring-2 focus-visible:ring-moonlight/70 focus-visible:outline-none disabled:opacity-50"
+      "flex items-center justify-center cursor-pointer rounded-full border border-line bg-field/80 text-moonlight-bright transition-colors hover:bg-line/60 focus-visible:ring-2 focus-visible:ring-moonlight/70 focus-visible:outline-none disabled:opacity-50"
 
     const variantClasses = {
       default: "p-2",

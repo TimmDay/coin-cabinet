@@ -16,7 +16,7 @@ import { InfoTooltip } from "./InfoTooltip"
 
 // FLIP and DEEP DIVE: Cinzel capitals on a field surface with a grey edge.
 const MODAL_BUTTON_CLASSES =
-  "font-display cursor-pointer rounded-md border border-line bg-field px-6 py-2 text-sm font-medium tracking-widest text-ink uppercase transition-colors duration-200 hover:border-moonlight/50 hover:bg-line/50 focus-visible:ring-2 focus-visible:ring-moonlight/70 focus-visible:outline-none"
+  "font-display cursor-pointer rounded-md border border-line bg-field px-6 py-2 text-sm font-medium tracking-widest text-moonlight-bright uppercase transition-colors duration-200 hover:border-moonlight/50 hover:bg-line/50 focus-visible:ring-2 focus-visible:ring-moonlight/70 focus-visible:outline-none"
 
 type BrowseCoinsModalProps = {
   isOpen: boolean
@@ -572,7 +572,7 @@ export function BrowseCoinsModal({
                 </div>
               )}
 
-              <h2 className="text-l mb-3">
+              <h2 className="text-moonlight-bright text-l mb-3">
                 {`${civ?.toUpperCase()}${civ_specific ? ` (${civ_specific})` : ""}${denomination ? ` ${denomination}` : ""}. ${mint}. ${formatYearRange(mint_year_earliest, mint_year_latest)}`}
               </h2>
 
@@ -581,7 +581,7 @@ export function BrowseCoinsModal({
 
               {/* Legend */}
               <p
-                className={`text-ink mb-3 text-3xl uppercase transition-opacity duration-150 ease-in-out ${isFlipFading ? "opacity-0" : "opacity-100"}`}
+                className={`text-moonlight-bright mb-3 text-3xl uppercase transition-opacity duration-150 ease-in-out ${isFlipFading ? "opacity-0" : "opacity-100"}`}
               >
                 {isReverse ? legend_r : legend_o}
               </p>

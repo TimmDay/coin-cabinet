@@ -31,7 +31,7 @@ export function InfoTooltip({
             setShowTooltip(false)
           }
         }}
-        className="border-line bg-field text-moonlight hover:border-moonlight/50 hover:bg-line/50 hover:text-ink focus-visible:ring-moonlight/70 cursor-pointer rounded-full border p-2 transition-all duration-200 focus-visible:ring-2 focus-visible:outline-none"
+        className="border-line bg-field text-moonlight hover:border-moonlight/50 hover:bg-line/50 hover:text-moonlight-bright focus-visible:ring-moonlight/70 cursor-pointer rounded-full border p-2 transition-all duration-200 focus-visible:ring-2 focus-visible:outline-none"
         aria-label="Show additional information"
         aria-expanded={showTooltip}
         aria-describedby={showTooltip ? id : undefined}
@@ -45,7 +45,7 @@ export function InfoTooltip({
           ref={tooltipRef}
           id={id}
           role="tooltip"
-          className="z-tooltip border-line bg-night/95 text-ink absolute bottom-full left-1/2 mb-3 w-80 -translate-x-1/2 rounded-lg border p-4 text-sm shadow-lg backdrop-blur-sm sm:w-96 lg:top-1/2 lg:right-full lg:bottom-auto lg:left-auto lg:mr-3 lg:mb-0 lg:w-80 lg:translate-x-0 lg:-translate-y-1/2"
+          className="z-tooltip border-line bg-night/95 text-moonlight-bright absolute bottom-full left-1/2 mb-3 w-80 -translate-x-1/2 rounded-lg border p-4 text-sm shadow-lg backdrop-blur-sm sm:w-96 lg:top-1/2 lg:right-full lg:bottom-auto lg:left-auto lg:mr-3 lg:mb-0 lg:w-80 lg:translate-x-0 lg:-translate-y-1/2"
           tabIndex={-1}
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
