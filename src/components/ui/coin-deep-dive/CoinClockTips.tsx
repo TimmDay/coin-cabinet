@@ -19,7 +19,7 @@ export const DEMO_CLOCK_NOTES: ClockNote[] = [
  * clearance of a button radius (28px) and a hair more, so a button never
  * overlaps a coin that fills its box.
  */
-const CLEARANCE = "30px"
+const CLEARANCE = "35px"
 
 function clockOffset(position: number) {
   const angle = ((position % 12) * 30 * Math.PI) / 180
