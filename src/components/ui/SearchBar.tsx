@@ -15,7 +15,7 @@ export function SearchBar({
   label = "Search coins",
 }: SearchBarProps) {
   return (
-    <div className={`relative w-80 max-w-full ${className}`}>
+    <div className={`relative w-full ${className}`}>
       <input
         type="text"
         value={value}

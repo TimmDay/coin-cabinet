@@ -8,6 +8,7 @@ import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { FilterSelect } from "~/components/ui/FilterSelect"
 import { FilterYear } from "~/components/ui/FilterYear"
 import { SearchBar } from "~/components/ui/SearchBar"
+import { mintedInYear } from "~/lib/utils/mint-year"
 import {
   ViewModeControls,
   type ClickMode,
@@ -45,9 +46,8 @@ export function CoinGrid({
 
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Year filter state
-  const [yearStart, setYearStart] = useState<string>("")
-  const [yearEnd, setYearEnd] = useState<string>("")
+  // Mint year filter state (a single year; matches any coin minted in it)
+  const [mintYear, setMintYear] = useState<string>("")
 
   // Denomination and civilization filter state
   const [filterDenomination, setFilterDenomination] = useState<string>("")
@@ -115,27 +115,15 @@ export function CoinGrid({
         ].some((field) => field.toLowerCase().includes(query))
       }
 
-      // Apply year range filter
-      if (showSearch && (yearStart || yearEnd)) {
-        const startYear = yearStart ? parseInt(yearStart, 10) : null
-        const endYear = yearEnd ? parseInt(yearEnd, 10) : null
-
-        const coinYearEarliest = coin.mint_year_earliest ?? null
-        const coinYearLatest = coin.mint_year_latest ?? null
-
-        // A coin matches if either of its years falls within the range
-        if (startYear !== null && !isNaN(startYear)) {
-          const hasYearAfterStart =
-            (coinYearEarliest !== null && coinYearEarliest >= startYear) ||
-            (coinYearLatest !== null && coinYearLatest >= startYear)
-          if (!hasYearAfterStart) matchesYearRange = false
-        }
-
-        if (endYear !== null && !isNaN(endYear)) {
-          const hasYearBeforeEnd =
-            (coinYearEarliest !== null && coinYearEarliest <= endYear) ||
-            (coinYearLatest !== null && coinYearLatest <= endYear)
-          if (!hasYearBeforeEnd) matchesYearRange = false
+      // Apply mint year filter: the year must fall within the coin's range
+      if (showSearch && mintYear) {
+        const year = parseInt(mintYear, 10)
+        if (!isNaN(year)) {
+          matchesYearRange = mintedInYear(
+            coin.mint_year_earliest,
+            coin.mint_year_latest,
+            year,
+          )
         }
       }
 
@@ -256,28 +244,22 @@ export function CoinGrid({
             clickMode={clickMode}
             onClickModeChange={setClickMode}
           />
-          <SearchBar value={searchQuery} onChange={setSearchQuery} />
-
-          {/* Year filters row */}
-          <div className="flex w-80 max-w-full gap-2">
-            <FilterYear
-              id="year-start"
-              value={yearStart}
-              onChange={setYearStart}
-              placeholder="Year start"
-              label="Year start"
-            />
-            <FilterYear
-              id="year-end"
-              value={yearEnd}
-              onChange={setYearEnd}
-              placeholder="Year end"
-              label="Year end"
-            />
-          </div>
-
-          {/* Denomination and Civilization filters row */}
-          <div className="flex w-80 max-w-full gap-2">
+          {/* Search and the three filters as equal-width cells: one row from
+              tablet up. On phones the search and mint year get a row each
+              and the two selects pair up. */}
+          <div className="grid w-80 max-w-full grid-cols-2 gap-2 md:w-[40rem] md:grid-cols-4">
+            <div className="col-span-2 md:col-span-1">
+              <SearchBar value={searchQuery} onChange={setSearchQuery} />
+            </div>
+            <div className="col-span-2 md:col-span-1">
+              <FilterYear
+                id="mint-year"
+                value={mintYear}
+                onChange={setMintYear}
+                placeholder="Mint year"
+                label="Mint year"
+              />
+            </div>
             <FilterSelect
               id="filter-denomination"
               value={filterDenomination}

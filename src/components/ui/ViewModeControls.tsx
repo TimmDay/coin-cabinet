@@ -44,7 +44,7 @@ function SegmentedControl<T extends string>({
             className="peer sr-only"
           />
           <div
-            className={`peer-focus-visible:ring-moonlight/70 font-display rounded-full px-4 py-2 text-center text-sm tracking-widest uppercase transition-colors duration-200 peer-focus-visible:ring-2 ${
+            className={`peer-focus-visible:ring-moonlight/70 font-display rounded-full px-2 py-2 text-center text-sm tracking-wide uppercase transition-colors duration-200 peer-focus-visible:ring-2 sm:px-4 sm:tracking-widest ${
               value === option.value
                 ? "bg-line text-ink"
                 : "text-field-muted hover:bg-line/50 hover:text-ink"
@@ -77,7 +77,7 @@ export function ViewModeControls({
 }: ViewModeControlsProps) {
   return (
     <div className="z-controls mt-6 flex justify-center">
-      <div className="flex flex-wrap items-center justify-center gap-4">
+      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
         <SegmentedControl
           legend="Coin side to show"
           name="viewMode"
