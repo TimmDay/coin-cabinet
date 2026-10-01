@@ -78,8 +78,8 @@ export function CoinRow({
       {/* All screen sizes: Single Image with Mini-Image Buttons */}
       <div className="flex flex-col space-y-4 lg:items-center lg:space-y-6">
         {/* Images Section */}
-        <div className="flex justify-center px-2 lg:flex-shrink-0 lg:px-0">
-          <div className="relative w-full max-w-md lg:h-[420px] lg:w-[420px] lg:max-w-none xl:h-[480px] xl:w-[480px]">
+        <div className="flex justify-center px-12 lg:flex-shrink-0 lg:px-12">
+          <div className="relative w-full max-w-md lg:h-[360px] lg:w-[360px] lg:max-w-none xl:h-[480px] xl:w-[480px]">
             {/* Main displayed image */}
             <div
               className="artemis-card flex aspect-square w-full cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105"
@@ -109,7 +109,7 @@ export function CoinRow({
 
         {/* Text content */}
         {(hasAnyText || availableImages.length > 1) && (
-          <div className="flex flex-col space-y-2 text-center lg:w-[420px] xl:w-[480px]">
+          <div className="flex flex-col space-y-2 text-center lg:w-[360px] xl:w-[480px]">
             {legendExpanded && (
               <p className="font-display text-lg tracking-wide break-words text-slate-400 xl:text-xl">
                 <FormattedLegendExpanded text={legendExpanded} />

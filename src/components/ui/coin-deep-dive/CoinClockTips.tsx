@@ -14,12 +14,19 @@ export const DEMO_CLOCK_NOTES: ClockNote[] = [
   { position: 10, title: "Demo", body: "A note at ten o'clock." },
 ]
 
-/** Where a clock position sits on a circle, as percentages of the box. */
-function clockOffset(position: number, radius: number) {
+/**
+ * Where a clock position sits: on the coin's rim (half the box) plus a fixed
+ * clearance, so the buttons sit just off the coin's edge.
+ */
+const CLEARANCE = "18px"
+
+function clockOffset(position: number) {
   const angle = ((position % 12) * 30 * Math.PI) / 180
+  const sin = Math.sin(angle).toFixed(4)
+  const cos = Math.cos(angle).toFixed(4)
   return {
-    left: `${50 + radius * Math.sin(angle)}%`,
-    top: `${50 - radius * Math.cos(angle)}%`,
+    left: `calc(50% + (50% + ${CLEARANCE}) * ${sin})`,
+    top: `calc(50% - (50% + ${CLEARANCE}) * ${cos})`,
   }
 }
 
@@ -37,7 +44,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
         <div
           key={note.position}
           className="group absolute z-10 -translate-x-1/2 -translate-y-1/2"
-          style={clockOffset(note.position, 50)}
+          style={clockOffset(note.position)}
         >
           <button
             type="button"
