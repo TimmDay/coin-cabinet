@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { uniqueHeadingId } from "~/lib/utils/heading-ids"
 
 type TocItem = {
   id: string
@@ -16,18 +17,14 @@ export function TableOfContents() {
   useEffect(() => {
     // Generate TOC from headings in the document
     const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6")
+    const usedIds = new Set<string>()
     const items: TocItem[] = Array.from(headings).map((heading) => {
       const text = heading.textContent || ""
-      let id = heading.id
 
-      // If heading doesn't have an id, create one
-      if (!id) {
-        id = text
-          .toLowerCase()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/\s+/g, "-")
-        heading.id = id
-      }
+      // Every heading gets an id no other heading has (two "Historical
+      // Context" boxes would otherwise share one, and so would their keys)
+      const id = uniqueHeadingId(text, heading.id, usedIds)
+      heading.id = id
 
       return {
         id,
