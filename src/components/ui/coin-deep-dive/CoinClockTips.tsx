@@ -16,10 +16,10 @@ export const DEMO_CLOCK_NOTES: ClockNote[] = [
 
 /**
  * Where a clock position sits: on the coin's rim (half the box) plus a fixed
- * clearance of a button radius (28px) and a hair more, so a button never
+ * clearance of a button radius (22px) and a small gap, so a button never
  * overlaps a coin that fills its box.
  */
-const CLEARANCE = "35px"
+const CLEARANCE = "29px"
 
 function clockOffset(position: number) {
   const angle = ((position % 12) * 30 * Math.PI) / 180
@@ -50,7 +50,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           <button
             type="button"
             aria-label={note.title ?? `Note at ${note.position} o'clock`}
-            className="border-moonlight/70 text-moonlight hover:border-moonlight focus-visible:border-moonlight focus-visible:ring-moonlight/70 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border border-dashed bg-transparent transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none"
+            className="border-moonlight/70 text-moonlight hover:border-moonlight focus-visible:border-moonlight focus-visible:ring-moonlight/70 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-dashed bg-transparent transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none"
           />
           <div
             role="tooltip"
