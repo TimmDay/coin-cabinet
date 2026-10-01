@@ -150,7 +150,10 @@ export function Quip({ children, label = "More info" }: QuipProps) {
   return (
     <span
       ref={wrapperRef}
-      className="relative inline-block align-middle"
+      // The 24px button has ~5px of empty space either side of the small glyph;
+      // the negative margins pull the glyph in toward the words and the
+      // punctuation without shrinking the click target.
+      className="relative -mr-1 -ml-0.5 inline-block align-middle"
       // Mouse only: touch fires pointerenter on tap, which would fight the
       // click handler and close the popover straight after opening it.
       onPointerEnter={(event) => {
