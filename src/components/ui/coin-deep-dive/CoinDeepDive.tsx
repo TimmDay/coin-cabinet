@@ -330,7 +330,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   return (
     <section className="w-full space-y-8 md:space-y-12 md:overflow-x-hidden">
       {/* Obverse and reverse: stacked on small screens, side by side on desktop */}
-      <div className="flex flex-col gap-8 md:gap-12 lg:flex-row lg:items-start lg:justify-center lg:gap-2 xl:gap-12">
+      <div className="flex flex-col gap-8 md:gap-12 lg:flex-row lg:items-start lg:justify-center lg:gap-2 xl:gap-8">
         {coin.image_link_o && (
           <CoinRow
             side="obverse"
