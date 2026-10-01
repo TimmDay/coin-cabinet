@@ -3,11 +3,11 @@ type ClickMode = "browse" | "dive"
 
 type ViewModeControlsProps = {
   /**
-   * Line the toggles up with the filters under them (the coin grid). From
-   * tablet (md) up they become two equal columns whose gap lines up with a
-   * gap in a row of four equal cells. Between sm and md the filters are a
-   * single 320px column, so the toggles stack and fill it. Phones keep the
-   * natural widths.
+   * Line the toggles up with the filters under them (the coin grid). The
+   * pills always share the full width of the filters column, side by side
+   * (they wrap only when the screen is too narrow for both). From tablet (md)
+   * up they become two equal columns whose gap lines up with a gap in a row
+   * of four equal cells.
    */
   fill?: boolean
   viewMode: ViewMode
@@ -21,7 +21,7 @@ type SegmentedControlProps<T extends string> = {
   legend: string
   /** Radio group name */
   name: string
-  /** Stretch to the width of the column (tablet and up) */
+  /** Share the full width of the column */
   fill?: boolean
   options: readonly { value: T; label: string }[]
   value: T
@@ -43,13 +43,13 @@ function SegmentedControl<T extends string>({
 }: SegmentedControlProps<T>) {
   return (
     <fieldset
-      className={`border-line bg-field flex items-center rounded-full border p-1 ${fill ? "sm:w-full" : ""}`}
+      className={`border-line bg-field flex items-center rounded-full border p-1 ${fill ? "flex-1 md:w-full" : ""}`}
     >
       <legend className="sr-only">{legend}</legend>
       {options.map((option) => (
         <label
           key={option.value}
-          className={`relative cursor-pointer ${fill ? "sm:flex-1" : ""}`}
+          className={`relative cursor-pointer ${fill ? "flex-1" : ""}`}
         >
           <input
             type="radio"
@@ -60,7 +60,7 @@ function SegmentedControl<T extends string>({
             className="peer sr-only"
           />
           <div
-            className={`peer-focus-visible:ring-moonlight/70 font-display rounded-full px-2 py-2 text-center text-sm tracking-wide uppercase transition-colors duration-200 peer-focus-visible:ring-2 sm:px-4 sm:tracking-widest ${
+            className={`peer-focus-visible:ring-moonlight/70 font-display rounded-full px-2 py-2 text-center text-sm tracking-wide uppercase transition-colors duration-200 peer-focus-visible:ring-2 md:px-4 md:tracking-widest ${
               value === option.value
                 ? "bg-line text-ink"
                 : "text-field-muted hover:bg-line/50 hover:text-ink"
@@ -98,9 +98,7 @@ export function ViewModeControls({
     >
       <div
         className={`flex flex-wrap items-center justify-center gap-2 ${
-          fill
-            ? "w-full sm:max-md:flex-col sm:max-md:items-stretch md:grid md:grid-cols-2"
-            : "sm:gap-4"
+          fill ? "w-full md:grid md:grid-cols-2" : "sm:gap-4"
         }`}
       >
         <SegmentedControl
