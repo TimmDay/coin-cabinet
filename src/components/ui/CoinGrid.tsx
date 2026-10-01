@@ -259,7 +259,7 @@ export function CoinGrid({
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
           {/* Year filters row */}
-          <div className="flex w-80 gap-2">
+          <div className="flex w-80 max-w-full gap-2">
             <FilterYear
               id="year-start"
               value={yearStart}
@@ -277,7 +277,7 @@ export function CoinGrid({
           </div>
 
           {/* Denomination and Civilization filters row */}
-          <div className="flex w-80 gap-2">
+          <div className="flex w-80 max-w-full gap-2">
             <FilterSelect
               id="filter-denomination"
               value={filterDenomination}

@@ -1,6 +1,7 @@
 "use client"
 
 import { Calendar } from "lucide-react"
+import { FILTER_CONTROL_CLASSES } from "./filter-styles"
 
 type FilterYearProps = {
   id: string
@@ -18,7 +19,7 @@ export function FilterYear({
   label,
 }: FilterYearProps) {
   return (
-    <div className="relative flex-1">
+    <div className="relative min-w-0 flex-1">
       <label htmlFor={id} className="sr-only">
         {label}
       </label>
@@ -28,15 +29,15 @@ export function FilterYear({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="year-input w-full rounded-full border border-slate-700/30 bg-slate-700/50 py-2 pr-10 pl-4 text-sm text-slate-200 placeholder-slate-500 backdrop-blur-sm transition-colors duration-200 focus:border-slate-500 focus:outline-none"
+        className={`year-input ${FILTER_CONTROL_CLASSES}`}
       />
       <button
         type="button"
         onClick={() => onChange("")}
-        className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-500 transition-colors hover:text-slate-300"
+        className="text-bronze hover:text-bronze-light focus-visible:ring-bronze-light/70 absolute top-1/2 right-3 -translate-y-1/2 rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none"
         aria-label={`Clear ${label}`}
       >
-        <Calendar className="h-4 w-4" />
+        <Calendar className="h-4 w-4" aria-hidden="true" />
       </button>
     </div>
   )
