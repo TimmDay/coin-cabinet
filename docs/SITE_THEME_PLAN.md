@@ -38,6 +38,12 @@ and dead CSS (Leaflet, `.light-mode`, unused button and auth classes).
 - Components use tokens, not raw palette classes, once their area is
   migrated. Migrate by role, file by file. Never with a blanket regex: the
   light panels (Aside, map controls) need different treatment.
+- **Custom classes must not beat utilities.** Plain (unlayered) CSS wins over
+  Tailwind's layered utilities. `.body-text { font-size: 1rem }` silently
+  overrode `text-xl` and `text-[1.5rem]` on the homepage, so the text stayed
+  16px through two rounds of "make it bigger". Put component classes in
+  `@layer components`, or better, express them as utilities on the element.
+  Never set `font-size`, `color` or spacing in unlayered CSS.
 - Keep `text-*` colour tokens and font-size tokens apart. `text-heading` is a
   colour. Size tokens, when added, are `--text-*` and get their own step,
   because changing `--text-xs` or `--text-sm` resizes every use.
@@ -68,10 +74,15 @@ panels (Aside box, map controls), instead of hardcoded greys.
 Each step is its own commit. Steps 1 to 3 change nothing visible.
 
 1. [x] Plan (this file).
-2. [ ] Delete dead CSS and dead classes: Leaflet rules, `.light-mode`,
+2. [x] Delete dead CSS and dead classes: Leaflet rules, `.light-mode`,
    `.somnus-button*`, the `auth-accent` family (including `RoundButton`'s
    `auth` variant and `PageTitle`'s `authPage` prop), unused helpers, and the
-   shadcn utility classes that compile to nothing.
+   shadcn utility classes that compile to nothing. Verified with
+   before-and-after screenshots of 10 pages at 1280px and 390px: byte
+   identical except pages with random content.
+   - [ ] Move the remaining custom classes (`.coin-description`,
+     `.coin-title`, `.heading-accent`, `.somnus-*`) into utilities or
+     `@layer components`.
 3. [ ] Foundation: role tokens in `@theme static` with the same values,
    repoint every consumer, delete the `:root` triplets.
 4. [ ] Per-area visual passes, one at a time, each reviewed by eye: non-home

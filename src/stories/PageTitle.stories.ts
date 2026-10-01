@@ -19,15 +19,11 @@ const meta: Meta<typeof PageTitle> = {
     children: {
       control: "text",
       description:
-        "The title text with the last word automatically accented in gold or purple",
+        "The title text with the last word automatically accented in gold",
     },
     className: {
       control: "text",
       description: "Additional CSS classes",
-    },
-    authPage: {
-      control: "boolean",
-      description: "Use purple accent instead of gold for authentication pages",
     },
   },
 } satisfies Meta<typeof PageTitle>
@@ -56,12 +52,5 @@ export const LongTitle: Story = {
 export const VeryLongTitle: Story = {
   args: {
     children: "Ancient Roman Imperatorial Coin Cabinet",
-  },
-}
-
-export const AuthPageColors: Story = {
-  args: {
-    children: "Add Coin",
-    authPage: true,
   },
 }

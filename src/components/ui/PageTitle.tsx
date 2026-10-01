@@ -12,8 +12,6 @@ type PageTitleProps = {
   subtitle?: string
   /** Additional CSS classes */
   className?: string
-  /** Use purple accent instead of gold for auth pages */
-  authPage?: boolean
   /** Full coin data for displaying coin flip information */
   coin?: CoinEnhanced | null
   /** "somnus": Roman capitals, warm muted colours and a curved divider */
@@ -58,7 +56,6 @@ export function PageTitle({
   children,
   subtitle,
   className = "",
-  authPage = false,
   coin,
   variant = "default",
 }: PageTitleProps) {
@@ -85,10 +82,7 @@ export function PageTitle({
         {words.map((word, index) => {
           if (index === lastWordIndex && shouldAccentLastWord) {
             return (
-              <span
-                key={index}
-                className={authPage ? "text-purple-400" : "heading-accent"}
-              >
+              <span key={index} className="heading-accent">
                 {word}
               </span>
             )

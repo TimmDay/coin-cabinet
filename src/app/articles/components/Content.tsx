@@ -28,7 +28,7 @@ export function Quote({
 }: QuoteProps) {
   return (
     <blockquote
-      className={`border-primary my-6 border-l-4 bg-slate-800/30 py-4 pl-6 text-slate-200 italic ${className}`}
+      className={`my-6 border-l-4 bg-slate-800/30 py-4 pl-6 text-slate-200 italic ${className}`}
     >
       <div className="mb-2 text-lg leading-relaxed">"{children}"</div>
       {(author || source) && (
@@ -112,7 +112,7 @@ export function Timeline({ events, className = "" }: TimelineProps) {
         {events.map((event, index) => (
           <div key={index} className="relative mb-6 flex items-start last:mb-0">
             {/* Timeline dot */}
-            <div className="bg-primary relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-slate-900">
+            <div className="relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-slate-900">
               {index + 1}
             </div>
 

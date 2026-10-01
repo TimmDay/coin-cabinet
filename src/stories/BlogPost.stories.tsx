@@ -18,7 +18,7 @@ function BlogPostDemo() {
           <div className="flex gap-8">
             {/* Main content */}
             <article className="prose prose-slate prose-invert max-w-none flex-1">
-              <h1 className="text-foreground mb-6 text-3xl font-bold">
+              <h1 className="mb-6 text-3xl font-bold">
                 Caracalla and Geta: Brothers in Power, Rivals in Death
               </h1>
 
@@ -30,7 +30,7 @@ function BlogPostDemo() {
                 conflict would tear apart the Severan dynasty.
               </p>
 
-              <h2 className="text-foreground mb-4 text-2xl font-semibold">
+              <h2 className="mb-4 text-2xl font-semibold">
                 Early Lives and Rise to Power
               </h2>
 
@@ -52,9 +52,7 @@ function BlogPostDemo() {
                 vitae dicta sunt explicabo.
               </p>
 
-              <h2 className="text-foreground mb-4 text-2xl font-semibold">
-                The Joint Rule
-              </h2>
+              <h2 className="mb-4 text-2xl font-semibold">The Joint Rule</h2>
 
               <p className="mb-4 leading-relaxed text-slate-300">
                 Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
@@ -77,7 +75,7 @@ function BlogPostDemo() {
                 qui dolorem eum fugiat quo voluptas nulla pariatur.
               </p>
 
-              <h2 className="text-foreground mb-4 text-2xl font-semibold">
+              <h2 className="mb-4 text-2xl font-semibold">
                 The Bitter Rivalry
               </h2>
 
@@ -96,7 +94,7 @@ function BlogPostDemo() {
                 voluptas assumenda est, omnis dolor repellendus.
               </p>
 
-              <h3 className="text-foreground mb-3 text-xl font-medium">
+              <h3 className="mb-3 text-xl font-medium">
                 Political Maneuvering
               </h3>
 
@@ -108,9 +106,7 @@ function BlogPostDemo() {
                 consequatur aut perferendis doloribus asperiores repellat.
               </p>
 
-              <h2 className="text-foreground mb-4 text-2xl font-semibold">
-                The Tragic End
-              </h2>
+              <h2 className="mb-4 text-2xl font-semibold">The Tragic End</h2>
 
               <p className="mb-4 leading-relaxed text-slate-300">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
@@ -129,7 +125,7 @@ function BlogPostDemo() {
                 characterize the later Roman Empire.
               </p>
 
-              <h3 className="text-foreground mb-3 text-xl font-medium">
+              <h3 className="mb-3 text-xl font-medium">
                 Legacy and Numismatic Evidence
               </h3>
 
@@ -207,7 +203,7 @@ export const MobileLayout: Story = {
           </div>
 
           <article className="prose prose-slate prose-invert max-w-none">
-            <h1 className="text-foreground mb-6 text-3xl font-bold">
+            <h1 className="mb-6 text-3xl font-bold">
               Caracalla and Geta: Brothers in Power, Rivals in Death
             </h1>
 
@@ -219,7 +215,7 @@ export const MobileLayout: Story = {
               conflict would tear apart the Severan dynasty.
             </p>
 
-            <h2 className="text-foreground mb-4 text-2xl font-semibold">
+            <h2 className="mb-4 text-2xl font-semibold">
               Early Lives and Rise to Power
             </h2>
 
@@ -234,9 +230,7 @@ export const MobileLayout: Story = {
               <FeaturedCoins />
             </div>
 
-            <h2 className="text-foreground mb-4 text-2xl font-semibold">
-              The Tragic End
-            </h2>
+            <h2 className="mb-4 text-2xl font-semibold">The Tragic End</h2>
 
             <p className="mb-4 leading-relaxed text-slate-300">
               The assassination of Geta by his brother Caracalla in 211 CE

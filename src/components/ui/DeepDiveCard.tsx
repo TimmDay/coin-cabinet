@@ -57,7 +57,7 @@ export function DeepDiveCard({
 
   return (
     <div
-      className={`bg-card w-full overflow-hidden rounded-lg border border-gray-500 px-6 pt-6 break-words ${className}`}
+      className={`w-full overflow-hidden rounded-lg border border-gray-500 px-6 pt-6 break-words ${className}`}
     >
       {/* Header Section */}
       <h3 className="mb-4 text-center text-xl font-bold tracking-widest uppercase">
@@ -73,7 +73,7 @@ export function DeepDiveCard({
       {hasExpandableContent && (
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="bg-muted/50 text-foreground hover:bg-muted mb-4 flex w-full items-center justify-center rounded text-sm font-medium transition-colors"
+          className="mb-4 flex w-full items-center justify-center rounded text-sm font-medium transition-colors"
           aria-expanded={isOpen}
           aria-label={isOpen ? "Collapse details" : "Expand details"}
         >
