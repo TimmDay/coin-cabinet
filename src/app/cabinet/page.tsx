@@ -8,7 +8,7 @@ export default function CabinetPage() {
       <PageTitle>The Coin Cabinet</PageTitle>
 
       {/* Featured Sets Grid */}
-      <div className="grid w-full max-w-6xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-10 grid w-full max-w-6xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {featuredSets.map((set) => (
           <SetPreviewCard
             key={set.name}
@@ -16,6 +16,7 @@ export default function CabinetPage() {
             href={set.href}
             description={set.description}
             image={set.image}
+            fullDescription
           />
         ))}
       </div>

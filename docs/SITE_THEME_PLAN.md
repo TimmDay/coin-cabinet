@@ -104,8 +104,11 @@ Each step is its own commit. Steps 1 to 3 change nothing visible.
      unused CoinInfoModal was deleted.
      `ImageModal` belongs to the deep dive pass and the drawers to the map
      pass.
-   - [ ] Cards, other form controls, articles. Map and deep dive have their
-     own branches.
+   - [x] Set cards: one `SetPreviewCard` (night surface, grey edge, dimmed
+     image, Cinzel name) now serves both the homepage Featured Sets and
+     /cabinet. `.somnus-card` is gone.
+   - [ ] Other form controls, articles. Map and deep dive have their own
+     branches.
 5. [ ] Map colours from one `colors.ts`.
 6. [ ] Resolve the 4 `dark:` variants. Tailwind's default `dark` variant
    follows the OS setting, so they do fire. Keep the dark value as the base.
