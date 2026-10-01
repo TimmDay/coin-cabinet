@@ -8,7 +8,7 @@ import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { FilterSelect } from "~/components/ui/FilterSelect"
 import { FilterYear } from "~/components/ui/FilterYear"
 import { SearchBar } from "~/components/ui/SearchBar"
-import { mintedInYear } from "~/lib/utils/mint-year"
+import { overlapsYearRange } from "~/lib/utils/mint-year"
 import {
   ViewModeControls,
   type ClickMode,
@@ -46,8 +46,9 @@ export function CoinGrid({
 
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Mint year filter state (a single year; matches any coin minted in it)
-  const [mintYear, setMintYear] = useState<string>("")
+  // Year filter state: a coin matches if its mint range overlaps the range
+  const [yearStart, setYearStart] = useState<string>("")
+  const [yearEnd, setYearEnd] = useState<string>("")
 
   // Denomination and civilization filter state
   const [filterDenomination, setFilterDenomination] = useState<string>("")
@@ -115,16 +116,16 @@ export function CoinGrid({
         ].some((field) => field.toLowerCase().includes(query))
       }
 
-      // Apply mint year filter: the year must fall within the coin's range
-      if (showSearch && mintYear) {
-        const year = parseInt(mintYear, 10)
-        if (!isNaN(year)) {
-          matchesYearRange = mintedInYear(
-            coin.mint_year_earliest,
-            coin.mint_year_latest,
-            year,
-          )
-        }
+      // Apply year range filter: the coin's mint range must overlap it
+      if (showSearch && (yearStart || yearEnd)) {
+        const start = yearStart ? parseInt(yearStart, 10) : NaN
+        const end = yearEnd ? parseInt(yearEnd, 10) : NaN
+        matchesYearRange = overlapsYearRange(
+          coin.mint_year_earliest,
+          coin.mint_year_latest,
+          isNaN(start) ? null : start,
+          isNaN(end) ? null : end,
+        )
       }
 
       return (
@@ -245,38 +246,48 @@ export function CoinGrid({
             clickMode={clickMode}
             onClickModeChange={setClickMode}
           />
-          {/* Search and the three filters as equal-width cells: one row from
-              tablet up. On phones the search and mint year get a row each
-              and the two selects pair up. */}
+          {/* Search and the four filters on the same four-column grid as the
+              toggles above, so the centre gap lines up in every row: search
+              and the two years share one row, the two selects the next. On
+              phones the search and each pair get a row. */}
           <div className="grid w-80 max-w-full grid-cols-2 gap-2 md:w-[40rem] md:grid-cols-4">
-            <div className="col-span-2 md:col-span-1">
+            <div className="col-span-2">
               <SearchBar value={searchQuery} onChange={setSearchQuery} />
             </div>
-            <div className="col-span-2 md:col-span-1">
-              <FilterYear
-                id="mint-year"
-                value={mintYear}
-                onChange={setMintYear}
-                placeholder="Mint year"
-                label="Mint year"
+            <FilterYear
+              id="year-start"
+              value={yearStart}
+              onChange={setYearStart}
+              placeholder="Year start"
+              label="Year start"
+            />
+            <FilterYear
+              id="year-end"
+              value={yearEnd}
+              onChange={setYearEnd}
+              placeholder="Year end"
+              label="Year end"
+            />
+            <div className="col-span-1 md:col-span-2">
+              <FilterSelect
+                id="filter-denomination"
+                value={filterDenomination}
+                onChange={setFilterDenomination}
+                options={denominationOptions}
+                placeholder="Denomination"
+                label="Denomination"
               />
             </div>
-            <FilterSelect
-              id="filter-denomination"
-              value={filterDenomination}
-              onChange={setFilterDenomination}
-              options={denominationOptions}
-              placeholder="Denomination"
-              label="Denomination"
-            />
-            <FilterSelect
-              id="filter-civilization"
-              value={filterCivilization}
-              onChange={setFilterCivilization}
-              options={civilizationOptions}
-              placeholder="Civilisation"
-              label="Civilisation"
-            />
+            <div className="col-span-1 md:col-span-2">
+              <FilterSelect
+                id="filter-civilization"
+                value={filterCivilization}
+                onChange={setFilterCivilization}
+                options={civilizationOptions}
+                placeholder="Civilisation"
+                label="Civilisation"
+              />
+            </div>
           </div>
         </div>
       ) : (
