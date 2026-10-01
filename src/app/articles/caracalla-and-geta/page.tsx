@@ -175,7 +175,7 @@ export default function CaracallaAndGetaArticle() {
         alt="Marble bust of Julia Domna"
         caption="A marble bust of Julia Domna, wife of Septimius Severus and mother of Caracalla and Geta."
         layout="left"
-        maxHeight={800}
+        maxHeight={200}
       />
 
       <p>
