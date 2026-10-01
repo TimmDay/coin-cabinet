@@ -8,16 +8,14 @@ import { CoinCardGridItem } from "~/components/ui/CoinCardGridItem"
 import { FilterSelect } from "~/components/ui/FilterSelect"
 import { FilterYear } from "~/components/ui/FilterYear"
 import { SearchBar } from "~/components/ui/SearchBar"
+import { coinMatchesSearch } from "~/lib/utils/coin-search"
 import { overlapsYearRange } from "~/lib/utils/mint-year"
 import {
   ViewModeControls,
   type ClickMode,
 } from "~/components/ui/ViewModeControls"
 import { useDeityOptions } from "~/hooks/useDeityOptions"
-import {
-  civilizationOptions,
-  denominationOptions,
-} from "~/lib/constants/coin-options"
+import { civilizationOptions } from "~/lib/constants/coin-options"
 import { generateCoinUrl } from "~/lib/utils/url-helpers"
 
 type CoinGridProps = {
@@ -50,8 +48,7 @@ export function CoinGrid({
   const [yearStart, setYearStart] = useState<string>("")
   const [yearEnd, setYearEnd] = useState<string>("")
 
-  // Denomination and civilization filter state
-  const [filterDenomination, setFilterDenomination] = useState<string>("")
+  // Civilization filter state (denominations are found through the search box)
   const [filterCivilization, setFilterCivilization] = useState<string>("")
 
   // Fetch coins from database (already filtered for obverse images at DB level)
@@ -76,7 +73,6 @@ export function CoinGrid({
       let matchesCiv = true
       let matchesSearch = true
       let matchesYearRange = true
-      let matchesDenomination = true
       let matchesCivilization = true
 
       if (filterSet) {
@@ -87,33 +83,19 @@ export function CoinGrid({
         matchesCiv = coin.civ === filterCiv
       }
 
-      // Apply denomination filter from dropdown
-      if (showSearch && filterDenomination) {
-        matchesDenomination = coin.denomination === filterDenomination
-      }
-
       // Apply civilization filter from dropdown
       if (showSearch && filterCivilization) {
         matchesCivilization = coin.civ === filterCivilization
       }
 
-      // Apply search filter if search is enabled and query exists
+      // Apply search filter: name, denomination, legends or deity names
       if (showSearch && searchQuery.trim()) {
-        const query = searchQuery.toLowerCase()
-
-        // Get deity names for this coin
         const deityNames = (coin.deity_id ?? [])
           .map((id) => deityMap.get(id) ?? "")
           .filter(Boolean)
           .join(" ")
 
-        matchesSearch = [
-          coin.nickname ?? "",
-          coin.denomination ?? "",
-          coin.legend_o ?? "",
-          coin.legend_r ?? "",
-          deityNames,
-        ].some((field) => field.toLowerCase().includes(query))
+        matchesSearch = coinMatchesSearch(coin, deityNames, searchQuery)
       }
 
       // Apply year range filter: the coin's mint range must overlap it
@@ -133,7 +115,6 @@ export function CoinGrid({
         matchesCiv &&
         matchesSearch &&
         matchesYearRange &&
-        matchesDenomination &&
         matchesCivilization
       )
     })
@@ -246,12 +227,13 @@ export function CoinGrid({
             clickMode={clickMode}
             onClickModeChange={setClickMode}
           />
-          {/* Search and the four filters on the same four-column grid as the
-              toggles above, so the centre gap lines up in every row: search
-              and the two years share one row, the two selects the next. On
-              phones the search and each pair get a row. */}
+          {/* Search, the two year boxes and civilisation as four equal cells
+              under the toggles: one row from tablet up, with the centre gap
+              lined up with the toggles' gap. Search also finds denominations
+              ("denarius"). On phones the search and civilisation get a row
+              each and the years pair up. */}
           <div className="grid w-80 max-w-full grid-cols-2 gap-2 md:w-[40rem] md:grid-cols-4">
-            <div className="col-span-2">
+            <div className="col-span-2 md:col-span-1">
               <SearchBar value={searchQuery} onChange={setSearchQuery} />
             </div>
             <FilterYear
@@ -268,17 +250,7 @@ export function CoinGrid({
               placeholder="Year end"
               label="Year end"
             />
-            <div className="col-span-1 md:col-span-2">
-              <FilterSelect
-                id="filter-denomination"
-                value={filterDenomination}
-                onChange={setFilterDenomination}
-                options={denominationOptions}
-                placeholder="Denomination"
-                label="Denomination"
-              />
-            </div>
-            <div className="col-span-1 md:col-span-2">
+            <div className="col-span-2 md:col-span-1">
               <FilterSelect
                 id="filter-civilization"
                 value={filterCivilization}
