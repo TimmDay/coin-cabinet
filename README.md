@@ -20,8 +20,7 @@ Please be careful using this data for anything serious - on this site it is just
 - [Cloudinary](https://console.cloudinary.com/) for image storage, optimisation and CDN. (optional upgrade toCloudflare R2 and custom pipeline later).
   - https://supabase.com/dashboard
   - `pnpm install @supabase/supabase-js
-- Storybook for component management
-- Vitest + Storybook for testing
+- Vitest for testing
 - Shadcn / radix UI for fast component prototyping.
 
 ## Caching Strategy

@@ -46,8 +46,6 @@ yarn-error.log*
 
 # idea files
 .idea
-*storybook.log
-storybook-static
 
 # data reference local
 /src/data/pleiades-places-latest.json

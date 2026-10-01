@@ -66,10 +66,6 @@ Versions below reflect `package.json` at the time of writing. Run
 | `@testing-library/react` | ^16.3.3 | Renders components in tests and queries them the way a user would. | Enzyme (unmaintained) — React Testing Library is the de facto standard. |
 | `@testing-library/jest-dom` | ^6.9.1 | Adds DOM-specific matchers (`toBeInTheDocument`, etc.) to test assertions. | Hand-written assertions against `element.textContent` etc. |
 | `@playwright/test` | ^1.63.0 | End-to-end browser testing. | Cypress — Playwright was chosen for multi-browser support and speed. |
-| `storybook` / `@storybook/nextjs` | ^9.1.20 | Component development/catalog environment, isolated from the full app. | Ladle or plain ad-hoc dev pages — Storybook gives addon ecosystem (a11y checks, Chromatic) in exchange for heavier tooling. |
-| `@storybook/addon-a11y` | ^9.1.20 | Flags accessibility issues on components inside Storybook. | axe-core run standalone in CI instead. |
-| `@storybook/addon-onboarding` | ^9.1.20 | First-run Storybook tutorial UI. | Safe to remove — not used once the team is past onboarding. |
-| `@chromatic-com/storybook` | ^4.1.3 | Visual regression testing service integration for Storybook. | Percy, or dropping visual regression testing entirely. |
 | `eslint` | ^9.39.5 | Linter core. | Biome — a newer, faster all-in-one linter/formatter; would replace both eslint and (partially) prettier. |
 | `eslint-config-next` | ^16.3.4 | Next.js's recommended ESLint rule set. | Hand-assembled rule config — this exists specifically to avoid that. |
 | `typescript-eslint` | ^8.70.0 | TypeScript-aware lint rules. | Required as long as eslint + TypeScript are both in use. |
