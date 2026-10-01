@@ -223,6 +223,9 @@ export function MobileNavigation() {
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation"
+        // Closed, the panel is only slid off-screen: without inert its links
+        // stay reachable by Tab and the dialog stays "open" to assistive tech.
+        inert={!isOpen}
       >
         {/* Header */}
         <div className="border-dusk-edge/60 flex items-center justify-between border-b p-4">
