@@ -6,42 +6,42 @@ export default function ArticlesPage() {
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12 text-center">
           <PageTitle className="mb-6">Articles</PageTitle>
-          <p className="coin-description text-xl">
+          <p className="text-ink-muted text-xl leading-[1.7]">
             Coming soon - insights and stories from the world of numismatics
           </p>
         </div>
 
         <div className="mx-auto max-w-4xl">
           <div className="artemis-card p-8 text-center">
-            <h2 className="coin-title mb-4 text-2xl font-semibold">
+            <h2 className="mb-4 text-2xl font-semibold tracking-tight">
               Articles & Research
             </h2>
-            <p className="coin-description mb-6 text-lg">
+            <p className="text-ink-muted mb-6 text-lg leading-[1.7]">
               This section will feature in-depth articles about ancient coins,
               historical context, and numismatic research.
             </p>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               <div className="artemis-card p-6">
-                <h3 className="coin-title mb-2 text-lg font-medium">
+                <h3 className="mb-2 text-lg font-semibold tracking-tight">
                   Historical Context
                 </h3>
-                <p className="coin-description text-sm">
+                <p className="text-ink-muted text-sm leading-[1.7]">
                   Explore the historical significance of ancient coins
                 </p>
               </div>
               <div className="artemis-card p-6">
-                <h3 className="coin-title mb-2 text-lg font-medium">
+                <h3 className="mb-2 text-lg font-semibold tracking-tight">
                   Numismatic Research
                 </h3>
-                <p className="coin-description text-sm">
+                <p className="text-ink-muted text-sm leading-[1.7]">
                   Latest findings and research in the field
                 </p>
               </div>
               <div className="artemis-card p-6">
-                <h3 className="coin-title mb-2 text-lg font-medium">
+                <h3 className="mb-2 text-lg font-semibold tracking-tight">
                   Collection Stories
                 </h3>
-                <p className="coin-description text-sm">
+                <p className="text-ink-muted text-sm leading-[1.7]">
                   Stories behind notable coins and collections
                 </p>
               </div>

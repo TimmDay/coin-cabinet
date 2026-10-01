@@ -192,7 +192,7 @@ export function Quip({ children, label = "More info" }: QuipProps) {
           >
             <span
               ref={boxRef}
-              className="text-heading border-dusk-edge/70 bg-dusk/96 block rounded-lg border px-4 py-3 text-left text-lg leading-relaxed font-normal text-balance whitespace-normal shadow-lg backdrop-blur-sm"
+              className="text-ink border-dusk-edge/70 bg-dusk/96 block rounded-lg border px-4 py-3 text-left text-lg leading-relaxed font-normal text-balance whitespace-normal shadow-lg backdrop-blur-sm"
             >
               {children}
             </span>

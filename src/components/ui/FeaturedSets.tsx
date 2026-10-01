@@ -62,7 +62,7 @@ export function FeaturedSets({
                 <h3 className="group-hover:text-bronze-light mb-2 text-base tracking-widest uppercase transition-colors">
                   {set.name}
                 </h3>
-                <p className="text-heading/75 line-clamp-3 text-base leading-relaxed">
+                <p className="text-ink/75 line-clamp-3 text-base leading-relaxed">
                   {set.description}
                 </p>
               </div>

@@ -40,7 +40,7 @@ export function SetPreviewCard({
         {name}
       </h3>
 
-      <p className="coin-description text-sm leading-relaxed">{description}</p>
+      <p className="text-ink-muted text-sm leading-[1.7]">{description}</p>
 
       <div className="mt-4 text-sm font-medium text-amber-400 transition-colors group-hover:text-amber-300">
         Explore Collection →

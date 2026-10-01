@@ -9,7 +9,7 @@ export default function ImperialWomenPage() {
       <CoinGrid filterSet="Imperial Women" />
 
       <div className="mt-12 text-center">
-        <p className="coin-description mb-6">
+        <p className="text-ink-muted mb-6 leading-[1.7]">
           Explore coins featuring Imperial Women of the Roman Empire.
         </p>
       </div>

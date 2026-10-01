@@ -78,7 +78,7 @@ export function DeepDiveCard({
           aria-label={isOpen ? "Collapse details" : "Expand details"}
         >
           <svg
-            className={`text-heading h-6 w-6 transition-transform duration-200 ${
+            className={`text-ink h-6 w-6 transition-transform duration-200 ${
               isOpen ? "rotate-180" : ""
             }`}
             fill="none"

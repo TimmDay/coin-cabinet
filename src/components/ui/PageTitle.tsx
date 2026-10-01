@@ -75,7 +75,7 @@ export function PageTitle({
       <h1
         className={
           isSomnus
-            ? "somnus-title text-xl sm:text-2xl lg:text-3xl"
+            ? "font-display text-xl font-normal tracking-[0.2em] uppercase [text-shadow:0_1px_1px_hsl(228_20%_4%/0.7)] sm:text-2xl lg:text-3xl"
             : "text-2xl font-light tracking-wide sm:text-3xl lg:text-4xl"
         }
       >
@@ -114,7 +114,9 @@ export function PageTitle({
 
           <p
             className={
-              isSomnus ? "somnus-subtitle text-xl" : "text-lg text-slate-400"
+              isSomnus
+                ? "font-subtitle text-subtitle text-xl tracking-[0.04em]"
+                : "text-lg text-slate-400"
             }
           >
             {subtitle}

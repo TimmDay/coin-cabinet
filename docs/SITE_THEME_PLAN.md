@@ -80,9 +80,11 @@ Each step is its own commit. Steps 1 to 3 change nothing visible.
    shadcn utility classes that compile to nothing. Verified with
    before-and-after screenshots of 10 pages at 1280px and 390px: byte
    identical except pages with random content.
-   - [ ] Move the remaining custom classes (`.coin-description`,
-     `.coin-title`, `.heading-accent`, `.somnus-*`) into utilities or
-     `@layer components`.
+   - [x] Custom classes into utilities: `.coin-description`, `.coin-title`,
+     `.heading-accent`, `.somnus-title` and `.somnus-subtitle` are gone
+     (verified pixel-identical), and the `--color-heading` alias was folded
+     into `--color-ink`. Left on purpose: `.somnus-card` (the cards pass),
+     `.somnus-nav*` and `.content-wrapper` (layout, no utility conflicts).
 3. [x] Foundation: role tokens in `@theme static` with the same values,
    repoint every consumer, delete the `:root` triplets. Done. The old
    `--background`, `--card`, `--primary` and friends no longer exist.
