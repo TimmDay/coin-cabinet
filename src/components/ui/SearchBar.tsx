@@ -3,6 +3,7 @@
 import { X } from "lucide-react"
 import { useRef } from "react"
 import { FILTER_CONTROL_CLASSES } from "./filter-styles"
+import { IconButton } from "./IconButton"
 
 type SearchBarProps = {
   value: string
@@ -34,17 +35,17 @@ export function SearchBar({
       {value ? (
         // Once there is text, the magnifier becomes a clear button. It is a
         // real button (32px target) and hands focus back to the box.
-        <button
-          type="button"
+        <IconButton
+          icon={X}
+          iconSize="sm"
+          variant="ghost"
           onClick={() => {
             onChange("")
             inputRef.current?.focus()
           }}
           aria-label="Clear search"
-          className="text-field-muted hover:text-ink focus-visible:ring-moonlight/70 absolute top-1/2 right-1 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none"
-        >
-          <X className="h-4 w-4" aria-hidden="true" />
-        </button>
+          className="absolute top-1/2 right-1 -translate-y-1/2"
+        />
       ) : (
         <svg
           className="text-field-muted pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"

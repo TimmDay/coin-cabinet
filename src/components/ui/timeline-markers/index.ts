@@ -5,7 +5,6 @@ export { StackedMarkers } from "./markers/StackedMarkers"
 export { InvertedStackedMarkers } from "./markers/InvertedStackedMarkers"
 export { SideLineMarker } from "./markers/SideLineMarker"
 export { EventLogo } from "./EventLogo"
-export { processTextForSmartWrapping, willTextWrap } from "./utils"
 
 export type {
   MarkerProps,

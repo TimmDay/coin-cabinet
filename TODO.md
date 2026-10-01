@@ -269,7 +269,7 @@ Set list, but main feature is a 'wooden' drawer with the coin images laid out as
 
 - [ ] replace radix imports with local code
 - [ ] replace lucide icons with local svgs
-- [ ] a11y audit (nav dropdowns and accordions esp). Bring in a component library. Storybook tests.
+- [ ] a11y audit (nav dropdowns and accordions esp). Bring in a component library.
 - [ ] is twMerge(clsx...) really necessary?
 - [ ] fix cloudinary to not point to work email
 - [ ] remove references to t3 app (icons links to docs, stuff that could confuse AIs)

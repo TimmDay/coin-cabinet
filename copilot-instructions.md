@@ -8,8 +8,6 @@ Framework/Hosting: Next.js (App Router) on Vercel (Node runtime for server code 
 
 Styling: Tailwind CSS. Allow targeted CSS Modules for complex layouts (e.g., gallery).
 
-Components/Docs: Storybook.
-
 Testing: Vitest (unit), consider Playwright (e2e) later.
 
 DB & Auth: Supabase (Postgres + Auth + RLS). Use TypeScript types for database schema.

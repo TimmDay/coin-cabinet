@@ -9,13 +9,6 @@ const severanImages = [
 ]
 const gordyImages = ["z_bust-gordianus-iii-louvre-ma1063-ba2c6c-1024_2"]
 const imperialWomenImages = ["z_Julia_Domna_marble_bust_Yale_1920x1080"]
-const crisisImages = ["z_PhilipItheArabjpg"]
-const tetrachyImages = [
-  "z_7952_-_Venezia_-_Tetrarchi_in_Piazza_San_Marco_-_Foto_Giovanni_Dall_Orto_8-Aug-2007",
-]
-const constantinianImages = ["z_helena_pubdom"]
-const detectorFindsImages = [""]
-const adoptiveEmperorsImages = [""]
 
 const severanSet = {
   name: "Severan Dynasty",
@@ -44,60 +37,4 @@ const imperialWomenSet = {
   image: imperialWomenImages,
 }
 
-const crisisSet = {
-  name: "Crisis",
-  href: "/cabinet/crisis",
-  description:
-    "Turmoil in the Crisis of the Third Century. A rapid succession of emperors and usurpers and their coins reflect the political instability and economic chaos.",
-  image: crisisImages,
-}
-const tetrachySet = {
-  name: "Tetrachy",
-  href: "/cabinet/tetrachy",
-  description:
-    "Coins from Diocletian's revolutionary four-ruler system that stabilized the empire and reformed its administration.",
-  image: tetrachyImages,
-}
-const constantinianSet = {
-  name: "Constantinian",
-  href: "/cabinet/constantinian",
-  description:
-    "The transformative period of Constantine the Great, including the first Christian symbols on Roman coinage.",
-  image: constantinianImages,
-}
-const detectorFindsSet = {
-  name: "Detector Finds",
-  href: "/cabinet/detector-finds",
-  description:
-    "Coins recovered through detector finds, with provenance details that add context to where and how they were discovered.",
-  image: detectorFindsImages,
-}
-
-const adoptiveEmperorsSet = {
-  name: "The Adoptive Emperors",
-  href: "/cabinet/adoptive-emperors",
-  description: "Five guys kept things pretty peaceful for 84 years.",
-  image: adoptiveEmperorsImages,
-}
-
-const silverEmperorsSet = {
-  name: "Roman Emperors in Silver",
-  href: "/cabinet/silver-emperors",
-  description:
-    "The cleanest silver observe for each emperor in the Somnus Collection",
-  image: [],
-}
-
 export const featuredSets = [severanSet, gordySet, imperialWomenSet]
-
-export const romanSets = [
-  adoptiveEmperorsSet,
-  severanSet,
-  gordySet,
-  crisisSet,
-  tetrachySet,
-  constantinianSet,
-  detectorFindsSet,
-  imperialWomenSet,
-  silverEmperorsSet,
-]
