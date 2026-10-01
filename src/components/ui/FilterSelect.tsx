@@ -92,13 +92,13 @@ export function FilterSelect({
         </span>
         <span
           aria-hidden={!selectedOption}
-          className={`block truncate ${selectedOption ? "text-ink" : "text-moonlight"}`}
+          className={`block truncate ${selectedOption ? "text-ink" : "text-field-muted"}`}
         >
           {selectedOption?.label ?? placeholder}
         </span>
       </button>
       <ChevronDown
-        className={`text-moonlight pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        className={`text-field-muted pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
         aria-hidden="true"
       />
 
@@ -109,7 +109,9 @@ export function FilterSelect({
             type="button"
             aria-current={!value ? "true" : undefined}
             className={`${OPTION_CLASSES} ${
-              !value ? "bg-line text-ink" : "text-moonlight hover:bg-line/50"
+              !value
+                ? "bg-line text-ink"
+                : "text-field-muted hover:bg-line/50 hover:text-ink"
             }`}
             onClick={() => handleSelect("")}
           >

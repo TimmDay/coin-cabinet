@@ -47,7 +47,7 @@ function SegmentedControl<T extends string>({
             className={`peer-focus-visible:ring-moonlight/70 font-display rounded-full px-4 py-2 text-center text-sm tracking-widest uppercase transition-colors duration-200 peer-focus-visible:ring-2 ${
               value === option.value
                 ? "bg-line text-ink"
-                : "text-moonlight hover:bg-line/50 hover:text-ink"
+                : "text-field-muted hover:bg-line/50 hover:text-ink"
             }`}
           >
             {option.label}

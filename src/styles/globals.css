@@ -45,6 +45,11 @@
   /* Form fields sit a touch lighter than the page (surface is 8% lightness). */
   --color-field: hsl(218 17% 10%);
 
+  /* Muted text on form fields (placeholders, unselected toggles): 5.3:1 on
+     --color-field, a notch darker than moonlight but still well above the
+     4.5:1 AA minimum. */
+  --color-field-muted: oklch(64% 0.04 256.788);
+
   /* Dusty rose-grey: page subtitles and the accent word of page titles. */
   --color-subtitle: hsl(340 10% 62%);
 
