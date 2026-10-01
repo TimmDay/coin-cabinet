@@ -94,7 +94,14 @@ Each step is its own commit. Steps 1 to 3 change nothing visible.
      page gets darker and cooler as you scroll down), with real focus rings,
      named radio groups, and a keyboard-closable select.
    - [x] Footer: night (`--color-night`, `--color-moonlight`), not sunset.
-   - [ ] Cards and modals, other form controls, articles, map, deep dive.
+   - [x] Modals: the browse modal (the pop-up in "Browse" click mode) uses
+     the night surface, cream text, Cinzel buttons and the field/line/
+     moonlight palette, and is a proper dialog (role and name, focus moves in
+     and back, Tab stays inside). The unused CoinInfoModal was deleted.
+     `ImageModal` belongs to the deep dive pass and the drawers to the map
+     pass.
+   - [ ] Cards, other form controls, articles. Map and deep dive have their
+     own branches.
 5. [ ] Map colours from one `colors.ts`.
 6. [ ] Resolve the 4 `dark:` variants. Tailwind's default `dark` variant
    follows the OS setting, so they do fire. Keep the dark value as the base.
