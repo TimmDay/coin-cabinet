@@ -104,7 +104,7 @@ export function FilterSelect({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="bg-surface-raised border-line z-dropdown absolute mt-1 max-h-60 w-full overflow-auto rounded-lg border shadow-lg">
+        <div className="bg-field border-line z-dropdown absolute mt-1 max-h-60 w-full overflow-auto rounded-lg border shadow-lg">
           <button
             type="button"
             aria-current={!value ? "true" : undefined}

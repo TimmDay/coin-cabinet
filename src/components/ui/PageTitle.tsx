@@ -82,7 +82,7 @@ export function PageTitle({
         {words.map((word, index) => {
           if (index === lastWordIndex && shouldAccentLastWord) {
             return (
-              <span key={index} className="heading-accent">
+              <span key={index} className="text-subtitle">
                 {word}
               </span>
             )

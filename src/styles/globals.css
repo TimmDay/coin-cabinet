@@ -42,6 +42,12 @@
   --color-night: hsl(228 22% 5%);
   --color-moonlight: oklch(70.4% 0.04 256.788);
 
+  /* Form fields sit a touch lighter than the page (surface is 8% lightness). */
+  --color-field: hsl(218 17% 10%);
+
+  /* Dusty rose-grey: page subtitles and the accent word of page titles. */
+  --color-subtitle: hsl(340 10% 62%);
+
   /* Roman sunset surfaces and accents, used by popovers and cards that sit
      on the dark page. Dusk is a deep wine-brown; its edge and the bronze
      tones echo the copper glow of the homepage header.
@@ -223,7 +229,7 @@ main {
 .somnus-subtitle {
   font-family: var(--font-cormorant), Georgia, serif;
   letter-spacing: 0.04em;
-  color: hsl(340 10% 62%);
+  color: var(--color-subtitle);
 }
 
 /* Carousel slide animations */

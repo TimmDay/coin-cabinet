@@ -31,7 +31,7 @@ function SegmentedControl<T extends string>({
   onChange,
 }: SegmentedControlProps<T>) {
   return (
-    <fieldset className="border-line bg-surface-raised flex items-center rounded-full border p-1">
+    <fieldset className="border-line bg-field flex items-center rounded-full border p-1">
       <legend className="sr-only">{legend}</legend>
       {options.map((option) => (
         <label key={option.value} className="relative cursor-pointer">
@@ -44,7 +44,7 @@ function SegmentedControl<T extends string>({
             className="peer sr-only"
           />
           <div
-            className={`peer-focus-visible:ring-moonlight/70 rounded-full px-4 py-2 text-center text-base transition-colors duration-200 peer-focus-visible:ring-2 ${
+            className={`peer-focus-visible:ring-moonlight/70 font-display rounded-full px-4 py-2 text-center text-sm tracking-widest uppercase transition-colors duration-200 peer-focus-visible:ring-2 ${
               value === option.value
                 ? "bg-line text-ink"
                 : "text-moonlight hover:bg-line/50 hover:text-ink"
