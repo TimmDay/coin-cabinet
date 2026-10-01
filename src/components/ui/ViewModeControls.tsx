@@ -3,9 +3,10 @@ type ClickMode = "browse" | "dive"
 
 type ViewModeControlsProps = {
   /**
-   * From tablet up, stretch the two toggles to share one width in two equal
-   * columns, so their gap lines up with a gap in a row of four equal cells
-   * placed under them (the filters row on the coin grid). Phones keep the
+   * Line the toggles up with the filters under them (the coin grid). From
+   * tablet (md) up they become two equal columns whose gap lines up with a
+   * gap in a row of four equal cells. Between sm and md the filters are a
+   * single 320px column, so the toggles stack and fill it. Phones keep the
    * natural widths.
    */
   fill?: boolean
@@ -42,13 +43,13 @@ function SegmentedControl<T extends string>({
 }: SegmentedControlProps<T>) {
   return (
     <fieldset
-      className={`border-line bg-field flex items-center rounded-full border p-1 ${fill ? "md:w-full" : ""}`}
+      className={`border-line bg-field flex items-center rounded-full border p-1 ${fill ? "sm:w-full" : ""}`}
     >
       <legend className="sr-only">{legend}</legend>
       {options.map((option) => (
         <label
           key={option.value}
-          className={`relative cursor-pointer ${fill ? "md:flex-1" : ""}`}
+          className={`relative cursor-pointer ${fill ? "sm:flex-1" : ""}`}
         >
           <input
             type="radio"
@@ -97,7 +98,9 @@ export function ViewModeControls({
     >
       <div
         className={`flex flex-wrap items-center justify-center gap-2 ${
-          fill ? "md:grid md:w-full md:grid-cols-2" : "sm:gap-4"
+          fill
+            ? "w-full sm:max-md:flex-col sm:max-md:items-stretch md:grid md:grid-cols-2"
+            : "sm:gap-4"
         }`}
       >
         <SegmentedControl
