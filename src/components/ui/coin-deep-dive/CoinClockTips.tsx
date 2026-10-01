@@ -42,7 +42,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           <button
             type="button"
             aria-label={note.title ?? `Note at ${note.position} o'clock`}
-            className="border-moonlight/50 text-moonlight hover:border-moonlight focus-visible:border-moonlight focus-visible:ring-moonlight/70 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border border-dashed bg-transparent transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none"
+            className="border-moonlight/70 text-moonlight hover:border-moonlight focus-visible:border-moonlight focus-visible:ring-moonlight/70 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border border-dashed bg-transparent transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none"
           />
           <div
             role="tooltip"
