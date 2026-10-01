@@ -36,10 +36,10 @@ export function FeaturedSets({
           <Link
             key={set.name}
             href={set.href}
-            className="group focus-visible:ring-bronze-light/70 max-w-[280px] min-w-[200px] flex-1 rounded-lg transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:outline-none motion-reduce:transition-none motion-reduce:hover:scale-100 sm:max-w-[300px] sm:min-w-[220px]"
+            className="group focus-visible:ring-moonlight/70 max-w-[280px] min-w-[200px] flex-1 rounded-lg transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:outline-none motion-reduce:transition-none motion-reduce:hover:scale-100 sm:max-w-[300px] sm:min-w-[220px]"
           >
-            <div className="bg-dusk border-dusk-edge/60 group-hover:border-bronze flex flex-col rounded-lg border p-4 transition-colors">
-              <div className="from-dusk-edge/40 to-dusk mb-3 flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br">
+            <div className="bg-night border-line group-hover:border-moonlight/50 flex flex-col rounded-lg border p-4 transition-colors">
+              <div className="from-line/50 to-field mb-3 flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br">
                 {set.image ? (
                   <div className="relative h-full w-full">
                     <CldImage
@@ -53,13 +53,13 @@ export function FeaturedSets({
                     <div className="absolute inset-0 bg-black/40" />
                   </div>
                 ) : (
-                  <div className="text-bronze px-2 text-center text-sm font-medium">
+                  <div className="text-moonlight px-2 text-center text-sm font-medium">
                     {set.name}
                   </div>
                 )}
               </div>
               <div className="text-center">
-                <h3 className="group-hover:text-bronze-light mb-2 text-base tracking-widest uppercase transition-colors">
+                <h3 className="mb-2 text-base tracking-widest uppercase">
                   {set.name}
                 </h3>
                 <p className="text-ink/75 line-clamp-3 text-base leading-relaxed">
