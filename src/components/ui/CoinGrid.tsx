@@ -239,6 +239,7 @@ export function CoinGrid({
       {showSearch ? (
         <div className="mb-12 flex flex-col items-center gap-3">
           <ViewModeControls
+            fill
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             clickMode={clickMode}
