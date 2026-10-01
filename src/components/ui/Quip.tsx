@@ -145,7 +145,7 @@ export function Quip({ children, label = "More info" }: QuipProps) {
         onClick={() => setPinned((prev) => !prev)}
         aria-label={label}
         aria-expanded={open}
-        className="inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-[hsl(22_24%_48%)] transition-colors duration-200 hover:text-[hsl(30_35%_68%)] focus-visible:ring-2 focus-visible:ring-amber-400/70 focus-visible:outline-none aria-expanded:text-[hsl(30_35%_68%)]"
+        className="text-bronze hover:text-bronze-light aria-expanded:text-bronze-light inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-amber-400/70 focus-visible:outline-none"
       >
         <CoinI />
       </button>
@@ -163,7 +163,7 @@ export function Quip({ children, label = "More info" }: QuipProps) {
             tabIndex={-1}
             className="z-tooltip absolute bottom-full left-1/2 block w-max max-w-[min(20rem,calc(100vw-2rem))] pb-2 focus:outline-none"
           >
-            <span className="block rounded-lg border border-slate-600/50 bg-slate-900/95 px-4 py-3 text-left text-sm leading-relaxed font-normal whitespace-normal text-slate-300 shadow-lg backdrop-blur-sm">
+            <span className="text-heading border-dusk-edge/70 bg-dusk/96 block rounded-lg border px-4 py-3 text-left text-lg leading-relaxed font-normal whitespace-normal shadow-lg backdrop-blur-sm">
               {children}
             </span>
           </span>
