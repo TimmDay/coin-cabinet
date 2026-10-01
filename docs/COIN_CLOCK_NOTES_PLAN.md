@@ -14,6 +14,10 @@ coin keeps the focus.
   `item_presentation`.
 - `flavour_obv` and `flavour_rev` stay as they are for now.
 - A note has a body, plus an optional title, `icon_type` and link.
+- A note can also link to a device (`device_id`, optional). Devices are shared
+  across coins, so a linked note can draw its title, description and image
+  from the `devices` row instead of repeating them on every coin. Fields
+  written on the note itself override the device's.
 - Coins with no notes show nothing: no empty circles.
 - Ingestion (`somnus-data-ingestion`) gets a widget: pick obverse or reverse,
   pick a clock position, write the note, save. `coin-cabinet` stays read-only.
@@ -27,19 +31,23 @@ coin keeps the focus.
 Keyed off `item_presentation`, like `supporting_images`.
 
 ```sql
-CREATE TABLE presentation_notes (
+CREATE TABLE item_presentation_notes (
   id              INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   presentation_id INTEGER NOT NULL REFERENCES item_presentation(id) ON DELETE CASCADE,
   side            TEXT NOT NULL CHECK (side IN ('obverse', 'reverse')),
   clock_position  SMALLINT NOT NULL CHECK (clock_position BETWEEN 1 AND 12),
   title           TEXT,
-  body            TEXT NOT NULL,
+  body            TEXT,
+  device_id       INTEGER REFERENCES devices(id) ON DELETE RESTRICT,
   icon_type       TEXT,
   link_url        TEXT,
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE (presentation_id, side, clock_position)
+  UNIQUE (presentation_id, side, clock_position),
+  CHECK (body IS NOT NULL OR device_id IS NOT NULL)
 );
+CREATE INDEX idx_item_presentation_notes_device_id
+  ON item_presentation_notes(device_id);
 ```
 
 Plus the `updated_at` trigger and RLS in the same shape as
@@ -47,8 +55,18 @@ Plus the `updated_at` trigger and RLS in the same shape as
 hidden). The migration is a `.sql` file handed to the owner to run, wrapped in
 a transaction. `db:types` then regenerates `database.types.ts`.
 
-Open: one note per position (the unique constraint above) or several? One is
-simpler to enter and to lay out.
+A note needs a body or a device, so a pure device note is valid. When both
+are set, the body shows first and the device supplies the rest (name as the
+default title, description, image).
+
+Open:
+- Must a linked device be one the coin already depicts (a row in
+  `coin_devices` for that coin)? Enforcing it needs a trigger. Without it,
+  ingestion just offers the coin's devices first.
+- `ON DELETE RESTRICT` blocks deleting a device that notes still use.
+  `SET NULL` would break the body-or-device check for a pure device note.
+- One note per position (the unique constraint above) or several? One is
+  simpler to enter and to lay out.
 
 ## Steps
 
