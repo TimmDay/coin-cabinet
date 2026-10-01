@@ -90,7 +90,7 @@ export function TableOfContents() {
 
   return (
     <div className="sticky top-8">
-      <div className="border-dusk-edge/60 bg-dusk rounded-lg border p-6">
+      <div className="border-line bg-surface-raised rounded-lg border p-6">
         <h3 className="mb-4 text-lg font-semibold">Table of Contents</h3>
         <nav>
           <ul className="space-y-2">

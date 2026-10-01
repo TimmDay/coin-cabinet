@@ -28,7 +28,7 @@ export function Quote({
 }: QuoteProps) {
   return (
     <blockquote
-      className={`border-bronze bg-dusk text-ink my-6 border-l-4 py-4 pl-6 italic ${className}`}
+      className={`border-bronze bg-surface-raised text-ink my-6 border-l-4 py-4 pl-6 italic ${className}`}
     >
       <div className="mb-2 text-lg leading-relaxed">"{children}"</div>
       {(author || source) && (
@@ -55,7 +55,7 @@ export function Callout({
   className = "",
 }: CalloutProps) {
   const styles = {
-    info: "border-bronze bg-dusk text-ink",
+    info: "border-bronze bg-surface-raised text-ink",
     warning: "border-amber-500/70 bg-amber-950/30 text-amber-100",
     success: "border-emerald-600/70 bg-emerald-950/30 text-emerald-100",
     error: "border-red-600/70 bg-red-950/30 text-red-100",
