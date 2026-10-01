@@ -6,8 +6,6 @@ export {
   InvertedStackedMarkers,
   SideLineMarker,
   EventLogo,
-  processTextForSmartWrapping,
-  willTextWrap,
 } from "./timeline-markers"
 
 export type {

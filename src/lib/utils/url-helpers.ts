@@ -29,18 +29,6 @@ export function generateCoinUrl(
 }
 
 /**
- * Generates a human-readable URL for a coin within a set
- * Format: /sets/severan-dynasty/123-marcus-aurelius-denarius
- */
-export function generateSetCoinUrl(
-  setSlug: string,
-  id: number,
-  nickname: string,
-): string {
-  return generateCoinUrl(id, nickname, `/sets/${setSlug}`)
-}
-
-/**
  * Extracts the database ID from a URL slug
  * Input: "123-marcus-aurelius-denarius"
  * Output: 123
@@ -72,17 +60,6 @@ export function extractIdFromSlug(slug: string): number {
   }
 
   return id
-}
-
-/**
- * Extracts the nickname portion from a URL slug
- * Input: "123-marcus-aurelius-denarius"
- * Output: "marcus-aurelius-denarius"
- */
-export function extractNicknameFromSlug(slug: string): string {
-  const nicknameRegex = /^\d+-(.+)$/
-  const nicknameMatch = nicknameRegex.exec(slug)
-  return nicknameMatch?.[1] ?? ""
 }
 
 /**

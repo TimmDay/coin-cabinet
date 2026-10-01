@@ -1,6 +1,4 @@
 export { MintDeepDiveCard } from "./coin-deep-dive/MintDeepDiveCard"
 export { DeepDiveCard } from "./DeepDiveCard"
 export { Loading } from "./Loading"
-export { MobileDrawer } from "./MobileDrawer"
-export { MobileDrawerTop } from "./MobileDrawerTop"
 export { ScrollToTop } from "./ScrollToTop"
