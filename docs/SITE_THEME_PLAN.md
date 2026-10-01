@@ -123,6 +123,12 @@ Each step is its own commit. Steps 1 to 3 change nothing visible.
 8. [ ] Lint rule against new raw palette colours, only after the migration
    (before it, it would just report about 650 warnings).
 
+9. [x] Shared components instead of copied markup: one `DesktopNav` serves
+   both headers (872 lines became 521), one `Button` and one `IconButton`
+   (with a quiet `ghost` variant for the clear buttons) replace the inline
+   button styling and two unused button components. Class strings stay next
+   to the component that owns them, not in a global file.
+
 ## Verification
 
 - Compile the stylesheet and check that the utilities and tokens the code

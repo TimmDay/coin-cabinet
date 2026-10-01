@@ -1,52 +1,27 @@
-"use client"
+import { forwardRef } from "react"
+import { cn } from "~/lib/utils"
 
-import type { ButtonHTMLAttributes, ReactNode } from "react"
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>
 
-type ButtonVariant = "primary" | "secondary" | "outline"
-type ButtonSize = "sm" | "md" | "lg"
-
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  children: ReactNode
-  variant?: ButtonVariant
-  size?: ButtonSize
-  isLoading?: boolean
-  loadingText?: string
-}
-
-const variants = {
-  primary:
-    "bg-purple-700 text-white opacity-75 transition-all hover:bg-purple-600 hover:opacity-100",
-  secondary:
-    "bg-gray-600 text-white opacity-75 transition-all hover:bg-gray-500 hover:opacity-100",
-  outline:
-    "border border-gray-300 bg-white text-gray-700 transition-all hover:bg-gray-50",
-}
-
-const sizes = {
-  sm: "px-3 py-1.5 text-sm",
-  md: "px-4 py-2 text-sm",
-  lg: "px-6 py-3 text-base",
-}
-
-export function Button({
-  children,
-  variant = "primary",
-  size = "md",
-  isLoading = false,
-  loadingText = "Loading...",
-  disabled,
-  className = "",
-  ...props
-}: ButtonProps) {
-  const isDisabled = disabled ?? (false || isLoading)
-
-  return (
+/**
+ * The site's text button: Cinzel capitals on a field surface with a grey
+ * edge, a moonlight focus ring, and a brighter edge on hover. It defaults to
+ * type="button" so it never submits a form by accident.
+ */
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, type = "button", ...props }, ref) => (
     <button
-      disabled={isDisabled}
-      className={`cursor-pointer rounded-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className} `}
+      ref={ref}
+      type={type}
+      className={cn(
+        "font-display border-line bg-field text-moonlight-bright hover:border-moonlight/50 hover:bg-line/50 focus-visible:ring-moonlight/70 cursor-pointer rounded-md border px-6 py-2 text-sm font-medium tracking-widest uppercase transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+        className,
+      )}
       {...props}
-    >
-      {isLoading ? loadingText : children}
-    </button>
-  )
-}
+    />
+  ),
+)
+
+Button.displayName = "Button"
+
+export { Button }

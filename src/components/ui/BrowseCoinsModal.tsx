@@ -11,12 +11,9 @@ import { useViewport } from "~/hooks/useViewport"
 import { formatYearRange } from "~/lib/utils/date-formatting"
 import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
 import { generateCoinUrl } from "~/lib/utils/url-helpers"
+import { Button } from "./Button"
 import { IconButton } from "./IconButton"
 import { InfoTooltip } from "./InfoTooltip"
-
-// FLIP and DEEP DIVE: Cinzel capitals on a field surface with a grey edge.
-const MODAL_BUTTON_CLASSES =
-  "font-display cursor-pointer rounded-md border border-line bg-field px-6 py-2 text-sm font-medium tracking-widest text-moonlight-bright uppercase transition-colors duration-200 hover:border-moonlight/50 hover:bg-line/50 focus-visible:ring-2 focus-visible:ring-moonlight/70 focus-visible:outline-none"
 
 type BrowseCoinsModalProps = {
   isOpen: boolean
@@ -507,9 +504,6 @@ export function BrowseCoinsModal({
                   }
                 />
               </div>
-
-              {/* <button>banana</button>
-              </div> */}
             </div>
           </div>
 
@@ -523,16 +517,13 @@ export function BrowseCoinsModal({
               {/* Mobile Buttons - Flip and Deep Dive side by side */}
               {isMobile && (
                 <div className="mb-6 flex items-center justify-center gap-4">
-                  <button onClick={handleFlip} className={MODAL_BUTTON_CLASSES}>
-                    FLIP
-                  </button>
+                  <Button onClick={handleFlip}>FLIP</Button>
 
                   {/* Deep Dive Button - Mobile */}
                   {coinId && nickname && (
-                    <button
+                    <Button
                       onClick={() => {
                         const url = generateCoinUrl(coinId, nickname)
-
                         // Set up navigation completion detection
                         const handleNavigationComplete = () => {
                           // Use requestAnimationFrame to ensure DOM has updated
@@ -544,7 +535,6 @@ export function BrowseCoinsModal({
                               )
                               const breadcrumbElement =
                                 document.querySelector("[data-breadcrumb]")
-
                               if (coinDetailElement || breadcrumbElement) {
                                 // Page has rendered, close modal
                                 onClose()
@@ -555,19 +545,15 @@ export function BrowseCoinsModal({
                             })
                           })
                         }
-
                         router.push(url)
-
                         // Start checking for navigation completion
                         setTimeout(handleNavigationComplete, 50)
-
                         // Fallback timeout in case detection fails
                         setTimeout(() => onClose(), 3000)
                       }}
-                      className={MODAL_BUTTON_CLASSES}
                     >
                       {deepDiveMessage}
-                    </button>
+                    </Button>
                   )}
                 </div>
               )}
@@ -602,16 +588,13 @@ export function BrowseCoinsModal({
               {!isMobile && (
                 <div className="relative mt-6 flex items-center justify-center gap-4">
                   {/* Flip Button - centered */}
-                  <button onClick={handleFlip} className={MODAL_BUTTON_CLASSES}>
-                    FLIP
-                  </button>
+                  <Button onClick={handleFlip}>FLIP</Button>
 
                   {/* More Info Button */}
                   {coinId && nickname && (
-                    <button
+                    <Button
                       onClick={() => {
                         const url = generateCoinUrl(coinId, nickname)
-
                         // Set up navigation completion detection
                         const handleNavigationComplete = () => {
                           // Use requestAnimationFrame to ensure DOM has updated
@@ -623,7 +606,6 @@ export function BrowseCoinsModal({
                               )
                               const breadcrumbElement =
                                 document.querySelector("[data-breadcrumb]")
-
                               if (coinDetailElement || breadcrumbElement) {
                                 // Page has rendered, close modal
                                 onClose()
@@ -634,19 +616,15 @@ export function BrowseCoinsModal({
                             })
                           })
                         }
-
                         router.push(url)
-
                         // Start checking for navigation completion
                         setTimeout(handleNavigationComplete, 50)
-
                         // Fallback timeout in case detection fails
                         setTimeout(() => onClose(), 3000)
                       }}
-                      className={MODAL_BUTTON_CLASSES}
                     >
                       {deepDiveMessage}
-                    </button>
+                    </Button>
                   )}
 
                   {/* Info Tooltip - Only show if flavour_tag is available, positioned absolutely to the right */}
