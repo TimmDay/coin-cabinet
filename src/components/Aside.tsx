@@ -24,11 +24,11 @@ export function Aside({
   return (
     <aside className="relative my-12 font-sans">
       {/* Main content box with cut-out corner */}
-      <div className="aside-cutout-box rounded-xl border bg-gray-200 p-5 pl-12">
+      <div className="aside-cutout-box border-line bg-surface-raised rounded-lg border p-5 pl-12">
         <div className="mb-3">
-          <h3 className="m-0 text-lg font-semibold text-gray-900">{title}</h3>
+          <h3 className="m-0 text-lg font-semibold">{title}</h3>
         </div>
-        <div className="text-base leading-relaxed text-gray-700">{body}</div>
+        <div className="text-ink-soft text-base leading-relaxed">{body}</div>
       </div>
 
       {/* Icon positioned on top of the main content */}
