@@ -7,6 +7,7 @@ import type { Device } from "~/database/schema-devices"
 import { CoinClockTips, DEMO_CLOCK_NOTES } from "./CoinClockTips"
 import { DescriptionWithDeviceHighlights } from "./DescriptionWithDeviceHighlights"
 import { ImageModal } from "./ImageModal"
+import { LegendTranslationTip } from "./LegendTranslationTip"
 
 type CoinRowProps = {
   side: "obverse" | "reverse"
@@ -114,15 +115,18 @@ export function CoinRow({
       {hasAnyText && (
         <div className="mt-12 flex flex-col space-y-2 text-center lg:row-start-2 lg:w-[350px] xl:w-[460px]">
           {legendExpanded && (
-            <p className="font-display text-lg tracking-wider break-words text-slate-400 xl:text-xl">
+            <p className="font-display relative text-lg tracking-wider break-words text-slate-400 xl:text-xl">
               <FormattedLegendExpanded text={legendExpanded} />
+              {legendTranslation && (
+                <LegendTranslationTip translation={legendTranslation} />
+              )}
             </p>
           )}
 
-          {legendTranslation && (
-            <p className="text-base break-words text-slate-400">
-              {legendTranslation}
-            </p>
+          {!legendExpanded && legendTranslation && (
+            <div className="relative">
+              <LegendTranslationTip translation={legendTranslation} />
+            </div>
           )}
 
           {description && (
