@@ -4,7 +4,8 @@ import { useState } from "react"
 import CloudinaryImage from "~/components/CloudinaryImage"
 import { FormattedLegendExpanded } from "~/components/FormattedLegendExpanded"
 import type { Device } from "~/database/schema-devices"
-import { CoinClockTips, DEMO_CLOCK_NOTES } from "./CoinClockTips"
+import type { ClockNote } from "~/types/api"
+import { CoinClockTips } from "./CoinClockTips"
 import { DescriptionWithDeviceHighlights } from "./DescriptionWithDeviceHighlights"
 import { ImageModal } from "./ImageModal"
 import { TipIcon } from "./TipIcon"
@@ -19,6 +20,7 @@ type CoinRowProps = {
   description?: string | null
   flavourText?: string | null
   devices?: Device[]
+  clockNotes?: ClockNote[]
   priority?: boolean
 }
 
@@ -32,6 +34,7 @@ export function CoinRow({
   description,
   flavourText,
   devices = [],
+  clockNotes = [],
   priority = false,
 }: CoinRowProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -41,7 +44,6 @@ export function CoinRow({
   // State for mobile image switching
   const [currentMobileImageIndex, setCurrentMobileImageIndex] = useState(0)
 
-  const clockNotes = DEMO_CLOCK_NOTES
   const hasAnyText = Boolean(legendExpanded || legendTranslation || flavourText)
 
   // Available images array for mobile switching

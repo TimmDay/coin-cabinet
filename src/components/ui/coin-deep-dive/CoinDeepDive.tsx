@@ -13,6 +13,7 @@ import { getArtifactLocationData } from "~/lib/utils/artifact-helpers"
 import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
 import { addFoundEventToTimeline } from "~/lib/utils/provenance-helpers"
 import type { CoinEnhanced } from "~/types/api"
+import { demoClockNotes } from "./CoinClockTips"
 import { CoinRow } from "./CoinRow"
 import { DeepDiveCardsSection } from "./DeepDiveCardsSection"
 
@@ -327,6 +328,14 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
           ? ([foundMarker.lat, foundMarker.lng] as [number, number])
           : undefined)
 
+  // Development shows demo notes on a coin that has none, so the layout can be
+  // seen. TEMPORARY: delete with the demo (docs/COIN_CLOCK_NOTES_PLAN.md).
+  const clockNotes = coin.clock_notes ?? []
+  const clockNotesFor = (side: "obverse" | "reverse") =>
+    clockNotes.length === 0 && process.env.NODE_ENV !== "production"
+      ? demoClockNotes(side)
+      : clockNotes.filter((note) => note.side === side)
+
   return (
     <section className="w-full space-y-8 md:space-y-12 md:overflow-x-hidden">
       {/* Obverse and reverse: stacked on small screens, side by side on desktop */}
@@ -348,6 +357,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             description={coin.desc_o}
             flavourText={coin.flavour_obv}
             devices={obvDevices}
+            clockNotes={clockNotesFor("obverse")}
             priority={true}
           />
         )}
@@ -363,6 +373,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             description={coin.desc_r}
             flavourText={coin.flavour_rev}
             devices={revDevices}
+            clockNotes={clockNotesFor("reverse")}
           />
         )}
       </div>

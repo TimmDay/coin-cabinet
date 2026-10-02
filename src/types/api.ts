@@ -4,11 +4,25 @@
 
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
 
+/** A note pinned to a clock position on one face of a coin, ready to show. */
+export type ClockNote = {
+  side: "obverse" | "reverse"
+  /** 1 to 12 (12 is straight up, 3 is right). */
+  position: number
+  title: string | null
+  body: string | null
+  linkUrl: string | null
+  linkLabel: string | null
+  /** Which icon shows in the circle. Free text for now. */
+  iconType: string | null
+}
+
 /**
  * Enhanced coin data with optional joined deity information
  * Used by API endpoints that support ?include=deities parameter
  */
 export type CoinEnhanced = SomnusCollection & {
+  clock_notes?: ClockNote[]
   deities?: Array<{
     id: number
     name: string

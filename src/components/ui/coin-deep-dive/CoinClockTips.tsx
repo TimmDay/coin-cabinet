@@ -1,23 +1,22 @@
 import { cn } from "~/lib/utils"
+import type { ClockNote } from "~/types/api"
 import { TipIcon } from "./TipIcon"
 
-export type ClockNote = {
-  /** Clock position, 1 to 12 (12 is straight up, 3 is right). */
-  position: number
-  title?: string | null
-  body: string
-}
+// TEMPORARY: demo notes shown in development when a coin has none of its own.
+// Delete once real notes exist (docs/COIN_CLOCK_NOTES_PLAN.md, step 6).
+const DEMO_POSITIONS = [12, 2, 4, 6, 9, 10]
 
-// TEMPORARY: hardcoded demo notes. Delete once notes come from the database
-// (docs/COIN_CLOCK_NOTES_PLAN.md, step 6).
-export const DEMO_CLOCK_NOTES: ClockNote[] = [
-  { position: 12, title: "Demo", body: "A note at twelve o'clock." },
-  { position: 2, title: "Demo", body: "A note at two o'clock." },
-  { position: 4, title: "Demo", body: "A note at four o'clock." },
-  { position: 6, title: "Demo", body: "A note at six o'clock." },
-  { position: 9, title: "Demo", body: "A note at nine o'clock." },
-  { position: 10, title: "Demo", body: "A note at ten o'clock." },
-]
+export function demoClockNotes(side: ClockNote["side"]): ClockNote[] {
+  return DEMO_POSITIONS.map((position) => ({
+    side,
+    position,
+    title: "Demo",
+    body: `A note at ${position} o'clock.`,
+    linkUrl: null,
+    linkLabel: null,
+    iconType: null,
+  }))
+}
 
 /**
  * Where a clock position sits: on the coin's rim (half the box) plus a fixed
@@ -63,6 +62,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           key={note.position}
           size="md"
           label={note.title ?? `Note at ${note.position} o'clock`}
+          interactive={note.linkUrl !== null}
           className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
           style={clockOffset(note.position)}
           popoverClassName={cn(
@@ -76,6 +76,16 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
             </span>
           )}
           {note.body}
+          {note.linkUrl && (
+            <a
+              href={note.linkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-moonlight hover:text-moonlight-bright mt-2 block underline underline-offset-2"
+            >
+              {note.linkLabel ?? "Learn more"}
+            </a>
+          )}
         </TipIcon>
       ))}
     </>

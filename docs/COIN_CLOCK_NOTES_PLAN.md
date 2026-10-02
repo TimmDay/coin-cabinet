@@ -77,12 +77,36 @@ Each step is its own commit.
 3. [x] Image-switch buttons moved under the legend at every width.
 4. [x] Popover behaviour, shared `TipIcon` (small, medium, large): hover, focus,
    tap, Escape, outside click, accessible name.
-5. [ ] Run the migration (owner), then `pnpm db:types`.
-6. [ ] Read path: query the notes with the coin, add them to `CoinEnhanced`,
-   pass them to `CoinRow`, delete the demo data. Resolve a linked entry's text,
-   image and name from its table.
-7. [ ] Icons in the circles (`icon_type`).
-8. [ ] Ingestion widget in `somnus-data-ingestion`.
+5. [x] Migration run, `pnpm db:types` regenerated.
+6. [x] Read path: `fetchClockNotes` (`src/database/queries/clock-notes.ts`) loads
+   an item's notes, resolves linked entries (device description, or
+   `flavour_text` for deities, places, persons, mints, artifacts; a mint is
+   named after its place), and `CoinEnhanced.clock_notes` carries them. Text on
+   the note wins over the linked entry's. Unit tested. A note with a link shows
+   it in the popover.
+7. [ ] Delete the demo (`demoClockNotes` in `CoinClockTips.tsx` and its
+   development fallback in `CoinDeepDive.tsx`) once real notes exist.
+8. [ ] Icons in the circles (`iconType`). Needs the set of icons decided first
+   (see `icon_type` in `IMPLEMENTATION_TODOS.md`).
+9. [ ] Show a linked entry's image in the popover (device `image_url`, artifact
+   `image_url`). Not fetched yet.
+10. [ ] Ingestion widget in `somnus-data-ingestion` (a "Clock Notes" form
+    section under Images). In progress on its own branch, see that repo.
+11. [ ] Only reserve the clock-button room (side padding, space above and below
+    the coin) for coins that have notes, if the roomy layout turns out to be
+    wanted only where there is something to show. For now it is always reserved.
+
+## Next steps, in order
+
+1. Build the ingestion widget and enter a few real notes.
+2. Check the page with real notes: popovers, links, a linked entry with no
+   body, a long body.
+3. Delete the demo (step 7).
+4. Decide `icon_type` (CHECK list or lookup table), then icons (step 8).
+5. Linked-entry images (step 9).
+6. Then the earlier open items outside this feature: the deep-dive retint of
+   the remaining raw palette classes (slate, purple, amber, emerald) and the
+   four `dark:` variants, from `docs/SITE_THEME_PLAN.md`.
 
 Also done around the same work: the translation behind a small `TipIcon` at the
 end of each legend, and the description behind a large `TipIcon` in the swap row.
