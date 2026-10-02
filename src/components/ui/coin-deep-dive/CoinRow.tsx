@@ -225,17 +225,17 @@ export function CoinRow({
 
 /**
  * The small button at the end of a legend that shows its translation. The
- * popover centres on the legend's column (the nearest `relative` ancestor) so
- * it stays on the page. The button's bottom edge sits on the baseline, which
- * centres it on the capitals.
+ * popover opens directly to the left of the button, centred on it vertically.
+ * The button's bottom edge sits on the baseline, which centres it on the
+ * capitals.
  */
 function TranslationTip({ translation }: { translation: string }) {
   return (
     <TipIcon
       size="sm"
       label="Show translation"
-      className="ml-2 align-baseline"
-      popoverClassName="font-sans text-center font-normal tracking-normal normal-case"
+      className="relative ml-2 align-baseline"
+      popoverClassName="top-1/2 right-full left-auto mt-0 mr-2 max-w-[min(20rem,calc(100vw-6rem))] -translate-x-0 -translate-y-1/2 font-sans text-left font-normal tracking-normal normal-case"
     >
       {translation}
     </TipIcon>

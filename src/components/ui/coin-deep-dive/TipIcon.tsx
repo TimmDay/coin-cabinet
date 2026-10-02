@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -32,6 +33,23 @@ type TipIconProps = {
   interactive?: boolean
 }
 
+/** The horizontal span in which an element can be seen: the screen, narrowed by the nearest ancestor that clips sideways. */
+function visibleBounds(element: HTMLElement) {
+  let left = 0
+  let right = window.innerWidth
+  for (
+    let ancestor = element.parentElement;
+    ancestor && ancestor !== document.body;
+    ancestor = ancestor.parentElement
+  ) {
+    if (getComputedStyle(ancestor).overflowX === "visible") continue
+    const rect = ancestor.getBoundingClientRect()
+    left = Math.max(left, rect.left)
+    right = Math.min(right, rect.right)
+  }
+  return { left, right }
+}
+
 // Time to cross the gap between the button and its popover without it closing
 const CLOSE_DELAY_MS = 150
 
@@ -52,6 +70,7 @@ export function TipIcon({
   const [open, setOpen] = useState(false)
   const popoverId = useId()
   const wrapperRef = useRef<HTMLSpanElement>(null)
+  const popoverRef = useRef<HTMLSpanElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const pointerType = useRef("")
@@ -67,6 +86,27 @@ export function TipIcon({
   }, [cancelClose])
 
   useEffect(() => cancelClose, [cancelClose])
+
+  // A popover that would run off the edge of the area it can be seen in (the
+  // screen, or an ancestor that clips sideways) narrows to fit, so its text
+  // wraps instead of being cut off.
+  useLayoutEffect(() => {
+    const popover = popoverRef.current
+    if (!open || !popover) return
+    popover.style.maxWidth = ""
+
+    const bounds = visibleBounds(popover)
+    const margin = 8
+    const { left, right, width } = popover.getBoundingClientRect()
+    if (left < bounds.left + margin) {
+      popover.style.maxWidth = `${Math.max(0, right - bounds.left - margin)}px`
+    } else if (right > bounds.right - margin) {
+      popover.style.maxWidth = `${Math.max(
+        0,
+        Math.min(width, bounds.right - margin - left),
+      )}px`
+    }
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -134,6 +174,7 @@ export function TipIcon({
       />
       {open && (
         <span
+          ref={popoverRef}
           id={popoverId}
           role={interactive ? "group" : "tooltip"}
           aria-label={interactive ? label : undefined}
