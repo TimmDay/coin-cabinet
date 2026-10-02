@@ -23,6 +23,8 @@ export type ClockNote = {
  */
 export type CoinEnhanced = SomnusCollection & {
   clock_notes?: ClockNote[]
+  /** The mint mark stamped on this coin, e.g. "XXIR". Shown under the reverse legend. */
+  mint_mark?: string | null
   deities?: Array<{
     id: number
     name: string

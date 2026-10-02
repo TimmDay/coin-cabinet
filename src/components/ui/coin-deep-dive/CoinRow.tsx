@@ -17,6 +17,8 @@ type CoinRowProps = {
   imageLinkSketch?: string | null
   legendExpanded?: string | null
   legendTranslation?: string | null
+  /** Shown on a new line under the legend, in the legend's style. */
+  mintMark?: string | null
   description?: string | null
   flavourText?: string | null
   devices?: Device[]
@@ -31,6 +33,7 @@ export function CoinRow({
   imageLinkSketch,
   legendExpanded,
   legendTranslation,
+  mintMark,
   description,
   flavourText,
   devices = [],
@@ -44,7 +47,9 @@ export function CoinRow({
   // State for mobile image switching
   const [currentMobileImageIndex, setCurrentMobileImageIndex] = useState(0)
 
-  const hasAnyText = Boolean(legendExpanded || legendTranslation || flavourText)
+  const hasAnyText = Boolean(
+    legendExpanded || legendTranslation || mintMark || flavourText,
+  )
 
   // Available images array for mobile switching
   const availableImages = [
@@ -114,11 +119,20 @@ export function CoinRow({
       {/* Text content */}
       {hasAnyText && (
         <div className="mt-12 flex flex-col space-y-2 text-center lg:row-start-2 lg:w-[350px] xl:w-[460px]">
-          {legendExpanded && (
+          {(legendExpanded || mintMark) && (
             <p className="font-display relative text-[1.75rem] tracking-[0.08em] break-words text-slate-400 xl:text-[2rem]">
-              <FormattedLegendExpanded text={legendExpanded} />
-              {legendTranslation && (
+              {legendExpanded && (
+                <FormattedLegendExpanded text={legendExpanded} />
+              )}
+              {legendExpanded && legendTranslation && (
                 <TranslationTip translation={legendTranslation} />
+              )}
+              {/* The mint mark reads as the legend continuing on a new line */}
+              {mintMark && (
+                <>
+                  {legendExpanded && <br />}
+                  <span className="uppercase">{mintMark}</span>
+                </>
               )}
             </p>
           )}

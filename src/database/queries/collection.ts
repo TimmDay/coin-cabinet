@@ -281,10 +281,13 @@ export async function fetchCollectionDetail(
 
   const { data: coin, error: coinError } = await supabase
     .from("coins")
-    .select("id, mint_id")
+    .select("id, mint_id, mint_mark")
     .eq("item_id", item.id)
     .maybeSingle()
-    .overrideTypes<Pick<CoinRow, "id" | "mint_id">, { merge: false }>()
+    .overrideTypes<
+      Pick<CoinRow, "id" | "mint_id" | "mint_mark">,
+      { merge: false }
+    >()
 
   if (coinError) return { data: null, error: coinError }
 
@@ -513,6 +516,7 @@ export async function fetchCollectionDetail(
   const enhanced: CoinEnhanced = {
     ...base,
     clock_notes: clockNotesResult.data ?? [],
+    mint_mark: coin?.mint_mark?.trim() || null,
     found_event: findEventRow
       ? {
           event_date: findEventRow.event_date,

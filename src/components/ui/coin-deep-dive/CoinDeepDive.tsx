@@ -365,6 +365,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             imageLinkSketch={coin.image_link_sketch_r}
             legendExpanded={coin.legend_r_expanded || coin.legend_r}
             legendTranslation={coin.legend_r_translation}
+            mintMark={coin.mint_mark}
             description={coin.desc_r}
             flavourText={coin.flavour_rev}
             devices={revDevices}
