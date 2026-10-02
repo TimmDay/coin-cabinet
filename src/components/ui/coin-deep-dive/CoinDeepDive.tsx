@@ -441,19 +441,19 @@ function FlavourFooter({
   return (
     <footer className="mt-4 space-y-2 border-t border-slate-600 pt-4">
       {flavourObv && (
-        <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
-          <span className="text-slate-500 not-italic">Obverse — </span>
+        <p className="text-center text-base leading-relaxed break-words text-slate-400 italic">
+          <span className="text-slate-400 not-italic">Obverse — </span>
           {flavourObv}
         </p>
       )}
       {flavourRev && (
-        <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
-          <span className="text-slate-500 not-italic">Reverse — </span>
+        <p className="text-center text-base leading-relaxed break-words text-slate-400 italic">
+          <span className="text-slate-400 not-italic">Reverse — </span>
           {flavourRev}
         </p>
       )}
       {flavourGen && (
-        <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
+        <p className="text-center text-base leading-relaxed break-words text-slate-400 italic">
           {flavourGen}
         </p>
       )}

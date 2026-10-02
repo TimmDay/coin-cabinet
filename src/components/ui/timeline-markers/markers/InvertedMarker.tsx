@@ -51,7 +51,7 @@ export function InvertedMarker({
 
       {/* Year label only - visible */}
       <div className="absolute top-10 left-1/2 -translate-x-1/2 transform">
-        <div className="text-center font-mono text-xs whitespace-nowrap text-slate-400">
+        <div className="text-center font-mono text-sm whitespace-nowrap text-slate-400">
           {formatTimelineYear(year)}
         </div>
       </div>

@@ -18,7 +18,7 @@ export function StackedMarkers({
         className="absolute left-1/2 -translate-x-1/2 transform whitespace-nowrap"
         style={{ top: `-${24 + (events.length - 1) * 32}px` }} // Dynamic top position
       >
-        <div className="text-center font-mono text-xs text-slate-400">
+        <div className="text-center font-mono text-sm text-slate-400">
           {formatTimelineYear(year)}
         </div>
       </div>

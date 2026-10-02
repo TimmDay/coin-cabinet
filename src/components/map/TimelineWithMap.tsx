@@ -471,14 +471,14 @@ export function TimelineWithMap({
                   />
                 ) : (
                   <div className="flex h-[400px] items-center justify-center bg-slate-100">
-                    <div className="text-slate-400">
+                    <div className="text-slate-600">
                       Tap to open interactive map
                     </div>
                   </div>
                 )}
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
-              <div className="pointer-events-none absolute right-3 bottom-3 rounded-full bg-slate-900/80 px-3 py-1 text-xs font-medium text-slate-100 backdrop-blur-sm">
+              <div className="pointer-events-none absolute right-3 bottom-3 rounded-full bg-slate-900/80 px-3 py-1 text-sm font-medium text-slate-100 backdrop-blur-sm">
                 Open interactive map
               </div>
             </button>
@@ -517,7 +517,7 @@ export function TimelineWithMap({
                 />
               ) : (
                 <div className="flex h-[400px] items-center justify-center bg-slate-100">
-                  <div className="text-slate-400">Loading map...</div>
+                  <div className="text-slate-600">Loading map...</div>
                 </div>
               )}
             </div>

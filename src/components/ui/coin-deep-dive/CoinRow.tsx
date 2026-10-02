@@ -120,7 +120,7 @@ export function CoinRow({
             )}
 
             {legendTranslation && (
-              <p className="text-xs break-words text-slate-400 sm:text-sm">
+              <p className="text-base break-words text-slate-400">
                 {legendTranslation}
               </p>
             )}
@@ -130,13 +130,13 @@ export function CoinRow({
                 <DescriptionWithDeviceHighlights
                   text={description}
                   devices={devices}
-                  className="mt-2 text-sm leading-relaxed break-words text-slate-400 italic"
+                  className="mt-2 text-base leading-relaxed break-words text-slate-400 italic"
                 />
               </div>
             )}
 
             {flavourText && (
-              <p className="mt-3 hidden text-sm leading-relaxed break-words text-slate-500 lg:block">
+              <p className="mt-3 hidden text-base leading-relaxed break-words text-slate-400 lg:block">
                 {flavourText}
               </p>
             )}
