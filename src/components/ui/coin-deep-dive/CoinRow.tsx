@@ -75,104 +75,103 @@ export function CoinRow({
   }
 
   return (
-    <div className="mx-auto max-w-7xl">
-      {/* All screen sizes: Single Image with Mini-Image Buttons */}
-      <div className="flex flex-col space-y-4 lg:items-center lg:space-y-6">
-        {/* Images Section */}
-        {/* Room all the way round for the clock buttons, used or not */}
-        <div className="flex justify-center px-14 pt-14 lg:flex-shrink-0">
-          <div className="relative w-full max-w-md lg:h-[350px] lg:w-[350px] lg:max-w-none xl:h-[460px] xl:w-[460px]">
-            {/* Main displayed image */}
-            <div
-              className="artemis-card flex aspect-square w-full cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105"
-              onClick={() => {
-                const currentImage = availableImages[currentMobileImageIndex]
-                if (currentImage) {
-                  handleImageClick(currentImage.src, currentImage.alt)
-                }
-              }}
-            >
-              <div className="max-h-full max-w-full">
-                {availableImages[currentMobileImageIndex] && (
-                  <CloudinaryImage
-                    src={availableImages[currentMobileImageIndex].src}
-                    alt={availableImages[currentMobileImageIndex].alt}
-                    width={480}
-                    height={480}
-                    priority={priority && currentMobileImageIndex === 0}
-                    trim
-                  />
-                )}
-              </div>
+    // On desktop the root spans three rows of the parent grid (image, text,
+    // switcher) so both faces line up row by row.
+    <div className="mx-auto flex max-w-7xl flex-col space-y-4 lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:justify-items-center lg:space-y-0">
+      {/* Images Section */}
+      {/* Room all the way round for the clock buttons, used or not */}
+      <div className="flex justify-center px-14 pt-14 lg:row-start-1 lg:flex-shrink-0">
+        <div className="relative w-full max-w-md lg:h-[350px] lg:w-[350px] lg:max-w-none xl:h-[460px] xl:w-[460px]">
+          {/* Main displayed image */}
+          <div
+            className="artemis-card flex aspect-square w-full cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105"
+            onClick={() => {
+              const currentImage = availableImages[currentMobileImageIndex]
+              if (currentImage) {
+                handleImageClick(currentImage.src, currentImage.alt)
+              }
+            }}
+          >
+            <div className="max-h-full max-w-full">
+              {availableImages[currentMobileImageIndex] && (
+                <CloudinaryImage
+                  src={availableImages[currentMobileImageIndex].src}
+                  alt={availableImages[currentMobileImageIndex].alt}
+                  width={480}
+                  height={480}
+                  priority={priority && currentMobileImageIndex === 0}
+                  trim
+                />
+              )}
             </div>
-
-            <CoinClockTips notes={clockNotes} />
           </div>
+
+          <CoinClockTips notes={clockNotes} />
         </div>
+      </div>
 
-        {/* Text content */}
-        {(hasAnyText || availableImages.length > 1) && (
-          <div className="mt-12 flex flex-col space-y-2 text-center lg:w-[350px] xl:w-[460px]">
-            {legendExpanded && (
-              <p className="font-display text-lg tracking-wider break-words text-slate-400 xl:text-xl">
-                <FormattedLegendExpanded text={legendExpanded} />
-              </p>
-            )}
+      {/* Text content */}
+      {hasAnyText && (
+        <div className="mt-12 flex flex-col space-y-2 text-center lg:row-start-2 lg:w-[350px] xl:w-[460px]">
+          {legendExpanded && (
+            <p className="font-display text-lg tracking-wider break-words text-slate-400 xl:text-xl">
+              <FormattedLegendExpanded text={legendExpanded} />
+            </p>
+          )}
 
-            {legendTranslation && (
-              <p className="text-base break-words text-slate-400">
-                {legendTranslation}
-              </p>
-            )}
+          {legendTranslation && (
+            <p className="text-base break-words text-slate-400">
+              {legendTranslation}
+            </p>
+          )}
 
-            {description && (
-              <div data-popover-container>
-                <DescriptionWithDeviceHighlights
-                  text={description}
-                  devices={devices}
-                  className="mt-2 text-base leading-relaxed break-words text-slate-400 italic"
+          {description && (
+            <div data-popover-container>
+              <DescriptionWithDeviceHighlights
+                text={description}
+                devices={devices}
+                className="mt-2 text-base leading-relaxed break-words text-slate-400 italic"
+              />
+            </div>
+          )}
+
+          {flavourText && (
+            <p className="mt-3 hidden text-base leading-relaxed break-words text-slate-400 lg:block">
+              {flavourText}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Switcher buttons for alternate images */}
+      {availableImages.length > 1 && (
+        <div className="flex flex-row justify-center gap-2 lg:row-start-3">
+          {availableImages.map((image, index) => (
+            <button
+              key={index}
+              className={`artemis-card flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none ${
+                index === currentMobileImageIndex
+                  ? "border-slate-400"
+                  : "border-slate-600"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation()
+                setCurrentMobileImageIndex(index)
+              }}
+              aria-label={`Switch to ${image.label} image`}
+            >
+              <div className="h-full w-full overflow-hidden rounded-full">
+                <CloudinaryImage
+                  src={image.src}
+                  alt={`${image.label} thumbnail`}
+                  width={56}
+                  height={56}
                 />
               </div>
-            )}
-
-            {flavourText && (
-              <p className="mt-3 hidden text-base leading-relaxed break-words text-slate-400 lg:block">
-                {flavourText}
-              </p>
-            )}
-
-            {/* Switcher buttons for alternate images */}
-            {availableImages.length > 1 && (
-              <div className="mt-4 flex flex-row justify-center gap-2">
-                {availableImages.map((image, index) => (
-                  <button
-                    key={index}
-                    className={`artemis-card flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none ${
-                      index === currentMobileImageIndex
-                        ? "border-slate-400"
-                        : "border-slate-600"
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setCurrentMobileImageIndex(index)
-                    }}
-                    aria-label={`Switch to ${image.label} image`}
-                  >
-                    <div className="h-full w-full overflow-hidden rounded-full">
-                      <CloudinaryImage
-                        src={image.src}
-                        alt={`${image.label} thumbnail`}
-                        width={56}
-                        height={56}
-                      />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Image Modal */}
       <ImageModal
