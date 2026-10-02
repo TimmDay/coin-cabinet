@@ -7,17 +7,17 @@ export function FormattedLegendExpanded({ text }: { text: string }) {
     <span>
       {parts.map((part, index) => {
         if (parenthesesRegex.exec(part)) {
-          // This is text within parentheses - remove the parentheses and apply special formatting
+          // This is text within parentheses - remove the parentheses and set it smaller, in lowercase
           const innerText = part.slice(1, -1) // Remove the parentheses
           return (
-            <span key={index} className="text-base font-normal lowercase">
+            <span key={index} className="text-[0.65em] font-normal lowercase">
               {innerText}
             </span>
           )
         } else {
-          // This is regular text - apply normal formatting (uppercase, bold) with larger font
+          // Regular text is uppercase at the size of the surrounding legend
           return (
-            <span key={index} className="text-2xl font-bold uppercase">
+            <span key={index} className="font-normal uppercase">
               {part}
             </span>
           )
