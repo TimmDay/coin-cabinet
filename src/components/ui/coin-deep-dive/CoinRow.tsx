@@ -40,6 +40,12 @@ export function CoinRow({
   // State for mobile image switching
   const [currentMobileImageIndex, setCurrentMobileImageIndex] = useState(0)
 
+  const clockNotes = DEMO_CLOCK_NOTES
+  // Buttons at 12 and 6 o'clock hang above and below the coin, so the layout
+  // makes room for them
+  const hasTopClockNote = clockNotes.some((note) => note.position === 12)
+  const hasBottomClockNote = clockNotes.some((note) => note.position === 6)
+
   const hasAnyText = Boolean(
     legendExpanded || legendTranslation || description || flavourText,
   )
@@ -78,7 +84,9 @@ export function CoinRow({
       {/* All screen sizes: Single Image with Mini-Image Buttons */}
       <div className="flex flex-col space-y-4 lg:items-center lg:space-y-6">
         {/* Images Section */}
-        <div className="flex justify-center px-14 lg:flex-shrink-0 lg:px-14">
+        <div
+          className={`flex justify-center px-14 lg:flex-shrink-0 lg:px-14 ${hasTopClockNote ? "pt-14" : ""}`}
+        >
           <div className="relative w-full max-w-md lg:h-[350px] lg:w-[350px] lg:max-w-none xl:h-[460px] xl:w-[460px]">
             {/* Main displayed image */}
             <div
@@ -104,13 +112,15 @@ export function CoinRow({
               </div>
             </div>
 
-            <CoinClockTips notes={DEMO_CLOCK_NOTES} />
+            <CoinClockTips notes={clockNotes} />
           </div>
         </div>
 
         {/* Text content */}
         {(hasAnyText || availableImages.length > 1) && (
-          <div className="flex flex-col space-y-2 text-center lg:w-[350px] xl:w-[460px]">
+          <div
+            className={`flex flex-col space-y-2 text-center lg:w-[350px] xl:w-[460px] ${hasBottomClockNote ? "mt-12" : ""}`}
+          >
             {legendExpanded && (
               <p className="font-display text-lg tracking-wide break-words text-slate-400 xl:text-xl">
                 <FormattedLegendExpanded text={legendExpanded} />

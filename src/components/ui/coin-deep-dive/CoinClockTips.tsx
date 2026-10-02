@@ -10,8 +10,10 @@ export type ClockNote = {
 // TEMPORARY: hardcoded demo notes. Delete once notes come from the database
 // (docs/COIN_CLOCK_NOTES_PLAN.md, step 6).
 export const DEMO_CLOCK_NOTES: ClockNote[] = [
+  { position: 12, title: "Demo", body: "A note at twelve o'clock." },
   { position: 2, title: "Demo", body: "A note at two o'clock." },
   { position: 4, title: "Demo", body: "A note at four o'clock." },
+  { position: 6, title: "Demo", body: "A note at six o'clock." },
   { position: 9, title: "Demo", body: "A note at nine o'clock." },
   { position: 10, title: "Demo", body: "A note at ten o'clock." },
 ]
