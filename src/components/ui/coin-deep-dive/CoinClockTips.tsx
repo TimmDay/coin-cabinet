@@ -36,14 +36,16 @@ function clockOffset(position: number) {
 }
 
 /**
- * Which way the tooltip opens. Buttons on the right half open leftward and
+ * Where the tooltip opens. Buttons on the right half open leftward and
  * buttons on the left half open rightward, so a tooltip never runs off the
- * edge of the page. 12 and 6 are centred.
+ * edge of the page. 12 and 6 are centred, and 6 opens upward so the tooltip
+ * doesn't cover the legend below the coin.
  */
-function tooltipAlign(position: number) {
+function tooltipPlacement(position: number) {
   const hour = position % 12
-  if (hour === 0 || hour === 6) return "left-1/2 -translate-x-1/2"
-  return hour < 6 ? "right-0" : "left-0"
+  if (hour === 6) return "bottom-full mb-2 left-1/2 -translate-x-1/2"
+  if (hour === 0) return "top-full mt-2 left-1/2 -translate-x-1/2"
+  return cn("top-full mt-2", hour < 6 ? "right-0" : "left-0")
 }
 
 /**
@@ -70,8 +72,8 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           <div
             role="tooltip"
             className={cn(
-              "border-line bg-field text-moonlight-bright pointer-events-none absolute top-full z-20 mt-2 hidden w-56 rounded-md border px-3 py-2 text-left text-sm group-focus-within:block group-hover:block",
-              tooltipAlign(note.position),
+              "border-line bg-field text-moonlight-bright pointer-events-none absolute z-20 hidden w-56 rounded-md border px-3 py-2 text-left text-sm group-focus-within:block group-hover:block",
+              tooltipPlacement(note.position),
             )}
           >
             {note.title && (
