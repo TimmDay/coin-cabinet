@@ -721,6 +721,123 @@ export type Database = {
           },
         ]
       }
+      item_clock_notes: {
+        Row: {
+          artifact_id: number | null
+          body: string | null
+          clock_position: number
+          created_at: string
+          deity_id: number | null
+          device_id: number | null
+          icon_type: string | null
+          id: number
+          item_id: number
+          link_label: string | null
+          link_url: string | null
+          mint_id: number | null
+          person_id: number | null
+          place_id: number | null
+          side: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          artifact_id?: number | null
+          body?: string | null
+          clock_position: number
+          created_at?: string
+          deity_id?: number | null
+          device_id?: number | null
+          icon_type?: string | null
+          id?: never
+          item_id: number
+          link_label?: string | null
+          link_url?: string | null
+          mint_id?: number | null
+          person_id?: number | null
+          place_id?: number | null
+          side: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          artifact_id?: number | null
+          body?: string | null
+          clock_position?: number
+          created_at?: string
+          deity_id?: number | null
+          device_id?: number | null
+          icon_type?: string | null
+          id?: never
+          item_id?: number
+          link_label?: string | null
+          link_url?: string | null
+          mint_id?: number | null
+          person_id?: number | null
+          place_id?: number | null
+          side?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_clock_notes_artifact_id_fkey"
+            columns: ["artifact_id"]
+            isOneToOne: false
+            referencedRelation: "artifacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_clock_notes_deity_id_fkey"
+            columns: ["deity_id"]
+            isOneToOne: false
+            referencedRelation: "deities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_clock_notes_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_clock_notes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "collection"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_clock_notes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "public_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_clock_notes_mint_id_fkey"
+            columns: ["mint_id"]
+            isOneToOne: false
+            referencedRelation: "mints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_clock_notes_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "persons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_clock_notes_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       item_deities: {
         Row: {
           deity_id: number
@@ -1357,6 +1474,18 @@ export type Database = {
         }
         Relationships: []
       }
+      site_owner: {
+        Row: {
+          user_id: string
+        }
+        Insert: {
+          user_id: string
+        }
+        Update: {
+          user_id?: string
+        }
+        Relationships: []
+      }
       sources: {
         Row: {
           author: string | null
@@ -1609,6 +1738,7 @@ export type Database = {
     }
     Functions: {
       coin_is_public: { Args: { p_coin_id: number }; Returns: boolean }
+      is_site_owner: { Args: never; Returns: boolean }
       item_is_public: { Args: { p_item_id: number }; Returns: boolean }
       owns_coin: { Args: { p_coin_id: number }; Returns: boolean }
       owns_item: { Args: { p_item_id: number }; Returns: boolean }
