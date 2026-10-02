@@ -88,9 +88,9 @@ export function CoinRow({
   }
 
   return (
-    // On desktop the root spans three rows of the parent grid (image, text,
-    // switcher) so both faces line up row by row.
-    <div className="mx-auto flex max-w-7xl flex-col space-y-4 lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:justify-items-center lg:space-y-0">
+    // On desktop the root spans two rows of the parent grid (image, text) so
+    // both faces line up row by row.
+    <div className="mx-auto flex max-w-7xl flex-col space-y-4 lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:justify-items-center lg:space-y-0">
       {/* Images Section */}
       {/* Room above the coin only when a clock button hangs there */}
       <div
@@ -147,15 +147,17 @@ export function CoinRow({
             </TipIcon>
           )}
 
-          {/* Under lg: the other images, as small buttons on the coin's edge */}
+          {/* The other images, as small buttons in the bottom-right corner (the
+              description is bottom-left). The first sits in the corner and any
+              more stack upward. */}
           {availableImages.length > 1 && (
-            <div className="absolute top-2 right-2 z-10 flex translate-x-1/2 flex-col gap-1 lg:hidden">
+            <div className="absolute right-0 bottom-0 z-10 flex flex-col-reverse gap-1">
               {availableImages.map(
                 (image, index) =>
                   index !== currentMobileImageIndex && (
                     <button
                       key={index}
-                      className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-slate-600 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none"
+                      className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-slate-600 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none"
                       onClick={(e) => {
                         e.stopPropagation()
                         setCurrentMobileImageIndex(index)
@@ -166,8 +168,8 @@ export function CoinRow({
                         <CloudinaryImage
                           src={image.src}
                           alt={`${image.label} thumbnail`}
-                          width={44}
-                          height={44}
+                          width={40}
+                          height={40}
                         />
                       </div>
                     </button>
@@ -215,37 +217,6 @@ export function CoinRow({
               {flavourText}
             </p>
           )}
-        </div>
-      )}
-
-      {/* Switcher buttons for alternate images. Under lg they are small
-          corner buttons on the coin instead. */}
-      {availableImages.length > 1 && (
-        <div className="relative hidden flex-row items-center justify-center gap-2 lg:row-start-3 lg:flex">
-          {availableImages.map((image, index) => (
-            <button
-              key={index}
-              className={`artemis-card flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none ${
-                index === currentMobileImageIndex
-                  ? "border-slate-400"
-                  : "border-slate-600"
-              }`}
-              onClick={(e) => {
-                e.stopPropagation()
-                setCurrentMobileImageIndex(index)
-              }}
-              aria-label={`Switch to ${image.label} image`}
-            >
-              <div className="h-full w-full overflow-hidden rounded-full">
-                <CloudinaryImage
-                  src={image.src}
-                  alt={`${image.label} thumbnail`}
-                  width={56}
-                  height={56}
-                />
-              </div>
-            </button>
-          ))}
         </div>
       )}
 
