@@ -73,7 +73,7 @@ Each step is its own commit.
 
 1. [x] Plan (this file).
 2. [x] Demo: `CoinClockTips` around the coin image, hardcoded notes
-   (`DEMO_CLOCK_NOTES`: 12, 2, 4, 6, 9 and 10 o'clock). Temporary.
+   at 12, 2, 4, 6, 9 and 10 o'clock. Since deleted (step 7).
 3. [x] Image-switch buttons moved under the legend at every width.
 4. [x] Popover behaviour, shared `TipIcon` (small, medium, large): hover, focus,
    tap, Escape, outside click, accessible name.
@@ -84,8 +84,8 @@ Each step is its own commit.
    named after its place), and `CoinEnhanced.clock_notes` carries them. Text on
    the note wins over the linked entry's. Unit tested. A note with a link shows
    it in the popover.
-7. [ ] Delete the demo (`demoClockNotes` in `CoinClockTips.tsx` and its
-   development fallback in `CoinDeepDive.tsx`) once real notes exist.
+7. [x] Demo deleted (`demoClockNotes` and its development fallback). Checked on
+   the first real notes (Aurelian reverse): popovers, a long body, no clipping.
 8. [ ] Icons in the circles (`iconType`). Needs the set of icons decided first
    (see `icon_type` in `IMPLEMENTATION_TODOS.md`).
 9. [ ] Show a linked entry's image in the popover (device `image_url`, artifact
@@ -102,14 +102,11 @@ Each step is its own commit.
 
 ## Next steps, in order
 
-1. Try the ingestion widget in the real app, merge its branch (after
-   `refactor/codebase-cleanup`), and enter a few real notes.
-2. Check the page with real notes: popovers, links, a linked entry with no
-   body, a long body.
-3. Delete the demo (step 7).
-4. Decide `icon_type` (CHECK list or lookup table), then icons (step 8).
-5. Linked-entry images (step 9).
-6. Then the earlier open items outside this feature: the deep-dive retint of
+1. Enter more real notes, including ones that link a device, deity, place,
+   person, mint or artifact, and one with a link, to check those on the page.
+2. Decide `icon_type` (CHECK list or lookup table), then icons (step 8).
+3. Linked-entry images (step 9).
+4. Then the earlier open items outside this feature: the deep-dive retint of
    the remaining raw palette classes (slate, purple, amber, emerald) and the
    four `dark:` variants, from `docs/SITE_THEME_PLAN.md`.
 
