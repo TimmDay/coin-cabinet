@@ -116,11 +116,11 @@ function HighlightedWord({ text, device, popoverId }: HighlightedWordProps) {
         >
           <p className="mb-1 font-semibold text-purple-300">{device.name}</p>
           {device.translation && (
-            <p className="mb-1 text-xs text-slate-400 italic">
+            <p className="mb-1 text-sm text-slate-400 italic">
               {device.translation}
             </p>
           )}
-          <p className="text-xs leading-relaxed text-slate-300">
+          <p className="text-sm leading-relaxed text-slate-300">
             {device.description}
           </p>
         </span>

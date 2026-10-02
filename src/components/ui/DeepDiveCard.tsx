@@ -69,7 +69,7 @@ export function DeepDiveCard({
           {title}
         </h3>
         {subtitle && (
-          <p className="mb-4 text-center text-sm whitespace-pre-line text-gray-400">
+          <p className="mb-4 text-center text-base whitespace-pre-line text-gray-400">
             {subtitle}
           </p>
         )}
@@ -110,14 +110,14 @@ export function DeepDiveCard({
         >
           {/* Primary Info */}
           {primaryInfo && (
-            <p className="text-center text-sm leading-relaxed text-gray-400">
+            <p className="text-center text-base leading-relaxed text-gray-400">
               {primaryInfo}
             </p>
           )}
 
           {/* Secondary Info */}
           {secondaryInfo && (
-            <p className="text-center text-sm leading-relaxed text-gray-400">
+            <p className="text-center text-base leading-relaxed text-gray-400">
               {secondaryInfo}
             </p>
           )}
@@ -134,7 +134,7 @@ export function DeepDiveCard({
                 />
                 {/* Tooltip on hover */}
                 {altText && (
-                  <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-xs -translate-x-1/2 rounded-lg bg-slate-900/95 px-3 py-2 text-xs text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100">
+                  <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-xs -translate-x-1/2 rounded-lg bg-slate-900/95 px-3 py-2 text-sm text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100">
                     <div className="text-center whitespace-pre-line">
                       {altText}
                     </div>
@@ -145,7 +145,7 @@ export function DeepDiveCard({
               </div>
               {/* Caption */}
               {caption && (
-                <p className="mt-3 text-center text-xs leading-relaxed text-gray-400 italic">
+                <p className="mt-3 text-center text-sm leading-relaxed text-gray-400 italic">
                   {caption}
                 </p>
               )}
@@ -158,7 +158,7 @@ export function DeepDiveCard({
       <div>
         {footer && (
           <div className="flex items-center justify-center border-t border-gray-500 pt-5 pb-5">
-            <p className="text-center text-xs whitespace-pre-line text-gray-400">
+            <p className="text-center text-sm whitespace-pre-line text-gray-400">
               {footer}
             </p>
           </div>

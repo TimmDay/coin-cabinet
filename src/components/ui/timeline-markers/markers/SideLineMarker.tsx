@@ -19,7 +19,7 @@ export function SideLineMarker({
 
       {/* Year label only - visible */}
       <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform">
-        <div className="text-center font-mono text-xs whitespace-nowrap text-slate-400">
+        <div className="text-center font-mono text-sm whitespace-nowrap text-slate-400">
           {formatTimelineYear(event.year)}
         </div>
       </div>

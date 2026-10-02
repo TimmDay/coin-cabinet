@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
+import { fetchClockNotes } from "~/database/queries/clock-notes"
 import type { QueryResult } from "~/database/queries/types"
 import type {
   NotableFeature,
@@ -280,10 +281,13 @@ export async function fetchCollectionDetail(
 
   const { data: coin, error: coinError } = await supabase
     .from("coins")
-    .select("id, mint_id")
+    .select("id, mint_id, mint_mark")
     .eq("item_id", item.id)
     .maybeSingle()
-    .overrideTypes<Pick<CoinRow, "id" | "mint_id">, { merge: false }>()
+    .overrideTypes<
+      Pick<CoinRow, "id" | "mint_id" | "mint_mark">,
+      { merge: false }
+    >()
 
   if (coinError) return { data: null, error: coinError }
 
@@ -300,6 +304,7 @@ export async function fetchCollectionDetail(
     itemTimelinesResult,
     presentationResult,
     findEventsResult,
+    clockNotesResult,
   ] = await Promise.all([
     coinId
       ? supabase
@@ -365,7 +370,13 @@ export async function fetchCollectionDetail(
       .select("*")
       .eq("item_id", item.id)
       .returns<PublicFindEventRow[]>(),
+    // Like find events, a failure here costs only the clock notes, not the page
+    fetchClockNotes(supabase, item.id),
   ])
+
+  if (clockNotesResult.error) {
+    console.error("item_clock_notes query failed:", clockNotesResult.error)
+  }
 
   if (findEventsResult.error) {
     console.error(
@@ -504,6 +515,8 @@ export async function fetchCollectionDetail(
 
   const enhanced: CoinEnhanced = {
     ...base,
+    clock_notes: clockNotesResult.data ?? [],
+    mint_mark: coin?.mint_mark?.trim() || null,
     found_event: findEventRow
       ? {
           event_date: findEventRow.event_date,

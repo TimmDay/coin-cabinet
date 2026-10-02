@@ -36,6 +36,11 @@ export type TimelineWithMapProps = {
   timeline: TimelineType
   className?: string
   initialCenter?: [number, number]
+  /**
+   * Where the small-screen preview map rests before it is tapped, typically
+   * the mint. Falls back to the birth event, then the first located event.
+   */
+  previewCenter?: [number, number]
   initialZoom?: number
   /**
    * Zoom level to use when focusing on a timeline event location.
@@ -76,6 +81,7 @@ export function TimelineWithMap({
   timeline,
   className = "",
   initialCenter = [41.9028, 12.4964], // Rome default
+  previewCenter,
   initialZoom = 5,
   eventZoomLevel = 5,
   showProvinceLabels = true,
@@ -433,22 +439,6 @@ export function TimelineWithMap({
 
   return (
     <div className={`flex flex-col ${className}`}>
-      {/* Timeline at top */}
-      <div ref={timelineContainerRef} className="hidden pr-2 lg:block">
-        {showHeaders && (
-          <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
-            Timeline
-          </h2>
-        )}
-        <Timeline
-          timeline={timeline}
-          onEventClick={handleEventClick}
-          selectedEventIndex={selectedEventIndex}
-          enableMobileDrawer={false}
-          className="timeline-in-map"
-        />
-      </div>
-
       {/* Map Container - wraps both mobile and desktop views for intersection observer */}
       <div ref={mapContainerRef}>
         {/* Mobile static map preview */}
@@ -469,7 +459,7 @@ export function TimelineWithMap({
                 {!isMobileModalOpen && isMapInViewport ? (
                   <Map
                     {...mapProps}
-                    center={mobilePreviewCenter}
+                    center={previewCenter ?? mobilePreviewCenter}
                     zoom={initialZoom}
                     height={MAP_HEIGHT}
                     width="100%"
@@ -481,14 +471,14 @@ export function TimelineWithMap({
                   />
                 ) : (
                   <div className="flex h-[400px] items-center justify-center bg-slate-100">
-                    <div className="text-slate-400">
+                    <div className="text-slate-600">
                       Tap to open interactive map
                     </div>
                   </div>
                 )}
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
-              <div className="pointer-events-none absolute right-3 bottom-3 rounded-full bg-slate-900/80 px-3 py-1 text-xs font-medium text-slate-100 backdrop-blur-sm">
+              <div className="pointer-events-none absolute right-3 bottom-3 rounded-full bg-slate-900/80 px-3 py-1 text-sm font-medium text-slate-100 backdrop-blur-sm">
                 Open interactive map
               </div>
             </button>
@@ -527,7 +517,7 @@ export function TimelineWithMap({
                 />
               ) : (
                 <div className="flex h-[400px] items-center justify-center bg-slate-100">
-                  <div className="text-slate-400">Loading map...</div>
+                  <div className="text-slate-600">Loading map...</div>
                 </div>
               )}
             </div>
@@ -543,6 +533,22 @@ export function TimelineWithMap({
             </div>
           </div>
         )}
+      </div>
+
+      {/* Timeline under the map */}
+      <div ref={timelineContainerRef} className="mt-8 hidden pr-2 lg:block">
+        {showHeaders && (
+          <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
+            Timeline
+          </h2>
+        )}
+        <Timeline
+          timeline={timeline}
+          onEventClick={handleEventClick}
+          selectedEventIndex={selectedEventIndex}
+          enableMobileDrawer={false}
+          className="timeline-in-map"
+        />
       </div>
 
       {isMobileViewport && isMobileModalOpen && (

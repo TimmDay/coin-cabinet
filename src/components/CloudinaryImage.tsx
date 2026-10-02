@@ -8,6 +8,8 @@ type Props = {
   alt?: string
   onLoad?: () => void
   priority?: boolean
+  /** Crop the empty margin first so the subject fills the whole box. */
+  trim?: boolean
 }
 
 // Utility function to prefetch Cloudinary images
@@ -39,6 +41,7 @@ export default function CloudinaryImage({
   alt = "",
   onLoad,
   priority = false,
+  trim = false,
 }: Props) {
   if (!src) {
     return (
@@ -58,6 +61,7 @@ export default function CloudinaryImage({
         source: true,
       }}
       background="transparent"
+      trim={trim}
       alt={alt}
       sizes={`${width}px`}
       className="max-h-full max-w-full object-contain"

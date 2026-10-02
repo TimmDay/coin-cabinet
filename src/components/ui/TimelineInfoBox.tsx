@@ -82,7 +82,7 @@ export function TimelineInfoBox({
 
         {event.description && (
           <div className="mb-5">
-            <p className="text-[15px] leading-8 text-slate-300 sm:text-base">
+            <p className="text-base leading-8 text-slate-300">
               {event.description}
             </p>
           </div>
@@ -90,7 +90,7 @@ export function TimelineInfoBox({
 
         {event.place && (
           <div className="mb-4 border-t border-slate-700/70 pt-4">
-            <p className="text-sm font-medium tracking-[0.18em] text-slate-500 uppercase">
+            <p className="text-sm font-medium tracking-[0.18em] text-slate-400 uppercase">
               Location
             </p>
             <p className="mt-2 text-base text-slate-300">{event.place}</p>

@@ -327,37 +327,52 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
           ? ([foundMarker.lat, foundMarker.lng] as [number, number])
           : undefined)
 
+  const clockNotes = coin.clock_notes ?? []
+  const clockNotesFor = (side: "obverse" | "reverse") =>
+    clockNotes.filter((note) => note.side === side)
+
   return (
     <section className="w-full space-y-8 md:space-y-12 md:overflow-x-hidden">
-      {/* Coin Row Components */}
-      {coin.image_link_o && (
-        <CoinRow
-          side="obverse"
-          imageLink={coin.image_link_o}
-          imageLinkAltlight={coin.image_link_altlight_o}
-          imageLinkSketch={coin.image_link_sketch_o}
-          legendExpanded={coin.legend_o_expanded || coin.legend_o}
-          legendTranslation={coin.legend_o_translation}
-          description={coin.desc_o}
-          flavourText={coin.flavour_obv}
-          devices={obvDevices}
-          priority={true}
-        />
-      )}
+      {/* Obverse and reverse: stacked on small screens, side by side on desktop */}
+      <div
+        className={`flex flex-col gap-8 md:gap-12 lg:grid lg:justify-center lg:gap-x-2 lg:gap-y-6 xl:gap-x-8 ${
+          coin.image_link_o && coin.image_link_r
+            ? "lg:grid-cols-[auto_auto]"
+            : "lg:grid-cols-[auto]"
+        }`}
+      >
+        {coin.image_link_o && (
+          <CoinRow
+            side="obverse"
+            imageLink={coin.image_link_o}
+            imageLinkAltlight={coin.image_link_altlight_o}
+            imageLinkSketch={coin.image_link_sketch_o}
+            legendExpanded={coin.legend_o_expanded || coin.legend_o}
+            legendTranslation={coin.legend_o_translation}
+            description={coin.desc_o}
+            flavourText={coin.flavour_obv}
+            devices={obvDevices}
+            clockNotes={clockNotesFor("obverse")}
+            priority={true}
+          />
+        )}
 
-      {coin.image_link_r && (
-        <CoinRow
-          side="reverse"
-          imageLink={coin.image_link_r}
-          imageLinkAltlight={coin.image_link_altlight_r}
-          imageLinkSketch={coin.image_link_sketch_r}
-          legendExpanded={coin.legend_r_expanded || coin.legend_r}
-          legendTranslation={coin.legend_r_translation}
-          description={coin.desc_r}
-          flavourText={coin.flavour_rev}
-          devices={revDevices}
-        />
-      )}
+        {coin.image_link_r && (
+          <CoinRow
+            side="reverse"
+            imageLink={coin.image_link_r}
+            imageLinkAltlight={coin.image_link_altlight_r}
+            imageLinkSketch={coin.image_link_sketch_r}
+            legendExpanded={coin.legend_r_expanded || coin.legend_r}
+            legendTranslation={coin.legend_r_translation}
+            mintMark={coin.mint_mark}
+            description={coin.desc_r}
+            flavourText={coin.flavour_rev}
+            devices={revDevices}
+            clockNotes={clockNotesFor("reverse")}
+          />
+        )}
+      </div>
 
       {/* Map Section */}
       {shouldShowMap && (
@@ -368,6 +383,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                 timeline={matchingTimeline}
                 showHeaders={false}
                 initialCenter={mapCenter}
+                previewCenter={mintCoords ?? undefined}
                 eventZoomLevel={6}
                 additionalMarkers={deityPlaceMarkers.concat(artifactMarkers)}
                 showDefaultMintMarkers={false}
@@ -438,19 +454,19 @@ function FlavourFooter({
   return (
     <footer className="mt-4 space-y-2 border-t border-slate-600 pt-4">
       {flavourObv && (
-        <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
-          <span className="text-slate-500 not-italic">Obverse — </span>
+        <p className="text-center text-base leading-relaxed break-words text-slate-400 italic">
+          <span className="text-slate-400 not-italic">Obverse — </span>
           {flavourObv}
         </p>
       )}
       {flavourRev && (
-        <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
-          <span className="text-slate-500 not-italic">Reverse — </span>
+        <p className="text-center text-base leading-relaxed break-words text-slate-400 italic">
+          <span className="text-slate-400 not-italic">Reverse — </span>
           {flavourRev}
         </p>
       )}
       {flavourGen && (
-        <p className="text-center text-xs leading-relaxed break-words text-slate-400 italic">
+        <p className="text-center text-base leading-relaxed break-words text-slate-400 italic">
           {flavourGen}
         </p>
       )}
