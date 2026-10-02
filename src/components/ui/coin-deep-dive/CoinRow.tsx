@@ -113,7 +113,7 @@ export function CoinRow({
       {hasAnyText && (
         <div className="mt-12 flex flex-col space-y-2 text-center lg:row-start-2 lg:w-[350px] xl:w-[460px]">
           {legendExpanded && (
-            <p className="font-display relative text-lg tracking-wider break-words text-slate-400 xl:text-xl">
+            <p className="font-display relative text-xl tracking-[0.08em] break-words text-slate-400 xl:text-2xl">
               <FormattedLegendExpanded text={legendExpanded} />
               {legendTranslation && (
                 <TranslationTip translation={legendTranslation} />
