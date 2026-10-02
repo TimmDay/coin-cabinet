@@ -90,15 +90,20 @@ Each step is its own commit.
    (see `icon_type` in `IMPLEMENTATION_TODOS.md`).
 9. [ ] Show a linked entry's image in the popover (device `image_url`, artifact
    `image_url`). Not fetched yet.
-10. [ ] Ingestion widget in `somnus-data-ingestion` (a "Clock Notes" form
-    section under Images). In progress on its own branch, see that repo.
+10. [x] Ingestion widget built in `somnus-data-ingestion` on branch
+    `feat/clock-notes-form` (branched from `refactor/codebase-cleanup`, which it
+    depends on for the shared child-row hooks). A "Clock Notes" section under
+    Images: side, position, type, then own text or a linked-entry picker.
+    Tested with component tests only. Not yet tried in the real app behind the
+    login, and not merged.
 11. [ ] Only reserve the clock-button room (side padding, space above and below
     the coin) for coins that have notes, if the roomy layout turns out to be
     wanted only where there is something to show. For now it is always reserved.
 
 ## Next steps, in order
 
-1. Build the ingestion widget and enter a few real notes.
+1. Try the ingestion widget in the real app, merge its branch (after
+   `refactor/codebase-cleanup`), and enter a few real notes.
 2. Check the page with real notes: popovers, links, a linked entry with no
    body, a long body.
 3. Delete the demo (step 7).
