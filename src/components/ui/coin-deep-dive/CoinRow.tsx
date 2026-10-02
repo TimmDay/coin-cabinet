@@ -114,7 +114,7 @@ export function CoinRow({
         {(hasAnyText || availableImages.length > 1) && (
           <div className="mt-12 flex flex-col space-y-2 text-center lg:w-[350px] xl:w-[460px]">
             {legendExpanded && (
-              <p className="font-display text-lg tracking-wide break-words text-slate-400 xl:text-xl">
+              <p className="font-display text-lg tracking-wider break-words text-slate-400 xl:text-xl">
                 <FormattedLegendExpanded text={legendExpanded} />
               </p>
             )}
