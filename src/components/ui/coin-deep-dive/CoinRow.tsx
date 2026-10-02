@@ -86,7 +86,7 @@ export function CoinRow({
     <div className="mx-auto flex max-w-7xl flex-col space-y-4 lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:justify-items-center lg:space-y-0">
       {/* Images Section */}
       {/* Room all the way round for the clock buttons, used or not */}
-      <div className="flex justify-center px-14 pt-14 lg:row-start-1 lg:flex-shrink-0">
+      <div className="flex justify-center px-3 pt-10 sm:px-14 sm:pt-14 lg:row-start-1 lg:flex-shrink-0">
         <div className="relative w-full max-w-md lg:h-[350px] lg:w-[350px] lg:max-w-none xl:h-[460px] xl:w-[460px]">
           {/* Main displayed image */}
           <div
@@ -118,7 +118,7 @@ export function CoinRow({
 
       {/* Text content */}
       {hasAnyText && (
-        <div className="mt-12 flex flex-col space-y-2 text-center lg:row-start-2 lg:w-[350px] xl:w-[460px]">
+        <div className="mt-9 flex flex-col space-y-2 text-center sm:mt-12 lg:row-start-2 lg:w-[350px] xl:w-[460px]">
           {(legendExpanded || mintMark) && (
             <p className="font-display relative text-[1.75rem] tracking-[0.08em] break-words text-slate-400 xl:text-[2rem]">
               {legendExpanded && (

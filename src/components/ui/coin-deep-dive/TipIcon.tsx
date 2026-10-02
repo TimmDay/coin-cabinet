@@ -13,7 +13,7 @@ import { cn } from "~/lib/utils"
 
 const sizeClasses = {
   sm: "h-[22px] w-[22px]",
-  md: "h-11 w-11",
+  md: "h-8 w-8 sm:h-11 sm:w-11",
   lg: "h-14 w-14",
 }
 

@@ -7,7 +7,9 @@ import { TipIcon } from "./TipIcon"
  * clearance of a button radius (22px) and a small gap, so a button never
  * overlaps a coin that fills its box.
  */
-const CLEARANCE = "33px"
+// A button radius plus a small gap. Set per breakpoint with --clock-gap below,
+// because the buttons are smaller on phones.
+const CLEARANCE = "var(--clock-gap)"
 
 function clockOffset(position: number) {
   const angle = ((position % 12) * 30 * Math.PI) / 180
@@ -47,7 +49,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           size="md"
           label={note.title ?? `Note at ${note.position} o'clock`}
           interactive={note.linkUrl !== null}
-          className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
+          className="absolute z-10 -translate-x-1/2 -translate-y-1/2 [--clock-gap:24px] sm:[--clock-gap:33px]"
           style={clockOffset(note.position)}
           popoverClassName={cn(
             "w-72 text-left sm:w-84",
