@@ -10,7 +10,7 @@ export function LegendTranslationTip({ translation }: { translation: string }) {
   const tooltipId = useId()
 
   return (
-    <span className="group ml-2 inline-block align-middle">
+    <span className="group ml-2 inline-block align-[-0.12em]">
       <button
         type="button"
         aria-label="Show translation"
