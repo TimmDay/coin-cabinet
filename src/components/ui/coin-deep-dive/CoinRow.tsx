@@ -7,7 +7,7 @@ import type { Device } from "~/database/schema-devices"
 import { CoinClockTips, DEMO_CLOCK_NOTES } from "./CoinClockTips"
 import { DescriptionWithDeviceHighlights } from "./DescriptionWithDeviceHighlights"
 import { ImageModal } from "./ImageModal"
-import { LegendTranslationTip } from "./LegendTranslationTip"
+import { TipIcon } from "./TipIcon"
 
 type CoinRowProps = {
   side: "obverse" | "reverse"
@@ -42,9 +42,7 @@ export function CoinRow({
   const [currentMobileImageIndex, setCurrentMobileImageIndex] = useState(0)
 
   const clockNotes = DEMO_CLOCK_NOTES
-  const hasAnyText = Boolean(
-    legendExpanded || legendTranslation || description || flavourText,
-  )
+  const hasAnyText = Boolean(legendExpanded || legendTranslation || flavourText)
 
   // Available images array for mobile switching
   const availableImages = [
@@ -118,24 +116,14 @@ export function CoinRow({
             <p className="font-display relative text-lg tracking-wider break-words text-slate-400 xl:text-xl">
               <FormattedLegendExpanded text={legendExpanded} />
               {legendTranslation && (
-                <LegendTranslationTip translation={legendTranslation} />
+                <TranslationTip translation={legendTranslation} />
               )}
             </p>
           )}
 
           {!legendExpanded && legendTranslation && (
             <div className="relative">
-              <LegendTranslationTip translation={legendTranslation} />
-            </div>
-          )}
-
-          {description && (
-            <div data-popover-container>
-              <DescriptionWithDeviceHighlights
-                text={description}
-                devices={devices}
-                className="mt-2 text-base leading-relaxed break-words text-slate-400 italic"
-              />
+              <TranslationTip translation={legendTranslation} />
             </div>
           )}
 
@@ -148,32 +136,47 @@ export function CoinRow({
       )}
 
       {/* Switcher buttons for alternate images */}
-      {availableImages.length > 1 && (
-        <div className="flex flex-row justify-center gap-2 lg:row-start-3">
-          {availableImages.map((image, index) => (
-            <button
-              key={index}
-              className={`artemis-card flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none ${
-                index === currentMobileImageIndex
-                  ? "border-slate-400"
-                  : "border-slate-600"
-              }`}
-              onClick={(e) => {
-                e.stopPropagation()
-                setCurrentMobileImageIndex(index)
-              }}
-              aria-label={`Switch to ${image.label} image`}
+      {(description || availableImages.length > 1) && (
+        <div className="relative flex flex-row items-center justify-center gap-2 lg:row-start-3">
+          {description && (
+            <TipIcon
+              size="lg"
+              label="Show description"
+              interactive
+              popoverClassName="bottom-full top-auto mt-0 mb-2 w-[min(24rem,calc(100vw-2rem))] max-w-none px-4 py-3 text-center text-base"
             >
-              <div className="h-full w-full overflow-hidden rounded-full">
-                <CloudinaryImage
-                  src={image.src}
-                  alt={`${image.label} thumbnail`}
-                  width={56}
-                  height={56}
-                />
-              </div>
-            </button>
-          ))}
+              <DescriptionWithDeviceHighlights
+                text={description}
+                devices={devices}
+                className="leading-relaxed break-words italic"
+              />
+            </TipIcon>
+          )}
+          {availableImages.length > 1 &&
+            availableImages.map((image, index) => (
+              <button
+                key={index}
+                className={`artemis-card flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none ${
+                  index === currentMobileImageIndex
+                    ? "border-slate-400"
+                    : "border-slate-600"
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setCurrentMobileImageIndex(index)
+                }}
+                aria-label={`Switch to ${image.label} image`}
+              >
+                <div className="h-full w-full overflow-hidden rounded-full">
+                  <CloudinaryImage
+                    src={image.src}
+                    alt={`${image.label} thumbnail`}
+                    width={56}
+                    height={56}
+                  />
+                </div>
+              </button>
+            ))}
         </div>
       )}
 
@@ -185,5 +188,23 @@ export function CoinRow({
         onClose={() => setIsModalOpen(false)}
       />
     </div>
+  )
+}
+
+/**
+ * The small button at the end of a legend that shows its translation. The
+ * popover centres on the legend's column (the nearest `relative` ancestor) so
+ * it stays on the page. The offset centres the button on the capitals.
+ */
+function TranslationTip({ translation }: { translation: string }) {
+  return (
+    <TipIcon
+      size="sm"
+      label="Show translation"
+      className="ml-2 align-[-0.12em]"
+      popoverClassName="font-sans text-center font-normal tracking-normal normal-case"
+    >
+      {translation}
+    </TipIcon>
   )
 }

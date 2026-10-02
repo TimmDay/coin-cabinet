@@ -1,4 +1,5 @@
 import { cn } from "~/lib/utils"
+import { TipIcon } from "./TipIcon"
 
 export type ClockNote = {
   /** Clock position, 1 to 12 (12 is straight up, 3 is right). */
@@ -36,22 +37,21 @@ function clockOffset(position: number) {
 }
 
 /**
- * Where the tooltip opens. Buttons on the right half open leftward and
- * buttons on the left half open rightward, so a tooltip never runs off the
- * edge of the page. 12 and 6 are centred, and 6 opens upward so the tooltip
+ * Where the popover opens. Buttons on the right half open leftward and
+ * buttons on the left half open rightward, so a popover never runs off the
+ * edge of the page. 12 and 6 are centred, and 6 opens upward so the popover
  * doesn't cover the legend below the coin.
  */
-function tooltipPlacement(position: number) {
+function popoverPlacement(position: number) {
   const hour = position % 12
-  if (hour === 6) return "bottom-full mb-2 left-1/2 -translate-x-1/2"
-  if (hour === 0) return "top-full mt-2 left-1/2 -translate-x-1/2"
-  return cn("top-full mt-2", hour < 6 ? "right-0" : "left-0")
+  if (hour === 6) return "top-auto bottom-full mt-0 mb-2"
+  if (hour === 0) return ""
+  return cn("left-auto translate-x-0", hour < 6 ? "right-0" : "left-0")
 }
 
 /**
  * Small circular note buttons placed around a coin image at clock positions.
- * Render inside a `relative` square that holds the coin. Muted on purpose:
- * a dashed blueprint outline that brightens on hover and focus.
+ * Render inside a `relative` square that holds the coin.
  */
 export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
   if (notes.length === 0) return null
@@ -59,31 +59,24 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
   return (
     <>
       {notes.map((note) => (
-        <div
+        <TipIcon
           key={note.position}
-          className="group absolute z-10 -translate-x-1/2 -translate-y-1/2 focus-within:z-30 hover:z-30"
+          size="md"
+          label={note.title ?? `Note at ${note.position} o'clock`}
+          className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
           style={clockOffset(note.position)}
+          popoverClassName={cn(
+            "w-56 text-left",
+            popoverPlacement(note.position),
+          )}
         >
-          <button
-            type="button"
-            aria-label={note.title ?? `Note at ${note.position} o'clock`}
-            className="border-moonlight/70 text-moonlight hover:border-moonlight focus-visible:border-moonlight focus-visible:ring-moonlight/70 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-dashed bg-transparent transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none"
-          />
-          <div
-            role="tooltip"
-            className={cn(
-              "border-line bg-field text-moonlight-bright pointer-events-none absolute z-20 hidden w-56 rounded-md border px-3 py-2 text-left text-sm group-focus-within:block group-hover:block",
-              tooltipPlacement(note.position),
-            )}
-          >
-            {note.title && (
-              <p className="font-display mb-1 text-xs tracking-widest uppercase">
-                {note.title}
-              </p>
-            )}
-            <p>{note.body}</p>
-          </div>
-        </div>
+          {note.title && (
+            <span className="font-display mb-1 block text-xs tracking-widest uppercase">
+              {note.title}
+            </span>
+          )}
+          {note.body}
+        </TipIcon>
       ))}
     </>
   )
