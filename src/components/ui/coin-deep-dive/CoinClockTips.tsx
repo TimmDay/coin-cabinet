@@ -3,6 +3,22 @@ import type { ClockNote } from "~/types/api"
 import { TipIcon } from "./TipIcon"
 
 /**
+ * Which positions hang above or below the coin and so need room there.
+ * 11, 12 and 1 clear the top edge, 5, 6 and 7 the bottom edge. The others sit
+ * beside the coin.
+ */
+const TOP_POSITIONS = [11, 12, 1]
+const BOTTOM_POSITIONS = [5, 6, 7]
+
+/** Whether any of these notes needs room above and/or below its coin. */
+export function clockNoteRoom(notes: ClockNote[]) {
+  return {
+    top: notes.some((n) => TOP_POSITIONS.includes(n.position)),
+    bottom: notes.some((n) => BOTTOM_POSITIONS.includes(n.position)),
+  }
+}
+
+/**
  * Where a clock position sits: on the coin's rim (half the box) plus a fixed
  * clearance of a button radius (22px) and a small gap, so a button never
  * overlaps a coin that fills its box.

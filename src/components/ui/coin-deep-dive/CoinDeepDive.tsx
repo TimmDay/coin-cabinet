@@ -13,6 +13,7 @@ import { getArtifactLocationData } from "~/lib/utils/artifact-helpers"
 import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
 import { addFoundEventToTimeline } from "~/lib/utils/provenance-helpers"
 import type { CoinEnhanced } from "~/types/api"
+import { clockNoteRoom } from "./CoinClockTips"
 import { CoinRow } from "./CoinRow"
 import { DeepDiveCardsSection } from "./DeepDiveCardsSection"
 
@@ -330,6 +331,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const clockNotes = coin.clock_notes ?? []
   const clockNotesFor = (side: "obverse" | "reverse") =>
     clockNotes.filter((note) => note.side === side)
+  // Both faces share the same room, so the coins and legends stay level
+  const clockRoom = clockNoteRoom(clockNotes)
 
   return (
     <section className="w-full space-y-8 md:space-y-12 md:overflow-x-hidden">
@@ -353,6 +356,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             flavourText={coin.flavour_obv}
             devices={obvDevices}
             clockNotes={clockNotesFor("obverse")}
+            reserveTop={clockRoom.top}
+            reserveBottom={clockRoom.bottom}
             priority={true}
           />
         )}
@@ -370,6 +375,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             flavourText={coin.flavour_rev}
             devices={revDevices}
             clockNotes={clockNotesFor("reverse")}
+            reserveTop={clockRoom.top}
+            reserveBottom={clockRoom.bottom}
           />
         )}
       </div>
