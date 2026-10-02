@@ -171,7 +171,7 @@ export function TipIcon({
           setOpen((value) => !value)
         }}
         className={cn(
-          "group border-moonlight/70 text-moonlight hover:border-moonlight focus-visible:border-moonlight focus-visible:ring-moonlight/70 grid shrink-0 cursor-pointer place-items-center rounded-full border border-dashed bg-transparent transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none",
+          "group border-moonlight/50 text-moonlight hover:border-moonlight focus-visible:border-moonlight focus-visible:ring-moonlight/70 grid shrink-0 cursor-pointer place-items-center rounded-full border border-dashed bg-transparent transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none",
           sizeClasses[size],
         )}
       >

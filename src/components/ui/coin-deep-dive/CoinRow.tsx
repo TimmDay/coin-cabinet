@@ -284,7 +284,7 @@ function ScrollIcon() {
         alt=""
         width={24}
         height={24}
-        className="opacity-70 group-hover:opacity-100 group-focus-visible:opacity-100"
+        className="opacity-50 group-hover:opacity-100 group-focus-visible:opacity-100"
         style={{ filter: `url(#${filterId})` }}
       />
     </>
