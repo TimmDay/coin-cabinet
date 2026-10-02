@@ -2,22 +2,6 @@ import { cn } from "~/lib/utils"
 import type { ClockNote } from "~/types/api"
 import { TipIcon } from "./TipIcon"
 
-// TEMPORARY: demo notes shown in development when a coin has none of its own.
-// Delete once real notes exist (docs/COIN_CLOCK_NOTES_PLAN.md, step 6).
-const DEMO_POSITIONS = [12, 2, 4, 6, 9, 10]
-
-export function demoClockNotes(side: ClockNote["side"]): ClockNote[] {
-  return DEMO_POSITIONS.map((position) => ({
-    side,
-    position,
-    title: "Demo",
-    body: `A note at ${position} o'clock.`,
-    linkUrl: null,
-    linkLabel: null,
-    iconType: null,
-  }))
-}
-
 /**
  * Where a clock position sits: on the coin's rim (half the box) plus a fixed
  * clearance of a button radius (22px) and a small gap, so a button never
