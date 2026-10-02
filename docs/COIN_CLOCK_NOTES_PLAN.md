@@ -2,86 +2,87 @@
 
 Goal: short notes anchored to a point on a coin face, shown as small circular
 info buttons around the coin image at clock positions 1 to 12. A button opens
-a tooltip with the note. They stay muted (blueprint feel, night theme) so the
+a popover with the note. They stay muted (blueprint feel, night theme) so the
 coin keeps the focus.
 
-## Decisions so far
+## Decisions
 
 - Each face has its own 12 positions: obverse and reverse are separate.
-- Notes live in a child table, not 12 columns on `item_presentation`. This
-  replaces the earlier idea of `flavour_o_1` ... `flavour_r_12` (24 nullable
-  columns). A table lets us add fields later without touching
-  `item_presentation`.
+- Notes live in a child table, `item_clock_notes`, keyed to `collection.id`
+  (the source of truth for an item), not 12 columns on `item_presentation`.
 - `flavour_obv` and `flavour_rev` stay as they are for now.
-- A note has a body, plus an optional title, `icon_type` and link.
-- A note can also link to a device (`device_id`, optional). Devices are shared
-  across coins, so a linked note can draw its title, description and image
-  from the `devices` row instead of repeating them on every coin. Fields
-  written on the note itself override the device's.
-- Coins with no notes show nothing: no empty circles.
+- A note has an optional title, a body, an optional link (URL and label) and an
+  optional `icon_type` (free text for now, to be revisited).
+- A note can link to at most one entry in one of six authority tables
+  (devices, deities, places, persons, mints, artifacts). It then draws its
+  title, description and image from that entry. Text on the note overrides it.
+  A note needs a body or an authority link.
+- One note per position per face.
+- Coins with no notes show nothing: no empty circles. The layout still reserves
+  room for all 12 positions.
 - Ingestion (`somnus-data-ingestion`) gets a widget: pick obverse or reverse,
-  pick a clock position, write the note, save. `coin-cabinet` stays read-only.
-- Mobile: the image-switch buttons move under the legend, as on desktop, which
-  frees the coin edge for the clock buttons.
-- Tooltip: hover and focus on desktop, tap to open and tap outside to close on
-  touch, keyboard reachable.
+  pick a clock position, write the note or pick the linked entry, save.
+  `coin-cabinet` stays read-only.
+- Interaction (all tip buttons share `TipIcon`): opens on mouse hover, keyboard
+  focus and tap, closes on leave, blur, Escape or an outside click.
 
-## Schema (proposed, lives in `~/Documents/docs`)
+## Schema
 
-Keyed off `item_presentation`, like `supporting_images`.
+Source of truth is `~/Documents/docs`: `schema.sql`, `rls.sql`, `SCHEMAS.md`
+and the migration `migrate_add_item_clock_notes.sql` (one transaction, run by
+the owner, never by an agent).
 
 ```sql
-CREATE TABLE item_presentation_notes (
-  id              INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  presentation_id INTEGER NOT NULL REFERENCES item_presentation(id) ON DELETE CASCADE,
-  side            TEXT NOT NULL CHECK (side IN ('obverse', 'reverse')),
-  clock_position  SMALLINT NOT NULL CHECK (clock_position BETWEEN 1 AND 12),
-  title           TEXT,
-  body            TEXT,
-  device_id       INTEGER REFERENCES devices(id) ON DELETE RESTRICT,
-  icon_type       TEXT,
-  link_url        TEXT,
-  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE (presentation_id, side, clock_position),
-  CHECK (body IS NOT NULL OR device_id IS NOT NULL)
+CREATE TABLE item_clock_notes (
+  id             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  item_id        INTEGER NOT NULL REFERENCES collection(id),
+  side           TEXT NOT NULL CHECK (side IN ('obverse', 'reverse')),
+  clock_position SMALLINT NOT NULL CHECK (clock_position BETWEEN 1 AND 12),
+  title          TEXT,
+  body           TEXT,
+  link_url       TEXT,
+  link_label     TEXT,
+  icon_type      TEXT,
+  device_id      INTEGER REFERENCES devices(id),
+  deity_id       INTEGER REFERENCES deities(id),
+  place_id       INTEGER REFERENCES places(id),
+  person_id      INTEGER REFERENCES persons(id),
+  mint_id        INTEGER REFERENCES mints(id),
+  artifact_id    INTEGER REFERENCES artifacts(id),
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (item_id, side, clock_position),
+  CHECK (num_nonnulls(device_id, deity_id, place_id, person_id, mint_id, artifact_id) <= 1),
+  CHECK (body IS NOT NULL
+         OR num_nonnulls(device_id, deity_id, place_id, person_id, mint_id, artifact_id) = 1),
+  CHECK (link_label IS NULL OR link_url IS NOT NULL)
 );
-CREATE INDEX idx_item_presentation_notes_device_id
-  ON item_presentation_notes(device_id);
 ```
 
-Plus the `updated_at` trigger and RLS in the same shape as
-`supporting_images` (owner full access, anon read when the presentation is not
-hidden). The migration is a `.sql` file handed to the owner to run, wrapped in
-a transaction. `db:types` then regenerates `database.types.ts`.
+Plus an index on each authority id, the `updated_at` trigger, and RLS like
+`media` (owner full access through `owns_item`, anon read through
+`item_is_public`).
 
-A note needs a body or a device, so a pure device note is valid. When both
-are set, the body shows first and the device supplies the rest (name as the
-default title, description, image).
-
-Open:
-- Must a linked device be one the coin already depicts (a row in
-  `coin_devices` for that coin)? Enforcing it needs a trigger. Without it,
-  ingestion just offers the coin's devices first.
-- `ON DELETE RESTRICT` blocks deleting a device that notes still use.
-  `SET NULL` would break the body-or-device check for a pure device note.
-- One note per position (the unique constraint above) or several? One is
-  simpler to enter and to lay out.
+To revisit: `icon_type` as a `CHECK` list or a lookup table once the icons
+settle. Also the public read path (direct anon read or a view). Both are in
+`IMPLEMENTATION_TODOS.md`.
 
 ## Steps
 
 Each step is its own commit.
 
-1. [ ] Plan (this file).
-2. [ ] Demo: `CoinClockTips` around the coin image in `CoinRow`, hardcoded
-   notes at 2, 4, 9 and 10 o'clock. Circles the size of the image-switch
-   buttons, muted `moonlight` border, no fill, dashed for the blueprint look.
-   Temporary: delete once real data exists.
-3. [ ] Mobile: move the image-switch buttons under the legend at all widths.
-4. [ ] Tooltip behaviour: hover, focus, tap, Escape, outside click, and an
-   accessible name and description per button.
-5. [ ] Schema migration and docs update (owner runs the SQL).
+1. [x] Plan (this file).
+2. [x] Demo: `CoinClockTips` around the coin image, hardcoded notes
+   (`DEMO_CLOCK_NOTES`: 12, 2, 4, 6, 9 and 10 o'clock). Temporary.
+3. [x] Image-switch buttons moved under the legend at every width.
+4. [x] Popover behaviour, shared `TipIcon` (small, medium, large): hover, focus,
+   tap, Escape, outside click, accessible name.
+5. [ ] Run the migration (owner), then `pnpm db:types`.
 6. [ ] Read path: query the notes with the coin, add them to `CoinEnhanced`,
-   pass them to `CoinRow`, delete the demo data.
-7. [ ] Icons in the circles (`icon_type`), later.
+   pass them to `CoinRow`, delete the demo data. Resolve a linked entry's text,
+   image and name from its table.
+7. [ ] Icons in the circles (`icon_type`).
 8. [ ] Ingestion widget in `somnus-data-ingestion`.
+
+Also done around the same work: the translation behind a small `TipIcon` at the
+end of each legend, and the description behind a large `TipIcon` in the swap row.
