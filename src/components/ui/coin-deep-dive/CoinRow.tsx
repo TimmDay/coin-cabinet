@@ -125,6 +125,56 @@ export function CoinRow({
           </div>
 
           <CoinClockTips notes={clockNotes} />
+
+          {/* Description: the bottom-left corner, clear of the clock buttons */}
+          {description && (
+            <TipIcon
+              size="lg"
+              label="Show description"
+              icon={<ScrollIcon />}
+              interactive
+              className="absolute bottom-0 left-0 z-10"
+              popoverClassName="bottom-full top-auto left-0 mt-0 mb-2 w-[min(24rem,calc(100vw-2rem))] max-w-none translate-x-0 px-4 py-3 text-center text-base"
+            >
+              <span className="font-display mb-2 block text-center text-lg tracking-widest uppercase">
+                Description
+              </span>
+              <DescriptionWithDeviceHighlights
+                text={description}
+                devices={devices}
+                className="leading-relaxed break-words italic"
+              />
+            </TipIcon>
+          )}
+
+          {/* Under lg: the other images, as small buttons on the coin's edge */}
+          {availableImages.length > 1 && (
+            <div className="absolute top-2 right-2 z-10 flex translate-x-1/2 flex-col gap-1 lg:hidden">
+              {availableImages.map(
+                (image, index) =>
+                  index !== currentMobileImageIndex && (
+                    <button
+                      key={index}
+                      className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-slate-600 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setCurrentMobileImageIndex(index)
+                      }}
+                      aria-label={`Switch to ${image.label} image`}
+                    >
+                      <div className="h-full w-full overflow-hidden rounded-full">
+                        <CloudinaryImage
+                          src={image.src}
+                          alt={`${image.label} thumbnail`}
+                          width={44}
+                          height={44}
+                        />
+                      </div>
+                    </button>
+                  ),
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -168,56 +218,34 @@ export function CoinRow({
         </div>
       )}
 
-      {/* Switcher buttons for alternate images */}
-      {(description || availableImages.length > 1) && (
-        <div className="relative flex flex-row items-center justify-center gap-2 lg:row-start-3">
-          {/* A fixed slot at the left, so the swap buttons sit in the same
-              place whether or not this side has a description */}
-          <div className="h-10 w-10 shrink-0">
-            {description && (
-              <TipIcon
-                size="lg"
-                label="Show description"
-                icon={<ScrollIcon />}
-                interactive
-                popoverClassName="bottom-full top-auto mt-0 mb-2 w-[min(24rem,calc(100vw-2rem))] max-w-none px-4 py-3 text-center text-base"
-              >
-                <span className="font-display mb-2 block text-center text-lg tracking-widest uppercase">
-                  Description
-                </span>
-                <DescriptionWithDeviceHighlights
-                  text={description}
-                  devices={devices}
-                  className="leading-relaxed break-words italic"
+      {/* Switcher buttons for alternate images. Under lg they are small
+          corner buttons on the coin instead. */}
+      {availableImages.length > 1 && (
+        <div className="relative hidden flex-row items-center justify-center gap-2 lg:row-start-3 lg:flex">
+          {availableImages.map((image, index) => (
+            <button
+              key={index}
+              className={`artemis-card flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none ${
+                index === currentMobileImageIndex
+                  ? "border-slate-400"
+                  : "border-slate-600"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation()
+                setCurrentMobileImageIndex(index)
+              }}
+              aria-label={`Switch to ${image.label} image`}
+            >
+              <div className="h-full w-full overflow-hidden rounded-full">
+                <CloudinaryImage
+                  src={image.src}
+                  alt={`${image.label} thumbnail`}
+                  width={56}
+                  height={56}
                 />
-              </TipIcon>
-            )}
-          </div>
-          {availableImages.length > 1 &&
-            availableImages.map((image, index) => (
-              <button
-                key={index}
-                className={`artemis-card flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none ${
-                  index === currentMobileImageIndex
-                    ? "border-slate-400"
-                    : "border-slate-600"
-                }`}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setCurrentMobileImageIndex(index)
-                }}
-                aria-label={`Switch to ${image.label} image`}
-              >
-                <div className="h-full w-full overflow-hidden rounded-full">
-                  <CloudinaryImage
-                    src={image.src}
-                    alt={`${image.label} thumbnail`}
-                    width={56}
-                    height={56}
-                  />
-                </div>
-              </button>
-            ))}
+              </div>
+            </button>
+          ))}
         </div>
       )}
 

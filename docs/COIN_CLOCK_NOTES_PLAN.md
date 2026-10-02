@@ -112,4 +112,6 @@ Each step is its own commit.
    four `dark:` variants, from `docs/SITE_THEME_PLAN.md`.
 
 Also done around the same work: the translation behind a small `TipIcon` at the
-end of each legend, and the description behind a large `TipIcon` in the swap row.
+end of each legend, and the description behind a scroll button in the bottom-left
+corner of the coin image (the timeline's scroll icon, 40px). Under 1024px the
+other images are small corner buttons on the coin; the swap row is desktop only.
