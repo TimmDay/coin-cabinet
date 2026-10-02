@@ -136,9 +136,6 @@ export function CoinRow({
               className="absolute bottom-0 left-0 z-10"
               popoverClassName="bottom-full top-auto left-0 mt-0 mb-2 w-[min(24rem,calc(100vw-2rem))] max-w-none translate-x-0 px-4 py-3 text-center text-base"
             >
-              <span className="font-display mb-2 block text-center text-lg tracking-widest uppercase">
-                Description
-              </span>
               <DescriptionWithDeviceHighlights
                 text={description}
                 devices={devices}
