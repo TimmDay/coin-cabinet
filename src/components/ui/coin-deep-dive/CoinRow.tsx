@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
+import { useId, useState } from "react"
 import CloudinaryImage from "~/components/CloudinaryImage"
 import { cn } from "~/lib/utils"
 import { FormattedLegendExpanded } from "~/components/FormattedLegendExpanded"
@@ -252,20 +252,41 @@ function TranslationTip({ translation }: { translation: string }) {
 }
 
 /**
- * The scroll from the timeline's events, drawn quietly for the description
- * button. The source image has a faint checkerboard baked into its background,
- * so it is inverted and its contrast raised until the checkerboard goes black
- * and the screen blend drops it. Dimmed to 75%, full strength on hover and focus.
+ * The scroll from the timeline's events, drawn in the same colour as the
+ * button's border (moonlight, 70% until hover). The source image is black
+ * strokes on a light background with a faint checkerboard baked in, so a
+ * colour-matrix filter turns brightness into transparency (the checkerboard's
+ * greys fall below the cut-off and vanish) and paints what is left moonlight.
  */
 function ScrollIcon() {
+  // CSS url(#id) cannot take the colons React puts in generated ids
+  const filterId = `scroll-tint-${useId().replace(/:/g, "")}`
   return (
-    <Image
-      src="/assets/icon-scroll.png"
-      alt=""
-      width={24}
-      height={24}
-      className="opacity-75 mix-blend-screen group-hover:opacity-100 group-focus-visible:opacity-100"
-      style={{ filter: "invert(1) contrast(4)" }}
-    />
+    <>
+      <svg width="0" height="0" aria-hidden="true" className="absolute">
+        <filter
+          id={filterId}
+          x="0"
+          y="0"
+          width="1"
+          height="1"
+          colorInterpolationFilters="sRGB"
+        >
+          {/* moonlight is slate-400, rgb(148 163 184). Alpha is high for dark pixels only, and the region is the image itself so the empty margin is not painted. */}
+          <feColorMatrix
+            type="matrix"
+            values="0 0 0 0 0.5804  0 0 0 0 0.6392  0 0 0 0 0.7216  -0.8333 -0.8333 -0.8333 0 1.9"
+          />
+        </filter>
+      </svg>
+      <Image
+        src="/assets/icon-scroll.png"
+        alt=""
+        width={24}
+        height={24}
+        className="opacity-70 group-hover:opacity-100 group-focus-visible:opacity-100"
+        style={{ filter: `url(#${filterId})` }}
+      />
+    </>
   )
 }
