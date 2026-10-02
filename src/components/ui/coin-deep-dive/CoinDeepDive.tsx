@@ -370,6 +370,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                 timeline={matchingTimeline}
                 showHeaders={false}
                 initialCenter={mapCenter}
+                previewCenter={mintCoords ?? undefined}
                 eventZoomLevel={6}
                 additionalMarkers={deityPlaceMarkers.concat(artifactMarkers)}
                 showDefaultMintMarkers={false}

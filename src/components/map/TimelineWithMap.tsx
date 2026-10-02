@@ -36,6 +36,11 @@ export type TimelineWithMapProps = {
   timeline: TimelineType
   className?: string
   initialCenter?: [number, number]
+  /**
+   * Where the small-screen preview map rests before it is tapped, typically
+   * the mint. Falls back to the birth event, then the first located event.
+   */
+  previewCenter?: [number, number]
   initialZoom?: number
   /**
    * Zoom level to use when focusing on a timeline event location.
@@ -76,6 +81,7 @@ export function TimelineWithMap({
   timeline,
   className = "",
   initialCenter = [41.9028, 12.4964], // Rome default
+  previewCenter,
   initialZoom = 5,
   eventZoomLevel = 5,
   showProvinceLabels = true,
@@ -433,22 +439,6 @@ export function TimelineWithMap({
 
   return (
     <div className={`flex flex-col ${className}`}>
-      {/* Timeline at top */}
-      <div ref={timelineContainerRef} className="hidden pr-2 lg:block">
-        {showHeaders && (
-          <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
-            Timeline
-          </h2>
-        )}
-        <Timeline
-          timeline={timeline}
-          onEventClick={handleEventClick}
-          selectedEventIndex={selectedEventIndex}
-          enableMobileDrawer={false}
-          className="timeline-in-map"
-        />
-      </div>
-
       {/* Map Container - wraps both mobile and desktop views for intersection observer */}
       <div ref={mapContainerRef}>
         {/* Mobile static map preview */}
@@ -469,7 +459,7 @@ export function TimelineWithMap({
                 {!isMobileModalOpen && isMapInViewport ? (
                   <Map
                     {...mapProps}
-                    center={mobilePreviewCenter}
+                    center={previewCenter ?? mobilePreviewCenter}
                     zoom={initialZoom}
                     height={MAP_HEIGHT}
                     width="100%"
@@ -543,6 +533,22 @@ export function TimelineWithMap({
             </div>
           </div>
         )}
+      </div>
+
+      {/* Timeline under the map */}
+      <div ref={timelineContainerRef} className="mt-8 hidden pr-2 lg:block">
+        {showHeaders && (
+          <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
+            Timeline
+          </h2>
+        )}
+        <Timeline
+          timeline={timeline}
+          onEventClick={handleEventClick}
+          selectedEventIndex={selectedEventIndex}
+          enableMobileDrawer={false}
+          className="timeline-in-map"
+        />
       </div>
 
       {isMobileViewport && isMobileModalOpen && (
