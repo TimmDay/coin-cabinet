@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useState } from "react"
 import CloudinaryImage from "~/components/CloudinaryImage"
 import { cn } from "~/lib/utils"
@@ -170,20 +171,28 @@ export function CoinRow({
       {/* Switcher buttons for alternate images */}
       {(description || availableImages.length > 1) && (
         <div className="relative flex flex-row items-center justify-center gap-2 lg:row-start-3">
-          {description && (
-            <TipIcon
-              size="lg"
-              label="Show description"
-              interactive
-              popoverClassName="bottom-full top-auto mt-0 mb-2 w-[min(24rem,calc(100vw-2rem))] max-w-none px-4 py-3 text-center text-base"
-            >
-              <DescriptionWithDeviceHighlights
-                text={description}
-                devices={devices}
-                className="leading-relaxed break-words italic"
-              />
-            </TipIcon>
-          )}
+          {/* A fixed slot at the left, so the swap buttons sit in the same
+              place whether or not this side has a description */}
+          <div className="h-10 w-10 shrink-0">
+            {description && (
+              <TipIcon
+                size="lg"
+                label="Show description"
+                icon={<ScrollIcon />}
+                interactive
+                popoverClassName="bottom-full top-auto mt-0 mb-2 w-[min(24rem,calc(100vw-2rem))] max-w-none px-4 py-3 text-center text-base"
+              >
+                <span className="font-display mb-2 block text-center text-lg tracking-widest uppercase">
+                  Description
+                </span>
+                <DescriptionWithDeviceHighlights
+                  text={description}
+                  devices={devices}
+                  className="leading-relaxed break-words italic"
+                />
+              </TipIcon>
+            )}
+          </div>
           {availableImages.length > 1 &&
             availableImages.map((image, index) => (
               <button
@@ -239,5 +248,24 @@ function TranslationTip({ translation }: { translation: string }) {
     >
       {translation}
     </TipIcon>
+  )
+}
+
+/**
+ * The scroll from the timeline's events, drawn quietly for the description
+ * button. The source image has a faint checkerboard baked into its background,
+ * so it is inverted and its contrast raised until the checkerboard goes black
+ * and the screen blend drops it. Dimmed to 75%, full strength on hover and focus.
+ */
+function ScrollIcon() {
+  return (
+    <Image
+      src="/assets/icon-scroll.png"
+      alt=""
+      width={24}
+      height={24}
+      className="opacity-75 mix-blend-screen group-hover:opacity-100 group-focus-visible:opacity-100"
+      style={{ filter: "invert(1) contrast(4)" }}
+    />
   )
 }

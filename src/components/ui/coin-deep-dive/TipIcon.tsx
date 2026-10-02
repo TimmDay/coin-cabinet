@@ -15,7 +15,7 @@ import { cn } from "~/lib/utils"
 const sizeClasses = {
   sm: "h-[22px] w-[22px]",
   md: "h-8 w-8 sm:h-11 sm:w-11",
-  lg: "h-14 w-14",
+  lg: "h-10 w-10",
 }
 
 type TipIconProps = {
@@ -31,6 +31,8 @@ type TipIconProps = {
   popoverClassName?: string
   /** The popover holds its own buttons or links, so it is a group, not a tooltip. */
   interactive?: boolean
+  /** Drawn inside the circle. Without one the circle is empty. */
+  icon?: ReactNode
 }
 
 /** The horizontal span in which an element can be seen: the screen, narrowed by the nearest ancestor that clips sideways. */
@@ -66,6 +68,7 @@ export function TipIcon({
   style,
   popoverClassName,
   interactive = false,
+  icon,
 }: TipIconProps) {
   const [open, setOpen] = useState(false)
   const popoverId = useId()
@@ -168,10 +171,12 @@ export function TipIcon({
           setOpen((value) => !value)
         }}
         className={cn(
-          "border-moonlight/70 text-moonlight hover:border-moonlight focus-visible:border-moonlight focus-visible:ring-moonlight/70 block shrink-0 cursor-pointer rounded-full border border-dashed bg-transparent transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none",
+          "group border-moonlight/70 text-moonlight hover:border-moonlight focus-visible:border-moonlight focus-visible:ring-moonlight/70 grid shrink-0 cursor-pointer place-items-center rounded-full border border-dashed bg-transparent transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none",
           sizeClasses[size],
         )}
-      />
+      >
+        {icon}
+      </button>
       {open && (
         <span
           ref={popoverRef}
