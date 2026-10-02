@@ -1,3 +1,5 @@
+import { cn } from "~/lib/utils"
+
 export type ClockNote = {
   /** Clock position, 1 to 12 (12 is straight up, 3 is right). */
   position: number
@@ -32,6 +34,17 @@ function clockOffset(position: number) {
 }
 
 /**
+ * Which way the tooltip opens. Buttons on the right half open leftward and
+ * buttons on the left half open rightward, so a tooltip never runs off the
+ * edge of the page. 12 and 6 are centred.
+ */
+function tooltipAlign(position: number) {
+  const hour = position % 12
+  if (hour === 0 || hour === 6) return "left-1/2 -translate-x-1/2"
+  return hour < 6 ? "right-0" : "left-0"
+}
+
+/**
  * Small circular note buttons placed around a coin image at clock positions.
  * Render inside a `relative` square that holds the coin. Muted on purpose:
  * a dashed blueprint outline that brightens on hover and focus.
@@ -44,7 +57,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
       {notes.map((note) => (
         <div
           key={note.position}
-          className="group absolute z-10 -translate-x-1/2 -translate-y-1/2"
+          className="group absolute z-10 -translate-x-1/2 -translate-y-1/2 focus-within:z-30 hover:z-30"
           style={clockOffset(note.position)}
         >
           <button
@@ -54,7 +67,10 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           />
           <div
             role="tooltip"
-            className="border-line bg-field text-moonlight-bright pointer-events-none absolute top-full left-1/2 z-20 mt-2 hidden w-56 -translate-x-1/2 rounded-md border px-3 py-2 text-left text-sm group-focus-within:block group-hover:block"
+            className={cn(
+              "border-line bg-field text-moonlight-bright pointer-events-none absolute top-full z-20 mt-2 hidden w-56 rounded-md border px-3 py-2 text-left text-sm group-focus-within:block group-hover:block",
+              tooltipAlign(note.position),
+            )}
           >
             {note.title && (
               <p className="font-display mb-1 text-xs tracking-widest uppercase">
