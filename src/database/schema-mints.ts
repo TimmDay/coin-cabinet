@@ -9,6 +9,9 @@ export type Mint = {
   mint_marks?: string[] // ["ROMA", "R", "ROM", "RM", "XXIR", "SMR"]
   officina_marks?: string[] // ["A", "B", "Γ", "Δ", "E", "S", "T"]
   flavour_text?: string | null // Historical description
+  image_url?: string | null // Cloudinary id or URL of a picture of the mint
+  image_alt_text?: string | null
+  image_credit?: string | null // Who to credit for the picture
 
   citations?: Citation[]
   opened_by?: string | null // "Augustus", "Republic Temple of Juno Moneta"

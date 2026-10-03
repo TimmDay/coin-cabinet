@@ -60,8 +60,9 @@ them, so components never see the table layout.
 ### `/api/mints` from `mints`, `places`, `mint_operation_periods`
 A mint has no name or coordinates of its own: `name`, `lat` and `lng` come from
 its place. `mint_operation_periods` rows become the `[start, end,
-authority_label][]` tuples that `MintDeepDiveCard` reads. A mint whose place is
-missing is left out.
+authority_label][]` tuples that `MintDeepDiveCard` reads. The mint's own
+`image_url`, `image_alt_text` and `image_credit` are the picture on its card, with
+the credit as its caption. A mint whose place is missing is left out.
 
 ### `/api/devices` from `devices`
 `image_url` becomes `img`. The numeric `id` is sent as a string, because
@@ -73,8 +74,7 @@ missing is left out.
 (strings, in artifact id order): the artifacts that picture the deity. The open
 card shows their images, with each artifact's alt text, caption (`flavour_text`)
 and `image_credit`: one image on its own, or a carousel you click through when
-there are several. A deity with no artifact picture falls back to its own
-`image_links` (Cloudinary ids or URLs). If the `deity_artifacts` read fails
+there are several. If the `deity_artifacts` read fails
 (before its migration is run, say) the deities load without artifacts rather than
 failing.
 
