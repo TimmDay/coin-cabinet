@@ -61,22 +61,30 @@ describe("ImageCarousel", () => {
     expect(container).toBeEmptyDOMElement()
   })
 
-  it("shows the caption and credit of the image that is showing", () => {
+  it("shows the name, location and credit on one line for the image that is showing", () => {
     render(
       <ImageCarousel
         images={[
-          { src: "a", alt: "A", caption: "First one", credit: "Photo A" },
-          { src: "b", alt: "B", caption: "Second one" },
+          {
+            src: "a",
+            alt: "A",
+            name: "Statue A",
+            location: "Stuttgart",
+            credit: "Photo A",
+          },
+          { src: "b", alt: "B", name: "Statue B" },
         ]}
       />,
     )
 
-    expect(screen.getByText("First one")).toBeInTheDocument()
-    expect(screen.getByText("Image: Photo A")).toBeInTheDocument()
+    // All on one line, in this order
+    expect(
+      screen.getByText("Statue A · Stuttgart · Image: Photo A"),
+    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole("button", { name: "Image 2" }))
 
-    expect(screen.getByText("Second one")).toBeInTheDocument()
-    expect(screen.queryByText(/Photo A/)).not.toBeInTheDocument()
+    expect(screen.getByText("Statue B")).toBeInTheDocument()
+    expect(screen.queryByText(/Photo A|Stuttgart/)).not.toBeInTheDocument()
   })
 })

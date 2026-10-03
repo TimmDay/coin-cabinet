@@ -27,7 +27,11 @@ export function transformDeitiesToCards(
               {
                 src: artifact.img_src,
                 alt: artifact.img_alt ?? artifact.name,
-                caption: artifact.flavour_text ?? undefined,
+                name: artifact.name,
+                location:
+                  artifact.location_name ??
+                  artifact.institution_name ??
+                  undefined,
                 credit: artifact.img_credit ?? undefined,
               },
             ]

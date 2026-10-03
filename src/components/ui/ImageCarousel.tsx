@@ -7,7 +7,11 @@ export type CarouselImage = {
   /** Cloudinary public id or URL. */
   src: string
   alt: string
-  /** Shown under the picture while it is the current one. */
+  /** What the picture is of (an artifact's name), shown under it. */
+  name?: string
+  /** Where it is (an artifact's location note). */
+  location?: string
+  /** Free text under the picture. */
   caption?: string
   /** Who to credit for the picture. */
   credit?: string
@@ -20,7 +24,8 @@ type ImageCarouselProps = {
 /**
  * One image, or several to step through: clicking the picture shows the next
  * (and wraps), and the dots below jump to one. The alt text appears on hover and
- * the caption under the picture, for whichever image is showing.
+ * one line of caption sits directly under the picture, for whichever image is
+ * showing.
  */
 export function ImageCarousel({ images }: ImageCarouselProps) {
   const [index, setIndex] = useState(0)
@@ -30,12 +35,23 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
 
   const many = images.length > 1
 
+  // One line: what it is, where it is, any caption, then the credit
+  const caption = [
+    current.name,
+    current.location,
+    current.caption,
+    current.credit && `Image: ${current.credit}`,
+  ]
+    .filter(Boolean)
+    .join(" · ")
+
   const picture = (
     <CloudinaryImage
       src={current.src}
       alt={current.alt}
       width={400}
       height={400}
+      fit
     />
   )
 
@@ -63,6 +79,12 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
         )}
       </div>
 
+      {caption && (
+        <p className="text-moonlight mt-2 text-center text-sm leading-snug">
+          {caption}
+        </p>
+      )}
+
       {many && (
         <div
           className="mt-3 flex gap-2"
@@ -84,17 +106,6 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
             />
           ))}
         </div>
-      )}
-
-      {current.credit && (
-        <p className="text-moonlight/80 mt-2 text-center text-xs">
-          Image: {current.credit}
-        </p>
-      )}
-      {current.caption && (
-        <p className="text-moonlight mt-3 text-center text-sm leading-relaxed italic">
-          {current.caption}
-        </p>
       )}
     </div>
   )

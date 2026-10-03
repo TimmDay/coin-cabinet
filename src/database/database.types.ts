@@ -20,7 +20,6 @@ export type Database = {
           created_at: string
           flavour_text: string | null
           historical_notes: string | null
-          historical_sources: string[] | null
           id: number
           image_alt_text: string | null
           image_credit: string | null
@@ -37,7 +36,6 @@ export type Database = {
           created_at?: string
           flavour_text?: string | null
           historical_notes?: string | null
-          historical_sources?: string[] | null
           id?: never
           image_alt_text?: string | null
           image_credit?: string | null
@@ -54,7 +52,6 @@ export type Database = {
           created_at?: string
           flavour_text?: string | null
           historical_notes?: string | null
-          historical_sources?: string[] | null
           id?: never
           image_alt_text?: string | null
           image_credit?: string | null
@@ -424,7 +421,6 @@ export type Database = {
           festivals: string[] | null
           flavour_text: string | null
           god_of: string[] | null
-          historical_sources: string[] | null
           id: number
           image_links: string[] | null
           legends_coinage: string[] | null
@@ -441,7 +437,6 @@ export type Database = {
           festivals?: string[] | null
           flavour_text?: string | null
           god_of?: string[] | null
-          historical_sources?: string[] | null
           id?: never
           image_links?: string[] | null
           legends_coinage?: string[] | null
@@ -458,7 +453,6 @@ export type Database = {
           festivals?: string[] | null
           flavour_text?: string | null
           god_of?: string[] | null
-          historical_sources?: string[] | null
           id?: never
           image_links?: string[] | null
           legends_coinage?: string[] | null
@@ -571,7 +565,6 @@ export type Database = {
           category: string | null
           created_at: string
           description: string
-          historical_sources: string[] | null
           id: number
           image_url: string | null
           name: string
@@ -582,7 +575,6 @@ export type Database = {
           category?: string | null
           created_at?: string
           description: string
-          historical_sources?: string[] | null
           id?: never
           image_url?: string | null
           name: string
@@ -593,7 +585,6 @@ export type Database = {
           category?: string | null
           created_at?: string
           description?: string
-          historical_sources?: string[] | null
           id?: never
           image_url?: string | null
           name?: string
@@ -1213,7 +1204,6 @@ export type Database = {
           coinage_materials: string[] | null
           created_at: string
           flavour_text: string | null
-          historical_sources: string[] | null
           id: number
           mint_marks: string[] | null
           officina_marks: string[] | null
@@ -1225,7 +1215,6 @@ export type Database = {
           coinage_materials?: string[] | null
           created_at?: string
           flavour_text?: string | null
-          historical_sources?: string[] | null
           id?: never
           mint_marks?: string[] | null
           officina_marks?: string[] | null
@@ -1237,7 +1226,6 @@ export type Database = {
           coinage_materials?: string[] | null
           created_at?: string
           flavour_text?: string | null
-          historical_sources?: string[] | null
           id?: never
           mint_marks?: string[] | null
           officina_marks?: string[] | null
@@ -1296,7 +1284,6 @@ export type Database = {
           death_year: number | null
           flavour_text: string | null
           full_name: string | null
-          historical_sources: string[] | null
           id: number
           name: string
           reign_end: number | null
@@ -1312,7 +1299,6 @@ export type Database = {
           death_year?: number | null
           flavour_text?: string | null
           full_name?: string | null
-          historical_sources?: string[] | null
           id?: never
           name: string
           reign_end?: number | null
@@ -1328,7 +1314,6 @@ export type Database = {
           death_year?: number | null
           flavour_text?: string | null
           full_name?: string | null
-          historical_sources?: string[] | null
           id?: never
           name?: string
           reign_end?: number | null
@@ -1345,7 +1330,6 @@ export type Database = {
           created_at: string
           established_year: number | null
           flavour_text: string | null
-          historical_sources: string[] | null
           id: number
           lat: number | null
           lng: number | null
@@ -1359,7 +1343,6 @@ export type Database = {
           created_at?: string
           established_year?: number | null
           flavour_text?: string | null
-          historical_sources?: string[] | null
           id?: never
           lat?: number | null
           lng?: number | null
@@ -1373,7 +1356,6 @@ export type Database = {
           created_at?: string
           established_year?: number | null
           flavour_text?: string | null
-          historical_sources?: string[] | null
           id?: never
           lat?: number | null
           lng?: number | null
@@ -1591,7 +1573,6 @@ export type Database = {
           event_type: string | null
           event_year: number | null
           flavour_text: string | null
-          historical_sources: string[] | null
           id: number
           lat: number | null
           lng: number | null
@@ -1607,7 +1588,6 @@ export type Database = {
           event_type?: string | null
           event_year?: number | null
           flavour_text?: string | null
-          historical_sources?: string[] | null
           id?: never
           lat?: number | null
           lng?: number | null
@@ -1623,7 +1603,6 @@ export type Database = {
           event_type?: string | null
           event_year?: number | null
           flavour_text?: string | null
-          historical_sources?: string[] | null
           id?: never
           lat?: number | null
           lng?: number | null

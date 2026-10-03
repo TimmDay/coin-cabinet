@@ -10,7 +10,8 @@ const artifact = (id: string, over: Partial<Artifact> = {}) =>
     img_src: `https://img/${id}.jpg`,
     img_alt: `Alt ${id}`,
     img_credit: `Credit ${id}`,
-    flavour_text: `Caption ${id}`,
+    location_name: `Location ${id}`,
+    institution_name: `Museum ${id}`,
     ...over,
   }) as Artifact
 
@@ -18,7 +19,7 @@ const deity = (over: Record<string, unknown> = {}) =>
   [{ id: 1, name: "Concordia", ...over }] as CoinEnhanced["deities"]
 
 describe("transformDeitiesToCards", () => {
-  it("pictures a deity with its artifacts, each with alt text, caption and credit", () => {
+  it("pictures a deity with its artifacts, each with alt text, name, location and credit", () => {
     const [card] = transformDeitiesToCards(
       deity({ artifact_ids: ["3", "5"] }),
       [artifact("3"), artifact("5")],
@@ -28,16 +29,26 @@ describe("transformDeitiesToCards", () => {
       {
         src: "https://img/3.jpg",
         alt: "Alt 3",
-        caption: "Caption 3",
+        name: "Artifact 3",
+        location: "Location 3",
         credit: "Credit 3",
       },
       {
         src: "https://img/5.jpg",
         alt: "Alt 5",
-        caption: "Caption 5",
+        name: "Artifact 5",
+        location: "Location 5",
         credit: "Credit 5",
       },
     ])
+  })
+
+  it("uses the museum when there is no location note", () => {
+    const [card] = transformDeitiesToCards(deity({ artifact_ids: ["3"] }), [
+      artifact("3", { location_name: null }),
+    ])
+
+    expect(card?.images?.[0]?.location).toBe("Museum 3")
   })
 
   it("names the artifact when it has no alt text, and skips one with no image", () => {
