@@ -3,7 +3,7 @@
 import { X } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useInViewport } from "~/hooks/useInViewport"
-import { MAP_HEIGHT } from "~/lib/constants"
+import { MAP_HEIGHT, MAP_HEIGHT_DESKTOP } from "~/lib/constants"
 import type {
   Event as TimelineEvent,
   Timeline as TimelineType,
@@ -499,13 +499,13 @@ export function TimelineWithMap({
         {/* Desktop map and info */}
         {!isMobileViewport && (
           <div className="hidden lg:flex lg:flex-row">
-            <div className="h-[400px] lg:w-2/3">
+            <div className="h-[520px] lg:w-2/3">
               {isMapInViewport ? (
                 <Map
                   {...mapProps}
                   center={validatedInitialCenter}
                   zoom={initialZoom}
-                  height={MAP_HEIGHT}
+                  height={MAP_HEIGHT_DESKTOP}
                   width="100%"
                   showProvinceLabels={showProvinceLabels}
                   hideControls={true}
@@ -516,13 +516,13 @@ export function TimelineWithMap({
                   onNavigate={handleMapNavigate}
                 />
               ) : (
-                <div className="flex h-[400px] items-center justify-center bg-slate-100">
+                <div className="flex h-[520px] items-center justify-center bg-slate-100">
                   <div className="text-slate-600">Loading map...</div>
                 </div>
               )}
             </div>
 
-            <div className="h-[400px] lg:w-1/3">
+            <div className="h-[520px] lg:w-1/3">
               <TimelineInfoBox
                 event={currentEvent}
                 onPrevious={handlePreviousEvent}
@@ -595,7 +595,7 @@ export function TimelineWithMap({
                 onNext={handleNextEvent}
                 hasPrevious={allEvents.length > 1}
                 hasNext={allEvents.length > 1}
-                className="h-full bg-slate-900"
+                className="h-full"
               />
             </div>
           </div>

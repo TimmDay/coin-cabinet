@@ -106,6 +106,8 @@ export type MapProps = {
   zoom?: number
   /** Height of the map container */
   height?: string
+  /** Height from the lg breakpoint up; defaults to `height` */
+  desktopHeight?: string
   /** Width of the map container */
   width?: string
   /** Additional CSS class names */
@@ -164,6 +166,7 @@ export const Map: React.FC<MapProps> = ({
   center,
   zoom,
   height = MAP_HEIGHT,
+  desktopHeight,
   width = "100%",
   className = "",
   layout = "default",
@@ -737,6 +740,9 @@ export const Map: React.FC<MapProps> = ({
   // Apply custom dimensions if provided, otherwise use Tailwind defaults
   const safeHeight = sanitizeCssDimension(height, MAP_HEIGHT)
   const safeWidth = sanitizeCssDimension(width, "100%")
+  const safeDesktopHeight = desktopHeight
+    ? sanitizeCssDimension(desktopHeight, safeHeight)
+    : null
 
   const updateViewportBounds = useCallback((map: MapLibreMap) => {
     const bounds = map.getBounds()
@@ -860,7 +866,14 @@ export const Map: React.FC<MapProps> = ({
             className={
               layout === "fullscreen"
                 ? "relative h-full w-full"
-                : `map-shell-sized relative ${width === "100%" ? "w-full" : ""}`
+                : `map-shell-sized relative ${width === "100%" ? "w-full" : ""} ${safeDesktopHeight ? "lg:h-(--map-desktop-height)!" : ""}`
+            }
+            style={
+              safeDesktopHeight
+                ? ({
+                    "--map-desktop-height": safeDesktopHeight,
+                  } as React.CSSProperties)
+                : undefined
             }
           >
             <MapGL
