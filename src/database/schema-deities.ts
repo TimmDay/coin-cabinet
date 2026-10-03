@@ -1,3 +1,5 @@
+import type { Citation } from "./schema-citations"
+
 // ============================================================================
 // DEITIES - Gods, goddesses, and divine concepts on coins
 // ============================================================================
@@ -21,7 +23,7 @@ export type Deity = {
   similar_gods?: string[] // similar gods from other civilizations
   flavour_text?: string | null
   secondary_info?: string | null
-  historical_sources?: string[] //TODO: need a type for historical sources objects
+  citations?: Citation[]
   god_of: string[]
   features_coinage: CoinageFeature[] // TODO: work out how to get the forms to handle the JSONB
   legends_coinage: string[]

@@ -1,11 +1,16 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
+import { fetchCitations } from "~/database/queries/citations"
 import type { QueryResult } from "~/database/queries/types"
+import type { Citation } from "~/database/schema-citations"
 import type { HistoricalFigure } from "~/database/schema-historical-figures"
 
 type PersonRow = Database["public"]["Tables"]["persons"]["Row"]
 
-function toHistoricalFigure(row: PersonRow): HistoricalFigure {
+function toHistoricalFigure(
+  row: PersonRow,
+  citations: Citation[],
+): HistoricalFigure {
   return {
     id: row.id,
     name: row.name,
@@ -18,7 +23,7 @@ function toHistoricalFigure(row: PersonRow): HistoricalFigure {
     death: row.death_year,
     altNames: row.alt_names,
     flavour_text: row.flavour_text,
-    historical_sources: [],
+    citations,
     timeline_id: [],
     artifact_ids: [],
     places_id: [],
@@ -37,5 +42,18 @@ export async function fetchHistoricalFigures(
     .order("name", { ascending: true })
 
   if (error) return { data: null, error }
-  return { data: data.map(toHistoricalFigure), error: null }
+
+  const citations = await fetchCitations(
+    supabase,
+    "person_id",
+    data.map((p) => p.id),
+  )
+  if (citations.error) return { data: null, error: citations.error }
+
+  return {
+    data: data.map((row) =>
+      toHistoricalFigure(row, citations.data.get(row.id) ?? []),
+    ),
+    error: null,
+  }
 }

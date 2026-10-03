@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
+import { fetchCitations } from "~/database/queries/citations"
 import type { QueryResult } from "~/database/queries/types"
 import type { Mint } from "~/database/schema-mints"
 
@@ -32,6 +33,9 @@ export async function fetchMints(
 
   if (periodsError) return { data: null, error: periodsError }
 
+  const citations = await fetchCitations(supabase, "mint_id", mintIds)
+  if (citations.error) return { data: null, error: citations.error }
+
   const placeById = new Map(places.map((p) => [p.id, p]))
   const periodsByMintId = new Map<number, OperationPeriodRow[]>()
   for (const period of periods) {
@@ -62,7 +66,7 @@ export async function fetchMints(
         mint_marks: mint.mint_marks ?? undefined,
         officina_marks: mint.officina_marks ?? undefined,
         flavour_text: mint.flavour_text,
-        historical_sources: mint.historical_sources ?? undefined,
+        citations: citations.data.get(mint.id) ?? [],
         opened_by: mint.opened_by,
         operation_periods: operationPeriods.length ? operationPeriods : null,
         coinage_materials: mint.coinage_materials ?? undefined,

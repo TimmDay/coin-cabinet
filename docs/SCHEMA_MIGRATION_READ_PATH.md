@@ -42,7 +42,7 @@ reshaped back into the old `[start, end, authority_label][]` tuple array that
 `MintDeepDiveCard.tsx` expects.
 
 ### `/api/devices` ← `devices`
-Rename `historical_sources`→`sources`, `image_url`→`img`. Numeric `id`
+Rename `image_url`→`img`. Citations: see "Citations" below. Numeric `id`
 stringified (old type was a uuid string; `CoinDeepDive.tsx`/
 `DescriptionWithDeviceHighlights.tsx` compare/key on `device.id` as a
 string). Dropped `artifact_ids` — not used by any device consumer, no
@@ -68,7 +68,7 @@ degradation.
 ### `/api/timelines` ← `timelines` join `timeline_events` (by `sequence`), join `places`
 Reassembles the `timeline: Event[]` JSONB-shaped array from child rows:
 `event_type`→`kind`, `flavour_text`→`description`,
-`historical_sources[]`→`source`. Place resolution follows the schema's own
+citations on each event: see "Citations" below. Place resolution follows the schema's own
 convention: `COALESCE(event.lat, place.lat)`.
 
 ### `/api/artifacts` ← `artifacts` join `places`
@@ -174,3 +174,18 @@ lowercase/hyphenated strings that didn't match any canonical casing either).
 - `/admin`, `/somnus-login`, and all write/mutation hooks (`useAddSomnusCoin`,
   etc.) still reference the old flat schema and will fail at runtime against
   the new DB. Left as-is pending their planned deletion.
+
+## Citations
+
+Places, mints, devices, deities, persons (`/api/historical-figures`), artifacts
+and timeline events each carry `citations: Citation[]` (`src/database/schema-citations.ts`):
+`id`, `author`, `work_title`, `citation`, `url` and `note`. They come from the
+`sources` table through `entity_sources` (one query per route, in
+`src/database/queries/citations.ts`), not from the old `historical_sources TEXT[]`
+columns, which the queries no longer read so that those columns can be dropped.
+The old per-route text fields (`historical_sources`, a device's `sources`, an
+event's `source`) are gone from the API responses, except that `Event.source`
+still exists as a free-text field for the hand-written timelines in `src/data`.
+`note` is the note on the link (`entity_sources.applies_to`), so the same source
+can carry a different note on each thing it is attached to. Nothing on the site
+displays citations yet.

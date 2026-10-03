@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
+import { fetchCitations } from "~/database/queries/citations"
 import type { QueryResult } from "~/database/queries/types"
 import type { Deity } from "~/database/schema-deities"
 
@@ -30,6 +31,9 @@ export async function fetchDeities(
     .in("deity_id", deityIds)
 
   if (deviceDeitiesError) return { data: null, error: deviceDeitiesError }
+
+  const citations = await fetchCitations(supabase, "deity_id", deityIds)
+  if (citations.error) return { data: null, error: citations.error }
 
   const deviceIds = [...new Set(deviceDeities.map((dd) => dd.device_id))]
   const { data: devices, error: devicesError } =
@@ -65,7 +69,7 @@ export async function fetchDeities(
     similar_gods: row.similar_gods ?? undefined,
     flavour_text: row.flavour_text,
     secondary_info: row.secondary_info,
-    historical_sources: row.historical_sources ?? undefined,
+    citations: citations.data.get(row.id) ?? [],
     god_of: row.god_of ?? [],
     // Replaces the old `features_coinage` (JSONB objects) — its data was
     // migrated into `device_deities` rows, see docs/SCHEMA_MIGRATION_READ_PATH.md.

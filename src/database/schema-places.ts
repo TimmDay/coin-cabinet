@@ -1,3 +1,5 @@
+import type { Citation } from "./schema-citations"
+
 // ============================================================================
 // PLACES - Cities, Temples, Ruins, Museums
 // ============================================================================
@@ -13,7 +15,7 @@ export type Place = {
   flavour_text?: string | null
   location_description?: string // e.g. North face of the hill, grove of trees, bank of the.
   established_year?: number | null
-  historical_sources?: string | null
+  citations?: Citation[]
   host_to?: string[] // events, battles, festivals.
 
   artifact_ids?: string[]

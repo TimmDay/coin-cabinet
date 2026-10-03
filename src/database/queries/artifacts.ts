@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
+import { fetchCitations } from "~/database/queries/citations"
 import type { QueryResult } from "~/database/queries/types"
 import type { Artifact } from "~/database/schema-artifacts"
 
@@ -30,6 +31,13 @@ export async function fetchArtifacts(
 
   if (placesError) return { data: null, error: placesError }
 
+  const citations = await fetchCitations(
+    supabase,
+    "artifact_id",
+    artifacts.map((a) => a.id),
+  )
+  if (citations.error) return { data: null, error: citations.error }
+
   const placeById = new Map(places.map((p) => [p.id, p]))
 
   const result: Artifact[] = artifacts.map((row) => {
@@ -49,7 +57,7 @@ export async function fetchArtifacts(
       year_of_creation_estimate: row.year_of_creation_estimate,
       flavour_text: row.flavour_text,
       historical_notes: row.historical_notes,
-      historical_sources: row.historical_sources,
+      citations: citations.data.get(row.id) ?? [],
       created_at: row.created_at,
       updated_at: row.updated_at,
     }

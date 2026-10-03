@@ -1,3 +1,5 @@
+import type { Citation } from "./schema-citations"
+
 export type Artifact = {
   id: string
   name: string
@@ -13,7 +15,7 @@ export type Artifact = {
   year_of_creation_estimate: number | null
   flavour_text: string | null
   historical_notes: string | null
-  historical_sources: string[] | null
+  citations?: Citation[]
   created_at: string
   updated_at: string
 }
@@ -32,7 +34,6 @@ export type ArtifactInsert = {
   year_of_creation_estimate?: number | null
   flavour_text?: string | null
   historical_notes?: string | null
-  historical_sources?: string[] | null
 }
 
 export type ArtifactUpdate = Partial<ArtifactInsert> & {

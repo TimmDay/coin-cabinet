@@ -1,11 +1,13 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
+import { fetchCitations } from "~/database/queries/citations"
 import type { QueryResult } from "~/database/queries/types"
+import type { Citation } from "~/database/schema-citations"
 import type { Place } from "~/database/schema-places"
 
 type PlaceRow = Database["public"]["Tables"]["places"]["Row"]
 
-function toPlace(row: PlaceRow): Place {
+function toPlace(row: PlaceRow, citations: Citation[]): Place {
   return {
     id: row.id,
     kind: row.place_type as Place["kind"],
@@ -16,7 +18,7 @@ function toPlace(row: PlaceRow): Place {
     flavour_text: row.flavour_text,
     location_description: row.location_description ?? undefined,
     established_year: row.established_year,
-    historical_sources: row.historical_sources?.join("; ") ?? null,
+    citations,
     created_at: row.created_at,
     updated_at: row.updated_at,
     user_id: "",
@@ -32,5 +34,16 @@ export async function fetchPlaces(
     .order("name", { ascending: true })
 
   if (error) return { data: null, error }
-  return { data: data.map(toPlace), error: null }
+
+  const citations = await fetchCitations(
+    supabase,
+    "place_id",
+    data.map((p) => p.id),
+  )
+  if (citations.error) return { data: null, error: citations.error }
+
+  return {
+    data: data.map((row) => toPlace(row, citations.data.get(row.id) ?? [])),
+    error: null,
+  }
 }
