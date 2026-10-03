@@ -359,6 +359,11 @@ main {
   }
 }
 
+/* Modifier for the coin page: room for two large coins side by side. */
+.content-wrapper.wide {
+  max-width: 1600px;
+}
+
 /* Modifier for home page - adds top padding */
 .content-wrapper.home {
   --padding-top: 3rem; /* 48px on mobile */

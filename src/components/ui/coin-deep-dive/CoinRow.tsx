@@ -90,10 +90,10 @@ export function CoinRow({
   return (
     // --coin-size: 350px at the least, then as big as the width (two coins side
     // by side, with room for the clock buttons) and the height of the window
-    // allow, up to 480px.
+    // allow, up to 580px.
     // On desktop the root spans two rows of the parent grid (image, text) so
     // both faces line up row by row.
-    <div className="mx-auto flex max-w-7xl flex-col space-y-4 lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:justify-items-center lg:space-y-0 lg:[--coin-size:clamp(350px,min(calc((min(100vw,1280px)-336px)/2),calc(100vh-440px)),480px)]">
+    <div className="mx-auto flex max-w-7xl flex-col space-y-4 lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:justify-items-center lg:space-y-0 lg:[--coin-size:clamp(350px,min(calc((min(100vw,1600px)-336px)/2),calc(100vh-420px)),580px)]">
       {/* Images Section */}
       {/* Room above the coin only when a clock button hangs there */}
       <div
@@ -118,8 +118,8 @@ export function CoinRow({
                 <CloudinaryImage
                   src={availableImages[currentMobileImageIndex].src}
                   alt={availableImages[currentMobileImageIndex].alt}
-                  width={480}
-                  height={480}
+                  width={640}
+                  height={640}
                   priority={priority && currentMobileImageIndex === 0}
                   trim
                 />
@@ -184,7 +184,7 @@ export function CoinRow({
       {hasAnyText && (
         <div
           className={cn(
-            "flex flex-col space-y-2 text-center lg:row-start-2 lg:w-[var(--coin-size)]",
+            "flex flex-col space-y-2 text-center lg:row-start-2 lg:w-[calc(var(--coin-size)+112px)]",
             reserveBottom && "mt-9 sm:mt-12",
           )}
         >

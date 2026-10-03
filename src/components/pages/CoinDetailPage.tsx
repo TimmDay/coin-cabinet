@@ -58,7 +58,7 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
-      <div className="content-wrapper">
+      <div className="content-wrapper wide">
         <div>
           <header className="mb-4 md:mb-6">
             <PageTitle subtitle={coin.denomination} coin={coin}>
