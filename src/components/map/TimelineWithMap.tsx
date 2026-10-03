@@ -553,7 +553,7 @@ export function TimelineWithMap({
 
       {isMobileViewport && isMobileModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex flex-col bg-slate-900 lg:hidden"
+          className="bg-night fixed inset-0 z-50 flex flex-col lg:hidden"
           role="dialog"
           aria-modal="true"
           aria-label="Map and timeline event details"
@@ -569,8 +569,8 @@ export function TimelineWithMap({
             </button>
           </div>
 
-          <div className="flex h-full flex-col bg-slate-900">
-            <div className="relative h-[52dvh] min-h-[360px] overflow-hidden border-b border-slate-700/70">
+          <div className="bg-night flex h-full flex-col">
+            <div className="border-line relative h-[52dvh] min-h-[360px] overflow-hidden border-b">
               <Map
                 {...mapProps}
                 center={mobilePreviewCenter}
@@ -588,7 +588,7 @@ export function TimelineWithMap({
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-slate-950/60 to-transparent" />
             </div>
 
-            <div className="min-h-0 flex-1 bg-slate-900 pt-3">
+            <div className="bg-night min-h-0 flex-1">
               <TimelineInfoBox
                 event={currentEvent}
                 onPrevious={handlePreviousEvent}
