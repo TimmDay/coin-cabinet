@@ -12,7 +12,7 @@ const COIN_CONTAINER_CLASSES =
   "group max-w-[154px] min-w-0 flex-1 sm:max-w-[252px] lg:max-w-[250px]"
 const COIN_IMAGE_CONTAINER_CLASSES =
   "flex aspect-square w-full items-center justify-center"
-const LOADING_DOTS_CLASSES = "text-xs text-slate-800"
+const LOADING_DOTS_CLASSES = "text-xs text-moonlight/60"
 
 type FeaturedCoin = {
   id: number
@@ -39,7 +39,7 @@ function FeaturedCoinSkeleton() {
     <div className={COIN_CONTAINER_CLASSES}>
       <div className="flex flex-col items-center">
         <div
-          className={`${COIN_IMAGE_CONTAINER_CLASSES} animate-pulse rounded-full bg-slate-800/50`}
+          className={`${COIN_IMAGE_CONTAINER_CLASSES} bg-surface-muted animate-pulse rounded-full`}
         >
           <div className={LOADING_DOTS_CLASSES}>...</div>
         </div>
@@ -65,7 +65,7 @@ function FeaturedCoinImage({
       <div className="flex flex-col items-center">
         <div className={`relative ${COIN_IMAGE_CONTAINER_CLASSES}`}>
           {!imageLoaded && (
-            <div className="absolute inset-0 flex animate-pulse items-center justify-center rounded-full bg-slate-800/50">
+            <div className="bg-surface-muted absolute inset-0 flex animate-pulse items-center justify-center rounded-full">
               <div className={LOADING_DOTS_CLASSES}>...</div>
             </div>
           )}
@@ -83,10 +83,10 @@ function FeaturedCoinImage({
         </div>
         {displayTextOnHover && (
           <div className="mt-3 text-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-            <p className="text-sm font-medium text-slate-300">
+            <p className="text-moonlight-bright text-sm font-medium">
               {coin.nickname}
             </p>
-            <p className="text-xs text-slate-400">{coin.denomination}</p>
+            <p className="text-moonlight text-xs">{coin.denomination}</p>
           </div>
         )}
       </div>

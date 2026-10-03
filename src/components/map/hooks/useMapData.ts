@@ -73,102 +73,40 @@ export const useMapData = (): UseMapDataResult => {
 }
 
 /**
- * Custom hook for managing empire layer visibility and data loading state
+ * Loads each empire extent layer's GeoJSON the first time it is shown. Which
+ * layers are shown comes from the config's `showProp`, so the caller owns it.
  */
-export const useEmpireLayerState = (
-  empireLayerConfig: EmpireLayerConfigMap,
-) => {
-  const [layerStates, setLayerStates] = useState(() => {
-    const initialStates: Record<
-      string,
-      { visible: boolean; data: GeoJSON.FeatureCollection | null }
-    > = {}
-    Object.keys(empireLayerConfig).forEach((key) => {
-      initialStates[key] = { visible: false, data: null }
-    })
-    return initialStates
-  })
-
-  // Load empire layer data when needed
-  const loadLayerData = async (layerKey: string, filename: string) => {
-    try {
-      const response = await fetch(`/data/${filename}`)
-      if (!response.ok) {
-        throw new Error(`Failed to load GeoJSON: ${response.statusText}`)
-      }
-      const data = (await response.json()) as GeoJSON.FeatureCollection
-
-      setLayerStates((prev) => ({
-        ...prev,
-        [layerKey]: {
-          visible: prev[layerKey]?.visible ?? false,
-          data,
-        },
-      }))
-    } catch (error) {
-      console.error(`Error loading Roman Empire ${layerKey} data:`, error)
-      setLayerStates((prev) => ({
-        ...prev,
-        [layerKey]: {
-          visible: prev[layerKey]?.visible ?? false,
-          data: {
-            type: "FeatureCollection",
-            features: [],
-          },
-        },
-      }))
-    }
-  }
-
-  // Load layer data when it becomes visible
-  useEffect(() => {
-    Object.entries(empireLayerConfig).forEach(([key, config]) => {
-      const layerState = layerStates[key]
-      if (layerState?.visible && !layerState.data) {
-        void loadLayerData(key, config.filename)
-      }
-    })
-  }, [layerStates, empireLayerConfig])
+export const useEmpireLayerData = (empireLayerConfig: EmpireLayerConfigMap) => {
+  const [layerData, setLayerData] = useState<
+    Record<string, GeoJSON.FeatureCollection>
+  >({})
 
   const isLayerVisible = (key: string): boolean =>
-    layerStates[key]?.visible ?? false
+    empireLayerConfig[key as keyof EmpireLayerConfigMap]?.showProp === true
+
+  useEffect(() => {
+    for (const [key, config] of Object.entries(empireLayerConfig)) {
+      if (config.showProp !== true || layerData[key]) continue
+
+      void (async () => {
+        let data: GeoJSON.FeatureCollection
+        try {
+          const response = await fetch(`/data/${config.filename}`)
+          if (!response.ok) {
+            throw new Error(`Failed to load GeoJSON: ${response.statusText}`)
+          }
+          data = (await response.json()) as GeoJSON.FeatureCollection
+        } catch (error) {
+          console.error(`Error loading Roman Empire ${key} data:`, error)
+          data = { type: "FeatureCollection", features: [] }
+        }
+        setLayerData((prev) => ({ ...prev, [key]: data }))
+      })()
+    }
+  }, [empireLayerConfig, layerData])
 
   const getLayerData = (key: string): GeoJSON.FeatureCollection | null =>
-    layerStates[key]?.data ?? null
+    layerData[key] ?? null
 
-  const toggleLayer = (key: string) => {
-    setLayerStates((prev) => ({
-      ...prev,
-      [key]: {
-        data: prev[key]?.data ?? null,
-        visible: !prev[key]?.visible,
-      },
-    }))
-  }
-
-  const clearAllEmpireLayers = () => {
-    setLayerStates((prev) => {
-      const newStates = { ...prev }
-      Object.keys(empireLayerConfig).forEach((key) => {
-        newStates[key] = {
-          data: prev[key]?.data ?? null,
-          visible: false,
-        }
-      })
-      return newStates
-    })
-  }
-
-  const hasAnyEmpireLayerVisible = (): boolean => {
-    return Object.values(layerStates).some((state) => state.visible)
-  }
-
-  return {
-    layerStates,
-    isLayerVisible,
-    getLayerData,
-    toggleLayer,
-    clearAllEmpireLayers,
-    hasAnyEmpireLayerVisible,
-  }
+  return { isLayerVisible, getLayerData }
 }

@@ -5,13 +5,14 @@ import { PageTitle } from "~/components/ui/PageTitle"
 import {
   AVAILABLE_FEATURE_FLAGS,
   type FeatureFlagConfig,
+  type FeatureFlagName,
 } from "~/lib/feature-flags"
 import { clearFeatureFlags, setFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 
 // The look the old card class gave these panels: a raised surface with a grey
 // edge, a soft shadow, and a faint gold edge on hover.
 const CARD_CLASSES =
-  "rounded-md border border-line bg-surface-raised shadow-[0_1px_3px_0_rgb(0_0_0/0.1),0_1px_2px_0_rgb(0_0_0/0.06)] transition-all duration-200 hover:border-accent/30 hover:shadow-[0_4px_6px_-1px_rgb(0_0_0/0.1),0_2px_4px_-1px_rgb(0_0_0/0.06)]"
+  "rounded-md border border-line bg-surface-raised shadow-[0_1px_3px_0_rgb(0_0_0/0.1),0_1px_2px_0_rgb(0_0_0/0.06)] transition-all duration-200 hover:border-bronze/30 hover:shadow-[0_4px_6px_-1px_rgb(0_0_0/0.1),0_2px_4px_-1px_rgb(0_0_0/0.06)]"
 
 export default function FeatureFlagsPage() {
   const [enabledFlags, setEnabledFlags] = useState<Record<string, boolean>>({})
@@ -39,7 +40,7 @@ export default function FeatureFlagsPage() {
   }, [])
 
   const handleToggleFlag = (flagName: string, enabled: boolean) => {
-    setFeatureFlag(flagName as "dev" | "show-hidden-coins", enabled)
+    setFeatureFlag(flagName as FeatureFlagName, enabled)
     setEnabledFlags((prev) => ({
       ...prev,
       [flagName]: enabled,
@@ -104,8 +105,8 @@ export default function FeatureFlagsPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                           isEnabled
-                            ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
+                            ? "bg-green-900/20 text-green-400"
+                            : "bg-surface-muted text-moonlight"
                         }`}
                       >
                         {isEnabled ? "Enabled" : "Disabled"}
@@ -119,7 +120,7 @@ export default function FeatureFlagsPage() {
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none ${
                         isEnabled
                           ? "bg-green-500 focus:ring-green-500"
-                          : "bg-gray-200 dark:bg-gray-700"
+                          : "bg-surface-muted"
                       }`}
                       role="switch"
                       aria-checked={isEnabled}

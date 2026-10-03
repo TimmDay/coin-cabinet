@@ -16,7 +16,7 @@
 
   /* Role tokens. Named by what they are for, not by hue, so a retint is one
      line. Utilities: bg-surface, bg-surface-raised, bg-surface-muted,
-     border-line, text-ink, text-ink-muted, text-accent, text-map-label.
+     border-line, text-ink, text-ink-muted, text-map-label.
      Headings use text-ink too.
      `static` keeps every token in the output, so TypeScript strings (the
      map colours) can use them as var(--color-*). */
@@ -26,8 +26,6 @@
   --color-line: hsl(215 15% 22%); /* borders and dividers */
   --color-ink: hsl(32 20% 80%); /* body text: pale warm cream */
   --color-ink-muted: hsl(210 10% 65%); /* secondary text */
-  --color-accent: hsl(36 45% 50%); /* legacy gold; to merge into bronze */
-  --color-map-label: hsl(273 46% 33%); /* map labels and popup titles */
 
   /* The header sky, top to bottom: deep indigo, plum, mauve, dusty rose, then
      the copper glow at the horizon. Shared by the homepage header and
@@ -47,6 +45,14 @@
      the whole panel stays in one cool temperature and the coin photo is the
      only warm thing on screen. moonlight is its secondary text. */
   --color-moonlight-bright: oklch(86% 0.02 256.788);
+
+  /* Old paper, for the light panels (map popups and controls): a parchment
+     surface, a slightly lighter one for inputs, its edge, and dark umber ink. */
+  --color-paper: hsl(40 38% 84%);
+  --color-paper-raised: hsl(40 45% 90%);
+  --color-paper-edge: hsl(32 22% 62%);
+  --color-paper-ink: hsl(22 30% 14%);
+  --color-paper-ink-muted: hsl(22 15% 34%);
 
   /* Form fields sit a touch lighter than the page (surface is 8% lightness). */
   --color-field: hsl(218 17% 10%);
@@ -72,6 +78,63 @@
   --color-dusk-edge: hsl(22 26% 28%);
   --color-bronze: hsl(22 24% 48%);
   --color-bronze-light: hsl(30 35% 68%);
+
+  /* Map colours. Written as #rrggbb on purpose: MapLibre parses colour strings
+     itself (hex, rgb() and hsl()) and cannot read var() or oklch(). HTML, SVG,
+     inline styles and Tailwind use the same tokens through var(--color-*) and
+     utilities such as text-pin-wine; the map's GL layers read the resolved value
+     with glColor() (src/components/map/mapColors.ts). A test keeps the two in
+     step. */
+
+  /* The base map: old paper at sunset. Land, woods and ice are parchment,
+     water is dusky mauve. */
+  --color-map-land: #948060;
+  --color-map-woods: #887555;
+  --color-map-town: #8d7a5a;
+  --color-map-ice: #a39578;
+  --color-map-water: #6b5860;
+  --color-map-waterway: #5f4e55;
+  --color-map-water-label: #d9c4cc;
+  --color-map-water-label-halo: #5a474e;
+  --color-map-border: #a8604a;
+  --color-map-ink: #2e1b12; /* province and mint names on the parchment */
+  --color-map-label: var(--color-pin-wine); /* popup titles, active controls */
+
+  /* Provinces and the five empire extents: fill and line each. */
+  --color-map-province-fill: #c4622d;
+  --color-map-province-line: #8c3b2a;
+  --color-map-bc60-fill: #d99a2b;
+  --color-map-bc60-line: #8a5a12;
+  --color-map-ad14-fill: #5f7f9c;
+  --color-map-ad14-line: #3d5a78;
+  --color-map-ad69-fill: #b0486b;
+  --color-map-ad69-line: #8c2f4d;
+  --color-map-ad117-fill: #6b8f5e;
+  --color-map-ad117-line: #476b3d;
+  --color-map-ad200-fill: #d9743a;
+  --color-map-ad200-line: #a84a1d;
+
+  /* Pins, cluster bubbles and their popup titles. */
+  --color-pin-wine: #6e2a3d;
+  --color-pin-wine-mid: #5a2238;
+  --color-pin-wine-light: #8a3a4f;
+  --color-pin-wine-dark: #2f1220;
+  --color-pin-gold: #e0a458;
+  --color-pin-gold-soft: #f0c27a;
+  --color-pin-cream: #fbeed3;
+  --color-pin-cream-warm: #f3dca8;
+  --color-pin-orange: #d9743a;
+  --color-pin-orange-soft: #e08a45;
+  --color-pin-sienna: #b4492a;
+  --color-pin-rose: #b0486b;
+  --color-pin-sage: #5a7f55;
+  --color-pin-sage-dark: #3f5f3b;
+  --color-pin-dusk: #5b3f66;
+  --color-pin-umber: #6a5a48;
+  --color-pin-umber-dark: #5a4a38;
+  --color-pin-minted-edge: #f6dfae;
+  --color-pin-found-edge: #ead6a6;
+  --color-pin-artifact-edge: #d8c49a;
 
   /* The paper note popovers fade in rather than snapping on. */
   --animate-paper-in: paper-in 220ms ease-out both;

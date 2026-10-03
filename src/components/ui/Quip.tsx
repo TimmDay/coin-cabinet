@@ -175,7 +175,7 @@ export function Quip({ children, label = "More info" }: QuipProps) {
         onClick={() => setPinned((prev) => !prev)}
         aria-label={label}
         aria-expanded={open}
-        className="text-bronze hover:text-bronze-light aria-expanded:text-bronze-light inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-amber-400/70 focus-visible:outline-none"
+        className="text-bronze hover:text-bronze-light aria-expanded:text-bronze-light focus-visible:ring-bronze-light/70 inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none"
       >
         <CoinI />
       </button>

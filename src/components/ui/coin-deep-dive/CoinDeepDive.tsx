@@ -8,6 +8,7 @@ import { useMints } from "~/api/mints"
 import { usePlaces } from "~/api/places"
 import { useTimelines } from "~/api/timelines"
 import type { CustomMapMarker } from "~/components/map/Map"
+import { pinStyle } from "~/components/map/pinStyle"
 import { DEEP_DIVE_MAP_VIEW, MAP_BOUNDS } from "~/components/map/mapConfig"
 import { useFoldFill } from "~/hooks/useFoldFill"
 import { MAP_HEIGHT_DESKTOP } from "~/lib/constants"
@@ -26,7 +27,7 @@ const Map = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-96 w-full animate-pulse rounded-lg bg-gray-200" />
+      <div className="bg-surface-raised h-96 w-full animate-pulse rounded-lg" />
     ),
   },
 )
@@ -40,7 +41,7 @@ const TimelineWithMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-96 w-full animate-pulse rounded-lg bg-gray-200" />
+      <div className="bg-surface-raised h-96 w-full animate-pulse rounded-lg" />
     ),
   },
 )
@@ -141,9 +142,7 @@ function buildDeityPlaceMarkers(
         subtitle: deityLabel,
         description:
           place.flavour_text ?? place.location_description ?? undefined,
-        className: "text-amber-900",
-        fillColor: "#0f172a",
-        borderColor: "#92400e",
+        ...pinStyle("deity-place"),
         sizeScale: 0.67,
         centerDotScale: 0.7,
         showPopup: true,
@@ -194,9 +193,7 @@ function getFoundMarker(coin: CoinEnhanced): CustomMapMarker | null {
     title: "Coin Found",
     subtitle: "This coin was found here",
     description: found.notes ?? undefined,
-    className: "text-emerald-900",
-    fillColor: "#059669",
-    borderColor: "#059669",
+    ...pinStyle("found"),
     showPopup: true,
     zIndexOffset: 900,
   }
@@ -271,9 +268,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             location.institutionName ?? artifact.location_name ?? undefined,
           description:
             artifact.flavour_text ?? artifact.historical_notes ?? undefined,
-          className: "text-slate-700",
-          fillColor: "#475569",
-          borderColor: "#94a3b8",
+          ...pinStyle("artifact"),
           showPopup: true,
           zIndexOffset: 50,
         },
@@ -297,9 +292,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
               coin.mint_year_earliest !== undefined
                 ? `Minted around ${coin.mint_year_earliest}`
                 : undefined,
-            className: "text-amber-900",
-            fillColor: "#f59e0b",
-            borderColor: "#f59e0b",
+            ...pinStyle("minted"),
             showPopup: true,
             zIndexOffset: 1000,
           },
@@ -408,10 +401,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                 <Map
                   center={DEEP_DIVE_MAP_VIEW.center}
                   zoom={DEEP_DIVE_MAP_VIEW.zoom}
-                  hideControls
                   showMintMarkers={false}
                   customMarkers={standaloneMarkers}
-                  showTimelineEventMarker={false}
                   height="400px"
                   desktopHeight={MAP_HEIGHT_DESKTOP}
                 />
@@ -423,13 +414,11 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                 <Map
                   center={DEEP_DIVE_MAP_VIEW.center}
                   zoom={DEEP_DIVE_MAP_VIEW.zoom}
-                  hideControls
                   showMintMarkers={false}
                   customMarkers={deityPlaceMarkers.concat(
                     artifactMarkers,
                     foundMarker ? [foundMarker] : [],
                   )}
-                  showTimelineEventMarker={false}
                   height="400px"
                   desktopHeight={MAP_HEIGHT_DESKTOP}
                 />

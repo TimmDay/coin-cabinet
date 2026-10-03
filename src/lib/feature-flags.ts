@@ -6,12 +6,6 @@ export const FEATURE_FLAGS = {
     description:
       "Enables development-only features like the Caracalla and Geta blog post",
   },
-  "show-hidden-coins": {
-    name: "show-hidden-coins",
-    displayName: "Show Hidden Coins",
-    description:
-      "When enabled, coins marked as 'isHidden' will be visible in the collection.",
-  },
   articles: {
     name: "articles",
     displayName: "Articles",

@@ -12,25 +12,19 @@ import { Layer, Map as MapGL, Marker, Source } from "react-map-gl/maplibre"
 import type { MapRef } from "react-map-gl/maplibre"
 import { useMints } from "~/api/mints"
 import { MAP_HEIGHT } from "~/lib/constants"
-import { formatYear } from "~/lib/utils/date-formatting"
 import { ROMAN_PROVINCES } from "./constants/provinces"
-import {
-  useEmpireLayerState,
-  useMapConfiguration,
-  useMapData,
-  useProvinceSelection,
-} from "./hooks"
+import { useEmpireLayerData, useMapConfiguration, useMapData } from "./hooks"
 import {
   MAP_BOUNDS_LNGLAT,
   MAP_PAN_BOUNDS_LNGLAT,
   MAP_STYLE_URL,
   MAP_STYLES,
+  provinceStyle,
   PROVINCE_LABEL_STYLES,
   createEmpireLayerConfig,
-  type EmpireLayerConfigMap,
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
-import { MapEmbeddedControls } from "./MapEmbeddedControls"
+import { glColor } from "./mapColors"
 import {
   buildClusteredCustomMarkers,
   buildMarkerLookup,
@@ -112,7 +106,7 @@ export type MapProps = {
   width?: string
   /** Additional CSS class names */
   className?: string
-  /** Layout mode - 'default' shows controls above map, 'fullscreen' shows controls below map */
+  /** 'fullscreen' makes the map fill its parent's height */
   layout?: "default" | "fullscreen"
   /** Show BC 60 empire extent layer */
   showBC60?: boolean
@@ -124,38 +118,16 @@ export type MapProps = {
   showAD117?: boolean
   /** Show AD 200 empire extent layer */
   showAD200?: boolean
-  /** Callback when BC60 layer toggle changes */
-  onBC60Change?: (show: boolean) => void
-  /** Callback when AD14 layer toggle changes */
-  onAD14Change?: (show: boolean) => void
-  /** Callback when AD69 layer toggle changes */
-  onAD69Change?: (show: boolean) => void
-  /** Callback when AD117 layer toggle changes */
-  onAD117Change?: (show: boolean) => void
-  /** Callback when AD200 layer toggle changes */
-  onAD200Change?: (show: boolean) => void
-  /** Selected provinces */
+  /** Provinces to draw; all of them by default */
   selectedProvinces?: string[]
   /** Show province labels */
   showProvinceLabels?: boolean
-  /** Hide all map controls (for external control) */
-  hideControls?: boolean
   /** Mint name to highlight with special pin (case insensitive match) */
   highlightMint?: string
   /** Whether default mint markers from the mints table should be displayed */
   showMintMarkers?: boolean
   /** Custom markers to render for coin detail pages and other specialized views */
   customMarkers?: CustomMapMarker[]
-  /** Timeline event marker to show on the map */
-  timelineEventMarker?: {
-    lat: number
-    lng: number
-    name: string
-    year: number
-    description?: string
-  } | null
-  /** Whether the default single highlighted timeline event marker should be displayed */
-  showTimelineEventMarker?: boolean
   /** Callback to receive the navigate function */
   onNavigate?: (
     navigateFn: (center: [number, number], zoom: number) => void,
@@ -175,19 +147,11 @@ export const Map: React.FC<MapProps> = ({
   showAD69 = false,
   showAD117 = false,
   showAD200 = false,
-  onBC60Change,
-  onAD14Change,
-  onAD69Change,
-  onAD117Change,
-  onAD200Change,
-  selectedProvinces: externalSelectedProvinces,
-  showProvinceLabels: externalShowProvinceLabels = true,
-  hideControls = false,
+  selectedProvinces = ROMAN_PROVINCES,
+  showProvinceLabels = true,
   highlightMint,
   showMintMarkers = true,
   customMarkers = [],
-  timelineEventMarker,
-  showTimelineEventMarker = true,
   onNavigate,
 }) => {
   // Validate and sanitize center prop to prevent NaN coordinates
@@ -231,21 +195,13 @@ export const Map: React.FC<MapProps> = ({
   // Use custom hooks for configuration and data management
   const config = useMapConfiguration()
   const { data: mints } = useMints()
-  const {
-    provincesData,
-    provincesLabelsData,
-    loading: provincesLoading,
-  } = useMapData()
+  const { provincesData, provincesLabelsData } = useMapData()
+
+  const provinces = useMemo(() => provinceStyle(), [])
 
   const mapRef = useRef<MapRef>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
 
-  // Local state for map-specific functionality
-  const [internalSelectedProvinces, setInternalSelectedProvinces] = useState<
-    string[]
-  >([...ROMAN_PROVINCES]) // Start with all provinces visible
-  const [internalShowProvinceLabels, setInternalShowProvinceLabels] =
-    useState(true)
   const [currentZoom, setCurrentZoom] = useState<number>(safeZoom)
   const [viewportBounds, setViewportBounds] =
     useState<ViewportBounds>(MAP_BOUNDS_LNGLAT)
@@ -282,35 +238,6 @@ export const Map: React.FC<MapProps> = ({
   }, [customMarkers])
 
   // Province selection logic using custom hook
-  const allProvinces = useMemo(() => {
-    if (!provincesData) return []
-    return provincesData.features
-      .map((feature) => feature.properties?.name as string)
-      .filter(Boolean)
-  }, [provincesData])
-
-  const { isExternallyControlled } = useProvinceSelection(
-    allProvinces,
-    externalSelectedProvinces,
-  )
-
-  // Use external props if provided, otherwise use internal state
-  const selectedProvinces =
-    externalSelectedProvinces ?? internalSelectedProvinces
-  const showProvinceLabels =
-    externalShowProvinceLabels ?? internalShowProvinceLabels
-  const setSelectedProvinces = isExternallyControlled
-    ? () => {
-        /* controlled externally */
-      }
-    : setInternalSelectedProvinces
-  const setShowProvinceLabels =
-    externalShowProvinceLabels !== undefined
-      ? () => {
-          /* controlled externally */
-        }
-      : setInternalShowProvinceLabels
-
   // Find highlighted mint and center on it if provided
   const highlightedMint = useMemo(() => {
     if (!highlightMint || !mints) return null
@@ -382,7 +309,7 @@ export const Map: React.FC<MapProps> = ({
         title: marker.title,
         subtitle: marker.subtitle,
         description: marker.description ?? "",
-        className: marker.className ?? "text-slate-100",
+        className: marker.className ?? "text-paper-ink",
       })
     },
     [openPopup],
@@ -441,91 +368,15 @@ export const Map: React.FC<MapProps> = ({
     () =>
       createEmpireLayerConfig(
         showBC60,
-        onBC60Change,
         showAD14,
-        onAD14Change,
         showAD69,
-        onAD69Change,
         showAD117,
-        onAD117Change,
         showAD200,
-        onAD200Change,
       ),
-    [
-      showBC60,
-      onBC60Change,
-      showAD14,
-      onAD14Change,
-      showAD69,
-      onAD69Change,
-      showAD117,
-      onAD117Change,
-      showAD200,
-      onAD200Change,
-    ],
+    [showBC60, showAD14, showAD69, showAD117, showAD200],
   )
 
-  // Use empire layer state management hook
-  const {
-    isLayerVisible,
-    getLayerData,
-    toggleLayer,
-    clearAllEmpireLayers,
-    hasAnyEmpireLayerVisible,
-  } = useEmpireLayerState(empireLayerConfig)
-
-  // Sync external props with hook state
-  useEffect(() => {
-    Object.entries(empireLayerConfig).forEach(([key, config]) => {
-      if (
-        config.showProp !== undefined &&
-        isLayerVisible(key) !== config.showProp
-      ) {
-        toggleLayer(key)
-      }
-    })
-  }, [
-    showBC60,
-    showAD14,
-    showAD69,
-    showAD117,
-    showAD200,
-    empireLayerConfig,
-    isLayerVisible,
-    toggleLayer,
-  ])
-
-  // Enhanced toggle function that also calls onChange callbacks
-  const handleToggleLayer = (layerKey: string) => {
-    const newValue = !isLayerVisible(layerKey)
-    toggleLayer(layerKey)
-
-    // Call onChange callback if it exists
-    if (layerKey in empireLayerConfig) {
-      const config = empireLayerConfig[layerKey as keyof EmpireLayerConfigMap]
-      config?.onChange?.(newValue)
-    }
-  }
-
-  // Generate province options from loaded data
-  const provinceOptions = useMemo(() => {
-    if (!provincesData) return []
-
-    return provincesData.features
-      .map((feature) => {
-        const name = feature.properties?.name as string
-        return name ? { value: name, label: name } : null
-      })
-      .filter(
-        (option): option is { value: string; label: string } => option !== null,
-      )
-      .sort((a, b) => a.label.localeCompare(b.label))
-  }, [provincesData])
-
-  // Handle province selection change
-  const handleProvinceSelectionChange = (newSelection: string[]) => {
-    setSelectedProvinces(newSelection)
-  }
+  const { isLayerVisible, getLayerData } = useEmpireLayerData(empireLayerConfig)
 
   // Get province labels from labels data
   const provinceLabels = useMemo(() => {
@@ -627,7 +478,7 @@ export const Map: React.FC<MapProps> = ({
           title: name,
           // TODO: hook this up to a data file with info for provinces.
           description: "Roman Territory",
-          className: "text-emerald-800",
+          className: "text-map-label",
         })
         return
       }
@@ -766,68 +617,6 @@ export const Map: React.FC<MapProps> = ({
           height: ${safeHeight};
           width: ${safeWidth};
         }
-
-        .timeline-event-marker-container {
-          position: relative;
-          width: 120px;
-          height: 60px;
-        }
-
-        .timeline-event-label {
-          position: absolute;
-          top: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          background: rgba(
-            31,
-            41,
-            55,
-            0.95
-          ); /* dark gray-800 with transparency */
-          color: #f9fafb; /* gray-50 */
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 11px;
-          font-weight: 500;
-          white-space: nowrap;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-          border: 1px solid #9ca3af; /* gray-400 */
-        }
-
-        .timeline-event-circle {
-          position: absolute;
-          top: 28px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 24px;
-          height: 24px;
-          border: 2px solid #9ca3af; /* gray-400 - brighter border */
-          border-radius: 50%;
-          background: #374151; /* gray-700 - dark app bg color */
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-          transition: all 0.2s ease;
-        }
-
-        .timeline-event-tail {
-          position: absolute;
-          top: 52px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 0;
-          height: 0;
-          border-left: 6px solid transparent;
-          border-right: 6px solid transparent;
-          border-top: 8px solid #9ca3af; /* gray-400 - brighter tail */
-        }
-
-        .timeline-event-marker:hover .timeline-event-circle {
-          transform: translateX(-50%) scale(1.1);
-          border-color: #f59e0b; /* amber-500 */
-        }
-
-        .timeline-event-marker:hover .timeline-event-tail {
-          border-top-color: #f59e0b; /* amber-500 */
-        }
       `}</style>
       <div
         className={
@@ -836,24 +625,6 @@ export const Map: React.FC<MapProps> = ({
             : `space-y-4 ${className}`
         }
       >
-        {/* Controls Container */}
-        {!hideControls && (
-          <MapEmbeddedControls
-            layout={layout}
-            empireLayerConfig={empireLayerConfig}
-            isLayerVisible={isLayerVisible}
-            toggleLayer={handleToggleLayer}
-            hasAnyEmpireLayerVisible={hasAnyEmpireLayerVisible}
-            clearAllEmpireLayers={clearAllEmpireLayers}
-            provinceOptions={provinceOptions}
-            selectedProvinces={selectedProvinces}
-            onProvinceSelectionChange={handleProvinceSelectionChange}
-            provincesLoading={provincesLoading}
-            showProvinceLabels={showProvinceLabels}
-            onShowProvinceLabelsChange={setShowProvinceLabels}
-          />
-        )}
-
         {/* Map Container */}
         <div
           className={
@@ -948,18 +719,18 @@ export const Map: React.FC<MapProps> = ({
                     id="provinces-fill"
                     type="fill"
                     paint={{
-                      "fill-color": MAP_STYLES.provinces.fillColor,
-                      "fill-opacity": MAP_STYLES.provinces.fillOpacity,
+                      "fill-color": provinces.fillColor,
+                      "fill-opacity": provinces.fillOpacity,
                     }}
                   />
                   <Layer
                     id="provinces-line"
                     type="line"
                     paint={{
-                      "line-color": MAP_STYLES.provinces.lineColor,
-                      "line-width": MAP_STYLES.provinces.lineWidth,
-                      "line-opacity": MAP_STYLES.provinces.lineOpacity,
-                      "line-dasharray": MAP_STYLES.provinces.lineDasharray,
+                      "line-color": provinces.lineColor,
+                      "line-width": provinces.lineWidth,
+                      "line-opacity": provinces.lineOpacity,
+                      "line-dasharray": provinces.lineDasharray,
                     }}
                   />
                 </Source>
@@ -1003,8 +774,8 @@ export const Map: React.FC<MapProps> = ({
                               : "",
                             description: mint.flavour_text ?? "",
                             className: isHighlighted
-                              ? "text-[#6e2a3d]"
-                              : "text-blue-800",
+                              ? "text-pin-wine"
+                              : "text-map-label",
                           },
                         )
                       }
@@ -1083,9 +854,9 @@ export const Map: React.FC<MapProps> = ({
                     id="spider-legs-line"
                     type="line"
                     paint={{
-                      "line-color": "rgba(90, 34, 56, 0.6)",
+                      "line-color": glColor("pin-wine-mid"),
                       "line-width": 2,
-                      "line-opacity": 0.9,
+                      "line-opacity": 0.6,
                     }}
                   />
                 </Source>
@@ -1113,49 +884,6 @@ export const Map: React.FC<MapProps> = ({
                   </Marker>
                 )
               })}
-
-              {/* Timeline Event Marker */}
-              {showTimelineEventMarker &&
-                timelineEventMarker &&
-                typeof timelineEventMarker.lat === "number" &&
-                typeof timelineEventMarker.lng === "number" &&
-                !isNaN(timelineEventMarker.lat) &&
-                !isNaN(timelineEventMarker.lng) &&
-                isFinite(timelineEventMarker.lat) &&
-                isFinite(timelineEventMarker.lng) && (
-                  <Marker
-                    key={`timeline-event-${timelineEventMarker.year}`}
-                    longitude={timelineEventMarker.lng}
-                    latitude={timelineEventMarker.lat}
-                    anchor="bottom"
-                    onClick={(e) =>
-                      openPopup(
-                        e.originalEvent.clientX,
-                        e.originalEvent.clientY,
-                        {
-                          title: "",
-                          description:
-                            timelineEventMarker.description ??
-                            "Timeline Event Location",
-                          className: "text-center",
-                        },
-                      )
-                    }
-                  >
-                    <div
-                      className="timeline-event-marker"
-                      dangerouslySetInnerHTML={{
-                        __html: `
-                        <div class="timeline-event-marker-container">
-                          <div class="timeline-event-label">${timelineEventMarker.name} (${formatYear(timelineEventMarker.year)})</div>
-                          <div class="timeline-event-circle"></div>
-                          <div class="timeline-event-tail"></div>
-                        </div>
-                      `,
-                      }}
-                    />
-                  </Marker>
-                )}
             </MapGL>
           </div>
         </div>

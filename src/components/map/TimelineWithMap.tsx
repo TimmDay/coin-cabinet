@@ -11,6 +11,7 @@ import type {
 import { Timeline } from "../ui/Timeline"
 import { TimelineInfoBox } from "../ui/TimelineInfoBox"
 import { Map, type CustomMapMarker } from "./Map"
+import { pinStyle } from "./pinStyle"
 
 const ROME_DEFAULT: [number, number] = [41.9028, 12.4964]
 
@@ -103,13 +104,6 @@ export function TimelineWithMap({
       ? initialCenter
       : ROME_DEFAULT
 
-  const [activeTimelineEvent, setActiveTimelineEvent] = useState<{
-    lat: number
-    lng: number
-    name: string
-    year: number
-    description?: string
-  } | null>(null)
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false)
   const [isMobileViewport, setIsMobileViewport] = useState(false)
 
@@ -123,7 +117,7 @@ export function TimelineWithMap({
   if (!timeline || timeline.length === 0) {
     return (
       <div className={`flex flex-col lg:flex-row ${className}`}>
-        <div className="flex h-64 items-center justify-center text-slate-500">
+        <div className="text-moonlight flex h-64 items-center justify-center">
           Loading timeline data...
         </div>
       </div>
@@ -200,26 +194,6 @@ export function TimelineWithMap({
     return validatedInitialCenter
   })()
 
-  const setActiveTimelineMarker = useCallback(
-    (event: TimelineEvent | null) => {
-      if (!event || !hasValidCoordinates(event)) {
-        setActiveTimelineEvent(null)
-        return
-      }
-
-      const [validLat, validLng] = sanitizeCoordinates(event.lat!, event.lng!)
-
-      setActiveTimelineEvent({
-        lat: validLat,
-        lng: validLng,
-        name: event.name ?? "Timeline Event",
-        year: event.year ?? 0,
-        description: event.description,
-      })
-    },
-    [hasValidCoordinates],
-  )
-
   // Callback to receive navigate function from Map
   const handleMapNavigate = useCallback(
     (navigateFn: (center: [number, number], zoom: number) => void) => {
@@ -268,14 +242,11 @@ export function TimelineWithMap({
   useEffect(() => {
     if (isMobileModalOpen) return
 
-    setActiveTimelineEvent(null)
     navigateMapRef.current = null
   }, [isMobileModalOpen])
 
   useEffect(() => {
     if (!isMobileModalOpen || !currentEvent) return
-
-    setActiveTimelineMarker(currentEvent)
 
     if (!navigateMapRef.current || !hasValidCoordinates(currentEvent)) return
 
@@ -285,13 +256,7 @@ export function TimelineWithMap({
     )
 
     navigateMapRef.current([validLat, validLng], eventZoomLevel)
-  }, [
-    currentEvent,
-    eventZoomLevel,
-    hasValidCoordinates,
-    isMobileModalOpen,
-    setActiveTimelineMarker,
-  ])
+  }, [currentEvent, eventZoomLevel, hasValidCoordinates, isMobileModalOpen])
 
   // No automatic initialization - map stays on Rome until user interacts
   // The selectedEventIndex starts at 0 to show first event in info box
@@ -301,8 +266,6 @@ export function TimelineWithMap({
    */
   const navigateToEvent = useCallback(
     (event: TimelineEvent) => {
-      setActiveTimelineMarker(event)
-
       if (!hasValidCoordinates(event) || !navigateMapRef.current) return
 
       const lat = event.lat!
@@ -313,7 +276,7 @@ export function TimelineWithMap({
       const [validLat, validLng] = sanitizeCoordinates(lat, lng)
       navigateMapRef.current([validLat, validLng], eventZoomLevel)
     },
-    [eventZoomLevel, hasValidCoordinates, setActiveTimelineMarker],
+    [eventZoomLevel, hasValidCoordinates],
   )
 
   // Handle timeline event click - update selected event index and info box
@@ -327,7 +290,6 @@ export function TimelineWithMap({
         setSelectedEventIndex(eventIndex)
 
         if (isMobileViewport) {
-          setActiveTimelineMarker(allEvents[eventIndex] ?? event)
           setIsMobileModalOpen(true)
           return
         }
@@ -335,7 +297,7 @@ export function TimelineWithMap({
         navigateToEvent(event)
       }
     },
-    [allEvents, isMobileViewport, navigateToEvent, setActiveTimelineMarker],
+    [allEvents, isMobileViewport, navigateToEvent],
   )
 
   // Navigation functions for info box
@@ -374,8 +336,6 @@ export function TimelineWithMap({
   const handleTimelineMarkerSelection = useCallback(
     (event: TimelineEvent, eventIndex: number) => {
       setSelectedEventIndex(eventIndex)
-      setActiveTimelineMarker(event)
-
       if (isMobileViewport) {
         setIsMobileModalOpen(true)
         return
@@ -383,7 +343,7 @@ export function TimelineWithMap({
 
       navigateToEvent(event)
     },
-    [isMobileViewport, navigateToEvent, setActiveTimelineMarker],
+    [isMobileViewport, navigateToEvent],
   )
 
   const timelineCustomMarkers: CustomMapMarker[] = []
@@ -408,13 +368,7 @@ export function TimelineWithMap({
           ? "This coin was found here"
           : undefined,
       description: event.description,
-      className: isCoinMinted
-        ? "text-amber-900"
-        : isFound
-          ? "text-emerald-900"
-          : "text-[#6e2a3d]",
-      fillColor: isCoinMinted ? "#d9743a" : isFound ? "#5a7f55" : "#6e2a3d",
-      borderColor: isCoinMinted ? "#f6dfae" : isFound ? "#ead6a6" : "#f0c27a",
+      ...pinStyle(isCoinMinted ? "minted" : isFound ? "found" : "event"),
       isActive: index === selectedEventIndex,
       showPopup: false,
       onClick: () => handleTimelineMarkerSelection(event, index),
@@ -425,18 +379,6 @@ export function TimelineWithMap({
   const combinedCustomMarkers: CustomMapMarker[] =
     timelineCustomMarkers.concat(additionalMarkers)
 
-  // Validate timeline event marker before passing to Map
-  const validatedTimelineMarker =
-    activeTimelineEvent &&
-    typeof activeTimelineEvent.lat === "number" &&
-    typeof activeTimelineEvent.lng === "number" &&
-    !isNaN(activeTimelineEvent.lat) &&
-    !isNaN(activeTimelineEvent.lng) &&
-    isFinite(activeTimelineEvent.lat) &&
-    isFinite(activeTimelineEvent.lng)
-      ? activeTimelineEvent
-      : null
-
   return (
     <div className={`flex flex-col ${className}`}>
       {/* Map Container - wraps both mobile and desktop views for intersection observer */}
@@ -445,14 +387,12 @@ export function TimelineWithMap({
         {isMobileViewport && (
           <div className="lg:hidden">
             {showHeaders && (
-              <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
-                Map
-              </h2>
+              <h2 className="text-ink mb-4 px-4 text-2xl font-bold">Map</h2>
             )}
             <button
               type="button"
               onClick={() => setIsMobileModalOpen(true)}
-              className="relative block w-full overflow-hidden rounded-lg text-left focus:ring-2 focus:ring-amber-400 focus:outline-none"
+              className="focus:ring-bronze-light relative block w-full overflow-hidden rounded-lg text-left focus:ring-2 focus:outline-none"
               aria-label="Open interactive map and event details"
             >
               <div className="pointer-events-none">
@@ -464,21 +404,19 @@ export function TimelineWithMap({
                     height={MAP_HEIGHT}
                     width="100%"
                     showProvinceLabels={showProvinceLabels}
-                    hideControls={true}
                     showMintMarkers={showDefaultMintMarkers}
-                    showTimelineEventMarker={false}
                     customMarkers={combinedCustomMarkers}
                   />
                 ) : (
-                  <div className="flex h-[400px] items-center justify-center bg-slate-100">
-                    <div className="text-slate-600">
+                  <div className="bg-surface-raised flex h-[400px] items-center justify-center">
+                    <div className="text-moonlight">
                       Tap to open interactive map
                     </div>
                   </div>
                 )}
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
-              <div className="pointer-events-none absolute right-3 bottom-3 rounded-full bg-slate-900/80 px-3 py-1 text-sm font-medium text-slate-100 backdrop-blur-sm">
+              <div className="from-night/60 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
+              <div className="bg-night/80 text-moonlight-bright pointer-events-none absolute right-3 bottom-3 rounded-full px-3 py-1 text-sm font-medium backdrop-blur-sm">
                 Open interactive map
               </div>
             </button>
@@ -489,9 +427,7 @@ export function TimelineWithMap({
         {!isMobileViewport && (
           <div className="hidden lg:block">
             {showHeaders && (
-              <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
-                Map
-              </h2>
+              <h2 className="text-ink mb-4 px-4 text-2xl font-bold">Map</h2>
             )}
           </div>
         )}
@@ -508,16 +444,13 @@ export function TimelineWithMap({
                   height={MAP_HEIGHT_DESKTOP}
                   width="100%"
                   showProvinceLabels={showProvinceLabels}
-                  hideControls={true}
-                  timelineEventMarker={validatedTimelineMarker}
                   showMintMarkers={showDefaultMintMarkers}
-                  showTimelineEventMarker={false}
                   customMarkers={combinedCustomMarkers}
                   onNavigate={handleMapNavigate}
                 />
               ) : (
-                <div className="flex h-[520px] items-center justify-center bg-slate-100">
-                  <div className="text-slate-600">Loading map...</div>
+                <div className="bg-surface-raised flex h-[520px] items-center justify-center">
+                  <div className="text-moonlight">Loading map...</div>
                 </div>
               )}
             </div>
@@ -538,9 +471,7 @@ export function TimelineWithMap({
       {/* Timeline under the map */}
       <div ref={timelineContainerRef} className="mt-8 hidden pr-2 lg:block">
         {showHeaders && (
-          <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
-            Timeline
-          </h2>
+          <h2 className="text-ink mb-4 px-4 text-2xl font-bold">Timeline</h2>
         )}
         <Timeline
           timeline={timeline}
@@ -562,7 +493,7 @@ export function TimelineWithMap({
             <button
               type="button"
               onClick={() => setIsMobileModalOpen(false)}
-              className="rounded-full bg-slate-900/80 p-2 text-slate-100 shadow-lg backdrop-blur-sm transition-opacity hover:opacity-90 focus:ring-2 focus:ring-amber-400 focus:outline-none"
+              className="bg-night/80 text-moonlight-bright focus:ring-bronze-light rounded-full p-2 shadow-lg backdrop-blur-sm transition-opacity hover:opacity-90 focus:ring-2 focus:outline-none"
               aria-label="Close map and event details"
             >
               <X className="h-5 w-5" />
@@ -578,14 +509,11 @@ export function TimelineWithMap({
                 height="52dvh"
                 width="100%"
                 showProvinceLabels={showProvinceLabels}
-                hideControls={true}
-                timelineEventMarker={validatedTimelineMarker}
                 showMintMarkers={showDefaultMintMarkers}
-                showTimelineEventMarker={false}
                 customMarkers={combinedCustomMarkers}
                 onNavigate={handleMapNavigate}
               />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-slate-950/60 to-transparent" />
+              <div className="from-night/60 pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t to-transparent" />
             </div>
 
             <div className="bg-night min-h-0 flex-1">

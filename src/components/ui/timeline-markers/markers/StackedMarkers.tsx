@@ -1,6 +1,7 @@
 import { formatTimelineYear } from "~/lib/utils/date-formatting"
 import { EventLogo } from "../EventLogo"
 import type { StackedMarkersProps } from "../types"
+import { markerBorder } from "../markerBorder"
 
 export function StackedMarkers({
   year,
@@ -18,7 +19,7 @@ export function StackedMarkers({
         className="absolute left-1/2 -translate-x-1/2 transform whitespace-nowrap"
         style={{ top: `-${24 + (events.length - 1) * 32}px` }} // Dynamic top position
       >
-        <div className="text-center font-mono text-sm text-slate-400">
+        <div className="text-moonlight text-center font-mono text-sm">
           {formatTimelineYear(year)}
         </div>
       </div>
@@ -41,7 +42,7 @@ export function StackedMarkers({
 
             {/* Event marker */}
             <div
-              className={`absolute -translate-x-1/2 transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-blue-400 focus:outline-none ${
+              className={`focus:ring-bronze-light absolute -translate-x-1/2 transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:outline-none ${
                 isEventSelected ? "scale-[1.3]" : ""
               }`}
               style={{
@@ -60,20 +61,14 @@ export function StackedMarkers({
                   <EventLogo event={event} />
                 </div>
                 <div
-                  className={`pointer-events-none absolute inset-0 rounded-full border shadow-lg ${
-                    isEventSelected
-                      ? "border-2 border-purple-500"
-                      : event.kind === "coin-minted"
-                        ? "border-amber-500"
-                        : "border-gray-500"
-                  }`}
+                  className={`pointer-events-none absolute inset-0 rounded-full border shadow-lg ${markerBorder(event, isEventSelected)}`}
                   style={{ zIndex: 10 }}
                 />
               </div>
 
               {/* Teardrop tail - only for bottom marker (closest to timeline) */}
               {eventIndex === events.length - 1 && (
-                <div className="absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-t-8 border-r-4 border-l-4 border-t-gray-500 border-r-transparent border-l-transparent"></div>
+                <div className="border-t-moonlight/50 absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-t-8 border-r-4 border-l-4 border-r-transparent border-l-transparent"></div>
               )}
             </div>
           </div>

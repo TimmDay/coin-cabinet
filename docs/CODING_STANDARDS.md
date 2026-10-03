@@ -10,12 +10,12 @@ This document outlines the coding standards and best practices for the Coin Cabi
 
 ```typescript
 // ✅ Good - Use ?? for null/undefined checks
-const userName = user.name ?? "Anonymous";
-const config = userConfig ?? defaultConfig;
+const userName = user.name ?? "Anonymous"
+const config = userConfig ?? defaultConfig
 
 // ✅ Good - Use || for falsy checks (empty strings, 0, false, null, undefined)
-const isValid = !imageLink || imageLink.trim() === "";
-const hasContent = title || description || image;
+const isValid = !imageLink || imageLink.trim() === ""
+const hasContent = title || description || image
 
 // ❌ Bad - Using || when only null/undefined should be handled
 const userName = user.name || "Anonymous"; // This treats empty string as falsy too
@@ -31,7 +31,7 @@ if (user?.profile?.preferences?.theme) {
   // handle theme
 }
 
-const email = user?.contact?.email;
+const email = user?.contact?.email
 
 // ❌ Bad
 if (
@@ -51,20 +51,20 @@ if (
 ```typescript
 // ✅ Good - Use type for type definitions
 type CoinData = {
-  id: number;
-  nickname: string;
-  denomination: string;
-  image_link_o: string | null;
-  image_link_r: string | null;
-};
+  id: number
+  nickname: string
+  denomination: string
+  image_link_o: string | null
+  image_link_r: string | null
+}
 
 // ❌ Bad - Using interface when type is more appropriate
 interface CoinData {
-  id: number;
-  nickname: string;
-  denomination: string;
-  image_link_o: string | null;
-  image_link_r: string | null;
+  id: number
+  nickname: string
+  denomination: string
+  image_link_o: string | null
+  image_link_r: string | null
 }
 ```
 
@@ -77,23 +77,23 @@ interface CoinData {
 ```typescript
 // ✅ Good - Function declarations for top-level functions
 function processCoin(coin: CoinData): string {
-  return coin.nickname;
+  return coin.nickname
 }
 
 function calculateDiameter(coin: CoinData): number {
-  return coin.diameter ?? 0;
+  return coin.diameter ?? 0
 }
 
 // ✅ Good - Arrow functions for callbacks, event handlers, and inline functions
-const coins = data.map((coin) => processCoin(coin));
+const coins = data.map((coin) => processCoin(coin))
 const handleClick = (event: React.MouseEvent) => {
   // handle click
-};
+}
 
 // ❌ Bad - Arrow functions for top-level function definitions
 const processCoin = (coin: CoinData): string => {
-  return coin.nickname;
-};
+  return coin.nickname
+}
 ```
 
 ### 5. Type Safety
@@ -103,7 +103,7 @@ const processCoin = (coin: CoinData): string => {
 ```typescript
 // ✅ Good
 function processCoin(coin: CoinData): string {
-  return coin.nickname;
+  return coin.nickname
 }
 
 // ❌ Bad
@@ -112,7 +112,7 @@ function processCoin(coin: any): string {
 }
 ```
 
-### 4. ARIA Attributes
+### 6. ARIA Attributes
 
 **Rule:** ARIA attributes must use string values, not boolean expressions.
 
@@ -128,35 +128,35 @@ function processCoin(coin: any): string {
 </button>
 ```
 
-### 5. Boolean Type Inference
+### 7. Boolean Type Inference
 
 **Rule:** Don't explicitly type obvious boolean values.
 
 ```typescript
 // ✅ Good
-const isValid = true;
-const checkStatus = (enabled = false) => { ... };
+const isValid = true
+const checkStatus = (enabled = false) => { ... }
 
 // ❌ Bad
-const isValid: boolean = true;
-const checkStatus = (enabled: boolean = false) => { ... };
+const isValid: boolean = true
+const checkStatus = (enabled: boolean = false) => { ... }
 ```
 
-### 6. Semicolons
+### 8. Semicolons
 
 **Rule:** Do not use semicolons at the end of statements in TypeScript.
 
 ```typescript
 // ✅ Good - No semicolons
-const userName = user.name ?? "Anonymous";
-const result = processData(input);
+const userName = user.name ?? "Anonymous"
+const result = processData(input)
 
 function calculateTotal(items: Item[]): number {
-  return items.reduce((sum, item) => sum + item.price, 0);
+  return items.reduce((sum, item) => sum + item.price, 0)
 }
 
 if (isValid) {
-  handleSuccess();
+  handleSuccess()
 }
 
 // ❌ Bad - Using semicolons
@@ -176,16 +176,16 @@ if (isValid) {
 
 ## Component Patterns
 
-### 1. Props Interface Definition
+### 1. Props Type Definition
 
-Always define proper TypeScript interfaces for component props:
+Always define a `type` for component props:
 
 ```typescript
-interface ButtonProps {
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  variant?: "primary" | "secondary";
+type ButtonProps = {
+  label: string
+  onClick: () => void
+  disabled?: boolean
+  variant?: "primary" | "secondary"
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -195,7 +195,7 @@ export const Button: React.FC<ButtonProps> = ({
   variant = "primary",
 }) => {
   // component logic
-};
+}
 ```
 
 ### 2. Event Handlers
@@ -204,13 +204,13 @@ Use proper event typing:
 
 ```typescript
 const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-  event.preventDefault();
+  event.preventDefault()
   // handle click
-};
+}
 
 const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  setValue(event.target.value);
-};
+  setValue(event.target.value)
+}
 ```
 
 ### 3. Form Validation
@@ -219,16 +219,16 @@ Use consistent patterns for form validation:
 
 ```typescript
 // Use react-hook-form with Zod schemas
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email format"),
-});
+})
 
-type FormData = z.infer<typeof schema>;
+type FormData = z.infer<typeof schema>
 
 const MyForm = () => {
   const {
@@ -237,10 +237,10 @@ const MyForm = () => {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-  });
+  })
 
   // form logic
-};
+}
 ```
 
 ## File Organization
@@ -249,81 +249,83 @@ const MyForm = () => {
 
 ```typescript
 // 1. React and third-party libraries
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import React from "react"
+import { useQuery } from "@tanstack/react-query"
 
 // 2. Internal utilities and hooks
-import { cn } from "~/lib/utils";
-import { useAuth } from "~/hooks/useAuth";
+import { cn } from "~/lib/utils"
+import { useViewport } from "~/hooks/useViewport"
 
 // 3. Components
-import { Button } from "~/components/ui/Button";
+import { Button } from "~/components/ui/Button"
 
 // 4. Types (with type import)
-import type { CoinData } from "~/types/coin";
+import type { CoinData } from "~/types/coin"
 ```
 
 ### 2. Component Structure
 
 ```typescript
 // 1. Imports
-import React from "react";
+import React from "react"
 
-// 2. Types/Interfaces
-interface ComponentProps {
+// 2. Types
+type ComponentProps = {
   // props definition
 }
 
 // 3. Component
 export const Component: React.FC<ComponentProps> = ({ prop1, prop2 }) => {
   // 4. Hooks
-  const [state, setState] = useState();
+  const [state, setState] = useState()
 
   // 5. Event handlers
   const handleClick = () => {
     // handler logic
-  };
+  }
 
   // 6. Effects
   useEffect(() => {
     // effect logic
-  }, []);
+  }, [])
 
   // 7. Render
   return (
     <div>
       {/* JSX */}
     </div>
-  );
-};
+  )
+}
 ```
 
 ## Error Handling
 
 ### 1. API Calls
 
+The site reads through its own `/api` routes (see `READ_PATH.md`). Do not write
+a new `fetch` with its own error handling:
+
+- **Client:** build a list hook with `createPublicQuery` and fetch a single
+  resource with `fetchPublic` (`src/api/public-query.ts`). Both unwrap the
+  `{ success, data }` envelope and throw a `PublicFetchError` that carries the
+  status, so `404` can be told apart from a failure.
+- **Server:** write a route as `publicRoute(label, load, { cache })`
+  (`src/app/api/_lib/public-route.ts`). Never put a database error in a response
+  body: `publicRoute` logs it and sends a fixed message. Throw a
+  `PublicRouteError` for a failure the visitor may be told about, such as a bad
+  id.
+
 ```typescript
-// ✅ Good - Proper error handling
-const fetchData = async (): Promise<ApiResponse> => {
-  try {
-    const response = await fetch("/api/data");
+// Client
+export const useMints = createPublicQuery<Mint[]>({
+  key: ["mints"],
+  path: "/api/mints",
+  label: "mints",
+  staleTime: STALE.week,
+})
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = (await response.json()) as ApiResponse;
-
-    if (!result.success) {
-      throw new Error(result.message ?? "Unknown error occurred");
-    }
-
-    return result;
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
-    throw error;
-  }
-};
+// Server
+export const GET = publicRoute("mints", fetchMints)
 ```
 
 ### 2. Component Error Boundaries
@@ -331,14 +333,14 @@ const fetchData = async (): Promise<ApiResponse> => {
 Use error boundaries for better user experience:
 
 ```typescript
-import { ErrorBoundary } from "react-error-boundary";
+import { ErrorBoundary } from "react-error-boundary"
 
 const ErrorFallback = ({ error }: { error: Error }) => (
   <div role="alert">
     <h2>Something went wrong:</h2>
     <pre>{error.message}</pre>
   </div>
-);
+)
 
 // Wrap components that might throw
 <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -353,23 +355,23 @@ const ErrorFallback = ({ error }: { error: Error }) => (
 ```typescript
 // Use useMemo for expensive calculations
 const expensiveValue = useMemo(() => {
-  return heavyCalculation(data);
-}, [data]);
+  return heavyCalculation(data)
+}, [data])
 
 // Use useCallback for event handlers in child components
 const handleClick = useCallback(
   (id: string) => {
-    onItemClick(id);
+    onItemClick(id)
   },
   [onItemClick],
-);
+)
 ```
 
 ### 2. Code Splitting
 
 ```typescript
 // Lazy load components that aren't immediately needed
-const LazyComponent = lazy(() => import("./LazyComponent"));
+const LazyComponent = lazy(() => import("./LazyComponent"))
 
 // Use Suspense for loading states
 <Suspense fallback={<Loading />}>
@@ -382,23 +384,23 @@ const LazyComponent = lazy(() => import("./LazyComponent"));
 ### 1. Component Testing
 
 ```typescript
-import { render, screen, fireEvent } from "@testing-library/react";
-import { Button } from "./Button";
+import { render, screen, fireEvent } from "@testing-library/react"
+import { Button } from "./Button"
 
 describe("Button", () => {
   it("should render with correct label", () => {
-    render(<Button label="Click me" onClick={() => {}} />);
-    expect(screen.getByText("Click me")).toBeInTheDocument();
-  });
+    render(<Button label="Click me" onClick={() => {}} />)
+    expect(screen.getByText("Click me")).toBeInTheDocument()
+  })
 
   it("should call onClick when clicked", () => {
-    const handleClick = jest.fn();
-    render(<Button label="Click me" onClick={handleClick} />);
+    const handleClick = jest.fn()
+    render(<Button label="Click me" onClick={handleClick} />)
 
-    fireEvent.click(screen.getByText("Click me"));
-    expect(handleClick).toHaveBeenCalledTimes(1);
-  });
-});
+    fireEvent.click(screen.getByText("Click me"))
+    expect(handleClick).toHaveBeenCalledTimes(1)
+  })
+})
 ```
 
 ## Accessibility (a11y)
@@ -455,13 +457,15 @@ describe("Button", () => {
 
 ## Enforcement
 
-These standards are enforced through:
+- **ESLint** (`eslint.config.js`): strict TypeScript and React rules.
+- **TypeScript**: strict mode. `pnpm check` runs lint and the type check; run it
+  before opening a PR.
+- **Prettier** (`prettier.config.js`): `semi: false` and the Tailwind class
+  sorting plugin.
+- **Vitest**: `pnpm test:run`.
 
-- **ESLint**: Configured with strict rules for TypeScript and React
-- **TypeScript**: Strict mode enabled with comprehensive type checking
-- **Prettier**: Consistent code formatting
-- **Husky**: Pre-commit hooks to run linting and tests
-- **CI/CD**: Build pipeline fails if linting errors exist
+There are no pre-commit hooks and no lint job in CI, so nothing stops a commit
+that skips these.
 
 ## Resources
 

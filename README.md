@@ -16,12 +16,20 @@ Please be careful using this data for anything serious - on this site it is just
 
 - [Next.js](https://nextjs.org)
 - [Tailwind CSS](https://tailwindcss.com)
-- [Supabase](https://supabase.com) for Postgres db, runtime queries AND auth integration
-- [Cloudinary](https://console.cloudinary.com/) for image storage, optimisation and CDN. (optional upgrade toCloudflare R2 and custom pipeline later).
-  - https://supabase.com/dashboard
-  - `pnpm install @supabase/supabase-js
-- Vitest for testing
-- Shadcn / radix UI for fast component prototyping.
+- [Supabase](https://supabase.com) for the Postgres database. The site is read-only and uses the anon key; all writes go through the separate data-maintenance app (`somnus-data-ingestion`).
+- [TanStack Query](https://tanstack.com/query) for client-side caching.
+- [MapLibre GL JS](https://maplibre.org) with `react-map-gl` for the map, on [OpenFreeMap](https://openfreemap.org) tiles.
+- [Cloudinary](https://console.cloudinary.com/) for image storage, optimisation and CDN. (optional upgrade to Cloudflare R2 and custom pipeline later).
+- Vitest for testing.
+
+## Docs
+
+- [`docs/READ_PATH.md`](docs/READ_PATH.md): how the site reads the database, and what it cannot read
+- [`docs/MAP.md`](docs/MAP.md): the map
+- [`docs/THEME.md`](docs/THEME.md): colour and type tokens, and where the site is sunset and where it is night
+- [`docs/TODO_CLOCK_NOTES.md`](docs/TODO_CLOCK_NOTES.md): notes anchored to a point on a coin face (in progress, deleted when finished)
+- [`docs/CODING_STANDARDS.md`](docs/CODING_STANDARDS.md): code conventions
+- [`docs/image_upload_workflow.md`](docs/image_upload_workflow.md): getting photos into Cloudinary
 
 ## Caching Strategy
 
@@ -64,4 +72,4 @@ Where:
 - `src-<source>`: where the image came from. If it is `src-timmday` it is from Tim and fine to use without credit. When it is src-something else (where something else should be the original vendor who took the photo, not an aggregator like biddr or vcoins) then a photo credit in the UI should be given when displaying the image. Use this vendor name and the date to generate the credit
   (i.e. src-imperial-numismatics, src-the-coin-cabinet etc)
 
-I have made a tool at the base of the add coin page (auth users only), that will generate a file name from the entered data that you can copy/paste to rename old files so they match up as you add them to the db.
+The data-maintenance app (`somnus-data-ingestion`) has a tool that generates a file name from the entered data, which you can copy and paste to rename old files so they match up as you add them to the db.

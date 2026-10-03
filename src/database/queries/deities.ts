@@ -71,8 +71,8 @@ export async function fetchDeities(
     secondary_info: row.secondary_info,
     citations: citations.data.get(row.id) ?? [],
     god_of: row.god_of ?? [],
-    // Replaces the old `features_coinage` (JSONB objects) — its data was
-    // migrated into `device_deities` rows, see docs/SCHEMA_MIGRATION_READ_PATH.md.
+    // The card footer lists the devices linked through `device_deities`
+    // (see docs/READ_PATH.md).
     features_coinage: (devicesByDeityId.get(row.id) ?? []).map((name) => ({
       name,
     })),

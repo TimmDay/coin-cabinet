@@ -1,6 +1,7 @@
 import { formatTimelineYear } from "~/lib/utils/date-formatting"
 import { EventLogo } from "../EventLogo"
 import type { InvertedStackedMarkersProps } from "../types"
+import { markerBorder } from "../markerBorder"
 
 export function InvertedStackedMarkers({
   year,
@@ -18,7 +19,7 @@ export function InvertedStackedMarkers({
         className="absolute left-1/2 -translate-x-1/2 transform whitespace-nowrap"
         style={{ top: `${8 + (events.length - 1) * 32 + 26}px` }} // Dynamic bottom position
       >
-        <div className="text-center font-mono text-sm text-slate-400">
+        <div className="text-moonlight text-center font-mono text-sm">
           {formatTimelineYear(year)}
         </div>
       </div>
@@ -41,7 +42,7 @@ export function InvertedStackedMarkers({
 
             {/* Event marker */}
             <div
-              className={`absolute -translate-x-1/2 transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-blue-400 focus:outline-none ${
+              className={`focus:ring-bronze-light absolute -translate-x-1/2 transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:outline-none ${
                 isEventSelected ? "scale-[1.3]" : ""
               }`}
               style={{ top: `${eventIndex * 32}px`, left: "50%" }} // Stack vertically downward
@@ -57,20 +58,14 @@ export function InvertedStackedMarkers({
                   <EventLogo event={event} />
                 </div>
                 <div
-                  className={`pointer-events-none absolute inset-0 rounded-full border shadow-lg ${
-                    isEventSelected
-                      ? "border-2 border-purple-500"
-                      : event.kind === "coin-minted"
-                        ? "border-amber-500"
-                        : "border-gray-500"
-                  }`}
+                  className={`pointer-events-none absolute inset-0 rounded-full border shadow-lg ${markerBorder(event, isEventSelected)}`}
                   style={{ zIndex: 10 }}
                 />
               </div>
 
               {/* Inverted teardrop tail - only for top marker, pointing up */}
               {eventIndex === 0 && (
-                <div className="absolute bottom-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-r-4 border-b-8 border-l-4 border-r-transparent border-b-gray-500 border-l-transparent"></div>
+                <div className="border-b-moonlight/50 absolute bottom-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-r-4 border-b-8 border-l-4 border-r-transparent border-l-transparent"></div>
               )}
             </div>
           </div>

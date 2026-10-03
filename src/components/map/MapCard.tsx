@@ -35,13 +35,13 @@ export const MapCard: React.FC<MapCardProps> = ({
       <h4 className="text-map-label mb-2 text-base font-bold">{title}</h4>
 
       {subtitle && (
-        <p className="mb-2 text-sm text-gray-600">
+        <p className="text-paper-ink-muted mb-2 text-sm">
           <em>{subtitle}</em>
         </p>
       )}
 
       {description && (
-        <p className="mb-2 text-sm text-gray-600">{description}</p>
+        <p className="text-paper-ink-muted mb-2 text-sm">{description}</p>
       )}
 
       {details.length > 0 && (
@@ -55,7 +55,9 @@ export const MapCard: React.FC<MapCardProps> = ({
       )}
 
       {notes && (
-        <p className="mt-2 text-sm leading-relaxed text-gray-600">{notes}</p>
+        <p className="text-paper-ink-muted mt-2 text-sm leading-relaxed">
+          {notes}
+        </p>
       )}
     </div>
   )
