@@ -92,9 +92,22 @@ describe("buildCoinMap", () => {
     expect(map).toBeNull()
   })
 
-  it("pins a related artifact at its place", () => {
+  it("pins an artifact from the coin's supporting images", () => {
+    const map = buildCoinMap(
+      coin({ flavour_img: ["a1"] }),
+      reference({
+        places: [place(5, 51.5, -0.12)],
+        artifacts: [{ id: "a1", name: "Bust", place_id: "5" }],
+      }),
+    )
+
+    expect(map?.markers[0]).toMatchObject({ id: "artifact-a1", title: "Bust" })
+  })
+
+  it("pins an artifact a deity points at, once even if the coin has it too", () => {
     const map = buildCoinMap(
       coin({
+        flavour_img: ["a1"],
         deities: [{ id: 1, name: "Athena", artifact_ids: ["a1"] }],
       } as Partial<CoinEnhanced>),
       reference({
@@ -103,6 +116,7 @@ describe("buildCoinMap", () => {
       }),
     )
 
+    expect(map?.markers).toHaveLength(1)
     expect(map?.markers[0]).toMatchObject({
       id: "artifact-a1",
       title: "Bust",

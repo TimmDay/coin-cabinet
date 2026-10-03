@@ -183,8 +183,10 @@ in `src/data`. Nothing on the site displays citations yet.
 
 ## Known limitations
 
-- Deity and person cards show no illustrative photo: `artifact_ids` has no home
-  in the normalised schema for those two kinds.
+- Deity and person cards show no illustrative photo, and a deity or person brings
+  no artifact pins to the map: `artifact_ids` has no home in the normalised
+  schema for those two kinds. A coin's own supporting images (`flavour_img`) still
+  name artifacts, and those get a pin.
 - What appears on the site depends on the data: items and sets with
   `is_hidden = TRUE` are invisible, and a set page is empty until its set is
   made visible in the data-maintenance app.

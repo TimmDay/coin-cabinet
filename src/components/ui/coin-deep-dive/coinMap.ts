@@ -39,8 +39,12 @@ function isWithinMapBounds(lat: number, lng: number) {
   return lat <= maxLat && lat >= minLat && lng >= minLng && lng <= maxLng
 }
 
+/**
+ * The artifacts tied to this coin: the ones in its own supporting images
+ * (`flavour_img`), and any a deity or person on it points at.
+ */
 function relatedArtifactIds(coin: CoinEnhanced) {
-  const ids = new Set<string>()
+  const ids = new Set<string>(coin.flavour_img ?? [])
 
   for (const deity of coin.deities ?? []) {
     for (const id of deity.artifact_ids ?? []) ids.add(id)
