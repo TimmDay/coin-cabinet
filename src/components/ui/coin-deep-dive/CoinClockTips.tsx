@@ -1,3 +1,4 @@
+import CloudinaryImage from "~/components/CloudinaryImage"
 import { cn } from "~/lib/utils"
 import type { ClockNote } from "~/types/api"
 import { TipIcon } from "./TipIcon"
@@ -75,6 +76,16 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           {note.title && (
             <span className="font-display mb-2 block text-center text-lg tracking-widest uppercase">
               {note.title}
+            </span>
+          )}
+          {note.imageUrl && (
+            <span className="mb-3 flex h-40 items-center justify-center overflow-hidden rounded">
+              <CloudinaryImage
+                src={note.imageUrl}
+                alt={note.title ?? ""}
+                width={480}
+                height={320}
+              />
             </span>
           )}
           {note.body}

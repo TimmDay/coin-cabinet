@@ -29,7 +29,16 @@ const row = (overrides: Partial<Row>): Row => ({
 })
 
 const entries = (): LinkedEntries => ({
-  device: new Map([[7, { title: "Cornucopia", body: "Horn of plenty." }]]),
+  device: new Map([
+    [
+      7,
+      {
+        title: "Cornucopia",
+        body: "Horn of plenty.",
+        imageUrl: "https://img/c.jpg",
+      },
+    ],
+  ]),
   deity: new Map([[2, { title: "Sol", body: null }]]),
   place: new Map(),
   person: new Map(),
@@ -49,6 +58,19 @@ describe("resolveClockNotes", () => {
   it("fills a missing title and body from the linked entry", () => {
     const [note] = resolveClockNotes([row({ device_id: 7 })], entries())
     expect(note).toMatchObject({ title: "Cornucopia", body: "Horn of plenty." })
+  })
+
+  it("carries the linked entry's picture, and none when it has none", () => {
+    const [withImage] = resolveClockNotes([row({ device_id: 7 })], entries())
+    const [without] = resolveClockNotes([row({ deity_id: 2 })], entries())
+
+    expect(withImage?.imageUrl).toBe("https://img/c.jpg")
+    expect(without?.imageUrl).toBeNull()
+  })
+
+  it("gives a note with its own text no picture", () => {
+    const [note] = resolveClockNotes([row({ body: "Own" })], entries())
+    expect(note?.imageUrl).toBeNull()
   })
 
   it("lets the note override the linked entry's text", () => {

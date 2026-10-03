@@ -13,6 +13,8 @@ export type ClockNote = {
   body: string | null
   linkUrl: string | null
   linkLabel: string | null
+  /** The linked entry's picture (a device's or an artifact's), if it has one. */
+  imageUrl: string | null
   /** Which icon shows in the circle. Free text for now. */
   iconType: string | null
 }

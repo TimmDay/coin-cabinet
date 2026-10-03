@@ -6,7 +6,11 @@ import type { ClockNote } from "~/types/api"
 type ClockNoteRow = Database["public"]["Tables"]["item_clock_notes"]["Row"]
 
 /** What a linked authority entry contributes to a note. */
-export type LinkedEntry = { title: string; body: string | null }
+export type LinkedEntry = {
+  title: string
+  body: string | null
+  imageUrl?: string | null
+}
 
 type LinkKind = "device" | "deity" | "place" | "person" | "mint" | "artifact"
 
@@ -66,6 +70,7 @@ export function resolveClockNotes(
       body,
       linkUrl: row.link_url,
       linkLabel: row.link_label,
+      imageUrl: entry?.imageUrl ?? null,
       iconType: row.icon_type,
     })
   }
@@ -91,7 +96,7 @@ async function fetchLinkedEntries(
   ]
 
   const named = async (
-    table: "deities" | "places" | "persons" | "artifacts",
+    table: "deities" | "places" | "persons",
     kind: LinkKind,
   ) => {
     const wanted = ids(kind)
@@ -105,20 +110,34 @@ async function fetchLinkedEntries(
 
   const deviceIds = ids("device")
   const mintIds = ids("mint")
+  const artifactIds = ids("artifact")
 
   const [devices, deities, places, persons, artifacts, mints] =
     await Promise.all([
       deviceIds.length > 0
         ? supabase
             .from("devices")
-            .select("id, name, description")
+            .select("id, name, description, image_url")
             .in("id", deviceIds)
-            .returns<{ id: number; name: string; description: string }[]>()
+            .returns<
+              {
+                id: number
+                name: string
+                description: string
+                image_url: string | null
+              }[]
+            >()
         : Promise.resolve({ data: [], error: null }),
       named("deities", "deity"),
       named("places", "place"),
       named("persons", "person"),
-      named("artifacts", "artifact"),
+      artifactIds.length > 0
+        ? supabase
+            .from("artifacts")
+            .select("id, name, flavour_text, image_url")
+            .in("id", artifactIds)
+            .returns<(NamedRow & { image_url: string | null })[]>()
+        : Promise.resolve({ data: [], error: null }),
       // A mint has no name of its own: it is its place
       mintIds.length > 0
         ? supabase
@@ -148,13 +167,16 @@ async function fetchLinkedEntries(
 
   const entries = emptyEntries()
   for (const d of devices.data ?? []) {
-    entries.device.set(d.id, { title: d.name, body: d.description })
+    entries.device.set(d.id, {
+      title: d.name,
+      body: d.description,
+      imageUrl: d.image_url,
+    })
   }
   const byKind = {
     deity: deities,
     place: places,
     person: persons,
-    artifact: artifacts,
   }
   for (const [kind, result] of Object.entries(byKind) as [
     keyof typeof byKind,
@@ -163,6 +185,13 @@ async function fetchLinkedEntries(
     for (const row of result.data ?? []) {
       entries[kind].set(row.id, { title: row.name, body: row.flavour_text })
     }
+  }
+  for (const a of artifacts.data ?? []) {
+    entries.artifact.set(a.id, {
+      title: a.name,
+      body: a.flavour_text,
+      imageUrl: a.image_url,
+    })
   }
   for (const m of mints.data ?? []) {
     if (m.places) {

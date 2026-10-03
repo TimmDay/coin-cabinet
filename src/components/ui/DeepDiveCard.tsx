@@ -139,7 +139,7 @@ export function DeepDiveCard({
                       {altText}
                     </div>
                     {/* Arrow pointing down */}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900/95"></div>
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-night/95"></div>
                   </div>
                 )}
               </div>

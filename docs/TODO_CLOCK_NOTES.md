@@ -1,6 +1,6 @@
 # Clock notes
 
-In progress: this file is deleted when the two items under "Not done yet" are
+In progress: this file is deleted when the item under "Not done yet" is
 finished. Until then it also describes the feature.
 
 Short notes anchored to a point on a coin face, shown as small circular buttons
@@ -17,7 +17,9 @@ the note. They stay muted so the coin keeps the focus.
 - A note can link to at most one entry in one of six authority tables: devices,
   deities, places, persons, mints, artifacts. It then draws its title and body
   from that entry (a device's description, or `flavour_text` for the others; a
-  mint is named after its place). Text written on the note wins over the entry's.
+  mint is named after its place), and its picture if the entry has one (a
+  device's or an artifact's `image_url`). Text written on the note wins over the
+  entry's.
 - A note needs a body or a linked entry that supplies one. A note whose linked
   entry is missing or hidden, and with no text of its own, is dropped.
 - A coin with no notes shows nothing: no empty circles.
@@ -53,7 +55,8 @@ tap, and closes on leave, blur, Escape or an outside click).
   coins and their legends stay level on desktop. Room at the sides is always
   kept.
 - **Popover:** it opens away from the coin (`popoverPlacement` by position), with
-  the title in Cinzel, then the body, then the link if there is one. Style is in
+  the title in Cinzel, then the linked entry's picture if it has one, then the
+  body, then the link if there is one. Style is in
   `THEME.md`.
 - **Other small buttons on a coin:** the translation sits behind a small
   `TipIcon` at the end of each legend, the description behind a scroll button in
@@ -65,5 +68,3 @@ tap, and closes on leave, blur, Escape or an outside click).
 
 - `icon_type` is stored and returned but the circles show no icon. The set of
   icons has to be decided first (a `CHECK` list or a lookup table).
-- A linked entry's image (a device's or artifact's `image_url`) is not fetched or
-  shown in the popover.
