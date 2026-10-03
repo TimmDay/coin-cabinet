@@ -27,17 +27,20 @@ export function SideLineMarker({
 
       {/* Event marker - gray colored */}
       <div
-        className={`focus:ring-bronze-light relative transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:outline-none ${
-          isSelected ? "scale-[1.3]" : ""
-        }`}
+        className="focus:ring-bronze-light relative cursor-pointer rounded-full focus:ring-2 focus:outline-none"
         onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
         onKeyDown={(e) => onEventKeyDown?.(event, e)}
         tabIndex={tabIndex}
         role="button"
         aria-label={`${event.name} - ${formatTimelineYear(event.year)}`}
       >
-        {/* Circle marker - gray theme */}
-        <div className="relative">
+        {/* Circle marker - gray theme. It grows toward the outer edge, away
+            from the timeline, so the tail below never runs into the line. */}
+        <div
+          className={`relative transition-transform duration-200 hover:scale-110 ${
+            position === "start" ? "origin-right" : "origin-left"
+          } ${isSelected ? "scale-[1.3]" : ""}`}
+        >
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-transparent">
             <EventLogo event={event} />
           </div>
