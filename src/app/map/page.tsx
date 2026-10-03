@@ -59,7 +59,7 @@ export default function MapPage() {
       </div>
 
       {/* Map Controls */}
-      <div className="border-paper-edge bg-paper-raised flex-shrink-0 border-t px-4 py-4 sm:px-6 lg:px-8">
+      <div className="flex-shrink-0 px-4 py-4 sm:px-6 lg:px-8">
         <MapControls
           showBC60={showBC60}
           onBC60Change={setShowBC60}
