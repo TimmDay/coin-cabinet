@@ -13,7 +13,7 @@ const Map = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-full w-full animate-pulse rounded-lg bg-gray-200" />
+      <div className="bg-surface-raised h-full w-full animate-pulse rounded-lg" />
     ),
   },
 )
@@ -42,11 +42,10 @@ export default function MapPage() {
       {/* Full-size Map Container */}
       <div className="h-[calc(100vh-140px)] flex-shrink-0">
         <div className="h-full p-4 sm:p-6 lg:p-8">
-          <div className="h-full w-full overflow-hidden rounded-lg bg-white shadow-lg">
+          <div className="bg-paper h-full w-full overflow-hidden rounded-lg shadow-lg">
             <Map
               layout="fullscreen"
               height="100%"
-              hideControls={true}
               showBC60={showBC60}
               showAD14={showAD14}
               showAD69={showAD69}
@@ -60,7 +59,7 @@ export default function MapPage() {
       </div>
 
       {/* Map Controls */}
-      <div className="flex-shrink-0 border-t border-gray-200 bg-gray-50 px-4 py-4 sm:px-6 lg:px-8">
+      <div className="border-paper-edge bg-paper-raised flex-shrink-0 border-t px-4 py-4 sm:px-6 lg:px-8">
         <MapControls
           showBC60={showBC60}
           onBC60Change={setShowBC60}

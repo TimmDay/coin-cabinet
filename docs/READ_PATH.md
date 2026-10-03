@@ -1,0 +1,159 @@
+# Public read path
+
+How the site reads the collection. The site is read-only and anonymous: it
+never writes, and it never holds a service key. All writes happen in the
+data-maintenance app (`somnus-data-ingestion`).
+
+The schema itself (`schema.sql`, `rls.sql`, `views.sql`, `SCHEMAS.md`) is kept
+with that app. This document covers only what the site does with it.
+
+## The path
+
+```
+React hook (src/api/*.ts, createPublicQuery)
+  → GET /api/<name>  (src/app/api/<name>/route.ts, publicRoute)
+    → query module (src/database/queries/<name>.ts)
+      → Supabase, anon key, row level security
+```
+
+- **Hooks** (`src/api/public-query.ts`): `createPublicQuery` builds one React
+  Query hook per list route, and `fetchPublic` unwraps the `{ success, data }`
+  envelope. A failure throws a `PublicFetchError` carrying the HTTP status, so a
+  caller can tell a 404 from an outage. The hook modules are client modules
+  because they build their hooks at import.
+- **Routes** (`src/app/api/_lib/public-route.ts`): `publicRoute(label, load,
+  { cache })` is every route's whole body. It makes the Supabase client, runs the
+  loader, and answers `{ success, data }`.
+  - A loader that returns `data: null` answers 404.
+  - A `PublicRouteError` thrown by a loader (a bad id) answers with its own
+    status and message.
+  - Any other failure is logged on the server and answered with a fixed
+    `Failed to load <label>` message. The database error is never sent to the
+    visitor. Outside production the cause is attached as `error` for debugging.
+  - `cache: true` adds `Cache-Control: public, max-age=300,
+    stale-while-revalidate=86400` and a CDN header for a day. The coin list,
+    deities and timelines use it.
+- **Queries** (`src/database/queries/*.ts`): each returns a `QueryResult<T>`,
+  either `{ data, error: null }` or `{ data: null, error }`.
+- **Coin ids:** `/api/somnus-collection/[id]` accepts only plain positive
+  integers (up to ten digits). Anything else is a 400 without touching the
+  database.
+
+## Why targeted queries, not one nested select
+
+Each route runs a few small filtered queries (`item_id=in.(...)`) and stitches
+the rows together in the query module. There is no Postgres function. PostgREST
+cannot follow foreign keys out of a view (`public_items` has no key metadata),
+and `collection` itself has no anon grant, so a nested `select=*,coin_images(*)`
+is not reachable from either end.
+
+Every route keeps the response shape and TypeScript type the components already
+use (`SomnusCollection`, `CoinEnhanced`, `Mint`, `Place`, `Device`, `Deity`,
+`Timeline`, `Artifact`). The query module reshapes the normalised rows into
+them, so components never see the table layout.
+
+## Field mapping by route
+
+### `/api/places` from `places`
+`place_type` becomes `kind`.
+
+### `/api/mints` from `mints`, `places`, `mint_operation_periods`
+A mint has no name or coordinates of its own: `name`, `lat` and `lng` come from
+its place. `mint_operation_periods` rows become the `[start, end,
+authority_label][]` tuples that `MintDeepDiveCard` reads. A mint whose place is
+missing is left out.
+
+### `/api/devices` from `devices`
+`image_url` becomes `img`. The numeric `id` is sent as a string, because
+`CoinDeepDive` and `DescriptionWithDeviceHighlights` compare and key on it as one.
+
+### `/api/deities` from `deities`, `deity_places`, `device_deities`, `devices`
+`deity_places` becomes `place_ids`. The names of the devices linked through
+`device_deities` fill the card footer.
+
+### `/api/timelines` from `timelines`, `timeline_events`, `places`
+The `timeline: Event[]` array is rebuilt from the event rows in `sequence`
+order: `event_type` becomes `kind` and `flavour_text` becomes `description`. An
+event's position is `COALESCE(event.lat, place.lat)`, and likewise for longitude.
+
+### `/api/artifacts` from `artifacts`, `places`
+The institution name and coordinates come from the joined place and are
+flattened onto the output fields `artifact-helpers.ts` reads. `image_url`
+becomes `img_src`, `image_alt_text` becomes `img_alt` and `location_note`
+becomes `location_name`. The numeric `id` is sent as a string.
+
+### `/api/somnus-collection` (list) from `public_items` and its children
+`public_items` is the only anon-readable source of `collection` and `coins`
+fields. It does not expose `coins.id`, so `coins` is queried separately for the
+`item_id` to `coin_id` join key.
+
+- `coin_images` rows with `variant = 'standard'` become `image_link_o` and
+  `image_link_r`. The stored `url` is already a bare Cloudinary public id.
+- The `is_primary` row of `coin_catalogue_references` becomes `reference` and
+  `reference_link`. The browse modal reads it from the list.
+- `item_sets` and `sets` become the `sets: string[]` array, and `item_deities`
+  becomes `deity_id: string[]`.
+- Renames: `nickname` from `brief_description`; `civ` and `civ_specific` from
+  `culture_or_period` and `culture_or_period_specific`; `silver_content` from
+  `fineness`; `mint_year_earliest` and `mint_year_latest` from `date_earliest`
+  and `date_latest`.
+- `die_axis` is `` `${coins.rotation}h` `` when `rotation` is set, because the
+  grids and cards expect the `"6h"` form.
+
+Hidden and unconfirmed items never reach the site: row level security excludes
+them for anon, so there is nothing to filter in code.
+
+### `/api/somnus-collection/[id]` (detail)
+The same base row as the list, plus:
+
+- `coin_catalogue_references`, `coin_notable_features` passed through.
+- `coin_devices` become `obv_device_ids` and `rev_device_ids` (strings).
+- `item_deities` with `deities` become `deities[]`.
+- `item_persons` with `persons` become `historical_figures[]`: `title` becomes
+  `authority`, `birth_year` and `death_year` become `birth` and `death`, and
+  `alt_names` becomes `altNames`.
+- `item_timelines` becomes `timelines_id`.
+- `supporting_images` with `artifacts` become `flavour_img`.
+- Every `coin_images` variant and side, in `sequence` order, becomes
+  `image_link_altlight_o/_r`, `image_link_sketch_o/_r`, `image_link_zoom_o/_r`
+  and `image_rotation`.
+- `item_clock_notes` become `clock_notes`; see `TODO_CLOCK_NOTES.md`.
+- `public_find_events` becomes `found_event` (below).
+
+## What the site cannot read: provenance
+
+`provenance_events` is owner-only: price, vendor, source and auction never reach
+an anonymous visitor, so the site shows no provenance chip or footer line.
+
+One narrow exception: the detail route reads `public_find_events`, a view that
+exposes only `item_id, event_date, find_lat, find_lng, notes` for events of type
+`find`. It powers the "found here" pin on the deep dive map and timeline
+(`CoinDeepDive.tsx`, `lib/utils/provenance-helpers.ts`). If the view is missing
+or errors, the coin loads without a found event instead of failing.
+
+## Set names
+
+`sets` holds Title Case names (`"Imperial Women"`, `"Gordy Boys"`, ...). The
+cabinet pages pass those exact strings to `CoinGrid filterSet="..."`, and the two
+special-case sorts in `CoinGrid.tsx` match them.
+
+## Citations
+
+Places, mints, devices, deities, persons, artifacts and timeline events each
+carry `citations: Citation[]` (`src/database/schema-citations.ts`): `id`,
+`author`, `work_title`, `citation`, `url` and `note`. They come from the
+`sources` table through `entity_sources`, one query per route
+(`src/database/queries/citations.ts`). `note` is the note on the link
+(`entity_sources.applies_to`), so one source can carry a different note on each
+thing it is attached to.
+
+`Event.source` still exists as a free-text field for the hand-written timelines
+in `src/data`. Nothing on the site displays citations yet.
+
+## Known limitations
+
+- Deity and person cards show no illustrative photo: `artifact_ids` has no home
+  in the normalised schema for those two kinds.
+- What appears on the site depends on the data: items and sets with
+  `is_hidden = TRUE` are invisible, and a set page is empty until its set is
+  made visible in the data-maintenance app.

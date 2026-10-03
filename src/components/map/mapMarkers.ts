@@ -1,3 +1,5 @@
+import { cssColor } from "./mapColors"
+
 function escapeHtml(value: string): string {
   return value
     .replaceAll("&", "&amp;")
@@ -103,8 +105,8 @@ export function createClusterMarkerHtml(count: number) {
           position: absolute;
           inset: 0;
           border-radius: 9999px;
-          background: radial-gradient(circle at 30% 30%, #8a3a4f 0%, #5a2238 58%, #2f1220 100%);
-          border: 2px solid #e0a458;
+          background: radial-gradient(circle at 30% 30%, ${cssColor("pin-wine-light")} 0%, ${cssColor("pin-wine-mid")} 58%, ${cssColor("pin-wine-dark")} 100%);
+          border: 2px solid ${cssColor("pin-gold")};
           box-shadow: 0 10px 24px rgba(46, 27, 18, 0.4), 0 0 0 6px rgba(90, 34, 56, 0.25);
         "
       ></div>
@@ -115,7 +117,7 @@ export function createClusterMarkerHtml(count: number) {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #fbeed3;
+          color: ${cssColor("pin-cream")};
           font-size: ${count >= 100 ? 11 : 12}px;
           font-weight: 700;
           letter-spacing: 0.02em;

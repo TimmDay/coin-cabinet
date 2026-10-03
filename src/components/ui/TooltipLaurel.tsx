@@ -136,7 +136,7 @@ export function TooltipLaurel({
             setShowTooltip(false)
           }
         }}
-        className="cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-amber-400/70 focus:ring-offset-2 focus:ring-offset-slate-900 focus:outline-none"
+        className="focus:ring-bronze-light/70 focus:ring-offset-surface cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-offset-2 focus:outline-none"
         aria-label={ariaLabel}
         aria-describedby={tooltipId}
       >

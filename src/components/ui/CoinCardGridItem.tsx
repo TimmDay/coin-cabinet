@@ -159,13 +159,13 @@ export function CoinCardGridItem({
         <div
           className={`${textMarginClass} flex w-0 min-w-full flex-col items-center opacity-0 transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100`}
         >
-          <p className="text-sm whitespace-nowrap text-slate-300">
+          <p className="text-moonlight-bright text-sm whitespace-nowrap">
             {civ === "Roman Provincial" && civSpecific
               ? civSpecific.toUpperCase()
               : civ.toUpperCase()}
             {nickname && `. ${nickname}`}
           </p>
-          <p className="text-sm whitespace-nowrap text-slate-300">
+          <p className="text-moonlight-bright text-sm whitespace-nowrap">
             {denomination} {formatYearRange(mintYearEarliest, mintYearLatest)}
           </p>
         </div>

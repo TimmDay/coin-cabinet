@@ -116,7 +116,7 @@ export function PageTitle({
             className={
               isSomnus
                 ? "font-subtitle text-subtitle text-xl tracking-[0.04em]"
-                : "text-lg text-slate-400"
+                : "text-moonlight text-lg"
             }
           >
             {subtitle}
@@ -138,7 +138,7 @@ export function PageTitle({
         <CurvedDivider />
       ) : (
         /* Underline border - 300px wide */
-        <div className="mt-3 h-px w-[300px] bg-gradient-to-r from-transparent via-slate-600 to-transparent md:mt-5"></div>
+        <div className="via-moonlight/40 mt-3 h-px w-[300px] bg-gradient-to-r from-transparent to-transparent md:mt-5"></div>
       )}
     </div>
   )

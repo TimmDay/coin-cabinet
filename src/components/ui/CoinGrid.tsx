@@ -280,7 +280,7 @@ export function CoinGrid({
             <div key={index} className="group w-fit cursor-pointer text-center">
               <div className="flex justify-center gap-2">
                 <div className="flex h-[200px] w-[200px] flex-shrink-0 items-center justify-center">
-                  <div className="h-[200px] w-[200px] animate-pulse rounded-full bg-slate-800/20"></div>
+                  <div className="bg-surface-muted h-[200px] w-[200px] animate-pulse rounded-full"></div>
                 </div>
               </div>
             </div>
@@ -301,7 +301,7 @@ export function CoinGrid({
       {/* Empty state */}
       {!isLoading && !error && filteredCoins.length === 0 && (
         <div className="mt-12 flex justify-center">
-          <div className="text-slate-400">
+          <div className="text-moonlight">
             No coins with obverse images found in the collection.
           </div>
         </div>

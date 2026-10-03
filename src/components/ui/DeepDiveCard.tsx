@@ -61,7 +61,7 @@ export function DeepDiveCard({
     // card beside this one, so the chevrons and footers of a row line up with
     // the accordions closed. Anywhere else the three rows just stack.
     <div
-      className={`row-span-3 mb-4 grid w-full grid-rows-subgrid overflow-hidden rounded-lg border border-gray-500 px-6 pt-6 break-words ${className}`}
+      className={`border-line row-span-3 mb-4 grid w-full grid-rows-subgrid overflow-hidden rounded-lg border px-6 pt-6 break-words ${className}`}
     >
       {/* Header Section */}
       <div>
@@ -69,7 +69,7 @@ export function DeepDiveCard({
           {title}
         </h3>
         {subtitle && (
-          <p className="mb-4 text-center text-base whitespace-pre-line text-gray-400">
+          <p className="text-moonlight mb-4 text-center text-base whitespace-pre-line">
             {subtitle}
           </p>
         )}
@@ -110,14 +110,14 @@ export function DeepDiveCard({
         >
           {/* Primary Info */}
           {primaryInfo && (
-            <p className="text-center text-base leading-relaxed text-gray-400">
+            <p className="text-moonlight text-center text-base leading-relaxed">
               {primaryInfo}
             </p>
           )}
 
           {/* Secondary Info */}
           {secondaryInfo && (
-            <p className="text-center text-base leading-relaxed text-gray-400">
+            <p className="text-moonlight text-center text-base leading-relaxed">
               {secondaryInfo}
             </p>
           )}
@@ -134,7 +134,7 @@ export function DeepDiveCard({
                 />
                 {/* Tooltip on hover */}
                 {altText && (
-                  <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-xs -translate-x-1/2 rounded-lg bg-slate-900/95 px-3 py-2 text-sm text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100">
+                  <div className="bg-night/95 text-moonlight-bright pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-xs -translate-x-1/2 rounded-lg px-3 py-2 text-sm opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100">
                     <div className="text-center whitespace-pre-line">
                       {altText}
                     </div>
@@ -145,7 +145,7 @@ export function DeepDiveCard({
               </div>
               {/* Caption */}
               {caption && (
-                <p className="mt-3 text-center text-sm leading-relaxed text-gray-400 italic">
+                <p className="text-moonlight mt-3 text-center text-sm leading-relaxed italic">
                   {caption}
                 </p>
               )}
@@ -157,8 +157,8 @@ export function DeepDiveCard({
       {/* Footer (an empty third row when there is none, so rows stay shared) */}
       <div>
         {footer && (
-          <div className="flex items-center justify-center border-t border-gray-500 pt-5 pb-5">
-            <p className="text-center text-sm whitespace-pre-line text-gray-400">
+          <div className="border-line flex items-center justify-center border-t pt-5 pb-5">
+            <p className="text-moonlight text-center text-sm whitespace-pre-line">
               {footer}
             </p>
           </div>

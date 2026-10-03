@@ -1,3 +1,5 @@
+import { cssColor } from "./mapColors"
+
 /**
  * SVG component for highlighted mint markers (sunset circular design)
  * Used when a specific mint is highlighted on coin detail pages
@@ -18,16 +20,16 @@ export function HighlightedMintSvg({ displayName }: { displayName: string }) {
                 cx="12"
                 cy="12"
                 r="10"
-                fill="#e08a45"
-                stroke="#6e2a3d"
+                fill={cssColor("pin-orange-soft")}
+                stroke={cssColor("pin-wine")}
                 strokeWidth="2"
               />
-              <circle cx="12" cy="12" r="5" fill="#b4492a" />
-              <circle cx="12" cy="12" r="2" fill="#fbeed3" />
+              <circle cx="12" cy="12" r="5" fill={cssColor("pin-sienna")} />
+              <circle cx="12" cy="12" r="2" fill={cssColor("pin-cream")} />
             </svg>
           </div>
         </div>
-        <div className="font-display mt-1 text-center text-xs font-bold tracking-[0.06em] whitespace-nowrap text-[#2e1b12] uppercase">
+        <div className="font-display text-map-ink mt-1 text-center text-xs font-bold tracking-[0.06em] whitespace-nowrap uppercase">
           {displayName}
         </div>
       </div>

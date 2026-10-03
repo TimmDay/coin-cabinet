@@ -92,7 +92,7 @@ function HighlightedWord({ text, device, popoverId }: HighlightedWordProps) {
   return (
     <span ref={triggerRef} className="relative inline">
       <span
-        className="cursor-pointer rounded bg-purple-900/30 px-0.5 text-purple-300 underline decoration-dotted underline-offset-2 transition-colors hover:bg-purple-800/40 hover:text-purple-200"
+        className="bg-bronze/20 text-bronze-light hover:bg-bronze/30 hover:text-ink cursor-pointer rounded px-0.5 underline decoration-dotted underline-offset-2 transition-colors"
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={(e) => {
           const related = e.relatedTarget as Node | null
@@ -110,17 +110,17 @@ function HighlightedWord({ text, device, popoverId }: HighlightedWordProps) {
           ref={popoverRef}
           id={popoverId}
           role="tooltip"
-          className="absolute top-0 left-0 z-50 rounded-lg border border-slate-600/50 bg-slate-800/95 p-3 text-left text-sm text-slate-300 shadow-xl backdrop-blur-sm"
+          className="border-line bg-field text-moonlight absolute top-0 left-0 z-50 rounded-lg border p-3 text-left text-sm shadow-xl backdrop-blur-sm"
           onMouseEnter={() => setOpen(true)}
           onMouseLeave={() => setOpen(false)}
         >
-          <p className="mb-1 font-semibold text-purple-300">{device.name}</p>
+          <p className="text-bronze-light mb-1 font-semibold">{device.name}</p>
           {device.translation && (
-            <p className="mb-1 text-sm text-slate-400 italic">
+            <p className="text-moonlight mb-1 text-sm italic">
               {device.translation}
             </p>
           )}
-          <p className="text-sm leading-relaxed text-slate-300">
+          <p className="text-moonlight text-sm leading-relaxed">
             {device.description}
           </p>
         </span>
