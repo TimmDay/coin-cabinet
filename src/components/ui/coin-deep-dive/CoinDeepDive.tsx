@@ -7,17 +7,13 @@ import { useDevices } from "~/api/devices"
 import { useMints } from "~/api/mints"
 import { usePlaces } from "~/api/places"
 import { useTimelines } from "~/api/timelines"
-import type { CustomMapMarker } from "~/components/map/Map"
-import { pinStyle } from "~/components/map/pinStyle"
-import { DEEP_DIVE_MAP_VIEW, MAP_BOUNDS } from "~/components/map/mapConfig"
+import { DEEP_DIVE_MAP_VIEW } from "~/components/map/mapConfig"
 import { useFoldFill } from "~/hooks/useFoldFill"
 import { MAP_HEIGHT_DESKTOP } from "~/lib/constants"
 import { cn } from "~/lib/utils"
-import { getArtifactLocationData } from "~/lib/utils/artifact-helpers"
-import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
-import { addFoundEventToTimeline } from "~/lib/utils/provenance-helpers"
 import type { CoinEnhanced } from "~/types/api"
 import { clockNoteRoom } from "./CoinClockTips"
+import { buildCoinMap } from "./coinMap"
 import { CoinRow } from "./CoinRow"
 import { DeepDiveCardsSection } from "./DeepDiveCardsSection"
 
@@ -50,167 +46,6 @@ type CoinDeepDiveProps = {
   coin: CoinEnhanced
 }
 
-function isWithinMapBounds(lat: number, lng: number) {
-  const [[maxLat, minLng], [minLat, maxLng]] = MAP_BOUNDS.maxBounds
-
-  return lat <= maxLat && lat >= minLat && lng >= minLng && lng <= maxLng
-}
-
-function getRelatedArtifactIds(coin: CoinEnhanced) {
-  const artifactIds = new Set<string>()
-
-  for (const deity of coin.deities ?? []) {
-    for (const artifactId of deity.artifact_ids ?? []) {
-      artifactIds.add(artifactId)
-    }
-  }
-
-  for (const figure of coin.historical_figures ?? []) {
-    for (const artifactId of figure.artifact_ids ?? []) {
-      artifactIds.add(artifactId)
-    }
-  }
-
-  return [...artifactIds]
-}
-
-function buildDeityPlaceMarkers(
-  coin: CoinEnhanced,
-  places: ReturnType<typeof usePlaces>["data"],
-  allDeities: ReturnType<typeof useDeities>["data"],
-): CustomMapMarker[] {
-  if (!places) {
-    return []
-  }
-
-  const deityNamesByPlaceId = new globalThis.Map<number, Set<string>>()
-
-  const deityIdsFromCoin = (coin.deity_id ?? [])
-    .map((id) => Number.parseInt(id, 10))
-    .filter((id) => Number.isFinite(id))
-
-  const resolvedDeities =
-    allDeities?.filter((deity) => deityIdsFromCoin.includes(deity.id)) ??
-    coin.deities ??
-    []
-
-  for (const deity of resolvedDeities) {
-    for (const rawPlaceId of deity.place_ids ?? []) {
-      const placeId =
-        typeof rawPlaceId === "number"
-          ? rawPlaceId
-          : Number.parseInt(String(rawPlaceId), 10)
-
-      if (!Number.isFinite(placeId)) {
-        continue
-      }
-
-      const names = deityNamesByPlaceId.get(placeId) ?? new Set<string>()
-      names.add(deity.name)
-      deityNamesByPlaceId.set(placeId, names)
-    }
-  }
-
-  return [...deityNamesByPlaceId.entries()].flatMap(([placeId, deityNames]) => {
-    const place = places.find(
-      (candidate) => Number(candidate.id) === Number(placeId),
-    )
-
-    const lat = Number(place?.lat)
-    const lng = Number(place?.lng)
-
-    if (!place || !Number.isFinite(lat) || !Number.isFinite(lng)) {
-      return []
-    }
-
-    if (!isWithinMapBounds(lat, lng)) {
-      return []
-    }
-
-    const relatedDeities = [...deityNames]
-    const deityLabel =
-      relatedDeities.length === 1
-        ? `Associated with ${relatedDeities[0]}`
-        : `Associated with ${relatedDeities.join(", ")}`
-
-    return [
-      {
-        id: `deity-place-${place.id}`,
-        lat,
-        lng,
-        title: place.name,
-        subtitle: deityLabel,
-        description:
-          place.flavour_text ?? place.location_description ?? undefined,
-        ...pinStyle("deity-place"),
-        sizeScale: 0.67,
-        centerDotScale: 0.7,
-        showPopup: true,
-        zIndexOffset: 200,
-      },
-    ]
-  })
-}
-
-// Data transformation helpers
-function buildTimelineForCoin(
-  coin: CoinEnhanced,
-  dbTimelines: ReturnType<typeof useTimelines>["data"],
-  mints: ReturnType<typeof useMints>["data"],
-) {
-  // Get timeline from database based on coin's timeline IDs
-  if (coin.timelines_id && coin.timelines_id.length > 0 && dbTimelines) {
-    const coinTimeline = dbTimelines.find((timeline) =>
-      coin.timelines_id!.includes(timeline.id),
-    )
-    if (coinTimeline) {
-      const withMintEvent = addCoinMintingEventToTimeline(
-        coinTimeline.timeline,
-        {
-          denomination: coin.denomination,
-          mint_id: coin.mint_id,
-          mint_year_earliest: coin.mint_year_earliest,
-          mint_year_latest: coin.mint_year_latest,
-        },
-        mints, // Pass mints data for timeline event creation
-      )
-      return addFoundEventToTimeline(withMintEvent, coin.found_event)
-    }
-  }
-
-  // No timeline found
-  return null
-}
-
-function getFoundMarker(coin: CoinEnhanced): CustomMapMarker | null {
-  const found = coin.found_event
-  if (!found) return null
-
-  return {
-    id: `coin-found-${coin.id}`,
-    lat: found.lat,
-    lng: found.lng,
-    title: "Coin Found",
-    subtitle: "This coin was found here",
-    description: found.notes ?? undefined,
-    ...pinStyle("found"),
-    showPopup: true,
-    zIndexOffset: 900,
-  }
-}
-
-function getMintCoordinates(
-  coin: CoinEnhanced,
-  mints: ReturnType<typeof useMints>["data"],
-): [number, number] | null {
-  if (!coin.mint_id || !mints) return null
-
-  const mint = mints.find((m) => m.id === coin.mint_id)
-  if (!mint?.lat || !mint?.lng) return null
-
-  return [mint.lat, mint.lng]
-}
-
 /** How much of the next section shows above the fold on desktop. */
 const FOLD_PEEK_PX = 32
 
@@ -229,88 +64,14 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
     coin.rev_device_ids?.includes(d.id),
   )
 
-  // Process data using helper functions
-  const matchingTimeline = buildTimelineForCoin(coin, dbTimelines, mints)
-  const mintCoords = getMintCoordinates(coin, mints)
-  const foundMarker = getFoundMarker(coin)
+  const coinMap = buildCoinMap(coin, {
+    timelines: dbTimelines,
+    mints,
+    places,
+    deities: allDeities,
+    artifacts,
+  })
 
-  // Get mint name for map highlighting
-  const mint =
-    coin.mint_id && mints ? mints.find((m) => m.id === coin.mint_id) : null
-  const mintName = mint?.name
-
-  const relatedArtifactIds = getRelatedArtifactIds(coin)
-  const artifactMarkers: CustomMapMarker[] = relatedArtifactIds.flatMap(
-    (artifactId) => {
-      const artifact = artifacts?.find(
-        (candidate) => candidate.id === artifactId,
-      )
-      if (!artifact) {
-        return []
-      }
-
-      const location = getArtifactLocationData(artifact, places)
-      if (location.lat === null || location.lng === null) {
-        return []
-      }
-
-      if (!isWithinMapBounds(location.lat, location.lng)) {
-        return []
-      }
-
-      return [
-        {
-          id: `artifact-${artifact.id}`,
-          lat: location.lat,
-          lng: location.lng,
-          title: artifact.name,
-          subtitle:
-            location.institutionName ?? artifact.location_name ?? undefined,
-          description:
-            artifact.flavour_text ?? artifact.historical_notes ?? undefined,
-          ...pinStyle("artifact"),
-          showPopup: true,
-          zIndexOffset: 50,
-        },
-      ]
-    },
-  )
-
-  const deityPlaceMarkers = buildDeityPlaceMarkers(coin, places, allDeities)
-
-  const standaloneMarkers: CustomMapMarker[] = [
-    ...(mintCoords && mintName
-      ? [
-          {
-            id: `coin-mint-${coin.id}`,
-            lat: mintCoords[0],
-            lng: mintCoords[1],
-            title: mintName,
-            subtitle: "This coin was minted here",
-            description:
-              coin.mint_year_earliest !== null &&
-              coin.mint_year_earliest !== undefined
-                ? `Minted around ${coin.mint_year_earliest}`
-                : undefined,
-            ...pinStyle("minted"),
-            showPopup: true,
-            zIndexOffset: 1000,
-          },
-        ]
-      : []),
-    ...deityPlaceMarkers,
-    ...artifactMarkers,
-    ...(foundMarker ? [foundMarker] : []),
-  ]
-
-  // Determine map display logic - show timeline map if available, otherwise mint map
-  const shouldShowMap = Boolean(
-    matchingTimeline ||
-    mintCoords ||
-    deityPlaceMarkers.length ||
-    artifactMarkers.length ||
-    foundMarker,
-  )
   const clockNotes = coin.clock_notes ?? []
   const clockNotesFor = (side: "obverse" | "reverse") =>
     clockNotes.filter((note) => note.side === side)
@@ -370,7 +131,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       </div>
 
       {/* Map Section */}
-      {shouldShowMap && (
+      {coinMap && (
         <div
           className={cn(
             "mx-auto w-full px-4 pt-6 md:pt-10",
@@ -381,50 +142,32 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
               : "max-w-6xl",
           )}
         >
-          <div className="w-full">
-            {matchingTimeline ? (
-              <TimelineWithMap
-                timeline={matchingTimeline}
-                showHeaders={false}
-                initialCenter={DEEP_DIVE_MAP_VIEW.center}
-                initialZoom={DEEP_DIVE_MAP_VIEW.zoom}
-                previewCenter={DEEP_DIVE_MAP_VIEW.center}
-                eventZoomLevel={6}
-                additionalMarkers={deityPlaceMarkers.concat(artifactMarkers)}
-                showDefaultMintMarkers={false}
-                mapProps={{
-                  height: "400px",
-                }}
+          {coinMap.kind === "timeline" ? (
+            <TimelineWithMap
+              timeline={coinMap.timeline}
+              showHeaders={false}
+              initialCenter={DEEP_DIVE_MAP_VIEW.center}
+              initialZoom={DEEP_DIVE_MAP_VIEW.zoom}
+              previewCenter={DEEP_DIVE_MAP_VIEW.center}
+              eventZoomLevel={6}
+              additionalMarkers={coinMap.markers}
+              showDefaultMintMarkers={false}
+              mapProps={{
+                height: "400px",
+              }}
+            />
+          ) : (
+            <div className="space-y-4">
+              <Map
+                center={DEEP_DIVE_MAP_VIEW.center}
+                zoom={DEEP_DIVE_MAP_VIEW.zoom}
+                showMintMarkers={false}
+                customMarkers={coinMap.markers}
+                height="400px"
+                desktopHeight={MAP_HEIGHT_DESKTOP}
               />
-            ) : mintCoords ? (
-              <div className="space-y-4">
-                <Map
-                  center={DEEP_DIVE_MAP_VIEW.center}
-                  zoom={DEEP_DIVE_MAP_VIEW.zoom}
-                  showMintMarkers={false}
-                  customMarkers={standaloneMarkers}
-                  height="400px"
-                  desktopHeight={MAP_HEIGHT_DESKTOP}
-                />
-              </div>
-            ) : deityPlaceMarkers.length > 0 ||
-              artifactMarkers.length > 0 ||
-              foundMarker ? (
-              <div className="space-y-4">
-                <Map
-                  center={DEEP_DIVE_MAP_VIEW.center}
-                  zoom={DEEP_DIVE_MAP_VIEW.zoom}
-                  showMintMarkers={false}
-                  customMarkers={deityPlaceMarkers.concat(
-                    artifactMarkers,
-                    foundMarker ? [foundMarker] : [],
-                  )}
-                  height="400px"
-                  desktopHeight={MAP_HEIGHT_DESKTOP}
-                />
-              </div>
-            ) : null}
-          </div>
+            </div>
+          )}
         </div>
       )}
 
