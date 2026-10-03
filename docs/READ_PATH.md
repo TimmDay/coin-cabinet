@@ -117,7 +117,7 @@ The same base row as the list, plus:
 - Every `coin_images` variant and side, in `sequence` order, becomes
   `image_link_altlight_o/_r`, `image_link_sketch_o/_r`, `image_link_zoom_o/_r`
   and `image_rotation`.
-- `item_clock_notes` become `clock_notes`; see `CLOCK_NOTES.md`.
+- `item_clock_notes` become `clock_notes`; see `TODO_CLOCK_NOTES.md`.
 - `public_find_events` becomes `found_event` (below).
 
 ## What the site cannot read: provenance

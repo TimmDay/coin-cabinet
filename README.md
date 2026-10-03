@@ -27,7 +27,7 @@ Please be careful using this data for anything serious - on this site it is just
 - [`docs/READ_PATH.md`](docs/READ_PATH.md): how the site reads the database, and what it cannot read
 - [`docs/MAP.md`](docs/MAP.md): the map
 - [`docs/THEME.md`](docs/THEME.md): colour and type tokens, and where the site is sunset and where it is night
-- [`docs/CLOCK_NOTES.md`](docs/CLOCK_NOTES.md): notes anchored to a point on a coin face
+- [`docs/TODO_CLOCK_NOTES.md`](docs/TODO_CLOCK_NOTES.md): notes anchored to a point on a coin face (in progress, deleted when finished)
 - [`docs/CODING_STANDARDS.md`](docs/CODING_STANDARDS.md): code conventions
 - [`docs/image_upload_workflow.md`](docs/image_upload_workflow.md): getting photos into Cloudinary
 

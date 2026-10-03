@@ -1,5 +1,8 @@
 # Clock notes
 
+In progress: this file is deleted when the two items under "Not done yet" are
+finished. Until then it also describes the feature.
+
 Short notes anchored to a point on a coin face, shown as small circular buttons
 around the coin image at clock positions 1 to 12. A button opens a popover with
 the note. They stay muted so the coin keeps the focus.
