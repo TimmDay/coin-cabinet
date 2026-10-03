@@ -8,7 +8,7 @@ import { useMints } from "~/api/mints"
 import { usePlaces } from "~/api/places"
 import { useTimelines } from "~/api/timelines"
 import type { CustomMapMarker } from "~/components/map/Map"
-import { MAP_BOUNDS } from "~/components/map/mapConfig"
+import { DEEP_DIVE_MAP_VIEW, MAP_BOUNDS } from "~/components/map/mapConfig"
 import { useFoldFill } from "~/hooks/useFoldFill"
 import { getArtifactLocationData } from "~/lib/utils/artifact-helpers"
 import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
@@ -316,22 +316,6 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
     artifactMarkers.length ||
     foundMarker,
   )
-  const mapCenter =
-    mintCoords ??
-    (deityPlaceMarkers.length > 0
-      ? ([deityPlaceMarkers[0]!.lat, deityPlaceMarkers[0]!.lng] as [
-          number,
-          number,
-        ])
-      : artifactMarkers.length > 0
-        ? ([artifactMarkers[0]!.lat, artifactMarkers[0]!.lng] as [
-            number,
-            number,
-          ])
-        : foundMarker
-          ? ([foundMarker.lat, foundMarker.lng] as [number, number])
-          : undefined)
-
   const clockNotes = coin.clock_notes ?? []
   const clockNotesFor = (side: "obverse" | "reverse") =>
     clockNotes.filter((note) => note.side === side)
@@ -398,8 +382,9 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
               <TimelineWithMap
                 timeline={matchingTimeline}
                 showHeaders={false}
-                initialCenter={mapCenter}
-                previewCenter={mintCoords ?? undefined}
+                initialCenter={DEEP_DIVE_MAP_VIEW.center}
+                initialZoom={DEEP_DIVE_MAP_VIEW.zoom}
+                previewCenter={DEEP_DIVE_MAP_VIEW.center}
                 eventZoomLevel={6}
                 additionalMarkers={deityPlaceMarkers.concat(artifactMarkers)}
                 showDefaultMintMarkers={false}
@@ -410,7 +395,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             ) : mintCoords ? (
               <div className="space-y-4">
                 <Map
-                  center={mapCenter}
+                  center={DEEP_DIVE_MAP_VIEW.center}
+                  zoom={DEEP_DIVE_MAP_VIEW.zoom}
                   hideControls
                   showMintMarkers={false}
                   customMarkers={standaloneMarkers}
@@ -423,7 +409,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
               foundMarker ? (
               <div className="space-y-4">
                 <Map
-                  center={mapCenter}
+                  center={DEEP_DIVE_MAP_VIEW.center}
+                  zoom={DEEP_DIVE_MAP_VIEW.zoom}
                   hideControls
                   showMintMarkers={false}
                   customMarkers={deityPlaceMarkers.concat(
@@ -445,47 +432,6 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
         deities={coin.deities}
         historicalFigures={coin.historical_figures}
       />
-
-      {/* Coin Details */}
-      {(coin.flavour_tag || coin.flavour_obv || coin.flavour_rev) && (
-        <FlavourFooter
-          flavourGen={coin.flavour_tag ?? undefined}
-          flavourObv={coin.flavour_obv ?? undefined}
-          flavourRev={coin.flavour_rev ?? undefined}
-        />
-      )}
     </section>
-  )
-}
-
-function FlavourFooter({
-  flavourGen,
-  flavourObv,
-  flavourRev,
-}: {
-  flavourGen?: string
-  flavourObv?: string
-  flavourRev?: string
-}) {
-  return (
-    <footer className="mt-4 space-y-2 border-t border-slate-600 pt-4">
-      {flavourObv && (
-        <p className="text-center text-base leading-relaxed break-words text-slate-400 italic">
-          <span className="text-slate-400 not-italic">Obverse — </span>
-          {flavourObv}
-        </p>
-      )}
-      {flavourRev && (
-        <p className="text-center text-base leading-relaxed break-words text-slate-400 italic">
-          <span className="text-slate-400 not-italic">Reverse — </span>
-          {flavourRev}
-        </p>
-      )}
-      {flavourGen && (
-        <p className="text-center text-base leading-relaxed break-words text-slate-400 italic">
-          {flavourGen}
-        </p>
-      )}
-    </footer>
   )
 }

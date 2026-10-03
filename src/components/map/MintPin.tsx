@@ -29,8 +29,8 @@ export function MintPin({ size = 24, className = "", label }: MintPinProps) {
               cx="12"
               cy="12"
               r="10"
-              fill="#a78bfa" // Light purple (purple-300)
-              stroke="#7c3aed" // Darker purple outline (purple-900)
+              fill="#e08a45" // Sunset orange
+              stroke="#6e2a3d" // Wine outline
               strokeWidth="2"
             />
 
@@ -39,18 +39,18 @@ export function MintPin({ size = 24, className = "", label }: MintPinProps) {
               cx="12"
               cy="12"
               r="5"
-              fill="#8b5cf6" // Medium purple (purple-400)
+              fill="#b4492a" // Burnt sienna
             />
 
             {/* Small inner dot */}
-            <circle cx="12" cy="12" r="2" fill="#ffffff" />
+            <circle cx="12" cy="12" r="2" fill="#fbeed3" />
           </svg>
         </div>
       </div>
 
       {/* Optional label */}
       {label && (
-        <div className="mt-1 text-center text-xs font-bold whitespace-nowrap text-purple-900">
+        <div className="mt-1 text-center text-xs font-bold whitespace-nowrap text-[#2e1b12]">
           {label.toUpperCase()}
         </div>
       )}

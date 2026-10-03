@@ -412,9 +412,9 @@ export function TimelineWithMap({
         ? "text-amber-900"
         : isFound
           ? "text-emerald-900"
-          : "text-purple-900",
-      fillColor: isCoinMinted ? "#f59e0b" : isFound ? "#059669" : "#0f172a",
-      borderColor: isCoinMinted ? "#f59e0b" : isFound ? "#059669" : "#7c3aed",
+          : "text-[#6e2a3d]",
+      fillColor: isCoinMinted ? "#d9743a" : isFound ? "#5a7f55" : "#6e2a3d",
+      borderColor: isCoinMinted ? "#f6dfae" : isFound ? "#ead6a6" : "#f0c27a",
       isActive: index === selectedEventIndex,
       showPopup: false,
       onClick: () => handleTimelineMarkerSelection(event, index),
