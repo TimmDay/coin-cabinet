@@ -13,7 +13,8 @@ old paper at sunset to sit with the rest of the site (`THEME.md`).
 | `TimelineWithMap.tsx` | A timeline's map with its event reader and the timeline strip underneath |
 | `mapConfig.ts` | Bounds, province and empire layer styles, the deep dive opening view |
 | `mapTheme.ts` | Recolours the vendor base style as old paper |
-| `pinStyle.ts` | `pinStyle(kind)` and `PIN_PALETTE`: how every pin looks |
+| `pinStyle.ts` | `pinStyle(kind)`: how every pin looks |
+| `mapColors.ts` | Names the colour tokens; `cssColor` and `glColor` read them |
 | `mapMarkers.ts` | HTML for pins and cluster bubbles |
 | `mapMarkerClustering.ts` | Clustering and spiderfy maths |
 | `MintMarkerSvg.tsx` | The highlighted mint marker |
@@ -25,8 +26,8 @@ OpenFreeMap's `dark` style (`MAP_STYLE_URL`): free, no key, no usage cap. Once
 it loads, `applyOldPaperTheme` (`mapTheme.ts`) repaints it. The vendor's tiles
 and layer ids stay as they are and only the paint changes:
 
-- Land, woods and ice are parchment tones, water is dusky mauve. The palette is
-  one block at the top of the file (`OLD_PAPER`).
+- Land, woods and ice are parchment tones, water is dusky mauve. The colours are
+  the `--color-map-*` tokens in `globals.css`.
 - Roads, rail, buildings, airports and state borders are hidden, as are modern
   place labels (`hideModernPlaceLabels` in `Map.tsx`). They are wrong for the
   ancient world. Country borders stay, faint.
@@ -73,9 +74,18 @@ colours, icon and popup text. Teardrop pins come from
 
 `pinStyle(kind)` is the only place that decides colours. Kinds: `event` (a
 timeline event), `minted`, `found`, `deity-place` and `artifact`. A call site
-names a kind and spreads the result into the marker. `PIN_PALETTE` holds the
-colours that cluster bubbles, spiderfy lines and mint markers share, so a retint
-is one edit.
+names a kind and spreads the result into the marker. The colours are the
+`--color-pin-*` tokens, shared by cluster bubbles, spiderfy lines and mint
+markers, so a retint is one edit in `globals.css`.
+
+### Colours
+
+Every map colour is a token in `globals.css`, written as `#rrggbb` because
+MapLibre parses colour strings itself and cannot read `var()`. Code that styles
+HTML or SVG uses `cssColor(name)` (a `var()` reference). Code that sets a
+MapLibre paint property uses `glColor(name)`, which reads the resolved value and
+works in the browser only, so it is called when the map renders, not at module
+level. `mapColors.test.ts` keeps the names and the CSS in step.
 
 ### Clustering
 
@@ -99,6 +109,6 @@ a pin, moves the map to it (`eventZoomLevel`, 6 on deep dives).
 
 ## Tests
 
-Only `pinStyle` has a unit test. `Map.tsx` and the clustering have none, so check
+Only `pinStyle` and the colour tokens have unit tests. `Map.tsx` and the clustering have none, so check
 the map by eye on a deep dive page, a timeline page and a phone after changing
 them.

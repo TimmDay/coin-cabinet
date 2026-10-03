@@ -43,9 +43,20 @@ Tokens are named by **role**, not hue, so a retint is one line.
 | `paper`, `paper-raised`, `paper-edge` | Old paper: the light panels (map popups and controls), their inputs and their edge |
 | `paper-ink`, `paper-ink-muted` | Dark umber text on paper |
 
-The map has its own palettes, kept next to the code that paints them: `OLD_PAPER`
-in `mapTheme.ts` for the base map, `PIN_PALETTE` in `pinStyle.ts` for pins. See
-`MAP.md`.
+### Map colours
+
+The map's colours are tokens too: `--color-map-*` (base map, provinces, the five
+empire extents) and `--color-pin-*` (pins, cluster bubbles, popup titles), in the
+same `@theme static` block. They are written as `#rrggbb`, because MapLibre
+parses colour strings itself and cannot read `var()` or `oklch()`.
+
+- HTML, SVG and inline styles use them as `var(--color-pin-wine)` (`cssColor`),
+  and Tailwind as utilities such as `text-pin-wine`.
+- MapLibre paint reads the resolved value (`glColor`, browser only).
+- `mapColors.ts` lists the names, and a test checks every name is declared as
+  hex and that no map token is missing from the list.
+
+See `MAP.md` for how the map uses them.
 
 ## Where the page is sunset and where it is night
 
@@ -86,9 +97,11 @@ still under reduced motion. Image placeholders are circles, because coins are.
 - **Keep `text-*` colour tokens and font-size tokens apart.** If size tokens are
   added they are `--text-*` and need their own review, because changing
   `--text-sm` resizes every use.
-- **Use tokens, not raw palette classes**, in migrated areas. Migrate by role and
-  by file, never with a blanket regex: the light panels (the Aside, map controls)
-  need different treatment.
+- **Use tokens, not raw palette classes.** `src/styles/theme.test.ts` fails when a
+  raw Tailwind palette class (`text-purple-300`, `bg-slate-800`, ...) appears in
+  `src`, apart from the red and green status colours and the two files listed
+  below. Migrate by role and by file, never with a blanket regex: the light panels
+  (the Aside, map controls) need different treatment.
 - **Shared components own their classes:** one `DesktopNav` serves both headers,
   and `Button` and `IconButton` (with a quiet `ghost` variant) own button
   styling. Class strings stay next to the component, not in a global file.
@@ -104,7 +117,7 @@ still under reduced motion. Image placeholders are circles, because coins are.
 
 ## Known gaps
 
-- There is no lint rule against raw palette colours.
+- No font-size tokens (`--text-*`): sizes are Tailwind's defaults.
 
 ## Checking a change
 
