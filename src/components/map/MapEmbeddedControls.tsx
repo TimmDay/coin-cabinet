@@ -56,7 +56,7 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
     <div
       className={
         layout === "fullscreen"
-          ? "order-2 rounded-lg border bg-white p-4 shadow-sm"
+          ? "border-paper-edge bg-paper order-2 rounded-lg border p-4 shadow-sm"
           : ""
       }
     >
@@ -70,11 +70,13 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
         {/* Empire Extent Layers */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-700">Empire Extent</h3>
+            <h3 className="text-paper-ink text-sm font-medium">
+              Empire Extent
+            </h3>
             {hasAnyEmpireLayerVisible() && (
               <button
                 onClick={clearAllEmpireLayers}
-                className="text-xs text-gray-500 underline hover:text-gray-700"
+                className="text-paper-ink-muted hover:text-paper-ink text-xs underline"
               >
                 Clear all empire layers
               </button>
@@ -87,8 +89,8 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
                 onClick={() => toggleLayer(key)}
                 className={`rounded-md border px-3 py-1 text-sm transition-colors ${
                   isLayerVisible(key)
-                    ? "border-amber-700 bg-amber-700 text-white"
-                    : "border-amber-200 bg-white text-amber-800 hover:border-amber-300 hover:bg-amber-50"
+                    ? "border-map-label bg-map-label text-paper-raised"
+                    : "border-paper-edge bg-paper-raised text-map-label hover:border-map-label hover:bg-paper"
                 }`}
                 title={config.description}
               >
@@ -97,7 +99,7 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
             ))}
           </div>
           {hasAnyEmpireLayerVisible() && (
-            <div className="space-y-1 text-xs text-gray-600">
+            <div className="text-paper-ink-muted space-y-1 text-xs">
               {Object.entries(empireLayerConfig).map(
                 ([key, config]) =>
                   isLayerVisible(key) && (
@@ -115,12 +117,14 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
       <div
         className={
           layout === "fullscreen"
-            ? "mt-4 border-t border-gray-200 pt-4"
+            ? "border-paper-edge mt-4 border-t pt-4"
             : "mt-4"
         }
       >
         <div className="space-y-2">
-          <h3 className="text-sm font-medium text-gray-700">Roman Provinces</h3>
+          <h3 className="text-paper-ink text-sm font-medium">
+            Roman Provinces
+          </h3>
           <div className="flex flex-col items-start gap-2 sm:flex-row">
             <div className="w-full min-w-0 flex-1 sm:w-auto">
               <SimpleMultiSelect
@@ -132,7 +136,7 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
                     ? "Loading provinces..."
                     : "Select provinces to highlight..."
                 }
-                className="w-full rounded-md border border-gray-300 bg-white text-gray-900"
+                className="border-paper-edge bg-paper-raised text-paper-ink w-full rounded-md border"
                 maxHeight="max-h-48"
               />
             </div>
@@ -144,7 +148,7 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
                   provinceOptions.length === 0 ||
                   selectedProvinces.length === ROMAN_PROVINCES.length
                 }
-                className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="border-paper-edge bg-paper-raised text-paper-ink hover:bg-paper rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                 title="Select all provinces"
               >
                 Select All
@@ -156,7 +160,7 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
                   provinceOptions.length === 0 ||
                   selectedProvinces.length === 0
                 }
-                className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="border-paper-edge bg-paper-raised text-paper-ink hover:bg-paper rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                 title="Clear all selected provinces"
               >
                 Clear All
@@ -165,8 +169,8 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
                 onClick={handleToggleLabels}
                 className={`rounded-md border px-3 py-2 text-sm ${
                   showProvinceLabels
-                    ? "border-emerald-600 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-                    : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                    ? "border-map-label bg-paper-raised text-map-label hover:bg-paper"
+                    : "border-paper-edge bg-paper-raised text-paper-ink hover:bg-paper"
                 }`}
                 title={
                   showProvinceLabels
@@ -179,7 +183,7 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
             </div>
           </div>
           {selectedProvinces.length > 0 && (
-            <div className="text-xs text-gray-600">
+            <div className="text-paper-ink-muted text-xs">
               Showing {selectedProvinces.length} province
               {selectedProvinces.length !== 1 ? "s" : ""} highlighted on the map
             </div>

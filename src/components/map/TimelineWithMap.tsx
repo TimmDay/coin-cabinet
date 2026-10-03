@@ -124,7 +124,7 @@ export function TimelineWithMap({
   if (!timeline || timeline.length === 0) {
     return (
       <div className={`flex flex-col lg:flex-row ${className}`}>
-        <div className="flex h-64 items-center justify-center text-slate-500">
+        <div className="text-moonlight flex h-64 items-center justify-center">
           Loading timeline data...
         </div>
       </div>
@@ -440,14 +440,12 @@ export function TimelineWithMap({
         {isMobileViewport && (
           <div className="lg:hidden">
             {showHeaders && (
-              <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
-                Map
-              </h2>
+              <h2 className="text-ink mb-4 px-4 text-2xl font-bold">Map</h2>
             )}
             <button
               type="button"
               onClick={() => setIsMobileModalOpen(true)}
-              className="relative block w-full overflow-hidden rounded-lg text-left focus:ring-2 focus:ring-amber-400 focus:outline-none"
+              className="focus:ring-bronze-light relative block w-full overflow-hidden rounded-lg text-left focus:ring-2 focus:outline-none"
               aria-label="Open interactive map and event details"
             >
               <div className="pointer-events-none">
@@ -465,15 +463,15 @@ export function TimelineWithMap({
                     customMarkers={combinedCustomMarkers}
                   />
                 ) : (
-                  <div className="flex h-[400px] items-center justify-center bg-slate-100">
-                    <div className="text-slate-600">
+                  <div className="bg-surface-raised flex h-[400px] items-center justify-center">
+                    <div className="text-moonlight">
                       Tap to open interactive map
                     </div>
                   </div>
                 )}
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
-              <div className="pointer-events-none absolute right-3 bottom-3 rounded-full bg-slate-900/80 px-3 py-1 text-sm font-medium text-slate-100 backdrop-blur-sm">
+              <div className="from-night/60 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
+              <div className="bg-night/80 text-moonlight-bright pointer-events-none absolute right-3 bottom-3 rounded-full px-3 py-1 text-sm font-medium backdrop-blur-sm">
                 Open interactive map
               </div>
             </button>
@@ -484,9 +482,7 @@ export function TimelineWithMap({
         {!isMobileViewport && (
           <div className="hidden lg:block">
             {showHeaders && (
-              <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
-                Map
-              </h2>
+              <h2 className="text-ink mb-4 px-4 text-2xl font-bold">Map</h2>
             )}
           </div>
         )}
@@ -511,8 +507,8 @@ export function TimelineWithMap({
                   onNavigate={handleMapNavigate}
                 />
               ) : (
-                <div className="flex h-[520px] items-center justify-center bg-slate-100">
-                  <div className="text-slate-600">Loading map...</div>
+                <div className="bg-surface-raised flex h-[520px] items-center justify-center">
+                  <div className="text-moonlight">Loading map...</div>
                 </div>
               )}
             </div>
@@ -533,9 +529,7 @@ export function TimelineWithMap({
       {/* Timeline under the map */}
       <div ref={timelineContainerRef} className="mt-8 hidden pr-2 lg:block">
         {showHeaders && (
-          <h2 className="mb-4 px-4 text-2xl font-bold text-slate-800">
-            Timeline
-          </h2>
+          <h2 className="text-ink mb-4 px-4 text-2xl font-bold">Timeline</h2>
         )}
         <Timeline
           timeline={timeline}
@@ -557,7 +551,7 @@ export function TimelineWithMap({
             <button
               type="button"
               onClick={() => setIsMobileModalOpen(false)}
-              className="rounded-full bg-slate-900/80 p-2 text-slate-100 shadow-lg backdrop-blur-sm transition-opacity hover:opacity-90 focus:ring-2 focus:ring-amber-400 focus:outline-none"
+              className="bg-night/80 text-moonlight-bright focus:ring-bronze-light rounded-full p-2 shadow-lg backdrop-blur-sm transition-opacity hover:opacity-90 focus:ring-2 focus:outline-none"
               aria-label="Close map and event details"
             >
               <X className="h-5 w-5" />
@@ -580,7 +574,7 @@ export function TimelineWithMap({
                 customMarkers={combinedCustomMarkers}
                 onNavigate={handleMapNavigate}
               />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-slate-950/60 to-transparent" />
+              <div className="from-night/60 pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t to-transparent" />
             </div>
 
             <div className="bg-night min-h-0 flex-1">

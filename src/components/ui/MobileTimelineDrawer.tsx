@@ -210,7 +210,7 @@ export function MobileTimelineDrawer({
       {/* Drawer content */}
       <div
         ref={contentRef}
-        className={`relative flex w-full flex-col rounded-b-2xl border border-slate-600 bg-slate-800/95 shadow-xl backdrop-blur-sm transition-all duration-300 ease-out ${
+        className={`border-line bg-night/95 relative flex w-full flex-col rounded-b-2xl border shadow-xl backdrop-blur-sm transition-all duration-300 ease-out ${
           isOpen && !isAnimating
             ? "translate-y-0 opacity-100"
             : "-translate-y-full opacity-0"
@@ -230,8 +230,8 @@ export function MobileTimelineDrawer({
               disabled={!hasPrevEvent}
               className={`rounded-full p-2 transition-colors ${
                 hasPrevEvent
-                  ? "text-slate-300 hover:bg-slate-700 hover:text-white"
-                  : "cursor-not-allowed text-slate-600"
+                  ? "text-moonlight-bright hover:bg-surface-raised hover:text-ink"
+                  : "text-moonlight/40 cursor-not-allowed"
               }`}
               aria-label="Previous event"
             >
@@ -239,7 +239,7 @@ export function MobileTimelineDrawer({
             </button>
 
             {/* Event counter in center */}
-            <div className="text-xs text-slate-400">
+            <div className="text-moonlight text-xs">
               {currentEventIndex + 1} of {events.length}
             </div>
 
@@ -249,8 +249,8 @@ export function MobileTimelineDrawer({
               disabled={!hasNextEvent}
               className={`rounded-full p-2 transition-colors ${
                 hasNextEvent
-                  ? "text-slate-300 hover:bg-slate-700 hover:text-white"
-                  : "cursor-not-allowed text-slate-600"
+                  ? "text-moonlight-bright hover:bg-surface-raised hover:text-ink"
+                  : "text-moonlight/40 cursor-not-allowed"
               }`}
               aria-label="Next event"
             >
@@ -260,7 +260,7 @@ export function MobileTimelineDrawer({
             {/* Close button - absolute positioned */}
             <button
               onClick={onClose}
-              className="absolute top-1 right-1 rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-700 hover:text-slate-300"
+              className="text-moonlight hover:bg-surface-raised hover:text-moonlight-bright absolute top-1 right-1 rounded-full p-2 transition-colors"
               aria-label="Close drawer"
             >
               <X size={18} />
@@ -271,13 +271,13 @@ export function MobileTimelineDrawer({
         {/* Scrollable event content */}
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {/* Event title with year */}
-          <div className="mb-3 text-lg font-semibold text-amber-400">
+          <div className="text-bronze-light mb-3 text-lg font-semibold">
             {currentEvent.name} ({formatYear(currentEvent.year)})
           </div>
 
           {/* Description */}
           {currentEvent.description && (
-            <div className="text-base leading-relaxed text-slate-300">
+            <div className="text-moonlight text-base leading-relaxed">
               {currentEvent.description}
             </div>
           )}

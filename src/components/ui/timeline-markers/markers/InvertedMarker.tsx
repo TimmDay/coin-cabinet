@@ -1,6 +1,7 @@
 import { formatTimelineYear } from "~/lib/utils/date-formatting"
 import { EventLogo } from "../EventLogo"
 import type { MarkerProps } from "../types"
+import { markerBorder } from "../markerBorder"
 
 export function InvertedMarker({
   year,
@@ -19,7 +20,7 @@ export function InvertedMarker({
 
       {/* Event marker - below timeline */}
       <div
-        className={`relative transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-blue-400 focus:outline-none ${
+        className={`focus:ring-bronze-light relative transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:outline-none ${
           isSelected ? "scale-[1.3]" : ""
         }`}
         onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
@@ -34,24 +35,18 @@ export function InvertedMarker({
             <EventLogo event={event} />
           </div>
           <div
-            className={`pointer-events-none absolute inset-0 rounded-full border shadow-lg ${
-              isSelected
-                ? "border-2 border-purple-500"
-                : event.kind === "coin-minted"
-                  ? "border-amber-500"
-                  : "border-gray-500"
-            }`}
+            className={`pointer-events-none absolute inset-0 rounded-full border shadow-lg ${markerBorder(event, isSelected)}`}
             style={{ zIndex: 10 }}
           />
         </div>
 
         {/* Inverted teardrop tail - pointing up */}
-        <div className="absolute bottom-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-r-4 border-b-8 border-l-4 border-r-transparent border-b-gray-500 border-l-transparent"></div>
+        <div className="border-b-moonlight/50 absolute bottom-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-r-4 border-b-8 border-l-4 border-r-transparent border-l-transparent"></div>
       </div>
 
       {/* Year label only - visible */}
       <div className="absolute top-10 left-1/2 -translate-x-1/2 transform">
-        <div className="text-center font-mono text-sm whitespace-nowrap text-slate-400">
+        <div className="text-moonlight text-center font-mono text-sm whitespace-nowrap">
           {formatTimelineYear(year)}
         </div>
       </div>

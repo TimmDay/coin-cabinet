@@ -32,7 +32,6 @@ Tokens are named by **role**, not hue, so a retint is one line.
 | `ink-muted` | Secondary text |
 | `ink-soft` | Warm secondary text for content pages (articles) |
 | `subtitle` | Page subtitles and the accent word of page titles |
-| `accent` | Older gold accent, to be merged into `bronze` |
 | `dusk`, `dusk-edge` | Sunset surfaces and their edge |
 | `bronze`, `bronze-light` | Sunset accents |
 | `sky-top`, `sky-high`, `sky-mid`, `sky-low`, `sky-glow` | The header sky, deep indigo to copper glow at the horizon |
@@ -40,7 +39,9 @@ Tokens are named by **role**, not hue, so a retint is one line.
 | `moonlight` | Grey-blue text on night surfaces |
 | `moonlight-bright` | Primary text on night surfaces |
 | `field`, `field-muted` | Form fields and their muted text |
-| `map-label` | Purple for popup titles and map labels outside the pins |
+| `map-label` | Wine, for popup titles, map labels and active controls on paper |
+| `paper`, `paper-raised`, `paper-edge` | Old paper: the light panels (map popups and controls), their inputs and their edge |
+| `paper-ink`, `paper-ink-muted` | Dark umber text on paper |
 
 The map has its own palettes, kept next to the code that paints them: `OLD_PAPER`
 in `mapTheme.ts` for the base map, `PIN_PALETTE` in `pinStyle.ts` for pins. See
@@ -92,15 +93,19 @@ still under reduced motion. Image placeholders are circles, because coins are.
   and `Button` and `IconButton` (with a quiet `ghost` variant) own button
   styling. Class strings stay next to the component, not in a global file.
 
+## Left as raw colours, on purpose
+
+- Black overlays (`bg-black/60` behind a modal) and `white`.
+- Status colours: red for an error, green for an enabled flag.
+- `TooltipLaurel`'s stone-and-parchment note, which is a paper drawn in its own
+  gradient.
+- The timeline's icon colour classes (`text-gray-400` and friends in
+  `Timeline.tsx`), which are keys that data files pass in to pick an icon filter.
+
 ## Known gaps
 
-- Raw palette classes remain outside the migrated areas: about 150 `slate`,
-  `gray`, `stone` or `zinc` classes and about 50 `purple`, `amber`, `emerald`,
-  `blue` or `red` ones, mostly in the deep dive, timeline and form controls.
-- Four `dark:` variants remain. Tailwind's default `dark` variant follows the OS
-  setting, so they do fire.
-- The light panels (the Aside, map controls) have no paper surface token and use
-  hardcoded greys.
+- `SimpleMultiSelect` (the multi-select filter) still uses raw `slate`, `purple`
+  and `amber` classes and has not had the night treatment the other filters got.
 - There is no lint rule against raw palette colours.
 
 ## Checking a change

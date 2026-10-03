@@ -47,8 +47,8 @@ export default function CloudinaryImage({
 }: Props) {
   if (!src) {
     return (
-      <div className="flex h-[200px] w-[200px] items-center justify-center rounded bg-slate-800/20">
-        <div className="text-xs text-slate-500">No Image</div>
+      <div className="bg-surface-muted flex h-[200px] w-[200px] items-center justify-center rounded">
+        <div className="text-moonlight/70 text-xs">No Image</div>
       </div>
     )
   }

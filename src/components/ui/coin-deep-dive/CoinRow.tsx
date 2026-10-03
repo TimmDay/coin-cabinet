@@ -174,7 +174,7 @@ export function CoinRow({
                   index !== currentMobileImageIndex && (
                     <button
                       key={index}
-                      className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-slate-600 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none disabled:cursor-wait disabled:hover:border-slate-600"
+                      className="border-moonlight/40 hover:border-moonlight focus:border-moonlight focus:ring-moonlight/50 disabled:hover:border-moonlight/40 flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 transition-all duration-200 focus:ring-2 focus:outline-none disabled:cursor-wait"
                       disabled={isSwapping}
                       onClick={(e) => {
                         e.stopPropagation()
@@ -189,7 +189,7 @@ export function CoinRow({
                       {isSwapping ? (
                         <span
                           aria-hidden="true"
-                          className="border-t-moonlight h-5 w-5 animate-spin rounded-full border-2 border-slate-600"
+                          className="border-t-moonlight border-moonlight/30 h-5 w-5 animate-spin rounded-full border-2"
                         />
                       ) : (
                         <div className="h-full w-full overflow-hidden rounded-full">
@@ -218,7 +218,7 @@ export function CoinRow({
           )}
         >
           {(legendExpanded || mintMark) && (
-            <p className="font-display relative text-[1.75rem] tracking-[0.08em] break-words text-slate-400 xl:text-[2rem]">
+            <p className="font-display text-moonlight relative text-[1.75rem] tracking-[0.08em] break-words xl:text-[2rem]">
               {legendExpanded && (
                 <FormattedLegendExpanded text={legendExpanded} />
               )}
@@ -242,7 +242,7 @@ export function CoinRow({
           )}
 
           {flavourText && (
-            <p className="mt-3 hidden text-base leading-relaxed break-words text-slate-400 lg:block">
+            <p className="text-moonlight mt-3 hidden text-base leading-relaxed break-words lg:block">
               {flavourText}
             </p>
           )}

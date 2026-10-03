@@ -27,7 +27,7 @@ const Map = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-96 w-full animate-pulse rounded-lg bg-gray-200" />
+      <div className="bg-surface-raised h-96 w-full animate-pulse rounded-lg" />
     ),
   },
 )
@@ -41,7 +41,7 @@ const TimelineWithMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-96 w-full animate-pulse rounded-lg bg-gray-200" />
+      <div className="bg-surface-raised h-96 w-full animate-pulse rounded-lg" />
     ),
   },
 )

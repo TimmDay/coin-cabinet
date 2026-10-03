@@ -383,7 +383,7 @@ export const Map: React.FC<MapProps> = ({
         title: marker.title,
         subtitle: marker.subtitle,
         description: marker.description ?? "",
-        className: marker.className ?? "text-slate-100",
+        className: marker.className ?? "text-paper-ink",
       })
     },
     [openPopup],
@@ -628,7 +628,7 @@ export const Map: React.FC<MapProps> = ({
           title: name,
           // TODO: hook this up to a data file with info for provinces.
           description: "Roman Territory",
-          className: "text-emerald-800",
+          className: "text-map-label",
         })
         return
       }
@@ -1005,7 +1005,7 @@ export const Map: React.FC<MapProps> = ({
                             description: mint.flavour_text ?? "",
                             className: isHighlighted
                               ? "text-[#6e2a3d]"
-                              : "text-blue-800",
+                              : "text-map-label",
                           },
                         )
                       }

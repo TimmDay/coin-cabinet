@@ -274,7 +274,7 @@ export function Timeline({
 
         {/* Timeline axis */}
         <div
-          className={`relative h-2 rounded-full bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 ${
+          className={`from-moonlight/50 via-moonlight/70 to-moonlight/50 relative h-2 rounded-full bg-gradient-to-r ${
             className?.includes("timeline-in-map")
               ? sideLineEvent
                 ? sideLineEndEvent
