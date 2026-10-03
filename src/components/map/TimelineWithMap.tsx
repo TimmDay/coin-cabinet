@@ -104,13 +104,6 @@ export function TimelineWithMap({
       ? initialCenter
       : ROME_DEFAULT
 
-  const [activeTimelineEvent, setActiveTimelineEvent] = useState<{
-    lat: number
-    lng: number
-    name: string
-    year: number
-    description?: string
-  } | null>(null)
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false)
   const [isMobileViewport, setIsMobileViewport] = useState(false)
 
@@ -201,26 +194,6 @@ export function TimelineWithMap({
     return validatedInitialCenter
   })()
 
-  const setActiveTimelineMarker = useCallback(
-    (event: TimelineEvent | null) => {
-      if (!event || !hasValidCoordinates(event)) {
-        setActiveTimelineEvent(null)
-        return
-      }
-
-      const [validLat, validLng] = sanitizeCoordinates(event.lat!, event.lng!)
-
-      setActiveTimelineEvent({
-        lat: validLat,
-        lng: validLng,
-        name: event.name ?? "Timeline Event",
-        year: event.year ?? 0,
-        description: event.description,
-      })
-    },
-    [hasValidCoordinates],
-  )
-
   // Callback to receive navigate function from Map
   const handleMapNavigate = useCallback(
     (navigateFn: (center: [number, number], zoom: number) => void) => {
@@ -269,14 +242,11 @@ export function TimelineWithMap({
   useEffect(() => {
     if (isMobileModalOpen) return
 
-    setActiveTimelineEvent(null)
     navigateMapRef.current = null
   }, [isMobileModalOpen])
 
   useEffect(() => {
     if (!isMobileModalOpen || !currentEvent) return
-
-    setActiveTimelineMarker(currentEvent)
 
     if (!navigateMapRef.current || !hasValidCoordinates(currentEvent)) return
 
@@ -286,13 +256,7 @@ export function TimelineWithMap({
     )
 
     navigateMapRef.current([validLat, validLng], eventZoomLevel)
-  }, [
-    currentEvent,
-    eventZoomLevel,
-    hasValidCoordinates,
-    isMobileModalOpen,
-    setActiveTimelineMarker,
-  ])
+  }, [currentEvent, eventZoomLevel, hasValidCoordinates, isMobileModalOpen])
 
   // No automatic initialization - map stays on Rome until user interacts
   // The selectedEventIndex starts at 0 to show first event in info box
@@ -302,8 +266,6 @@ export function TimelineWithMap({
    */
   const navigateToEvent = useCallback(
     (event: TimelineEvent) => {
-      setActiveTimelineMarker(event)
-
       if (!hasValidCoordinates(event) || !navigateMapRef.current) return
 
       const lat = event.lat!
@@ -314,7 +276,7 @@ export function TimelineWithMap({
       const [validLat, validLng] = sanitizeCoordinates(lat, lng)
       navigateMapRef.current([validLat, validLng], eventZoomLevel)
     },
-    [eventZoomLevel, hasValidCoordinates, setActiveTimelineMarker],
+    [eventZoomLevel, hasValidCoordinates],
   )
 
   // Handle timeline event click - update selected event index and info box
@@ -328,7 +290,6 @@ export function TimelineWithMap({
         setSelectedEventIndex(eventIndex)
 
         if (isMobileViewport) {
-          setActiveTimelineMarker(allEvents[eventIndex] ?? event)
           setIsMobileModalOpen(true)
           return
         }
@@ -336,7 +297,7 @@ export function TimelineWithMap({
         navigateToEvent(event)
       }
     },
-    [allEvents, isMobileViewport, navigateToEvent, setActiveTimelineMarker],
+    [allEvents, isMobileViewport, navigateToEvent],
   )
 
   // Navigation functions for info box
@@ -375,8 +336,6 @@ export function TimelineWithMap({
   const handleTimelineMarkerSelection = useCallback(
     (event: TimelineEvent, eventIndex: number) => {
       setSelectedEventIndex(eventIndex)
-      setActiveTimelineMarker(event)
-
       if (isMobileViewport) {
         setIsMobileModalOpen(true)
         return
@@ -384,7 +343,7 @@ export function TimelineWithMap({
 
       navigateToEvent(event)
     },
-    [isMobileViewport, navigateToEvent, setActiveTimelineMarker],
+    [isMobileViewport, navigateToEvent],
   )
 
   const timelineCustomMarkers: CustomMapMarker[] = []
@@ -420,18 +379,6 @@ export function TimelineWithMap({
   const combinedCustomMarkers: CustomMapMarker[] =
     timelineCustomMarkers.concat(additionalMarkers)
 
-  // Validate timeline event marker before passing to Map
-  const validatedTimelineMarker =
-    activeTimelineEvent &&
-    typeof activeTimelineEvent.lat === "number" &&
-    typeof activeTimelineEvent.lng === "number" &&
-    !isNaN(activeTimelineEvent.lat) &&
-    !isNaN(activeTimelineEvent.lng) &&
-    isFinite(activeTimelineEvent.lat) &&
-    isFinite(activeTimelineEvent.lng)
-      ? activeTimelineEvent
-      : null
-
   return (
     <div className={`flex flex-col ${className}`}>
       {/* Map Container - wraps both mobile and desktop views for intersection observer */}
@@ -458,7 +405,6 @@ export function TimelineWithMap({
                     width="100%"
                     showProvinceLabels={showProvinceLabels}
                     showMintMarkers={showDefaultMintMarkers}
-                    showTimelineEventMarker={false}
                     customMarkers={combinedCustomMarkers}
                   />
                 ) : (
@@ -498,9 +444,7 @@ export function TimelineWithMap({
                   height={MAP_HEIGHT_DESKTOP}
                   width="100%"
                   showProvinceLabels={showProvinceLabels}
-                  timelineEventMarker={validatedTimelineMarker}
                   showMintMarkers={showDefaultMintMarkers}
-                  showTimelineEventMarker={false}
                   customMarkers={combinedCustomMarkers}
                   onNavigate={handleMapNavigate}
                 />
@@ -565,9 +509,7 @@ export function TimelineWithMap({
                 height="52dvh"
                 width="100%"
                 showProvinceLabels={showProvinceLabels}
-                timelineEventMarker={validatedTimelineMarker}
                 showMintMarkers={showDefaultMintMarkers}
-                showTimelineEventMarker={false}
                 customMarkers={combinedCustomMarkers}
                 onNavigate={handleMapNavigate}
               />

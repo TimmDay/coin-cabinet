@@ -12,7 +12,6 @@ import { Layer, Map as MapGL, Marker, Source } from "react-map-gl/maplibre"
 import type { MapRef } from "react-map-gl/maplibre"
 import { useMints } from "~/api/mints"
 import { MAP_HEIGHT } from "~/lib/constants"
-import { formatYear } from "~/lib/utils/date-formatting"
 import { ROMAN_PROVINCES } from "./constants/provinces"
 import { useEmpireLayerData, useMapConfiguration, useMapData } from "./hooks"
 import {
@@ -129,16 +128,6 @@ export type MapProps = {
   showMintMarkers?: boolean
   /** Custom markers to render for coin detail pages and other specialized views */
   customMarkers?: CustomMapMarker[]
-  /** Timeline event marker to show on the map */
-  timelineEventMarker?: {
-    lat: number
-    lng: number
-    name: string
-    year: number
-    description?: string
-  } | null
-  /** Whether the default single highlighted timeline event marker should be displayed */
-  showTimelineEventMarker?: boolean
   /** Callback to receive the navigate function */
   onNavigate?: (
     navigateFn: (center: [number, number], zoom: number) => void,
@@ -163,8 +152,6 @@ export const Map: React.FC<MapProps> = ({
   highlightMint,
   showMintMarkers = true,
   customMarkers = [],
-  timelineEventMarker,
-  showTimelineEventMarker = true,
   onNavigate,
 }) => {
   // Validate and sanitize center prop to prevent NaN coordinates
@@ -630,68 +617,6 @@ export const Map: React.FC<MapProps> = ({
           height: ${safeHeight};
           width: ${safeWidth};
         }
-
-        .timeline-event-marker-container {
-          position: relative;
-          width: 120px;
-          height: 60px;
-        }
-
-        .timeline-event-label {
-          position: absolute;
-          top: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          background: rgba(
-            31,
-            41,
-            55,
-            0.95
-          ); /* dark gray-800 with transparency */
-          color: #f9fafb; /* gray-50 */
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 11px;
-          font-weight: 500;
-          white-space: nowrap;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-          border: 1px solid #9ca3af; /* gray-400 */
-        }
-
-        .timeline-event-circle {
-          position: absolute;
-          top: 28px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 24px;
-          height: 24px;
-          border: 2px solid #9ca3af; /* gray-400 - brighter border */
-          border-radius: 50%;
-          background: #374151; /* gray-700 - dark app bg color */
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-          transition: all 0.2s ease;
-        }
-
-        .timeline-event-tail {
-          position: absolute;
-          top: 52px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 0;
-          height: 0;
-          border-left: 6px solid transparent;
-          border-right: 6px solid transparent;
-          border-top: 8px solid #9ca3af; /* gray-400 - brighter tail */
-        }
-
-        .timeline-event-marker:hover .timeline-event-circle {
-          transform: translateX(-50%) scale(1.1);
-          border-color: #f59e0b; /* amber-500 */
-        }
-
-        .timeline-event-marker:hover .timeline-event-tail {
-          border-top-color: #f59e0b; /* amber-500 */
-        }
       `}</style>
       <div
         className={
@@ -959,49 +884,6 @@ export const Map: React.FC<MapProps> = ({
                   </Marker>
                 )
               })}
-
-              {/* Timeline Event Marker */}
-              {showTimelineEventMarker &&
-                timelineEventMarker &&
-                typeof timelineEventMarker.lat === "number" &&
-                typeof timelineEventMarker.lng === "number" &&
-                !isNaN(timelineEventMarker.lat) &&
-                !isNaN(timelineEventMarker.lng) &&
-                isFinite(timelineEventMarker.lat) &&
-                isFinite(timelineEventMarker.lng) && (
-                  <Marker
-                    key={`timeline-event-${timelineEventMarker.year}`}
-                    longitude={timelineEventMarker.lng}
-                    latitude={timelineEventMarker.lat}
-                    anchor="bottom"
-                    onClick={(e) =>
-                      openPopup(
-                        e.originalEvent.clientX,
-                        e.originalEvent.clientY,
-                        {
-                          title: "",
-                          description:
-                            timelineEventMarker.description ??
-                            "Timeline Event Location",
-                          className: "text-center",
-                        },
-                      )
-                    }
-                  >
-                    <div
-                      className="timeline-event-marker"
-                      dangerouslySetInnerHTML={{
-                        __html: `
-                        <div class="timeline-event-marker-container">
-                          <div class="timeline-event-label">${timelineEventMarker.name} (${formatYear(timelineEventMarker.year)})</div>
-                          <div class="timeline-event-circle"></div>
-                          <div class="timeline-event-tail"></div>
-                        </div>
-                      `,
-                      }}
-                    />
-                  </Marker>
-                )}
             </MapGL>
           </div>
         </div>

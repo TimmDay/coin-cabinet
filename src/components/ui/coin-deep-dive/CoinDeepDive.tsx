@@ -403,7 +403,6 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                   zoom={DEEP_DIVE_MAP_VIEW.zoom}
                   showMintMarkers={false}
                   customMarkers={standaloneMarkers}
-                  showTimelineEventMarker={false}
                   height="400px"
                   desktopHeight={MAP_HEIGHT_DESKTOP}
                 />
@@ -420,7 +419,6 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                     artifactMarkers,
                     foundMarker ? [foundMarker] : [],
                   )}
-                  showTimelineEventMarker={false}
                   height="400px"
                   desktopHeight={MAP_HEIGHT_DESKTOP}
                 />
