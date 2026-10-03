@@ -88,9 +88,12 @@ export function CoinRow({
   }
 
   return (
+    // --coin-size: 350px at the least, then as big as the width (two coins side
+    // by side, with room for the clock buttons) and the height of the window
+    // allow, up to 480px.
     // On desktop the root spans two rows of the parent grid (image, text) so
     // both faces line up row by row.
-    <div className="mx-auto flex max-w-7xl flex-col space-y-4 lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:justify-items-center lg:space-y-0">
+    <div className="mx-auto flex max-w-7xl flex-col space-y-4 lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:justify-items-center lg:space-y-0 lg:[--coin-size:clamp(350px,min(calc((min(100vw,1280px)-336px)/2),calc(100vh-440px)),480px)]">
       {/* Images Section */}
       {/* Room above the coin only when a clock button hangs there */}
       <div
@@ -99,10 +102,10 @@ export function CoinRow({
           reserveTop && "pt-10 sm:pt-14",
         )}
       >
-        <div className="relative w-full max-w-md lg:h-[350px] lg:w-[350px] lg:max-w-none xl:h-[460px] xl:w-[460px]">
+        <div className="relative w-full max-w-md lg:h-[var(--coin-size)] lg:w-[var(--coin-size)] lg:max-w-none">
           {/* Main displayed image */}
           <div
-            className="artemis-card flex aspect-square w-full cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105"
+            className="artemis-card flex aspect-square w-full cursor-pointer items-center justify-center"
             onClick={() => {
               const currentImage = availableImages[currentMobileImageIndex]
               if (currentImage) {
@@ -181,7 +184,7 @@ export function CoinRow({
       {hasAnyText && (
         <div
           className={cn(
-            "flex flex-col space-y-2 text-center lg:row-start-2 lg:w-[350px] xl:w-[460px]",
+            "flex flex-col space-y-2 text-center lg:row-start-2 lg:w-[var(--coin-size)]",
             reserveBottom && "mt-9 sm:mt-12",
           )}
         >
