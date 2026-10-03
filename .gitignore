@@ -53,7 +53,8 @@ yarn-error.log*
 # data files - exclude large GeoJSON and other data files
 # /src/data/
 
-# backup files
+# backup files: `pnpm db:backup` now lives in somnus-data-ingestion; this stays so any
+# old backups kept in this folder are never committed
 /backups/
 
 # local Supabase CLI link/config state (machine-specific, not shared)
