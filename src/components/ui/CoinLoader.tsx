@@ -1,4 +1,5 @@
 type CoinLoaderProps = {
+  /** Read out to screen readers; not shown. */
   label?: string
 }
 
@@ -13,7 +14,7 @@ const TRACK = 240
  */
 export function CoinLoader({ label = "Loading..." }: CoinLoaderProps) {
   return (
-    <div role="status" className="flex flex-col items-center gap-5">
+    <div role="status" className="flex flex-col items-center">
       <div
         aria-hidden="true"
         className="relative"
@@ -56,29 +57,17 @@ export function CoinLoader({ label = "Loading..." }: CoinLoaderProps) {
                 strokeDasharray="0.1 3.1"
                 strokeLinecap="round"
               />
-              {/* A radiate crown: its rays make the turning easy to see */}
-              <g
-                stroke="var(--color-dusk)"
-                strokeOpacity="0.7"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              >
-                <line x1="18" y1="9" x2="18" y2="12" />
-                <line x1="12.5" y1="11.5" x2="14" y2="14" />
-                <line x1="23.5" y1="11.5" x2="22" y2="14" />
-              </g>
-              <circle
-                cx="18"
-                cy="21"
-                r="4"
+              {/* A crescent moon: its lopsided shape makes the turning easy to see */}
+              <path
+                d="M21 10.5 A8 8 0 1 0 21 25.5 A9 9 0 0 1 21 10.5 Z"
                 fill="var(--color-dusk)"
-                fillOpacity="0.45"
+                fillOpacity="0.7"
               />
             </svg>
           </div>
         </div>
       </div>
-      <p className="text-ink-muted text-xl leading-[1.7]">{label}</p>
+      <span className="sr-only">{label}</span>
     </div>
   )
 }
