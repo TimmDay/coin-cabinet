@@ -70,13 +70,13 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
         {/* Empire Extent Layers */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-paper-ink text-sm font-medium">
+            <h3 className="text-moonlight text-sm font-medium">
               Empire Extent
             </h3>
             {hasAnyEmpireLayerVisible() && (
               <button
                 onClick={clearAllEmpireLayers}
-                className="text-paper-ink-muted hover:text-paper-ink text-xs underline"
+                className="text-moonlight hover:text-moonlight-bright text-xs underline"
               >
                 Clear all empire layers
               </button>
@@ -99,7 +99,7 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
             ))}
           </div>
           {hasAnyEmpireLayerVisible() && (
-            <div className="text-paper-ink-muted space-y-1 text-xs">
+            <div className="text-moonlight space-y-1 text-xs">
               {Object.entries(empireLayerConfig).map(
                 ([key, config]) =>
                   isLayerVisible(key) && (
@@ -122,7 +122,7 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
         }
       >
         <div className="space-y-2">
-          <h3 className="text-paper-ink text-sm font-medium">
+          <h3 className="text-moonlight text-sm font-medium">
             Roman Provinces
           </h3>
           <div className="flex flex-col items-start gap-2 sm:flex-row">
@@ -183,7 +183,7 @@ export const MapEmbeddedControls: React.FC<MapEmbeddedControlsProps> = ({
             </div>
           </div>
           {selectedProvinces.length > 0 && (
-            <div className="text-paper-ink-muted text-xs">
+            <div className="text-moonlight text-xs">
               Showing {selectedProvinces.length} province
               {selectedProvinces.length !== 1 ? "s" : ""} highlighted on the map
             </div>
