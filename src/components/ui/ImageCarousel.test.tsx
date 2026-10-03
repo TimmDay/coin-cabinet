@@ -9,18 +9,21 @@ vi.mock("~/components/CloudinaryImage", () => ({
   ),
 }))
 
+const imgs = (...srcs: string[]) =>
+  srcs.map((src) => ({ src, alt: "Concordia" }))
+
 const shown = () => screen.getByRole("img").getAttribute("src")
 
 describe("ImageCarousel", () => {
   it("shows a single image with nothing to click", () => {
-    render(<ImageCarousel images={["a"]} alt="Concordia" />)
+    render(<ImageCarousel images={imgs("a")} />)
 
     expect(shown()).toBe("a")
     expect(screen.queryByRole("button")).not.toBeInTheDocument()
   })
 
   it("steps to the next image when the picture is clicked, and wraps", () => {
-    render(<ImageCarousel images={["a", "b", "c"]} alt="Concordia" />)
+    render(<ImageCarousel images={imgs("a", "b", "c")} />)
     const picture = screen.getByRole("button", { name: /Show the next image/ })
 
     fireEvent.click(picture)
@@ -31,7 +34,7 @@ describe("ImageCarousel", () => {
   })
 
   it("jumps to an image from the dots and marks the current one", () => {
-    render(<ImageCarousel images={["a", "b", "c"]} alt="Concordia" />)
+    render(<ImageCarousel images={imgs("a", "b", "c")} />)
 
     fireEvent.click(screen.getByRole("button", { name: "Image 3" }))
 
@@ -46,7 +49,7 @@ describe("ImageCarousel", () => {
   })
 
   it("says which image of how many is showing", () => {
-    render(<ImageCarousel images={["a", "b"]} alt="Concordia" />)
+    render(<ImageCarousel images={imgs("a", "b")} />)
 
     expect(
       screen.getByRole("button", { name: /image 1 of 2/ }),
@@ -54,7 +57,26 @@ describe("ImageCarousel", () => {
   })
 
   it("renders nothing for no images", () => {
-    const { container } = render(<ImageCarousel images={[]} alt="x" />)
+    const { container } = render(<ImageCarousel images={[]} />)
     expect(container).toBeEmptyDOMElement()
+  })
+
+  it("shows the caption and credit of the image that is showing", () => {
+    render(
+      <ImageCarousel
+        images={[
+          { src: "a", alt: "A", caption: "First one", credit: "Photo A" },
+          { src: "b", alt: "B", caption: "Second one" },
+        ]}
+      />,
+    )
+
+    expect(screen.getByText("First one")).toBeInTheDocument()
+    expect(screen.getByText("Image: Photo A")).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole("button", { name: "Image 2" }))
+
+    expect(screen.getByText("Second one")).toBeInTheDocument()
+    expect(screen.queryByText(/Photo A/)).not.toBeInTheDocument()
   })
 })

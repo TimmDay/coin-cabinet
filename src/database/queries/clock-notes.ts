@@ -10,6 +10,7 @@ export type LinkedEntry = {
   title: string
   body: string | null
   imageUrl?: string | null
+  imageCredit?: string | null
 }
 
 type LinkKind = ClockNoteLinkKind
@@ -71,6 +72,7 @@ export function resolveClockNotes(
       linkUrl: row.link_url,
       linkLabel: row.link_label,
       imageUrl: entry?.imageUrl ?? null,
+      imageCredit: entry?.imageCredit ?? null,
       linkKind: link?.kind ?? null,
     })
   }
@@ -132,11 +134,12 @@ async function fetchLinkedEntries(
       named("places", "place"),
       named("persons", "person"),
       artifactIds.length > 0
-        ? supabase
-            .from("artifacts")
-            .select("id, name, flavour_text, image_url")
-            .in("id", artifactIds)
-            .returns<(NamedRow & { image_url: string | null })[]>()
+        ? supabase.from("artifacts").select("*").in("id", artifactIds).returns<
+            (NamedRow & {
+              image_url: string | null
+              image_credit: string | null
+            })[]
+          >()
         : Promise.resolve({ data: [], error: null }),
       // A mint has no name of its own: it is its place
       mintIds.length > 0
@@ -191,6 +194,7 @@ async function fetchLinkedEntries(
       title: a.name,
       body: a.flavour_text,
       imageUrl: a.image_url,
+      imageCredit: a.image_credit,
     })
   }
   for (const m of mints.data ?? []) {

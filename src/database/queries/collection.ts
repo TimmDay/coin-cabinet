@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
 import { fetchClockNotes } from "~/database/queries/clock-notes"
+import { fetchDeityArtifactIds } from "~/database/queries/deities"
 import type { QueryResult } from "~/database/queries/types"
 import type {
   NotableFeature,
@@ -518,6 +519,11 @@ export async function fetchCollectionDetail(
     (row) => row.find_lat !== null && row.find_lng !== null,
   )
 
+  const deityArtifactIds = await fetchDeityArtifactIds(
+    supabase,
+    (deitiesResult.data ?? []).map((d) => d.id),
+  )
+
   const enhanced: CoinEnhanced = {
     ...base,
     clock_notes: clockNotesResult.data ?? [],
@@ -535,7 +541,7 @@ export async function fetchCollectionDetail(
       name: d.name,
       subtitle: d.subtitle ?? undefined,
       flavour_text: d.flavour_text,
-      artifact_ids: [],
+      artifact_ids: deityArtifactIds.get(d.id) ?? [],
       image_links: d.image_links ?? [],
       place_ids: d.place_ids.map((p) => p.place_id),
       features_coinage: [],

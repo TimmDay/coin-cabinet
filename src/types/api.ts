@@ -23,6 +23,8 @@ export type ClockNote = {
   linkLabel: string | null
   /** The linked entry's picture (a device's or an artifact's), if it has one. */
   imageUrl: string | null
+  /** Who to credit for that picture. */
+  imageCredit: string | null
   /** What the note links to, which decides its icon; null for a note of its own. */
   linkKind: ClockNoteLinkKind | null
 }

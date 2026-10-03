@@ -23,6 +23,7 @@ export type Database = {
           historical_sources: string[] | null
           id: number
           image_alt_text: string | null
+          image_credit: string | null
           image_url: string | null
           location_note: string | null
           medium: string | null
@@ -39,6 +40,7 @@ export type Database = {
           historical_sources?: string[] | null
           id?: never
           image_alt_text?: string | null
+          image_credit?: string | null
           image_url?: string | null
           location_note?: string | null
           medium?: string | null
@@ -55,6 +57,7 @@ export type Database = {
           historical_sources?: string[] | null
           id?: never
           image_alt_text?: string | null
+          image_credit?: string | null
           image_url?: string | null
           location_note?: string | null
           medium?: string | null
@@ -466,6 +469,36 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      deity_artifacts: {
+        Row: {
+          artifact_id: number
+          deity_id: number
+        }
+        Insert: {
+          artifact_id: number
+          deity_id: number
+        }
+        Update: {
+          artifact_id?: number
+          deity_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deity_artifacts_artifact_id_fkey"
+            columns: ["artifact_id"]
+            isOneToOne: false
+            referencedRelation: "artifacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deity_artifacts_deity_id_fkey"
+            columns: ["deity_id"]
+            isOneToOne: false
+            referencedRelation: "deities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       deity_places: {
         Row: {

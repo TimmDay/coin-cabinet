@@ -69,9 +69,14 @@ missing is left out.
 
 ### `/api/deities` from `deities`, `deity_places`, `device_deities`, `devices`
 `deity_places` becomes `place_ids`. The names of the devices linked through
-`device_deities` fill the card footer. `image_links` (a text array of Cloudinary
-ids or URLs) holds the deity's pictures: the open card shows one image, or a
-carousel you click through when there are several.
+`device_deities` fill the card footer. `deity_artifacts` becomes `artifact_ids`
+(strings, in artifact id order): the artifacts that picture the deity. The open
+card shows their images, with each artifact's alt text, caption (`flavour_text`)
+and `image_credit`: one image on its own, or a carousel you click through when
+there are several. A deity with no artifact picture falls back to its own
+`image_links` (Cloudinary ids or URLs). If the `deity_artifacts` read fails
+(before its migration is run, say) the deities load without artifacts rather than
+failing.
 
 ### `/api/timelines` from `timelines`, `timeline_events`, `places`
 The `timeline: Event[]` array is rebuilt from the event rows in `sequence`
@@ -81,8 +86,8 @@ event's position is `COALESCE(event.lat, place.lat)`, and likewise for longitude
 ### `/api/artifacts` from `artifacts`, `places`
 The institution name and coordinates come from the joined place and are
 flattened onto the output fields `artifact-helpers.ts` reads. `image_url`
-becomes `img_src`, `image_alt_text` becomes `img_alt` and `location_note`
-becomes `location_name`. The numeric `id` is sent as a string.
+becomes `img_src`, `image_alt_text` becomes `img_alt`, `image_credit` becomes
+`img_credit` and `location_note` becomes `location_name`. The numeric `id` is sent as a string.
 
 ### `/api/somnus-collection` (list) from `public_items` and its children
 `public_items` is the only anon-readable source of `collection` and `coins`
@@ -139,7 +144,8 @@ popover with the note.
   a pure function with tests, builds the notes. A linked entry gives the title and
   body (a device's description, or `flavour_text` for the others; a mint is named
   after its place) and its picture if it has one (`image_url` of a device or an
-  artifact). Text written on the note wins. A note with nothing to show is
+  artifact), with the artifact's `image_credit` shown under it. Text written on
+  the note wins. A note with nothing to show is
   dropped. Notes come back sorted by side then position.
 - **Icon:** the circle's icon comes from what the note links to (`linkKind`), drawn
   by `ClockNoteIcon`: a die stamp for a device, sun rays for a deity, a pin for a
@@ -185,10 +191,10 @@ in `src/data`. Nothing on the site displays citations yet.
 
 ## Known limitations
 
-- A person's card shows no photo, and neither a deity nor a person brings
-  artifact pins to the map: `artifact_ids` has no home in the normalised schema
-  for those two kinds. A coin's own supporting images (`flavour_img`) still name
-  artifacts, and those get a pin.
+- A person's card shows no photo, and a person brings no artifact pins to the map:
+  `artifact_ids` has no home in the normalised schema for persons. A deity's
+  artifacts (`deity_artifacts`) and a coin's own supporting images (`flavour_img`)
+  do get a pin.
 - What appears on the site depends on the data: items and sets with
   `is_hidden = TRUE` are invisible, and a set page is empty until its set is
   made visible in the data-maintenance app.

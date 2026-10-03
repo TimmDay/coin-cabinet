@@ -47,6 +47,7 @@ export async function fetchArtifacts(
       name: row.name,
       img_src: row.image_url,
       img_alt: row.image_alt_text,
+      img_credit: row.image_credit,
       place_id: row.place_id !== null ? String(row.place_id) : null,
       institution_name: place?.name ?? null,
       location_name: row.location_note,

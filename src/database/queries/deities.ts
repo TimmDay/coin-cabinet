@@ -6,6 +6,36 @@ import type { Deity } from "~/database/schema-deities"
 
 type DeviceRow = Database["public"]["Tables"]["devices"]["Row"]
 
+/**
+ * The artifact ids that picture each deity, in artifact id order, as strings.
+ * A failure here leaves the deities without pictures instead of failing the
+ * whole read, so the site keeps working if this table is not there yet.
+ */
+export async function fetchDeityArtifactIds(
+  supabase: SupabaseClient<Database>,
+  deityIds: number[],
+): Promise<Map<number, string[]>> {
+  const byDeity = new Map<number, string[]>()
+  if (deityIds.length === 0) return byDeity
+
+  const { data, error } = await supabase
+    .from("deity_artifacts")
+    .select("*")
+    .in("deity_id", deityIds)
+
+  if (error) {
+    console.error("deity_artifacts query failed:", error)
+    return byDeity
+  }
+
+  for (const row of [...data].sort((a, b) => a.artifact_id - b.artifact_id)) {
+    const list = byDeity.get(row.deity_id) ?? []
+    list.push(String(row.artifact_id))
+    byDeity.set(row.deity_id, list)
+  }
+  return byDeity
+}
+
 export async function fetchDeities(
   supabase: SupabaseClient<Database>,
 ): Promise<QueryResult<Deity[]>> {
@@ -31,6 +61,8 @@ export async function fetchDeities(
     .in("deity_id", deityIds)
 
   if (deviceDeitiesError) return { data: null, error: deviceDeitiesError }
+
+  const artifactIdsByDeityId = await fetchDeityArtifactIds(supabase, deityIds)
 
   const citations = await fetchCitations(supabase, "deity_id", deityIds)
   if (citations.error) return { data: null, error: citations.error }
@@ -79,7 +111,7 @@ export async function fetchDeities(
     legends_coinage: row.legends_coinage ?? [],
     place_ids: placesByDeityId.get(row.id) ?? [],
     festivals: (row.festivals ?? []).map((name) => ({ name })),
-    artifact_ids: [],
+    artifact_ids: artifactIdsByDeityId.get(row.id) ?? [],
     image_links: row.image_links ?? [],
     created_at: row.created_at,
     updated_at: row.updated_at,

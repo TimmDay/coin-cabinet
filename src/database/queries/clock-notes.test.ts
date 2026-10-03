@@ -35,6 +35,7 @@ const entries = (): LinkedEntries => ({
         title: "Cornucopia",
         body: "Horn of plenty.",
         imageUrl: "https://img/c.jpg",
+        imageCredit: "Photo by Tim",
       },
     ],
   ]),
@@ -64,7 +65,9 @@ describe("resolveClockNotes", () => {
     const [without] = resolveClockNotes([row({ deity_id: 2 })], entries())
 
     expect(withImage?.imageUrl).toBe("https://img/c.jpg")
+    expect(withImage?.imageCredit).toBe("Photo by Tim")
     expect(without?.imageUrl).toBeNull()
+    expect(without?.imageCredit).toBeNull()
   })
 
   it("gives a note with its own text no picture", () => {

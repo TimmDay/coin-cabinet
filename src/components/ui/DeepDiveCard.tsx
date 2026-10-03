@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ImageCarousel } from "./ImageCarousel"
+import { ImageCarousel, type CarouselImage } from "./ImageCarousel"
 
 export type Source = {
   quote?: string
@@ -20,8 +20,8 @@ export type DeepDiveCardProps = {
   secondaryInfo?: string
   /** Image to display underneath secondary info */
   image?: string
-  /** Several images to step through; wins over `image` */
-  images?: string[]
+  /** Several images to step through, each with its own alt text and caption; wins over `image` */
+  images?: CarouselImage[]
   /** Alt text for the image */
   altText?: string
   /** Caption to display under the image */
@@ -56,7 +56,11 @@ export function DeepDiveCard({
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   // Check if there's any content to show in the expandable section
-  const pictures = images?.length ? images : image ? [image] : []
+  const pictures: CarouselImage[] = images?.length
+    ? images
+    : image
+      ? [{ src: image, alt: altText || "", caption }]
+      : []
   const hasExpandableContent =
     primaryInfo || secondaryInfo || pictures.length > 0
 
@@ -130,25 +134,7 @@ export function DeepDiveCard({
           {/* Image */}
           {pictures.length > 0 && (
             <div className="mt-4">
-              <div className="group relative flex w-full items-center justify-center overflow-hidden rounded-lg shadow-sm">
-                <ImageCarousel images={pictures} alt={altText || title} />
-                {/* Tooltip on hover */}
-                {altText && (
-                  <div className="bg-night/95 text-moonlight-bright pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-xs -translate-x-1/2 rounded-lg px-3 py-2 text-sm opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100">
-                    <div className="text-center whitespace-pre-line">
-                      {altText}
-                    </div>
-                    {/* Arrow pointing down */}
-                    <div className="border-t-night/95 absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent"></div>
-                  </div>
-                )}
-              </div>
-              {/* Caption */}
-              {caption && (
-                <p className="text-moonlight mt-3 text-center text-sm leading-relaxed italic">
-                  {caption}
-                </p>
-              )}
+              <ImageCarousel images={pictures} />
             </div>
           )}
         </div>
