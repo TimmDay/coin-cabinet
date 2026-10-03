@@ -16,7 +16,6 @@ const row = (overrides: Partial<Row>): Row => ({
   body: null,
   link_url: null,
   link_label: null,
-  icon_type: null,
   device_id: null,
   deity_id: null,
   place_id: null,

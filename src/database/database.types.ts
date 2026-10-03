@@ -729,7 +729,6 @@ export type Database = {
           created_at: string
           deity_id: number | null
           device_id: number | null
-          icon_type: string | null
           id: number
           item_id: number
           link_label: string | null
@@ -748,7 +747,6 @@ export type Database = {
           created_at?: string
           deity_id?: number | null
           device_id?: number | null
-          icon_type?: string | null
           id?: never
           item_id: number
           link_label?: string | null
@@ -767,7 +765,6 @@ export type Database = {
           created_at?: string
           deity_id?: number | null
           device_id?: number | null
-          icon_type?: string | null
           id?: never
           item_id?: number
           link_label?: string | null
