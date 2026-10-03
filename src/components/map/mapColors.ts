@@ -57,9 +57,14 @@ export const cssColor = (name: MapColor) => `var(--color-${name})`
 
 /**
  * The colour's resolved #rrggbb value, for MapLibre paint properties, which
- * parse colour strings themselves and cannot read `var()`. Browser only.
+ * parse colour strings themselves and cannot read `var()`. Reads the page's
+ * styles, so in the browser only (on the server it returns black).
  */
 export function glColor(name: MapColor): string {
+  // A server render has no styles to read. The map draws nothing there (MapLibre
+  // starts in the browser), so any colour will do.
+  if (typeof document === "undefined") return "#000000"
+
   const value = getComputedStyle(document.documentElement)
     .getPropertyValue(`--color-${name}`)
     .trim()

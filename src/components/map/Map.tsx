@@ -24,23 +24,10 @@ import {
   createEmpireLayerConfig,
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
-import { glColor } from "./mapColors"
-import {
-  buildClusteredCustomMarkers,
-  buildMarkerLookup,
-  createCustomMarkerClusterIndex,
-  createSpiderfyPositions,
-  getCoordinateKey,
-  type ClusteredMarker,
-  type SpiderfiedClusterState,
-} from "./mapMarkerClustering"
-import {
-  createClusterMarkerHtml,
-  createCustomMarkerHtml,
-  createSpiderfiedMarkerHtml,
-  type CustomMapMarker,
-} from "./mapMarkers"
+import { markerPopup, type CustomMapMarker } from "./mapMarkers"
+import { CustomMarkerLayer } from "./CustomMarkerLayer"
 import { MapPopup } from "./MapPopup"
+import type { ViewportBounds } from "./useMarkerClusters"
 import { HighlightedMintSvg } from "./MintMarkerSvg"
 
 export type { CustomMapMarker } from "./mapMarkers"
@@ -53,8 +40,6 @@ export type { CustomMapMarker } from "./mapMarkers"
 // static copy instead -- see scripts/copy-maplibre-assets.mjs for how that
 // file gets there and stays in sync with the installed maplibre-gl version.
 setWorkerUrl("/maplibre-gl-worker.mjs")
-
-type ViewportBounds = [number, number, number, number]
 
 type PopupContent = {
   title: string
@@ -216,8 +201,6 @@ export const Map: React.FC<MapProps> = ({
     position: { x: 0, y: 0 },
     content: { title: "" },
   })
-  const [spiderfiedCluster, setSpiderfiedCluster] =
-    useState<SpiderfiedClusterState | null>(null)
 
   // Close popup on scroll
   useEffect(() => {
@@ -233,10 +216,6 @@ export const Map: React.FC<MapProps> = ({
     }
   }, [customPopup.isVisible])
 
-  useEffect(() => {
-    setSpiderfiedCluster(null)
-  }, [customMarkers])
-
   // Province selection logic using custom hook
   // Find highlighted mint and center on it if provided
   const highlightedMint = useMemo(() => {
@@ -248,40 +227,6 @@ export const Map: React.FC<MapProps> = ({
         ) ?? mint.name.toLowerCase() === highlightMint.toLowerCase(),
     )
   }, [highlightMint, mints])
-
-  const activeCustomMarkers = useMemo(
-    () => customMarkers.filter((marker) => marker.isActive),
-    [customMarkers],
-  )
-
-  const clusterableCustomMarkers = useMemo(
-    () => customMarkers.filter((marker) => !marker.isActive),
-    [customMarkers],
-  )
-
-  const markerLookup = useMemo(() => {
-    return buildMarkerLookup(clusterableCustomMarkers)
-  }, [clusterableCustomMarkers])
-
-  const customMarkerClusterIndex = useMemo(() => {
-    return createCustomMarkerClusterIndex(clusterableCustomMarkers)
-  }, [clusterableCustomMarkers])
-
-  const clusteredCustomMarkers = useMemo(() => {
-    return buildClusteredCustomMarkers({
-      activeCustomMarkers,
-      currentZoom,
-      customMarkerClusterIndex,
-      markerLookup,
-      viewportBounds,
-    })
-  }, [
-    activeCustomMarkers,
-    currentZoom,
-    customMarkerClusterIndex,
-    markerLookup,
-    viewportBounds,
-  ])
 
   const openPopup = useCallback(
     (clientX: number, clientY: number, content: PopupContent) => {
@@ -298,69 +243,10 @@ export const Map: React.FC<MapProps> = ({
     (marker: CustomMapMarker, originalEvent: MouseEvent) => {
       marker.onClick?.()
 
-      if (
-        marker.showPopup === false ||
-        (!marker.title && !marker.subtitle && !marker.description)
-      ) {
-        return
-      }
-
-      openPopup(originalEvent.clientX, originalEvent.clientY, {
-        title: marker.title,
-        subtitle: marker.subtitle,
-        description: marker.description ?? "",
-        className: marker.className ?? "text-paper-ink",
-      })
+      const popup = markerPopup(marker)
+      if (popup) openPopup(originalEvent.clientX, originalEvent.clientY, popup)
     },
     [openPopup],
-  )
-
-  const handleClusterClick = useCallback(
-    (item: Extract<ClusteredMarker, { type: "cluster" }>, map: MapLibreMap) => {
-      if (!customMarkerClusterIndex) return
-
-      const leaves = customMarkerClusterIndex.getLeaves(item.id, item.count)
-      const markers = leaves
-        .map((leaf) => {
-          const markerId = leaf.properties?.markerId
-          return markerId ? markerLookup[markerId] : null
-        })
-        .filter((marker): marker is CustomMapMarker => marker !== null)
-
-      if (markers.length === 0) {
-        return
-      }
-
-      const coordinateKeys = new Set(
-        markers.map((marker) => getCoordinateKey(marker.lat, marker.lng)),
-      )
-
-      if (coordinateKeys.size === 1) {
-        setSpiderfiedCluster((current) => {
-          if (current?.clusterId === item.id) {
-            return null
-          }
-
-          return {
-            clusterId: item.id,
-            markers: createSpiderfyPositions({
-              map,
-              center: [item.lat, item.lng],
-              markers,
-            }),
-          }
-        })
-        return
-      }
-
-      setSpiderfiedCluster(null)
-      map.flyTo({
-        center: [item.lng, item.lat],
-        zoom: item.expansionZoom,
-        duration: 600,
-      })
-    },
-    [customMarkerClusterIndex, markerLookup],
   )
 
   // Empire extent layer configuration
@@ -417,29 +303,6 @@ export const Map: React.FC<MapProps> = ({
     } as GeoJSON.FeatureCollection
   }, [provincesData, selectedProvinces])
 
-  // GeoJSON for the spiderfy "leg" lines connecting a cluster center to its
-  // fanned-out markers
-  const spiderLegsGeoJSON = useMemo((): GeoJSON.FeatureCollection => {
-    if (!spiderfiedCluster) {
-      return { type: "FeatureCollection", features: [] }
-    }
-
-    return {
-      type: "FeatureCollection",
-      features: spiderfiedCluster.markers.map((item) => ({
-        type: "Feature",
-        properties: {},
-        geometry: {
-          type: "LineString",
-          coordinates: [
-            [item.leg[0][1], item.leg[0][0]],
-            [item.leg[1][1], item.leg[1][0]],
-          ],
-        },
-      })),
-    }
-  }, [spiderfiedCluster])
-
   // Layer ids currently eligible for click interaction -- must match
   // whichever fill layers are actually mounted below, or MapLibre has
   // nothing to hit-test against.
@@ -463,8 +326,6 @@ export const Map: React.FC<MapProps> = ({
 
   const handleMapClick = useCallback(
     (e: MapLayerMouseEvent) => {
-      setSpiderfiedCluster(null)
-
       const feature: MapGeoJSONFeature | undefined = e.features?.[0]
       if (!feature?.layer) return
 
@@ -675,7 +536,6 @@ export const Map: React.FC<MapProps> = ({
               onMoveEnd={(e) => updateViewportBounds(e.target)}
               onMoveStart={() => {
                 setCustomPopup((prev) => ({ ...prev, isVisible: false }))
-                setSpiderfiedCluster(null)
               }}
               onClick={handleMapClick}
             >
@@ -792,98 +652,12 @@ export const Map: React.FC<MapProps> = ({
                   )
                 })}
 
-              {/* Custom Markers */}
-              {clusteredCustomMarkers.map((item) => {
-                if (item.type === "cluster") {
-                  const isSpiderfied = spiderfiedCluster?.clusterId === item.id
-
-                  if (isSpiderfied) {
-                    return null
-                  }
-
-                  return (
-                    <Marker
-                      key={`custom-cluster-${item.id}`}
-                      longitude={item.lng}
-                      latitude={item.lat}
-                      anchor="center"
-                      onClick={(e) => {
-                        const map = mapRef.current?.getMap()
-                        if (map) handleClusterClick(item, map)
-                        e.originalEvent.stopPropagation()
-                      }}
-                    >
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: createClusterMarkerHtml(item.count),
-                        }}
-                      />
-                    </Marker>
-                  )
-                }
-
-                const marker = item.marker
-
-                return (
-                  <Marker
-                    key={marker.id}
-                    longitude={marker.lng}
-                    latitude={marker.lat}
-                    anchor="bottom"
-                    onClick={(e) => {
-                      handleCustomMarkerClick(marker, e.originalEvent)
-                      e.originalEvent.stopPropagation()
-                    }}
-                  >
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: createCustomMarkerHtml(marker),
-                      }}
-                    />
-                  </Marker>
-                )
-              })}
-
-              {spiderfiedCluster && (
-                <Source
-                  id="spider-legs"
-                  type="geojson"
-                  data={spiderLegsGeoJSON}
-                >
-                  <Layer
-                    id="spider-legs-line"
-                    type="line"
-                    paint={{
-                      "line-color": glColor("pin-wine-mid"),
-                      "line-width": 2,
-                      "line-opacity": 0.6,
-                    }}
-                  />
-                </Source>
-              )}
-
-              {spiderfiedCluster?.markers.map((item) => {
-                const marker = item.marker
-
-                return (
-                  <Marker
-                    key={`spiderfied-${marker.id}`}
-                    longitude={item.position[1]}
-                    latitude={item.position[0]}
-                    anchor="bottom"
-                    onClick={(e) => {
-                      handleCustomMarkerClick(marker, e.originalEvent)
-                      e.originalEvent.stopPropagation()
-                    }}
-                  >
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: createSpiderfiedMarkerHtml(marker),
-                      }}
-                    />
-                  </Marker>
-                )
-              })}
+              <CustomMarkerLayer
+                markers={customMarkers}
+                zoom={currentZoom}
+                bounds={viewportBounds}
+                onMarkerClick={handleCustomMarkerClick}
+              />
             </MapGL>
           </div>
         </div>
