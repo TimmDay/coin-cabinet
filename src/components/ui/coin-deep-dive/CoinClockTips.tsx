@@ -92,7 +92,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           )}
           {note.imageUrl && note.imageCredit && (
             <span className="text-moonlight/80 -mt-2 mb-3 block text-center text-xs">
-              Image: {note.imageCredit}
+              {note.imageCredit}
             </span>
           )}
           {note.body}

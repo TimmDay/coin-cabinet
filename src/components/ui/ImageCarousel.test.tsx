@@ -79,7 +79,7 @@ describe("ImageCarousel", () => {
 
     // All on one line, in this order
     expect(
-      screen.getByText("Statue A · Stuttgart · Image: Photo A"),
+      screen.getByText("Statue A · Stuttgart · Photo A"),
     ).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole("button", { name: "Image 2" }))

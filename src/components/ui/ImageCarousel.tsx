@@ -40,7 +40,7 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
     current.name,
     current.location,
     current.caption,
-    current.credit && `Image: ${current.credit}`,
+    current.credit,
   ]
     .filter(Boolean)
     .join(" · ")
@@ -80,7 +80,7 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
       </div>
 
       {caption && (
-        <p className="text-moonlight mt-2 text-center text-sm leading-snug">
+        <p className="text-ink mt-2 text-center text-sm leading-snug italic">
           {caption}
         </p>
       )}
