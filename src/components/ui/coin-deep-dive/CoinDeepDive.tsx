@@ -10,6 +10,8 @@ import { useTimelines } from "~/api/timelines"
 import type { CustomMapMarker } from "~/components/map/Map"
 import { DEEP_DIVE_MAP_VIEW, MAP_BOUNDS } from "~/components/map/mapConfig"
 import { useFoldFill } from "~/hooks/useFoldFill"
+import { MAP_HEIGHT_DESKTOP } from "~/lib/constants"
+import { cn } from "~/lib/utils"
 import { getArtifactLocationData } from "~/lib/utils/artifact-helpers"
 import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
 import { addFoundEventToTimeline } from "~/lib/utils/provenance-helpers"
@@ -327,7 +329,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const clockRoom = clockNoteRoom(clockNotes)
 
   return (
-    <section className="w-full space-y-8 md:space-y-12 md:overflow-x-hidden">
+    <section className="[container-type:inline-size] w-full space-y-8 md:space-y-12 md:overflow-x-hidden">
       {/* Obverse and reverse: stacked on small screens, side by side on desktop */}
       <div
         ref={foldRef}
@@ -376,7 +378,16 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
 
       {/* Map Section */}
       {shouldShowMap && (
-        <div className="mx-auto w-full max-w-6xl px-4">
+        <div
+          className={cn(
+            "mx-auto w-full px-4 pt-6 md:pt-10",
+            // With both faces, line up with the coins and legends above: two
+            // coin columns (coin plus 112px of room each) and the gap between.
+            coin.image_link_o && coin.image_link_r
+              ? "lg:w-[var(--deep-dive-width)] lg:px-0 lg:[--coin-size:clamp(350px,min(calc((100cqw-256px)/2),calc(100vh-420px)),580px)] lg:[--deep-dive-width:calc(2*(var(--coin-size)+112px)+0.5rem)] xl:[--deep-dive-width:calc(2*(var(--coin-size)+112px)+2rem)]"
+              : "max-w-6xl",
+          )}
+        >
           <div className="w-full">
             {matchingTimeline ? (
               <TimelineWithMap
@@ -402,6 +413,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                   customMarkers={standaloneMarkers}
                   showTimelineEventMarker={false}
                   height="400px"
+                  desktopHeight={MAP_HEIGHT_DESKTOP}
                 />
               </div>
             ) : deityPlaceMarkers.length > 0 ||
@@ -419,6 +431,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                   )}
                   showTimelineEventMarker={false}
                   height="400px"
+                  desktopHeight={MAP_HEIGHT_DESKTOP}
                 />
               </div>
             ) : null}
