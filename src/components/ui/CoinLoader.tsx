@@ -59,6 +59,7 @@ export function CoinLoader({ label = "Loading..." }: CoinLoaderProps) {
               />
               {/* A crescent moon: its lopsided shape makes the turning easy to see */}
               <path
+                transform="translate(2 0)"
                 d="M21 10.5 A8 8 0 1 0 21 25.5 A9 9 0 0 1 21 10.5 Z"
                 fill="var(--color-dusk)"
                 fillOpacity="0.7"
