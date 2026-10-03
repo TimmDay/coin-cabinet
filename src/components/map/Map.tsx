@@ -30,6 +30,7 @@ import {
   type EmpireLayerConfigMap,
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
+import { PIN_PALETTE } from "./pinStyle"
 import { MapEmbeddedControls } from "./MapEmbeddedControls"
 import {
   buildClusteredCustomMarkers,
@@ -1083,7 +1084,7 @@ export const Map: React.FC<MapProps> = ({
                     id="spider-legs-line"
                     type="line"
                     paint={{
-                      "line-color": "rgba(90, 34, 56, 0.6)",
+                      "line-color": `${PIN_PALETTE.wineMid}99`,
                       "line-width": 2,
                       "line-opacity": 0.9,
                     }}

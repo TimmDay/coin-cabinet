@@ -1,3 +1,5 @@
+import { PIN_PALETTE } from "./pinStyle"
+
 function escapeHtml(value: string): string {
   return value
     .replaceAll("&", "&amp;")
@@ -103,8 +105,8 @@ export function createClusterMarkerHtml(count: number) {
           position: absolute;
           inset: 0;
           border-radius: 9999px;
-          background: radial-gradient(circle at 30% 30%, #8a3a4f 0%, #5a2238 58%, #2f1220 100%);
-          border: 2px solid #e0a458;
+          background: radial-gradient(circle at 30% 30%, ${PIN_PALETTE.wineLight} 0%, ${PIN_PALETTE.wineMid} 58%, ${PIN_PALETTE.wineDark} 100%);
+          border: 2px solid ${PIN_PALETTE.gold};
           box-shadow: 0 10px 24px rgba(46, 27, 18, 0.4), 0 0 0 6px rgba(90, 34, 56, 0.25);
         "
       ></div>
@@ -115,7 +117,7 @@ export function createClusterMarkerHtml(count: number) {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #fbeed3;
+          color: ${PIN_PALETTE.cream};
           font-size: ${count >= 100 ? 11 : 12}px;
           font-weight: 700;
           letter-spacing: 0.02em;

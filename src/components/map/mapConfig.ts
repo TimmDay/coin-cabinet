@@ -1,3 +1,5 @@
+import { PIN_PALETTE } from "./pinStyle"
+
 export type EmpireLayerStyle = {
   fillColor: string
   fillOpacity: number
@@ -145,8 +147,8 @@ export const MAP_STYLES = {
     style: {
       width: "12px",
       height: "12px",
-      backgroundColor: "#b0486b",
-      border: "2px solid #f3dca8",
+      backgroundColor: PIN_PALETTE.rose,
+      border: `2px solid ${PIN_PALETTE.creamWarm}`,
       borderRadius: "9999px",
       boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
     },

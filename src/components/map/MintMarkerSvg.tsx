@@ -1,3 +1,5 @@
+import { PIN_PALETTE } from "./pinStyle"
+
 /**
  * SVG component for highlighted mint markers (sunset circular design)
  * Used when a specific mint is highlighted on coin detail pages
@@ -18,12 +20,12 @@ export function HighlightedMintSvg({ displayName }: { displayName: string }) {
                 cx="12"
                 cy="12"
                 r="10"
-                fill="#e08a45"
-                stroke="#6e2a3d"
+                fill={PIN_PALETTE.orangeSoft}
+                stroke={PIN_PALETTE.wine}
                 strokeWidth="2"
               />
-              <circle cx="12" cy="12" r="5" fill="#b4492a" />
-              <circle cx="12" cy="12" r="2" fill="#fbeed3" />
+              <circle cx="12" cy="12" r="5" fill={PIN_PALETTE.sienna} />
+              <circle cx="12" cy="12" r="2" fill={PIN_PALETTE.cream} />
             </svg>
           </div>
         </div>

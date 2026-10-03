@@ -11,6 +11,7 @@ import type {
 import { Timeline } from "../ui/Timeline"
 import { TimelineInfoBox } from "../ui/TimelineInfoBox"
 import { Map, type CustomMapMarker } from "./Map"
+import { pinStyle } from "./pinStyle"
 
 const ROME_DEFAULT: [number, number] = [41.9028, 12.4964]
 
@@ -408,13 +409,7 @@ export function TimelineWithMap({
           ? "This coin was found here"
           : undefined,
       description: event.description,
-      className: isCoinMinted
-        ? "text-amber-900"
-        : isFound
-          ? "text-emerald-900"
-          : "text-[#6e2a3d]",
-      fillColor: isCoinMinted ? "#d9743a" : isFound ? "#5a7f55" : "#6e2a3d",
-      borderColor: isCoinMinted ? "#f6dfae" : isFound ? "#ead6a6" : "#f0c27a",
+      ...pinStyle(isCoinMinted ? "minted" : isFound ? "found" : "event"),
       isActive: index === selectedEventIndex,
       showPopup: false,
       onClick: () => handleTimelineMarkerSelection(event, index),

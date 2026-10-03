@@ -19,7 +19,7 @@ From the architecture review of 2026-10-04 (candidates 1 to 3). Branch
    returns only what `CoinDetailPage` reads (`coin`, `isLoading`, `error`) and
    stops fetching deities and timelines. Drop `useDeityOptions` if nothing else
    uses it, and the inert `show-hidden-coins` flag and `showHidden` param.
-3. [ ] **One pin appearance module.** `pinFor(kind)` in the map folder owns fill,
+3. [x] **One pin appearance module.** `pinFor(kind)` in the map folder owns fill,
    border and popup colour for every kind of pin, in the sunset palette. The
    call sites in `CoinDeepDive.tsx` and `TimelineWithMap.tsx` name a kind.
 
