@@ -16,7 +16,6 @@ export type EmpireLayerConfig = {
   filename: string
   description: string
   showProp?: boolean
-  onChange?: (show: boolean) => void
   style: EmpireLayerStyle
 }
 
@@ -31,15 +30,10 @@ export type EmpireLayerConfigMap = {
 // Empire extent layer configurations
 export const createEmpireLayerConfig = (
   showBC60?: boolean,
-  onBC60Change?: (show: boolean) => void,
   showAD14?: boolean,
-  onAD14Change?: (show: boolean) => void,
   showAD69?: boolean,
-  onAD69Change?: (show: boolean) => void,
   showAD117?: boolean,
-  onAD117Change?: (show: boolean) => void,
   showAD200?: boolean,
-  onAD200Change?: (show: boolean) => void,
 ): EmpireLayerConfigMap => ({
   bc60: {
     id: "bc60",
@@ -49,7 +43,6 @@ export const createEmpireLayerConfig = (
     description:
       "Roman Republic around 60 BCE, during the First Triumvirate (Caesar, Pompey, Crassus)",
     showProp: showBC60,
-    onChange: onBC60Change,
     style: {
       fillColor: "#d99a2b",
       fillOpacity: 0.15,
@@ -66,7 +59,6 @@ export const createEmpireLayerConfig = (
     filename: "roman_empire_ad_14_extent.geojson",
     description: "Roman Empire at the death of Augustus in AD 14",
     showProp: showAD14,
-    onChange: onAD14Change,
     style: {
       fillColor: "#5f7f9c",
       fillOpacity: 0.15,
@@ -84,7 +76,6 @@ export const createEmpireLayerConfig = (
     description:
       "Roman Empire in AD 69, the Year of the Four Emperors (Galba, Otho, Vitellius, Vespasian)",
     showProp: showAD69,
-    onChange: onAD69Change,
     style: {
       fillColor: "#b0486b",
       fillOpacity: 0.15,
@@ -101,7 +92,6 @@ export const createEmpireLayerConfig = (
     filename: "roman_empire_ad_117_extent.geojson",
     description: "Roman Empire at its greatest extent under Trajan in AD 117",
     showProp: showAD117,
-    onChange: onAD117Change,
     style: {
       fillColor: "#6b8f5e",
       fillOpacity: 0.15,
@@ -118,7 +108,6 @@ export const createEmpireLayerConfig = (
     filename: "roman_empire_AD_200_extent.geojson",
     description: "Roman Empire around AD 200, during the Severan dynasty",
     showProp: showAD200,
-    onChange: onAD200Change,
     style: {
       fillColor: "#d9743a",
       fillOpacity: 0.15,

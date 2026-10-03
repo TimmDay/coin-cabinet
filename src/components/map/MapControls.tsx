@@ -197,7 +197,6 @@ export function MapControls({
                     ? "Loading provinces..."
                     : "Select provinces to highlight..."
                 }
-                className="border-paper-edge bg-paper-raised text-paper-ink w-full rounded-md border"
                 maxHeight="max-h-48"
               />
             </div>

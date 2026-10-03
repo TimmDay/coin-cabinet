@@ -46,7 +46,6 @@ export default function MapPage() {
             <Map
               layout="fullscreen"
               height="100%"
-              hideControls={true}
               showBC60={showBC60}
               showAD14={showAD14}
               showAD69={showAD69}

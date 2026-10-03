@@ -14,12 +14,7 @@ import { useMints } from "~/api/mints"
 import { MAP_HEIGHT } from "~/lib/constants"
 import { formatYear } from "~/lib/utils/date-formatting"
 import { ROMAN_PROVINCES } from "./constants/provinces"
-import {
-  useEmpireLayerState,
-  useMapConfiguration,
-  useMapData,
-  useProvinceSelection,
-} from "./hooks"
+import { useEmpireLayerData, useMapConfiguration, useMapData } from "./hooks"
 import {
   MAP_BOUNDS_LNGLAT,
   MAP_PAN_BOUNDS_LNGLAT,
@@ -27,11 +22,9 @@ import {
   MAP_STYLES,
   PROVINCE_LABEL_STYLES,
   createEmpireLayerConfig,
-  type EmpireLayerConfigMap,
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
 import { PIN_PALETTE } from "./pinStyle"
-import { MapEmbeddedControls } from "./MapEmbeddedControls"
 import {
   buildClusteredCustomMarkers,
   buildMarkerLookup,
@@ -113,7 +106,7 @@ export type MapProps = {
   width?: string
   /** Additional CSS class names */
   className?: string
-  /** Layout mode - 'default' shows controls above map, 'fullscreen' shows controls below map */
+  /** 'fullscreen' makes the map fill its parent's height */
   layout?: "default" | "fullscreen"
   /** Show BC 60 empire extent layer */
   showBC60?: boolean
@@ -125,22 +118,10 @@ export type MapProps = {
   showAD117?: boolean
   /** Show AD 200 empire extent layer */
   showAD200?: boolean
-  /** Callback when BC60 layer toggle changes */
-  onBC60Change?: (show: boolean) => void
-  /** Callback when AD14 layer toggle changes */
-  onAD14Change?: (show: boolean) => void
-  /** Callback when AD69 layer toggle changes */
-  onAD69Change?: (show: boolean) => void
-  /** Callback when AD117 layer toggle changes */
-  onAD117Change?: (show: boolean) => void
-  /** Callback when AD200 layer toggle changes */
-  onAD200Change?: (show: boolean) => void
-  /** Selected provinces */
+  /** Provinces to draw; all of them by default */
   selectedProvinces?: string[]
   /** Show province labels */
   showProvinceLabels?: boolean
-  /** Hide all map controls (for external control) */
-  hideControls?: boolean
   /** Mint name to highlight with special pin (case insensitive match) */
   highlightMint?: string
   /** Whether default mint markers from the mints table should be displayed */
@@ -176,14 +157,8 @@ export const Map: React.FC<MapProps> = ({
   showAD69 = false,
   showAD117 = false,
   showAD200 = false,
-  onBC60Change,
-  onAD14Change,
-  onAD69Change,
-  onAD117Change,
-  onAD200Change,
-  selectedProvinces: externalSelectedProvinces,
-  showProvinceLabels: externalShowProvinceLabels = true,
-  hideControls = false,
+  selectedProvinces = ROMAN_PROVINCES,
+  showProvinceLabels = true,
   highlightMint,
   showMintMarkers = true,
   customMarkers = [],
@@ -232,21 +207,11 @@ export const Map: React.FC<MapProps> = ({
   // Use custom hooks for configuration and data management
   const config = useMapConfiguration()
   const { data: mints } = useMints()
-  const {
-    provincesData,
-    provincesLabelsData,
-    loading: provincesLoading,
-  } = useMapData()
+  const { provincesData, provincesLabelsData } = useMapData()
 
   const mapRef = useRef<MapRef>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
 
-  // Local state for map-specific functionality
-  const [internalSelectedProvinces, setInternalSelectedProvinces] = useState<
-    string[]
-  >([...ROMAN_PROVINCES]) // Start with all provinces visible
-  const [internalShowProvinceLabels, setInternalShowProvinceLabels] =
-    useState(true)
   const [currentZoom, setCurrentZoom] = useState<number>(safeZoom)
   const [viewportBounds, setViewportBounds] =
     useState<ViewportBounds>(MAP_BOUNDS_LNGLAT)
@@ -283,35 +248,6 @@ export const Map: React.FC<MapProps> = ({
   }, [customMarkers])
 
   // Province selection logic using custom hook
-  const allProvinces = useMemo(() => {
-    if (!provincesData) return []
-    return provincesData.features
-      .map((feature) => feature.properties?.name as string)
-      .filter(Boolean)
-  }, [provincesData])
-
-  const { isExternallyControlled } = useProvinceSelection(
-    allProvinces,
-    externalSelectedProvinces,
-  )
-
-  // Use external props if provided, otherwise use internal state
-  const selectedProvinces =
-    externalSelectedProvinces ?? internalSelectedProvinces
-  const showProvinceLabels =
-    externalShowProvinceLabels ?? internalShowProvinceLabels
-  const setSelectedProvinces = isExternallyControlled
-    ? () => {
-        /* controlled externally */
-      }
-    : setInternalSelectedProvinces
-  const setShowProvinceLabels =
-    externalShowProvinceLabels !== undefined
-      ? () => {
-          /* controlled externally */
-        }
-      : setInternalShowProvinceLabels
-
   // Find highlighted mint and center on it if provided
   const highlightedMint = useMemo(() => {
     if (!highlightMint || !mints) return null
@@ -442,91 +378,15 @@ export const Map: React.FC<MapProps> = ({
     () =>
       createEmpireLayerConfig(
         showBC60,
-        onBC60Change,
         showAD14,
-        onAD14Change,
         showAD69,
-        onAD69Change,
         showAD117,
-        onAD117Change,
         showAD200,
-        onAD200Change,
       ),
-    [
-      showBC60,
-      onBC60Change,
-      showAD14,
-      onAD14Change,
-      showAD69,
-      onAD69Change,
-      showAD117,
-      onAD117Change,
-      showAD200,
-      onAD200Change,
-    ],
+    [showBC60, showAD14, showAD69, showAD117, showAD200],
   )
 
-  // Use empire layer state management hook
-  const {
-    isLayerVisible,
-    getLayerData,
-    toggleLayer,
-    clearAllEmpireLayers,
-    hasAnyEmpireLayerVisible,
-  } = useEmpireLayerState(empireLayerConfig)
-
-  // Sync external props with hook state
-  useEffect(() => {
-    Object.entries(empireLayerConfig).forEach(([key, config]) => {
-      if (
-        config.showProp !== undefined &&
-        isLayerVisible(key) !== config.showProp
-      ) {
-        toggleLayer(key)
-      }
-    })
-  }, [
-    showBC60,
-    showAD14,
-    showAD69,
-    showAD117,
-    showAD200,
-    empireLayerConfig,
-    isLayerVisible,
-    toggleLayer,
-  ])
-
-  // Enhanced toggle function that also calls onChange callbacks
-  const handleToggleLayer = (layerKey: string) => {
-    const newValue = !isLayerVisible(layerKey)
-    toggleLayer(layerKey)
-
-    // Call onChange callback if it exists
-    if (layerKey in empireLayerConfig) {
-      const config = empireLayerConfig[layerKey as keyof EmpireLayerConfigMap]
-      config?.onChange?.(newValue)
-    }
-  }
-
-  // Generate province options from loaded data
-  const provinceOptions = useMemo(() => {
-    if (!provincesData) return []
-
-    return provincesData.features
-      .map((feature) => {
-        const name = feature.properties?.name as string
-        return name ? { value: name, label: name } : null
-      })
-      .filter(
-        (option): option is { value: string; label: string } => option !== null,
-      )
-      .sort((a, b) => a.label.localeCompare(b.label))
-  }, [provincesData])
-
-  // Handle province selection change
-  const handleProvinceSelectionChange = (newSelection: string[]) => {
-    setSelectedProvinces(newSelection)
-  }
+  const { isLayerVisible, getLayerData } = useEmpireLayerData(empireLayerConfig)
 
   // Get province labels from labels data
   const provinceLabels = useMemo(() => {
@@ -837,24 +697,6 @@ export const Map: React.FC<MapProps> = ({
             : `space-y-4 ${className}`
         }
       >
-        {/* Controls Container */}
-        {!hideControls && (
-          <MapEmbeddedControls
-            layout={layout}
-            empireLayerConfig={empireLayerConfig}
-            isLayerVisible={isLayerVisible}
-            toggleLayer={handleToggleLayer}
-            hasAnyEmpireLayerVisible={hasAnyEmpireLayerVisible}
-            clearAllEmpireLayers={clearAllEmpireLayers}
-            provinceOptions={provinceOptions}
-            selectedProvinces={selectedProvinces}
-            onProvinceSelectionChange={handleProvinceSelectionChange}
-            provincesLoading={provincesLoading}
-            showProvinceLabels={showProvinceLabels}
-            onShowProvinceLabelsChange={setShowProvinceLabels}
-          />
-        )}
-
         {/* Map Container */}
         <div
           className={

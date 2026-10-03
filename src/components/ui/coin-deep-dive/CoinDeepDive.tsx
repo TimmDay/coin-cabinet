@@ -401,7 +401,6 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                 <Map
                   center={DEEP_DIVE_MAP_VIEW.center}
                   zoom={DEEP_DIVE_MAP_VIEW.zoom}
-                  hideControls
                   showMintMarkers={false}
                   customMarkers={standaloneMarkers}
                   showTimelineEventMarker={false}
@@ -416,7 +415,6 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                 <Map
                   center={DEEP_DIVE_MAP_VIEW.center}
                   zoom={DEEP_DIVE_MAP_VIEW.zoom}
-                  hideControls
                   showMintMarkers={false}
                   customMarkers={deityPlaceMarkers.concat(
                     artifactMarkers,

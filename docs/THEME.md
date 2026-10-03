@@ -104,8 +104,6 @@ still under reduced motion. Image placeholders are circles, because coins are.
 
 ## Known gaps
 
-- `SimpleMultiSelect` (the multi-select filter) still uses raw `slate`, `purple`
-  and `amber` classes and has not had the night treatment the other filters got.
 - There is no lint rule against raw palette colours.
 
 ## Checking a change

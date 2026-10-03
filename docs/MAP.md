@@ -9,6 +9,7 @@ old paper at sunset to sit with the rest of the site (`THEME.md`).
 | File | Job |
 |---|---|
 | `Map.tsx` | The map: base style, province and empire layers, mint and custom markers, clusters, popup |
+| `MapControls.tsx` | The empire layer and province panel on the `/map` page (behind the `dev` flag); `Map` itself has no controls and is driven by props |
 | `TimelineWithMap.tsx` | A timeline's map with its event reader and the timeline strip underneath |
 | `mapConfig.ts` | Bounds, province and empire layer styles, the deep dive opening view |
 | `mapTheme.ts` | Recolours the vendor base style as old paper |

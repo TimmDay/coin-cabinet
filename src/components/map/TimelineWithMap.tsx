@@ -457,7 +457,6 @@ export function TimelineWithMap({
                     height={MAP_HEIGHT}
                     width="100%"
                     showProvinceLabels={showProvinceLabels}
-                    hideControls={true}
                     showMintMarkers={showDefaultMintMarkers}
                     showTimelineEventMarker={false}
                     customMarkers={combinedCustomMarkers}
@@ -499,7 +498,6 @@ export function TimelineWithMap({
                   height={MAP_HEIGHT_DESKTOP}
                   width="100%"
                   showProvinceLabels={showProvinceLabels}
-                  hideControls={true}
                   timelineEventMarker={validatedTimelineMarker}
                   showMintMarkers={showDefaultMintMarkers}
                   showTimelineEventMarker={false}
@@ -567,7 +565,6 @@ export function TimelineWithMap({
                 height="52dvh"
                 width="100%"
                 showProvinceLabels={showProvinceLabels}
-                hideControls={true}
                 timelineEventMarker={validatedTimelineMarker}
                 showMintMarkers={showDefaultMintMarkers}
                 showTimelineEventMarker={false}
