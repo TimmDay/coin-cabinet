@@ -15,7 +15,7 @@ From the architecture review of 2026-10-04 (candidates 1 to 3). Branch
    - `/api/historical-figures` has no caller: delete it.
    - `/api/artifacts` returned a bare array while every other route returns
      `{ success, data }`: it joins the envelope.
-2. [ ] **Delete the admin-era surface of the coin read path.** `useSpecificCoinData`
+2. [x] **Delete the admin-era surface of the coin read path.** `useSpecificCoinData`
    returns only what `CoinDetailPage` reads (`coin`, `isLoading`, `error`) and
    stops fetching deities and timelines. Drop `useDeityOptions` if nothing else
    uses it, and the inert `show-hidden-coins` flag and `showHidden` param.

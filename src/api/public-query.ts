@@ -4,6 +4,16 @@ import { useQuery } from "@tanstack/react-query"
 
 type Envelope<T> = { success: boolean; data?: T; message?: string }
 
+/** A failed public fetch, with the HTTP status so callers can tell 404 apart. */
+export class PublicFetchError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message)
+  }
+}
+
 /**
  * GET a public route and unwrap its `{ success, data }` envelope. Throws an
  * Error carrying the route's message, so a hook's `error` is always readable.
@@ -19,7 +29,10 @@ export async function fetchPublic<T>(path: string, label: string): Promise<T> {
   }
 
   if (!response.ok || !result?.success || result.data === undefined) {
-    throw new Error(result?.message ?? `Failed to load ${label}`)
+    throw new PublicFetchError(
+      result?.message ?? `Failed to load ${label}`,
+      response.status,
+    )
   }
 
   return result.data

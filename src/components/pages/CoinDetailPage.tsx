@@ -5,14 +5,16 @@ import { CoinDeepDive } from "~/components/ui/coin-deep-dive"
 import { CoinLoader } from "~/components/ui/CoinLoader"
 import { NotFound404 } from "~/components/ui/NotFound404"
 import { PageTitle } from "~/components/ui/PageTitle"
-import { useSpecificCoinData } from "~/hooks/useEnhancedCoinData"
+import { useCoin } from "~/hooks/useCoin"
 
 type CoinDetailPageProps = {
   coinId: string
 }
 
 export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
-  const { coin, isLoading, error } = useSpecificCoinData(parseInt(coinId))
+  const { coin, isLoading, error, notFound } = useCoin(
+    /^\d+$/.test(coinId) ? Number(coinId) : null,
+  )
 
   if (isLoading) {
     return (
@@ -41,7 +43,7 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
     )
   }
 
-  if (!coin) {
+  if (notFound || !coin) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
         <div className="content-wrapper">

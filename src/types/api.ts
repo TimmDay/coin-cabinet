@@ -74,8 +74,3 @@ export type ApiResponse<T = unknown> = {
   message?: string
   error?: string
 }
-
-/**
- * Specific response type for coin API endpoints
- */
-export type CoinApiResponse = ApiResponse<CoinEnhanced>

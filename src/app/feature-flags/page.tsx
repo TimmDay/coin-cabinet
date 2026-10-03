@@ -5,6 +5,7 @@ import { PageTitle } from "~/components/ui/PageTitle"
 import {
   AVAILABLE_FEATURE_FLAGS,
   type FeatureFlagConfig,
+  type FeatureFlagName,
 } from "~/lib/feature-flags"
 import { clearFeatureFlags, setFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 
@@ -39,7 +40,7 @@ export default function FeatureFlagsPage() {
   }, [])
 
   const handleToggleFlag = (flagName: string, enabled: boolean) => {
-    setFeatureFlag(flagName as "dev" | "show-hidden-coins", enabled)
+    setFeatureFlag(flagName as FeatureFlagName, enabled)
     setEnabledFlags((prev) => ({
       ...prev,
       [flagName]: enabled,

@@ -1,3 +1,5 @@
+"use client"
+
 import { createPublicQuery, STALE } from "~/api/public-query"
 import type { Place } from "~/database/schema-places"
 
