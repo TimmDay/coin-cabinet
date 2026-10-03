@@ -61,24 +61,6 @@ describe("transformDeitiesToCards", () => {
     expect(card?.images?.[0]?.alt).toBe("Artifact 3")
   })
 
-  it("falls back to the deity's own image_links when it has no artifact picture", () => {
-    const [card] = transformDeitiesToCards(
-      deity({ artifact_ids: [], image_links: ["id-1"] }),
-      [],
-    )
-
-    expect(card?.images).toEqual([{ src: "id-1", alt: "Concordia" }])
-  })
-
-  it("prefers artifacts over image_links", () => {
-    const [card] = transformDeitiesToCards(
-      deity({ artifact_ids: ["3"], image_links: ["id-1"] }),
-      [artifact("3")],
-    )
-
-    expect(card?.images?.map((i) => i.src)).toEqual(["https://img/3.jpg"])
-  })
-
   it("has no images for a deity with nothing", () => {
     const [card] = transformDeitiesToCards(deity(), [])
     expect(card?.images).toBeUndefined()

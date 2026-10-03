@@ -73,8 +73,7 @@ missing is left out.
 (strings, in artifact id order): the artifacts that picture the deity. The open
 card shows their images, with each artifact's alt text, caption (`flavour_text`)
 and `image_credit`: one image on its own, or a carousel you click through when
-there are several. A deity with no artifact picture falls back to its own
-`image_links` (Cloudinary ids or URLs). If the `deity_artifacts` read fails
+there are several. If the `deity_artifacts` read fails
 (before its migration is run, say) the deities load without artifacts rather than
 failing.
 

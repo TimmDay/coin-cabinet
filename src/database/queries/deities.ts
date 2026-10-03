@@ -124,7 +124,6 @@ export async function fetchDeities(
     place_ids: placesByDeityId.get(row.id) ?? [],
     festivals: (row.festivals ?? []).map((name) => ({ name })),
     artifact_ids: artifactIdsByDeityId.get(row.id) ?? [],
-    image_links: row.image_links ?? [],
     created_at: row.created_at,
     updated_at: row.updated_at,
     user_id: "",

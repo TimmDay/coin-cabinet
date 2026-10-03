@@ -19,8 +19,8 @@ export function transformDeitiesToCards(
   return (
     deities?.map((deity) => {
       // A deity is pictured by its artifacts, which carry the alt text and
-      // caption. Its own image_links are only for a deity with no artifact.
-      const pictured = (deity.artifact_ids ?? []).flatMap((id) => {
+      // caption.
+      const images = (deity.artifact_ids ?? []).flatMap((id) => {
         const artifact = artifacts?.find((a) => a.id === id)
         return artifact?.img_src
           ? [
@@ -37,9 +37,6 @@ export function transformDeitiesToCards(
             ]
           : []
       })
-      const images = pictured.length
-        ? pictured
-        : (deity.image_links ?? []).map((src) => ({ src, alt: deity.name }))
 
       return {
         title: deity.name,

@@ -43,8 +43,6 @@ export type CoinEnhanced = SomnusCollection & {
     subtitle?: string
     flavour_text?: string | null
     artifact_ids?: string[]
-    /** Pictures of the deity, Cloudinary ids or URLs. */
-    image_links?: string[]
     place_ids?: number[] | null
     features_coinage?: Array<{
       name: string

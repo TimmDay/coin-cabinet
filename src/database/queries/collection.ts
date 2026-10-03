@@ -425,7 +425,7 @@ export async function fetchCollectionDetail(
       ? supabase
           .from("deities")
           .select(
-            "id, name, subtitle, flavour_text, secondary_info, image_links, place_ids:deity_places(place_id)",
+            "id, name, subtitle, flavour_text, secondary_info, place_ids:deity_places(place_id)",
           )
           .in(
             "id",
@@ -434,12 +434,7 @@ export async function fetchCollectionDetail(
           .returns<
             (Pick<
               DeityRow,
-              | "id"
-              | "name"
-              | "subtitle"
-              | "flavour_text"
-              | "secondary_info"
-              | "image_links"
+              "id" | "name" | "subtitle" | "flavour_text" | "secondary_info"
             > & { place_ids: { place_id: number }[] })[]
           >()
       : Promise.resolve({ data: [], error: null }),
@@ -547,7 +542,6 @@ export async function fetchCollectionDetail(
       subtitle: d.subtitle ?? undefined,
       flavour_text: d.flavour_text,
       artifact_ids: deityArtifactIds.get(d.id) ?? [],
-      image_links: d.image_links ?? [],
       place_ids: d.place_ids.map((p) => p.place_id),
       features_coinage: (deityDeviceNames.data.get(d.id) ?? []).map((name) => ({
         name,
