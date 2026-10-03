@@ -4,8 +4,6 @@ import { fetchCitations } from "~/database/queries/citations"
 import type { QueryResult } from "~/database/queries/types"
 import type { Deity } from "~/database/schema-deities"
 
-type DeviceRow = Database["public"]["Tables"]["devices"]["Row"]
-
 /**
  * The artifact ids that picture each deity, in artifact id order, as strings.
  * A failure here leaves the deities without pictures instead of failing the
@@ -36,6 +34,43 @@ export async function fetchDeityArtifactIds(
   return byDeity
 }
 
+/**
+ * The names of the devices linked to each deity through `device_deities`, in
+ * alphabetical order. The deity card lists them in its footer.
+ */
+export async function fetchDeityDeviceNames(
+  supabase: SupabaseClient<Database>,
+  deityIds: number[],
+): Promise<QueryResult<Map<number, string[]>>> {
+  const byDeity = new Map<number, string[]>()
+  if (deityIds.length === 0) return { data: byDeity, error: null }
+
+  const { data: links, error: linksError } = await supabase
+    .from("device_deities")
+    .select("*")
+    .in("deity_id", deityIds)
+  if (linksError) return { data: null, error: linksError }
+
+  const deviceIds = [...new Set(links.map((link) => link.device_id))]
+  if (deviceIds.length === 0) return { data: byDeity, error: null }
+
+  const { data: devices, error: devicesError } = await supabase
+    .from("devices")
+    .select("*")
+    .in("id", deviceIds)
+  if (devicesError) return { data: null, error: devicesError }
+
+  const nameById = new Map(devices.map((d) => [d.id, d.name]))
+  for (const link of links) {
+    const name = nameById.get(link.device_id)
+    if (!name) continue
+    byDeity.set(link.deity_id, [...(byDeity.get(link.deity_id) ?? []), name])
+  }
+  for (const names of byDeity.values()) names.sort((a, b) => a.localeCompare(b))
+
+  return { data: byDeity, error: null }
+}
+
 export async function fetchDeities(
   supabase: SupabaseClient<Database>,
 ): Promise<QueryResult<Deity[]>> {
@@ -55,42 +90,19 @@ export async function fetchDeities(
 
   if (deityPlacesError) return { data: null, error: deityPlacesError }
 
-  const { data: deviceDeities, error: deviceDeitiesError } = await supabase
-    .from("device_deities")
-    .select("*")
-    .in("deity_id", deityIds)
-
-  if (deviceDeitiesError) return { data: null, error: deviceDeitiesError }
-
   const artifactIdsByDeityId = await fetchDeityArtifactIds(supabase, deityIds)
 
   const citations = await fetchCitations(supabase, "deity_id", deityIds)
   if (citations.error) return { data: null, error: citations.error }
 
-  const deviceIds = [...new Set(deviceDeities.map((dd) => dd.device_id))]
-  const { data: devices, error: devicesError } =
-    deviceIds.length > 0
-      ? await supabase.from("devices").select("*").in("id", deviceIds)
-      : { data: [] as DeviceRow[], error: null }
-
-  if (devicesError) return { data: null, error: devicesError }
-
-  const deviceById = new Map(devices.map((d) => [d.id, d]))
+  const deviceNames = await fetchDeityDeviceNames(supabase, deityIds)
+  if (deviceNames.error) return { data: null, error: deviceNames.error }
 
   const placesByDeityId = new Map<number, number[]>()
   for (const dp of deityPlaces) {
     const list = placesByDeityId.get(dp.deity_id) ?? []
     list.push(dp.place_id)
     placesByDeityId.set(dp.deity_id, list)
-  }
-
-  const devicesByDeityId = new Map<number, string[]>()
-  for (const dd of deviceDeities) {
-    const device = deviceById.get(dd.device_id)
-    if (!device) continue
-    const list = devicesByDeityId.get(dd.deity_id) ?? []
-    list.push(device.name)
-    devicesByDeityId.set(dd.deity_id, list)
   }
 
   const result: Deity[] = deities.map((row) => ({
@@ -105,7 +117,7 @@ export async function fetchDeities(
     god_of: row.god_of ?? [],
     // The card footer lists the devices linked through `device_deities`
     // (see docs/READ_PATH.md).
-    features_coinage: (devicesByDeityId.get(row.id) ?? []).map((name) => ({
+    features_coinage: (deviceNames.data.get(row.id) ?? []).map((name) => ({
       name,
     })),
     legends_coinage: row.legends_coinage ?? [],

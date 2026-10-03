@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import type { Database } from "~/database/database.types"
-import { fetchDeityArtifactIds } from "./deities"
+import { fetchDeityArtifactIds, fetchDeityDeviceNames } from "./deities"
 
 function fakeClient(result: { data: unknown; error: unknown }) {
   const calls: unknown[][] = []
@@ -53,5 +53,46 @@ describe("fetchDeityArtifactIds", () => {
     })
 
     expect((await fetchDeityArtifactIds(client, [1])).size).toBe(0)
+  })
+})
+
+// A client whose tables each answer a fixed set of rows
+function tablesClient(tables: Record<string, unknown[]>) {
+  return {
+    from: (table: string) => ({
+      select: () => ({
+        in: () => Promise.resolve({ data: tables[table] ?? [], error: null }),
+      }),
+    }),
+  } as unknown as SupabaseClient<Database>
+}
+
+describe("fetchDeityDeviceNames", () => {
+  it("lists each deity's device names alphabetically", async () => {
+    const client = tablesClient({
+      device_deities: [
+        { deity_id: 1, device_id: 10 },
+        { deity_id: 1, device_id: 11 },
+        { deity_id: 2, device_id: 11 },
+      ],
+      devices: [
+        { id: 10, name: "Patera" },
+        { id: 11, name: "Cornucopia" },
+      ],
+    })
+
+    const { data } = await fetchDeityDeviceNames(client, [1, 2])
+
+    expect(data?.get(1)).toEqual(["Cornucopia", "Patera"])
+    expect(data?.get(2)).toEqual(["Cornucopia"])
+  })
+
+  it("is empty for deities with no devices, without asking for devices", async () => {
+    const client = tablesClient({
+      device_deities: [],
+      devices: [{ id: 1, name: "X" }],
+    })
+
+    expect((await fetchDeityDeviceNames(client, [1])).data?.size).toBe(0)
   })
 })

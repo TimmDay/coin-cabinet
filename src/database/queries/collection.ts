@@ -1,7 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
 import { fetchClockNotes } from "~/database/queries/clock-notes"
-import { fetchDeityArtifactIds } from "~/database/queries/deities"
+import {
+  fetchDeityArtifactIds,
+  fetchDeityDeviceNames,
+} from "~/database/queries/deities"
 import type { QueryResult } from "~/database/queries/types"
 import type {
   NotableFeature,
@@ -519,10 +522,12 @@ export async function fetchCollectionDetail(
     (row) => row.find_lat !== null && row.find_lng !== null,
   )
 
-  const deityArtifactIds = await fetchDeityArtifactIds(
-    supabase,
-    (deitiesResult.data ?? []).map((d) => d.id),
-  )
+  const itemDeityIds = (deitiesResult.data ?? []).map((d) => d.id)
+  const deityArtifactIds = await fetchDeityArtifactIds(supabase, itemDeityIds)
+  const deityDeviceNames = await fetchDeityDeviceNames(supabase, itemDeityIds)
+  if (deityDeviceNames.error) {
+    return { data: null, error: deityDeviceNames.error }
+  }
 
   const enhanced: CoinEnhanced = {
     ...base,
@@ -544,7 +549,9 @@ export async function fetchCollectionDetail(
       artifact_ids: deityArtifactIds.get(d.id) ?? [],
       image_links: d.image_links ?? [],
       place_ids: d.place_ids.map((p) => p.place_id),
-      features_coinage: [],
+      features_coinage: (deityDeviceNames.data.get(d.id) ?? []).map((name) => ({
+        name,
+      })),
     })),
     historical_figures: (personsResult.data ?? []).map((p) => ({
       id: p.id,
