@@ -30,8 +30,8 @@
   --color-map-label: hsl(273 46% 33%); /* map labels and popup titles */
 
   /* The header sky, top to bottom: deep indigo, plum, mauve, dusty rose, then
-     the copper glow at the horizon. Shared by the homepage header (curved)
-     and every other page's nav bar (flat). */
+     the copper glow at the horizon. Shared by the homepage header and
+     every other page's nav bar, both with a curved horizon. */
   --color-sky-top: hsl(228 20% 7%);
   --color-sky-high: hsl(248 15% 9%);
   --color-sky-mid: hsl(290 11% 11%);
@@ -124,19 +124,43 @@ main {
   outline: none;
 }
 
-/* Nav bar on every page except the homepage: the same sky as the homepage
-   header, flat. The glow near the bottom edge fades out over its last ~30px
-   (the same soft blur as the homepage), so the bar melts into the page. The
-   homepage header (.somnus-nav-home) curves it. */
+/* Nav bar on every page except the homepage: the same sky and the same curved
+   horizon as the homepage header (see below), on a shorter bar. The curve is
+   the edge of a very large circle, so the centre of the bar keeps its height
+   while the outer sides sag lower, by ~1.6vw at the edges. The gradient lives
+   on ::before, which extends --sag below the nav box, so nothing is pushed down.
+   The glow fades out over the last ~14px and the lower bands are fixed pixel
+   widths, so the bar melts into the page the way the flat bar did. */
 .somnus-nav {
-  background: linear-gradient(
-    to bottom,
-    var(--color-sky-top) 0%,
-    var(--color-sky-high) 25%,
-    var(--color-sky-mid) 42%,
-    var(--color-sky-low) calc(100% - 30px),
-    var(--color-sky-glow) calc(100% - 14px),
-    transparent 100%
+  /* Height of the nav box; keep in sync with h-32 / lg:h-20 in Navbar. */
+  --nav-h: 128px;
+  --sag: 1.6vw;
+  --earth-r: 780vw;
+}
+
+@media (min-width: 1024px) {
+  .somnus-nav {
+    --nav-h: 80px;
+  }
+}
+
+.somnus-nav::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: calc(-1 * var(--sag));
+  left: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% calc(100% - var(--sag) + var(--earth-r)),
+    transparent var(--earth-r),
+    var(--color-sky-glow) calc(var(--earth-r) + 14px),
+    var(--color-sky-low) calc(var(--earth-r) + 30px),
+    var(--color-sky-mid) calc(var(--earth-r) + var(--nav-h) * 0.58),
+    var(--color-sky-high) calc(var(--earth-r) + var(--nav-h) * 0.75),
+    var(--color-sky-top) calc(var(--earth-r) + var(--nav-h))
   );
 }
 
