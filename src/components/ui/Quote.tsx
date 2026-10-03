@@ -14,21 +14,21 @@ export function Quote({ quote, attribution, link }: QuoteProps) {
   }
 
   const containerClasses = `
-    text-center
+    mx-auto block w-fit max-w-2xl
     ${link ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}
   `
 
   if (link) {
     return (
       <button
-        className={`${containerClasses} w-full border-none bg-transparent p-0 text-left`}
+        className={`${containerClasses} border-none bg-transparent p-0 text-left`}
         onClick={handleClick}
         aria-label={`Read more about this quote by ${attribution}`}
       >
-        <blockquote className="text-ink mb-4 text-lg italic">
+        <blockquote className="text-ink mb-4 text-left text-xl leading-relaxed tracking-wide">
           &quot;{quote}&quot;
         </blockquote>
-        <cite className="text-ink-soft text-sm not-italic">
+        <cite className="text-ink-soft block pl-[3ch] text-base tracking-wide not-italic">
           — {attribution}
         </cite>
       </button>
@@ -37,10 +37,12 @@ export function Quote({ quote, attribution, link }: QuoteProps) {
 
   return (
     <div className={containerClasses}>
-      <blockquote className="text-ink mb-4 text-lg italic">
+      <blockquote className="text-ink mb-4 text-left text-xl leading-relaxed tracking-wide">
         &quot;{quote}&quot;
       </blockquote>
-      <cite className="text-ink-soft text-sm not-italic">— {attribution}</cite>
+      <cite className="text-ink-soft block pl-[3ch] text-base tracking-wide not-italic">
+        — {attribution}
+      </cite>
     </div>
   )
 }
