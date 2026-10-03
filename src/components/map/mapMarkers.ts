@@ -150,3 +150,24 @@ export function createSpiderfiedMarkerHtml(marker: CustomMapMarker): string {
     centerDotScale: marker.centerDotScale,
   })
 }
+
+/**
+ * What a click on a marker opens: its title, subtitle and description, in its
+ * own title colour. `null` for a marker that opens nothing (the timeline's
+ * own pins, which select an event instead, or one with no text).
+ */
+export function markerPopup(marker: CustomMapMarker) {
+  if (
+    marker.showPopup === false ||
+    (!marker.title && !marker.subtitle && !marker.description)
+  ) {
+    return null
+  }
+
+  return {
+    title: marker.title,
+    subtitle: marker.subtitle,
+    description: marker.description ?? "",
+    className: marker.className ?? "text-paper-ink",
+  }
+}

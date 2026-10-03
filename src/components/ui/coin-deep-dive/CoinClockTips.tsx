@@ -1,5 +1,7 @@
+import CloudinaryImage from "~/components/CloudinaryImage"
 import { cn } from "~/lib/utils"
 import type { ClockNote } from "~/types/api"
+import { ClockNoteIcon } from "./ClockNoteIcon"
 import { TipIcon } from "./TipIcon"
 
 /**
@@ -65,6 +67,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           size="md"
           label={note.title ?? `Note at ${note.position} o'clock`}
           interactive={note.linkUrl !== null}
+          icon={<ClockNoteIcon kind={note.linkKind} />}
           className="absolute z-10 -translate-x-1/2 -translate-y-1/2 [--clock-gap:24px] sm:[--clock-gap:33px]"
           style={clockOffset(note.position)}
           popoverClassName={cn(
@@ -75,6 +78,21 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           {note.title && (
             <span className="font-display mb-2 block text-center text-lg tracking-widest uppercase">
               {note.title}
+            </span>
+          )}
+          {note.imageUrl && (
+            <span className="mb-3 flex h-40 items-center justify-center overflow-hidden rounded">
+              <CloudinaryImage
+                src={note.imageUrl}
+                alt={note.title ?? ""}
+                width={480}
+                height={320}
+              />
+            </span>
+          )}
+          {note.imageUrl && note.imageCredit && (
+            <span className="text-moonlight/80 -mt-2 mb-3 block text-center text-xs">
+              {note.imageCredit}
             </span>
           )}
           {note.body}

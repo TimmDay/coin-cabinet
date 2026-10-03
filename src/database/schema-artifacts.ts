@@ -5,6 +5,8 @@ export type Artifact = {
   name: string
   img_src: string | null
   img_alt: string | null
+  /** Who to credit for the image. */
+  img_credit: string | null
   place_id: string | null
   institution_name: string | null
   location_name: string | null
@@ -24,6 +26,7 @@ export type ArtifactInsert = {
   name: string
   img_src?: string | null
   img_alt?: string | null
+  img_credit?: string | null
   place_id?: string | null
   institution_name?: string | null
   location_name?: string | null

@@ -12,27 +12,41 @@ type DeepDiveCardsSectionProps = {
   historicalFigures: CoinEnhanced["historical_figures"]
 }
 
-function transformDeitiesToCards(
+export function transformDeitiesToCards(
   deities: CoinEnhanced["deities"],
   artifacts: ReturnType<typeof useArtifacts>["data"],
 ) {
   return (
     deities?.map((deity) => {
-      // Look up first artifact for image
-      const artifactId = deity.artifact_ids?.[0]
-      const artifact =
-        artifactId && artifacts
-          ? artifacts.find((a) => a.id === artifactId)
-          : null
+      // A deity is pictured by its artifacts, which carry the alt text and
+      // caption. Its own image_links are only for a deity with no artifact.
+      const pictured = (deity.artifact_ids ?? []).flatMap((id) => {
+        const artifact = artifacts?.find((a) => a.id === id)
+        return artifact?.img_src
+          ? [
+              {
+                src: artifact.img_src,
+                alt: artifact.img_alt ?? artifact.name,
+                name: artifact.name,
+                location:
+                  artifact.location_name ??
+                  artifact.institution_name ??
+                  undefined,
+                credit: artifact.img_credit ?? undefined,
+              },
+            ]
+          : []
+      })
+      const images = pictured.length
+        ? pictured
+        : (deity.image_links ?? []).map((src) => ({ src, alt: deity.name }))
 
       return {
         title: deity.name,
         subtitle: deity.subtitle ?? "",
         primaryInfo: deity.flavour_text ?? "",
         footer: deity.features_coinage?.map((f) => f.name).join(", ") ?? "",
-        image: artifact?.img_src ?? undefined,
-        altText: artifact?.img_alt ?? deity.name ?? undefined,
-        caption: artifact?.flavour_text ?? undefined,
+        images: images.length ? images : undefined,
       }
     }) ?? []
   )

@@ -16,7 +16,6 @@ const row = (overrides: Partial<Row>): Row => ({
   body: null,
   link_url: null,
   link_label: null,
-  icon_type: null,
   device_id: null,
   deity_id: null,
   place_id: null,
@@ -29,7 +28,17 @@ const row = (overrides: Partial<Row>): Row => ({
 })
 
 const entries = (): LinkedEntries => ({
-  device: new Map([[7, { title: "Cornucopia", body: "Horn of plenty." }]]),
+  device: new Map([
+    [
+      7,
+      {
+        title: "Cornucopia",
+        body: "Horn of plenty.",
+        imageUrl: "https://img/c.jpg",
+        imageCredit: "Photo by Tim",
+      },
+    ],
+  ]),
   deity: new Map([[2, { title: "Sol", body: null }]]),
   place: new Map(),
   person: new Map(),
@@ -51,6 +60,21 @@ describe("resolveClockNotes", () => {
     expect(note).toMatchObject({ title: "Cornucopia", body: "Horn of plenty." })
   })
 
+  it("carries the linked entry's picture, and none when it has none", () => {
+    const [withImage] = resolveClockNotes([row({ device_id: 7 })], entries())
+    const [without] = resolveClockNotes([row({ deity_id: 2 })], entries())
+
+    expect(withImage?.imageUrl).toBe("https://img/c.jpg")
+    expect(withImage?.imageCredit).toBe("Photo by Tim")
+    expect(without?.imageUrl).toBeNull()
+    expect(without?.imageCredit).toBeNull()
+  })
+
+  it("gives a note with its own text no picture", () => {
+    const [note] = resolveClockNotes([row({ body: "Own" })], entries())
+    expect(note?.imageUrl).toBeNull()
+  })
+
   it("lets the note override the linked entry's text", () => {
     const [note] = resolveClockNotes(
       [row({ device_id: 7, body: "Mine" })],
@@ -68,7 +92,19 @@ describe("resolveClockNotes", () => {
     expect(resolveClockNotes([row({ device_id: 99 })], entries())).toEqual([])
   })
 
-  it("sorts by side, then position, and passes link and icon through", () => {
+  it("names what a note links to, and nothing for a note of its own", () => {
+    const notes = resolveClockNotes(
+      [
+        row({ id: 1, clock_position: 1, device_id: 7 }),
+        row({ id: 2, clock_position: 2, deity_id: 2 }),
+        row({ id: 3, clock_position: 3, body: "Own" }),
+      ],
+      entries(),
+    )
+    expect(notes.map((n) => n.linkKind)).toEqual(["device", "deity", null])
+  })
+
+  it("sorts by side, then position, and passes the link through", () => {
     const notes = resolveClockNotes(
       [
         row({ id: 1, side: "reverse", clock_position: 2, body: "a" }),
@@ -79,7 +115,6 @@ describe("resolveClockNotes", () => {
           body: "b",
           link_url: "https://example.com",
           link_label: "More",
-          icon_type: "device",
         }),
         row({ id: 3, side: "obverse", clock_position: 1, body: "c" }),
       ],
@@ -93,7 +128,6 @@ describe("resolveClockNotes", () => {
     expect(notes[1]).toMatchObject({
       linkUrl: "https://example.com",
       linkLabel: "More",
-      iconType: "device",
     })
   })
 })

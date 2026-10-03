@@ -69,7 +69,14 @@ missing is left out.
 
 ### `/api/deities` from `deities`, `deity_places`, `device_deities`, `devices`
 `deity_places` becomes `place_ids`. The names of the devices linked through
-`device_deities` fill the card footer.
+`device_deities` fill the card footer. `deity_artifacts` becomes `artifact_ids`
+(strings, in artifact id order): the artifacts that picture the deity. The open
+card shows their images, with each artifact's alt text, caption (`flavour_text`)
+and `image_credit`: one image on its own, or a carousel you click through when
+there are several. A deity with no artifact picture falls back to its own
+`image_links` (Cloudinary ids or URLs). If the `deity_artifacts` read fails
+(before its migration is run, say) the deities load without artifacts rather than
+failing.
 
 ### `/api/timelines` from `timelines`, `timeline_events`, `places`
 The `timeline: Event[]` array is rebuilt from the event rows in `sequence`
@@ -79,8 +86,8 @@ event's position is `COALESCE(event.lat, place.lat)`, and likewise for longitude
 ### `/api/artifacts` from `artifacts`, `places`
 The institution name and coordinates come from the joined place and are
 flattened onto the output fields `artifact-helpers.ts` reads. `image_url`
-becomes `img_src`, `image_alt_text` becomes `img_alt` and `location_note`
-becomes `location_name`. The numeric `id` is sent as a string.
+becomes `img_src`, `image_alt_text` becomes `img_alt`, `image_credit` becomes
+`img_credit` and `location_note` becomes `location_name`. The numeric `id` is sent as a string.
 
 ### `/api/somnus-collection` (list) from `public_items` and its children
 `public_items` is the only anon-readable source of `collection` and `coins`
@@ -117,8 +124,40 @@ The same base row as the list, plus:
 - Every `coin_images` variant and side, in `sequence` order, becomes
   `image_link_altlight_o/_r`, `image_link_sketch_o/_r`, `image_link_zoom_o/_r`
   and `image_rotation`.
-- `item_clock_notes` become `clock_notes`; see `TODO_CLOCK_NOTES.md`.
+- `item_clock_notes` become `clock_notes`; see "Clock notes" below.
 - `public_find_events` becomes `found_event` (below).
+
+## Clock notes
+
+Short notes anchored to a point on a coin face, shown as small circles around the
+coin image at clock positions 1 to 12 (12 is straight up). A circle opens a
+popover with the note.
+
+- **Data:** table `item_clock_notes`, keyed to `collection.id`: one note per item,
+  side (`obverse` or `reverse`) and position. A note has an optional title, body,
+  link (URL and label) and at most one link to a device, deity, place, person,
+  mint or artifact. It needs a body or a linked entry that supplies one. Row level
+  security lets anon read the notes of public items. Notes are written in the
+  data-maintenance app, in the item form's "Clock Notes" section.
+- **Resolving:** `fetchClockNotes` (`queries/clock-notes.ts`) loads the rows,
+  fetches the linked entries (one query per kind in use) and `resolveClockNotes`,
+  a pure function with tests, builds the notes. A linked entry gives the title and
+  body (a device's description, or `flavour_text` for the others; a mint is named
+  after its place) and its picture if it has one (`image_url` of a device or an
+  artifact), with the artifact's `image_credit` shown under it. Text written on
+  the note wins. A note with nothing to show is
+  dropped. Notes come back sorted by side then position.
+- **Icon:** the circle's icon comes from what the note links to (`linkKind`), drawn
+  by `ClockNoteIcon`: a die stamp for a device, sun rays for a deity, a pin for a
+  place, a bust for a person, a beaded coin for a mint, a column for an artifact,
+  and a small dot for a note of its own. The `icon_type` column is no longer read.
+- **On the page:** `CoinClockTips` draws the circles with `TipIcon` (opens on
+  hover, focus and tap, closes on leave, blur, Escape or an outside click). Room
+  above and below a coin is reserved only when a circle hangs there (11, 12 or 1
+  for the top, 5, 6 or 7 for the bottom), decided across both faces together
+  (`clockNoteRoom`) so the coins and legends stay level. The popover opens away
+  from the coin: title in Cinzel, then the picture, the body and the link. Its
+  style is in `THEME.md`.
 
 ## What the site cannot read: provenance
 
@@ -152,8 +191,10 @@ in `src/data`. Nothing on the site displays citations yet.
 
 ## Known limitations
 
-- Deity and person cards show no illustrative photo: `artifact_ids` has no home
-  in the normalised schema for those two kinds.
+- A person's card shows no photo, and a person brings no artifact pins to the map:
+  `artifact_ids` has no home in the normalised schema for persons. A deity's
+  artifacts (`deity_artifacts`) and a coin's own supporting images (`flavour_img`)
+  do get a pin.
 - What appears on the site depends on the data: items and sets with
   `is_hidden = TRUE` are invisible, and a set page is empty until its set is
   made visible in the data-maintenance app.

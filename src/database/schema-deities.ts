@@ -30,6 +30,7 @@ export type Deity = {
   place_ids: number[] // Place IDs for associated temples, shrines, etc.
   festivals: Festival[] // TODO: tighter type: {name: string, date: string (mm/dd), place: Place} JSONB
   artifact_ids: string[] // For joining to future artifacts table - museum pieces, statues, etc.
+  image_links: string[] // Pictures of the deity (Cloudinary ids or URLs), shown on its card
   created_at: string
   updated_at: string
   user_id: string

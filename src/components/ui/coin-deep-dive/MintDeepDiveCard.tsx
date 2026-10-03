@@ -43,7 +43,7 @@ export function MintDeepDiveCard({ mintId }: MintDeepDiveCardProps) {
 
   return (
     <DeepDiveCard
-      title={`${mint.name} Mint`}
+      title={mint.name}
       subtitle={subtitle}
       primaryInfo={mint.flavour_text}
       footer={mintMarksFooter}

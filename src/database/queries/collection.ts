@@ -1,6 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
 import { fetchClockNotes } from "~/database/queries/clock-notes"
+import {
+  fetchDeityArtifactIds,
+  fetchDeityDeviceNames,
+} from "~/database/queries/deities"
 import type { QueryResult } from "~/database/queries/types"
 import type {
   NotableFeature,
@@ -421,7 +425,7 @@ export async function fetchCollectionDetail(
       ? supabase
           .from("deities")
           .select(
-            "id, name, subtitle, flavour_text, secondary_info, place_ids:deity_places(place_id)",
+            "id, name, subtitle, flavour_text, secondary_info, image_links, place_ids:deity_places(place_id)",
           )
           .in(
             "id",
@@ -430,7 +434,12 @@ export async function fetchCollectionDetail(
           .returns<
             (Pick<
               DeityRow,
-              "id" | "name" | "subtitle" | "flavour_text" | "secondary_info"
+              | "id"
+              | "name"
+              | "subtitle"
+              | "flavour_text"
+              | "secondary_info"
+              | "image_links"
             > & { place_ids: { place_id: number }[] })[]
           >()
       : Promise.resolve({ data: [], error: null }),
@@ -513,6 +522,13 @@ export async function fetchCollectionDetail(
     (row) => row.find_lat !== null && row.find_lng !== null,
   )
 
+  const itemDeityIds = (deitiesResult.data ?? []).map((d) => d.id)
+  const deityArtifactIds = await fetchDeityArtifactIds(supabase, itemDeityIds)
+  const deityDeviceNames = await fetchDeityDeviceNames(supabase, itemDeityIds)
+  if (deityDeviceNames.error) {
+    return { data: null, error: deityDeviceNames.error }
+  }
+
   const enhanced: CoinEnhanced = {
     ...base,
     clock_notes: clockNotesResult.data ?? [],
@@ -530,9 +546,12 @@ export async function fetchCollectionDetail(
       name: d.name,
       subtitle: d.subtitle ?? undefined,
       flavour_text: d.flavour_text,
-      artifact_ids: [],
+      artifact_ids: deityArtifactIds.get(d.id) ?? [],
+      image_links: d.image_links ?? [],
       place_ids: d.place_ids.map((p) => p.place_id),
-      features_coinage: [],
+      features_coinage: (deityDeviceNames.data.get(d.id) ?? []).map((name) => ({
+        name,
+      })),
     })),
     historical_figures: (personsResult.data ?? []).map((p) => ({
       id: p.id,

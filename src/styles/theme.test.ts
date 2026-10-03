@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest"
 // palette classes. This fails when one creeps back in.
 
 const PALETTE_CLASS =
-  /\b(?:text|bg|border|ring|ring-offset|from|to|via|fill|stroke|divide|outline|placeholder|caret|accent|decoration|shadow)-(?:slate|gray|stone|zinc|neutral|purple|violet|indigo|blue|sky|cyan|teal|emerald|green|lime|yellow|amber|orange|red|rose|pink|fuchsia)-\d{2,3}\b/g
+  /\b(?:text|bg|border(?:-[trblxyse])?|ring|ring-offset|from|to|via|fill|stroke|divide|outline|placeholder|caret|accent|decoration|shadow)-(?:slate|gray|stone|zinc|neutral|purple|violet|indigo|blue|sky|cyan|teal|emerald|green|lime|yellow|amber|orange|red|rose|pink|fuchsia)-\d{2,3}\b/g
 
 // Status colours stay raw: red for an error, green for an enabled flag.
 const STATUS = /^(?:red|green)-/

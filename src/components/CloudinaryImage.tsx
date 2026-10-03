@@ -11,6 +11,8 @@ type Props = {
   priority?: boolean
   /** Crop the empty margin first so the subject fills the whole box. */
   trim?: boolean
+  /** Keep the picture's own shape (scaled to fit the box) instead of padding it to a square. */
+  fit?: boolean
 }
 
 // Utility function to prefetch Cloudinary images
@@ -44,6 +46,7 @@ export default function CloudinaryImage({
   onError,
   priority = false,
   trim = false,
+  fit = false,
 }: Props) {
   if (!src) {
     return (
@@ -59,14 +62,18 @@ export default function CloudinaryImage({
       width={width}
       height={height}
       crop={{
-        type: "pad",
+        type: fit ? "fit" : "pad",
         source: true,
       }}
       background="transparent"
       trim={trim}
       alt={alt}
       sizes={`${width}px`}
-      className="max-h-full max-w-full object-contain"
+      className={
+        fit
+          ? "h-auto w-auto max-w-full"
+          : "max-h-full max-w-full object-contain"
+      }
       onLoad={onLoad}
       onError={onError}
       priority={priority}
