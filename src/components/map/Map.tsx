@@ -25,7 +25,7 @@ import {
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
 import { markerPopup, type CustomMapMarker } from "./mapMarkers"
-import { CustomMarkerLayer } from "./CustomMarkerLayer"
+import { CustomMarkerLayer, type ClickPoint } from "./CustomMarkerLayer"
 import { MapPopup } from "./MapPopup"
 import type { ViewportBounds } from "./useMarkerClusters"
 import { HighlightedMintSvg } from "./MintMarkerSvg"
@@ -240,11 +240,11 @@ export const Map: React.FC<MapProps> = ({
   )
 
   const handleCustomMarkerClick = useCallback(
-    (marker: CustomMapMarker, originalEvent: MouseEvent) => {
+    (marker: CustomMapMarker, point: ClickPoint) => {
       marker.onClick?.()
 
       const popup = markerPopup(marker)
-      if (popup) openPopup(originalEvent.clientX, originalEvent.clientY, popup)
+      if (popup) openPopup(point.clientX, point.clientY, popup)
     },
     [openPopup],
   )
@@ -427,7 +427,10 @@ export const Map: React.FC<MapProps> = ({
               map.flyTo({
                 center: [numLng, numLat],
                 zoom: numZoom,
-                duration: 1500,
+                duration: window.matchMedia("(prefers-reduced-motion: reduce)")
+                  .matches
+                  ? 0
+                  : 1500,
               })
             } else {
               map.jumpTo({ center: [numLng, numLat], zoom: numZoom })

@@ -116,7 +116,8 @@ export function CoinCardGridItem({
 
   return (
     <div
-      className={`group w-fit cursor-pointer text-center transition-all duration-300 outline-none ${zigzagOffset}`}
+      className={`group focus-visible:ring-moonlight/70 w-fit cursor-pointer rounded-lg text-center transition-all duration-300 outline-none focus-visible:ring-2 ${zigzagOffset}`}
+      role="link"
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={(e) => {

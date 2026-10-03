@@ -54,19 +54,19 @@ export default function FeatureFlagsPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen p-6 md:p-8">
+      <div className="min-h-screen p-6 md:p-8">
         <div className="mx-auto max-w-4xl">
           <PageTitle subtitle="Manage development and experimental features">
             Feature Flags
           </PageTitle>
           <div className="mt-8 text-center">Loading feature flags...</div>
         </div>
-      </main>
+      </div>
     )
   }
 
   return (
-    <main className="min-h-screen p-6 md:p-8">
+    <div className="min-h-screen p-6 md:p-8">
       <div className="mx-auto max-w-4xl">
         <PageTitle subtitle="Manage development and experimental features">
           Feature Flags
@@ -162,6 +162,6 @@ export default function FeatureFlagsPage() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

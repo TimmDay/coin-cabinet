@@ -74,6 +74,11 @@ Markers are HTML (`Marker` from `react-map-gl`), so each can carry its own
 colours, icon and popup text. Teardrop pins come from
 `createReverseTeardropMarkerHtml`, and all text goes through `escapeHtml`.
 
+Each marker is a focusable `role="button"` (`MarkerButton` in `CustomMarkerLayer`)
+labelled with its title, or "Group of N places, zoom in" for a cluster. Enter and
+Space click it, and a key press opens the popup at the middle of the marker
+(`clickPoint`) instead of at the mouse.
+
 `pinStyle(kind)` is the only place that decides colours. Kinds: `event` (a
 timeline event), `minted`, `found`, `deity-place` and `artifact`. A call site
 names a kind and spreads the result into the marker. The colours are the

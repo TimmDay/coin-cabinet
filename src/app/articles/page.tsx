@@ -2,7 +2,7 @@ import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function ArticlesPage() {
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12 text-center">
           <PageTitle className="mb-6">Articles</PageTitle>
@@ -49,6 +49,6 @@ export default function ArticlesPage() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

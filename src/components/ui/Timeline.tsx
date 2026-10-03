@@ -437,7 +437,7 @@ function getEventIcon(
       return (
         <Image
           src="/assets/icon-gladius.png"
-          alt="Military event"
+          alt=""
           width={22}
           height={22}
           className="h-5 w-5"
@@ -448,7 +448,7 @@ function getEventIcon(
       return (
         <Image
           src="/assets/icon-laurel.png"
-          alt="Made emperor"
+          alt=""
           width={24}
           height={24}
           className="h-6 w-6"
@@ -459,7 +459,7 @@ function getEventIcon(
       return (
         <Image
           src="/assets/icon-torch.png"
-          alt="Coin minted"
+          alt=""
           width={22}
           height={22}
           className="h-5 w-5"

@@ -22,7 +22,7 @@ export default function HomePage() {
       `}</style>
       <HomeNavbar />
 
-      <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
+      <div className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
         <div className="content-wrapper home">
           <PageTitle variant="somnus" subtitle="to the Somnus Collection">
             Welcome
@@ -53,7 +53,7 @@ export default function HomePage() {
           {/* \TODO: contact form */}
           {/* </div> */}
         </div>
-      </main>
+      </div>
     </>
   )
 }

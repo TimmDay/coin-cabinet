@@ -4,7 +4,7 @@ import { Quote } from "~/components/ui/Quote"
 
 export default function GordyBoysPage() {
   return (
-    <main className="content-wrapper min-h-[calc(100dvh-9.5rem)]">
+    <div className="content-wrapper min-h-[calc(100dvh-9.5rem)]">
       <PageTitle>Gordy Boys</PageTitle>
 
       <CoinGrid filterSet="Gordy Boys" />
@@ -15,6 +15,6 @@ export default function GordyBoysPage() {
           attribution="Historia Augusta 20, The Three Gordians"
         />
       </div>
-    </main>
+    </div>
   )
 }

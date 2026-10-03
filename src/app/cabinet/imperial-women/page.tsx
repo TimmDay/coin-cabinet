@@ -4,7 +4,7 @@ import { Quote } from "~/components/ui/Quote"
 
 export default function ImperialWomenPage() {
   return (
-    <main className="content-wrapper min-h-[calc(100dvh-9.5rem)]">
+    <div className="content-wrapper min-h-[calc(100dvh-9.5rem)]">
       <PageTitle>Imperial Women</PageTitle>
 
       <CoinGrid filterSet="Imperial Women" />
@@ -15,6 +15,6 @@ export default function ImperialWomenPage() {
           attribution="Herodian, History of the Roman Empire 5.8.8"
         />
       </div>
-    </main>
+    </div>
   )
 }

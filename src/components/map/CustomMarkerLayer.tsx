@@ -15,8 +15,49 @@ type CustomMarkerLayerProps = {
   markers: CustomMapMarker[]
   zoom: number
   bounds: ViewportBounds
-  /** Called for a click on a single marker (not on a cluster). */
-  onMarkerClick: (marker: CustomMapMarker, event: MouseEvent) => void
+  /** Called for a click or key press on a single marker (not on a cluster), with the screen point to open its popup at. */
+  onMarkerClick: (marker: CustomMapMarker, point: ClickPoint) => void
+}
+
+export type ClickPoint = { clientX: number; clientY: number }
+
+/**
+ * Where a click on a marker happened. A key press on the marker's button is
+ * reported as a click at 0,0, so for those the point is the middle of the
+ * marker instead.
+ */
+export function clickPoint(event: MouseEvent): ClickPoint {
+  if (event.detail === 0 && event.target instanceof Element) {
+    const rect = event.target.getBoundingClientRect()
+    return {
+      clientX: rect.left + rect.width / 2,
+      clientY: rect.top + rect.height / 2,
+    }
+  }
+  return { clientX: event.clientX, clientY: event.clientY }
+}
+
+/**
+ * A marker's HTML as a keyboard-operable button. It is a div with a button
+ * role because the pin HTML is made of divs. Enter and Space click it, which
+ * reaches the map's marker click the way a mouse click does.
+ */
+function MarkerButton({ label, html }: { label: string; html: string }) {
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label={label}
+      className="focus-visible:ring-pin-cream block cursor-pointer rounded-full focus-visible:ring-2 focus-visible:outline-none"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          e.currentTarget.click()
+        }
+      }}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  )
 }
 
 /**
@@ -84,10 +125,9 @@ export function CustomMarkerLayer({
                 e.originalEvent.stopPropagation()
               }}
             >
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: createClusterMarkerHtml(item.count),
-                }}
+              <MarkerButton
+                label={`Group of ${item.count} places, zoom in`}
+                html={createClusterMarkerHtml(item.count)}
               />
             </Marker>
           )
@@ -100,14 +140,13 @@ export function CustomMarkerLayer({
             latitude={item.marker.lat}
             anchor="bottom"
             onClick={(e) => {
-              onMarkerClick(item.marker, e.originalEvent)
+              onMarkerClick(item.marker, clickPoint(e.originalEvent))
               e.originalEvent.stopPropagation()
             }}
           >
-            <div
-              dangerouslySetInnerHTML={{
-                __html: createCustomMarkerHtml(item.marker),
-              }}
+            <MarkerButton
+              label={item.marker.title || "Map marker"}
+              html={createCustomMarkerHtml(item.marker)}
             />
           </Marker>
         )
@@ -134,14 +173,13 @@ export function CustomMarkerLayer({
           latitude={position[0]}
           anchor="bottom"
           onClick={(e) => {
-            onMarkerClick(marker, e.originalEvent)
+            onMarkerClick(marker, clickPoint(e.originalEvent))
             e.originalEvent.stopPropagation()
           }}
         >
-          <div
-            dangerouslySetInnerHTML={{
-              __html: createSpiderfiedMarkerHtml(marker),
-            }}
+          <MarkerButton
+            label={marker.title || "Map marker"}
+            html={createSpiderfiedMarkerHtml(marker)}
           />
         </Marker>
       ))}

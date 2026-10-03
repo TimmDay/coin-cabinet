@@ -78,7 +78,7 @@ export function ClientArticleLayout({
   const { title, subtitle } = getArticleDisplayData(pathname, articleMetadata)
 
   return (
-    <main className="min-h-screen p-6 md:p-8">
+    <div className="min-h-screen p-6 md:p-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
           <PageTitle subtitle={subtitle}>{title}</PageTitle>
@@ -102,6 +102,6 @@ export function ClientArticleLayout({
           )}
         </div>
       </div>
-    </main>
+    </div>
   )
 }

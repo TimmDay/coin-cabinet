@@ -18,19 +18,19 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
+      <div className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
         <div className="content-wrapper">
           <div className="flex justify-center">
             <CoinLoader label="Loading coin details..." />
           </div>
         </div>
-      </main>
+      </div>
     )
   }
 
   if (error) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
+      <div className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
         <div className="content-wrapper">
           <div className="text-center">
             <p className="text-xl text-red-400">
@@ -39,13 +39,13 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
             </p>
           </div>
         </div>
-      </main>
+      </div>
     )
   }
 
   if (notFound || !coin) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
+      <div className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
         <div className="content-wrapper">
           <NotFound404
             title="Coin not found"
@@ -53,12 +53,12 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
             fullScreen={false}
           />
         </div>
-      </main>
+      </div>
     )
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
+    <div className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
       <div className="content-wrapper wide">
         <div>
           <header className="mb-4 md:mb-6">
@@ -74,6 +74,6 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
           <RelatedPosts nickname={coin.nickname} />
         </div>
       </div>
-    </main>
+    </div>
   )
 }

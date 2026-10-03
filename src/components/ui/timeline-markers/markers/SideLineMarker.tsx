@@ -39,7 +39,7 @@ export function SideLineMarker({
         <div
           className={`relative transition-transform duration-200 hover:scale-110 ${
             position === "start" ? "origin-right" : "origin-left"
-          } ${isSelected ? "scale-[1.3]" : ""}`}
+          } ${isSelected ? "scale-[1.15]" : ""}`}
         >
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-transparent">
             <EventLogo event={event} />

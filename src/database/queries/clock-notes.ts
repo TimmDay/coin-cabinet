@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
 import type { QueryResult } from "~/database/queries/types"
+import { safeLinkUrl } from "~/lib/utils/url-helpers"
 import type { ClockNote, ClockNoteLinkKind } from "~/types/api"
 
 type ClockNoteRow = Database["public"]["Tables"]["item_clock_notes"]["Row"]
@@ -69,7 +70,7 @@ export function resolveClockNotes(
       position: row.clock_position,
       title,
       body,
-      linkUrl: row.link_url,
+      linkUrl: safeLinkUrl(row.link_url),
       linkLabel: row.link_label,
       imageUrl: entry?.imageUrl ?? null,
       imageCredit: entry?.imageCredit ?? null,
