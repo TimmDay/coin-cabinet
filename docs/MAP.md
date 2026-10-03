@@ -8,14 +8,16 @@ old paper at sunset to sit with the rest of the site (`THEME.md`).
 
 | File | Job |
 |---|---|
-| `Map.tsx` | The map: base style, province and empire layers, mint and custom markers, clusters, popup |
+| `Map.tsx` | The map: base style, province and empire layers, mint markers, popup |
+| `CustomMarkerLayer.tsx` | Draws a set of markers inside the map: clusters, the fan of a cluster at one spot, the markers |
+| `useMarkerClusters.ts` | The layer's logic: clustering for the current view, what a cluster click does, when the fan closes |
 | `MapControls.tsx` | The empire layer and province panel on the `/map` page (behind the `dev` flag); `Map` itself has no controls and is driven by props |
 | `TimelineWithMap.tsx` | A timeline's map with its event reader and the timeline strip underneath |
 | `mapConfig.ts` | Bounds, province and empire layer styles, the deep dive opening view |
 | `mapTheme.ts` | Recolours the vendor base style as old paper |
 | `pinStyle.ts` | `pinStyle(kind)`: how every pin looks |
 | `mapColors.ts` | Names the colour tokens; `cssColor` and `glColor` read them |
-| `mapMarkers.ts` | HTML for pins and cluster bubbles |
+| `mapMarkers.ts` | HTML for pins and cluster bubbles, and `markerPopup` (what a marker click opens) |
 | `mapMarkerClustering.ts` | Clustering and spiderfy maths |
 | `MintMarkerSvg.tsx` | The highlighted mint marker |
 | `hooks/` | `useMapConfiguration` (zoom limits), province selection, map data |
@@ -90,8 +92,16 @@ level. `mapColors.test.ts` keeps the names and the CSS in step.
 ### Clustering
 
 Markers are clustered with a `supercluster` index we own (`mapMarkerClustering.ts`)
-and re-clustered when a move or zoom ends. A cluster of markers at the same
-spot spiderfies: it fans out on click, with legs drawn on a GeoJSON layer.
+and re-clustered when a move or zoom ends. `CustomMarkerLayer` draws the result
+and `useMarkerClusters` decides what a click on a cluster does: markers at the
+same spot fan out (spiderfy, with legs drawn on a GeoJSON layer), markers spread
+apart zoom in on the cluster. The fan closes when the map is clicked or starts to
+move, and when the set of markers changes.
+
+The index is keyed on the markers' ids and positions, not on the array. Callers
+build a new marker array on every render (their click handlers close over state),
+and the fan and the index must survive that, while a click still has to reach the
+latest handler.
 
 MapLibre's own GeoJSON source clustering was considered and not used. It
 clusters into GL circle and symbol layers, while these markers need per-marker
@@ -107,8 +117,18 @@ on desktop, with the timeline strip below. On a phone it shows a static preview
 that opens the map and reader full screen. Selecting an event, from the strip or
 a pin, moves the map to it (`eventZoomLevel`, 6 on deep dives).
 
+## On a deep dive page
+
+`buildCoinMap(coin, reference)` (`ui/coin-deep-dive/coinMap.ts`) answers what the
+coin's map shows: a timeline map with its pins, a map of pins (where the coin was
+struck, the places and artifacts tied to it, where it was found), or nothing.
+`CoinDeepDive` memoises it and renders the answer. Places and artifacts outside
+`MAP_BOUNDS` get no pin.
+
 ## Tests
 
-Only `pinStyle` and the colour tokens have unit tests. `Map.tsx` and the clustering have none, so check
-the map by eye on a deep dive page, a timeline page and a phone after changing
-them.
+`pinStyle`, the colour tokens, `markerPopup`, the clustering and spiderfy maths,
+`useMarkerClusters` (with a fake map) and `buildCoinMap` have unit tests. `Map.tsx`
+itself and `CustomMarkerLayer` do not, so check the map by eye on a deep dive
+page, a timeline page and a phone after changing them. Spiderfy needs markers at
+the same coordinates, which no real coin has, so it takes a temporary page to see.

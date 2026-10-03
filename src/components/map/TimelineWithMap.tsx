@@ -1,7 +1,7 @@
 "use client"
 
 import { X } from "lucide-react"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useInViewport } from "~/hooks/useInViewport"
 import { MAP_HEIGHT, MAP_HEIGHT_DESKTOP } from "~/lib/constants"
 import type {
@@ -13,6 +13,8 @@ import { TimelineInfoBox } from "../ui/TimelineInfoBox"
 import { Map, type CustomMapMarker } from "./Map"
 import { pinStyle } from "./pinStyle"
 
+const NO_MARKERS: CustomMapMarker[] = []
+const NO_EVENTS: TimelineEvent[] = []
 const ROME_DEFAULT: [number, number] = [41.9028, 12.4964]
 
 /**
@@ -88,7 +90,7 @@ export function TimelineWithMap({
   showProvinceLabels = true,
   showHeaders = true,
   mapProps = {},
-  additionalMarkers = [],
+  additionalMarkers = NO_MARKERS,
   showDefaultMintMarkers = true,
 }: TimelineWithMapProps) {
   // Validate initialCenter and use Rome as fallback
@@ -111,18 +113,7 @@ export function TimelineWithMap({
   const [selectedEventIndex, setSelectedEventIndex] = useState(0)
 
   // Get all events from timeline (timeline is already an array of events)
-  const allEvents = timeline || []
-
-  // Don't render until we have data
-  if (!timeline || timeline.length === 0) {
-    return (
-      <div className={`flex flex-col lg:flex-row ${className}`}>
-        <div className="text-moonlight flex h-64 items-center justify-center">
-          Loading timeline data...
-        </div>
-      </div>
-    )
-  }
+  const allEvents = timeline ?? NO_EVENTS
 
   // Ref for timeline container to enable scrolling
   const timelineContainerRef = useRef<HTMLDivElement>(null)
@@ -346,38 +337,67 @@ export function TimelineWithMap({
     [isMobileViewport, navigateToEvent],
   )
 
-  const timelineCustomMarkers: CustomMapMarker[] = []
+  // The same markers for the same events and selection, so the map does not
+  // rebuild its marker index on every render.
+  const combinedCustomMarkers = useMemo(() => {
+    const timelineMarkers: CustomMapMarker[] = []
 
-  for (const [index, event] of allEvents.entries()) {
-    if (!hasValidCoordinates(event)) {
-      continue
+    for (const [index, event] of allEvents.entries()) {
+      if (!hasValidCoordinates(event)) continue
+
+      const [lat, lng] = sanitizeCoordinates(event.lat!, event.lng!)
+      const isCoinMinted = event.kind === "coin-minted"
+      const isFound = event.kind === "found"
+
+      timelineMarkers.push({
+        id: `timeline-marker-${event.kind}-${event.year}-${index}`,
+        lat,
+        lng,
+        title: event.name,
+        subtitle: isCoinMinted
+          ? "This coin was minted here"
+          : isFound
+            ? "This coin was found here"
+            : undefined,
+        description: event.description,
+        ...pinStyle(isCoinMinted ? "minted" : isFound ? "found" : "event"),
+        isActive: index === selectedEventIndex,
+        showPopup: false,
+        onClick: () => handleTimelineMarkerSelection(event, index),
+        zIndexOffset: index === selectedEventIndex ? 1000 : 100,
+      })
     }
 
-    const [lat, lng] = sanitizeCoordinates(event.lat!, event.lng!)
-    const isCoinMinted = event.kind === "coin-minted"
-    const isFound = event.kind === "found"
+    return timelineMarkers.concat(additionalMarkers)
+  }, [
+    allEvents,
+    additionalMarkers,
+    selectedEventIndex,
+    hasValidCoordinates,
+    handleTimelineMarkerSelection,
+  ])
 
-    timelineCustomMarkers.push({
-      id: `timeline-marker-${event.kind}-${event.year}-${index}`,
-      lat,
-      lng,
-      title: event.name,
-      subtitle: isCoinMinted
-        ? "This coin was minted here"
-        : isFound
-          ? "This coin was found here"
-          : undefined,
-      description: event.description,
-      ...pinStyle(isCoinMinted ? "minted" : isFound ? "found" : "event"),
-      isActive: index === selectedEventIndex,
-      showPopup: false,
-      onClick: () => handleTimelineMarkerSelection(event, index),
-      zIndexOffset: index === selectedEventIndex ? 1000 : 100,
-    })
+  // Don't render until we have data
+  if (allEvents.length === 0) {
+    return (
+      <div className={`flex flex-col lg:flex-row ${className}`}>
+        <div className="text-moonlight flex h-64 items-center justify-center">
+          Loading timeline data...
+        </div>
+      </div>
+    )
   }
 
-  const combinedCustomMarkers: CustomMapMarker[] =
-    timelineCustomMarkers.concat(additionalMarkers)
+  // What the three maps (preview, desktop, full screen) have in common; each
+  // adds its own centre and height
+  const sharedMapProps = {
+    ...mapProps,
+    zoom: initialZoom,
+    width: "100%",
+    showProvinceLabels,
+    showMintMarkers: showDefaultMintMarkers,
+    customMarkers: combinedCustomMarkers,
+  }
 
   return (
     <div className={`flex flex-col ${className}`}>
@@ -398,14 +418,9 @@ export function TimelineWithMap({
               <div className="pointer-events-none">
                 {!isMobileModalOpen && isMapInViewport ? (
                   <Map
-                    {...mapProps}
+                    {...sharedMapProps}
                     center={previewCenter ?? mobilePreviewCenter}
-                    zoom={initialZoom}
                     height={MAP_HEIGHT}
-                    width="100%"
-                    showProvinceLabels={showProvinceLabels}
-                    showMintMarkers={showDefaultMintMarkers}
-                    customMarkers={combinedCustomMarkers}
                   />
                 ) : (
                   <div className="bg-surface-raised flex h-[400px] items-center justify-center">
@@ -438,14 +453,9 @@ export function TimelineWithMap({
             <div className="h-[520px] lg:w-2/3">
               {isMapInViewport ? (
                 <Map
-                  {...mapProps}
+                  {...sharedMapProps}
                   center={validatedInitialCenter}
-                  zoom={initialZoom}
                   height={MAP_HEIGHT_DESKTOP}
-                  width="100%"
-                  showProvinceLabels={showProvinceLabels}
-                  showMintMarkers={showDefaultMintMarkers}
-                  customMarkers={combinedCustomMarkers}
                   onNavigate={handleMapNavigate}
                 />
               ) : (
@@ -503,14 +513,9 @@ export function TimelineWithMap({
           <div className="bg-night flex h-full flex-col">
             <div className="border-line relative h-[52dvh] min-h-[360px] overflow-hidden border-b">
               <Map
-                {...mapProps}
+                {...sharedMapProps}
                 center={mobilePreviewCenter}
-                zoom={initialZoom}
                 height="52dvh"
-                width="100%"
-                showProvinceLabels={showProvinceLabels}
-                showMintMarkers={showDefaultMintMarkers}
-                customMarkers={combinedCustomMarkers}
                 onNavigate={handleMapNavigate}
               />
               <div className="from-night/60 pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t to-transparent" />
