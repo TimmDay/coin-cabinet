@@ -16,7 +16,7 @@ export function SimpleMultiSelect({
   options,
   selectedValues,
   onSelectionChange,
-  className = "w-full rounded-md border border-line bg-field text-ink",
+  className = "w-full rounded-md border border-paper-edge bg-paper-raised text-paper-ink",
   placeholder = "Select options...",
   maxHeight = "max-h-60",
   isLoading = false,
@@ -131,7 +131,7 @@ export function SimpleMultiSelect({
 
   if (isLoading) {
     return (
-      <div className="border-line bg-field h-[42px] w-full animate-pulse rounded-md border" />
+      <div className="border-paper-edge bg-paper-raised h-[42px] w-full animate-pulse rounded-md border" />
     )
   }
 
@@ -140,7 +140,7 @@ export function SimpleMultiSelect({
       {/* Main input area */}
       <div
         ref={containerRef}
-        className={`${className} focus-within:border-moonlight focus-within:ring-moonlight/70 flex min-h-[42px] cursor-text flex-wrap items-center gap-1 p-2 focus-within:ring-2`}
+        className={`${className} focus-within:border-map-label focus-within:ring-map-label/40 flex min-h-[42px] cursor-text flex-wrap items-center gap-1 p-2 focus-within:ring-2`}
         onClick={() => inputRef.current?.focus()}
       >
         {/* Selected pills */}
@@ -149,7 +149,7 @@ export function SimpleMultiSelect({
           return (
             <span
               key={value}
-              className="bg-surface-muted text-moonlight-bright inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm"
+              className="border-paper-edge bg-paper text-paper-ink inline-flex items-center gap-1 rounded-full border px-2 py-1 text-sm"
             >
               {option?.label ?? value}
               <span
@@ -164,7 +164,7 @@ export function SimpleMultiSelect({
                     removeValue(value)
                   }
                 }}
-                className="hover:bg-line cursor-pointer rounded-full p-0.5 transition-colors"
+                className="hover:bg-paper-edge/40 cursor-pointer rounded-full p-0.5 transition-colors"
                 role="button"
                 tabIndex={0}
                 aria-label={`Remove ${option?.label ?? value}`}
@@ -192,7 +192,7 @@ export function SimpleMultiSelect({
           value={searchTerm}
           onChange={handleSearchInputChange}
           onKeyDown={handleKeyDown}
-          className="text-ink placeholder:text-field-muted min-w-[120px] flex-1 bg-transparent outline-none"
+          className="text-paper-ink placeholder:text-paper-ink-muted min-w-[120px] flex-1 bg-transparent outline-none"
           placeholder={selectedValues.length === 0 ? placeholder : "Search..."}
           onFocus={() => setIsOpen(true)}
         />
@@ -200,7 +200,7 @@ export function SimpleMultiSelect({
         {/* Dropdown arrow */}
         <div className="ml-auto">
           <svg
-            className={`text-moonlight h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+            className={`text-paper-ink-muted h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -218,7 +218,7 @@ export function SimpleMultiSelect({
       {/* Dropdown menu */}
       {isOpen && (
         <div
-          className={`absolute z-50 mt-1 ${maxHeight} border-line bg-night w-full overflow-auto rounded-md border shadow-xl`}
+          className={`absolute z-50 mt-1 ${maxHeight} border-paper-edge bg-paper-raised w-full overflow-auto rounded-md border shadow-xl`}
           role="listbox"
           id="simple-multiselect-listbox"
           aria-label="Options"
@@ -232,10 +232,10 @@ export function SimpleMultiSelect({
                   key={option.value}
                   className={`cursor-pointer px-3 py-2 transition-colors ${
                     isFocused
-                      ? "bg-surface-raised text-moonlight-bright"
+                      ? "bg-paper text-paper-ink"
                       : isSelected
-                        ? "bg-surface-muted text-ink"
-                        : "bg-night text-moonlight"
+                        ? "bg-paper-edge/30 text-map-label"
+                        : "bg-paper-raised text-paper-ink"
                   }`}
                   onClick={() => toggleOption(option.value)}
                   onMouseEnter={() => setFocusedIndex(index)}
@@ -246,7 +246,7 @@ export function SimpleMultiSelect({
                     <span>{option.label}</span>
                     {isSelected && (
                       <svg
-                        className="text-bronze-light h-4 w-4"
+                        className="text-map-label h-4 w-4"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -262,7 +262,9 @@ export function SimpleMultiSelect({
               )
             })
           ) : (
-            <div className="text-moonlight px-3 py-2">No options found</div>
+            <div className="text-paper-ink-muted px-3 py-2">
+              No options found
+            </div>
           )}
         </div>
       )}
