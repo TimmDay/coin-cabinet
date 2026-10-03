@@ -20,11 +20,12 @@ import {
   MAP_PAN_BOUNDS_LNGLAT,
   MAP_STYLE_URL,
   MAP_STYLES,
+  provinceStyle,
   PROVINCE_LABEL_STYLES,
   createEmpireLayerConfig,
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
-import { PIN_PALETTE } from "./pinStyle"
+import { glColor } from "./mapColors"
 import {
   buildClusteredCustomMarkers,
   buildMarkerLookup,
@@ -208,6 +209,8 @@ export const Map: React.FC<MapProps> = ({
   const config = useMapConfiguration()
   const { data: mints } = useMints()
   const { provincesData, provincesLabelsData } = useMapData()
+
+  const provinces = useMemo(() => provinceStyle(), [])
 
   const mapRef = useRef<MapRef>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
@@ -791,18 +794,18 @@ export const Map: React.FC<MapProps> = ({
                     id="provinces-fill"
                     type="fill"
                     paint={{
-                      "fill-color": MAP_STYLES.provinces.fillColor,
-                      "fill-opacity": MAP_STYLES.provinces.fillOpacity,
+                      "fill-color": provinces.fillColor,
+                      "fill-opacity": provinces.fillOpacity,
                     }}
                   />
                   <Layer
                     id="provinces-line"
                     type="line"
                     paint={{
-                      "line-color": MAP_STYLES.provinces.lineColor,
-                      "line-width": MAP_STYLES.provinces.lineWidth,
-                      "line-opacity": MAP_STYLES.provinces.lineOpacity,
-                      "line-dasharray": MAP_STYLES.provinces.lineDasharray,
+                      "line-color": provinces.lineColor,
+                      "line-width": provinces.lineWidth,
+                      "line-opacity": provinces.lineOpacity,
+                      "line-dasharray": provinces.lineDasharray,
                     }}
                   />
                 </Source>
@@ -846,7 +849,7 @@ export const Map: React.FC<MapProps> = ({
                               : "",
                             description: mint.flavour_text ?? "",
                             className: isHighlighted
-                              ? "text-[#6e2a3d]"
+                              ? "text-pin-wine"
                               : "text-map-label",
                           },
                         )
@@ -926,9 +929,9 @@ export const Map: React.FC<MapProps> = ({
                     id="spider-legs-line"
                     type="line"
                     paint={{
-                      "line-color": `${PIN_PALETTE.wineMid}99`,
+                      "line-color": glColor("pin-wine-mid"),
                       "line-width": 2,
-                      "line-opacity": 0.9,
+                      "line-opacity": 0.6,
                     }}
                   />
                 </Source>

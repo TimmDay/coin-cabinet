@@ -1,4 +1,4 @@
-import { PIN_PALETTE } from "./pinStyle"
+import { cssColor, glColor } from "./mapColors"
 
 export type EmpireLayerStyle = {
   fillColor: string
@@ -44,9 +44,9 @@ export const createEmpireLayerConfig = (
       "Roman Republic around 60 BCE, during the First Triumvirate (Caesar, Pompey, Crassus)",
     showProp: showBC60,
     style: {
-      fillColor: "#d99a2b",
+      fillColor: glColor("map-bc60-fill"),
       fillOpacity: 0.15,
-      lineColor: "#8a5a12",
+      lineColor: glColor("map-bc60-line"),
       lineWidth: 2,
       lineOpacity: 0.8,
       lineDasharray: [6, 3],
@@ -60,9 +60,9 @@ export const createEmpireLayerConfig = (
     description: "Roman Empire at the death of Augustus in AD 14",
     showProp: showAD14,
     style: {
-      fillColor: "#5f7f9c",
+      fillColor: glColor("map-ad14-fill"),
       fillOpacity: 0.15,
-      lineColor: "#3d5a78",
+      lineColor: glColor("map-ad14-line"),
       lineWidth: 2,
       lineOpacity: 0.8,
       lineDasharray: [5, 4],
@@ -77,9 +77,9 @@ export const createEmpireLayerConfig = (
       "Roman Empire in AD 69, the Year of the Four Emperors (Galba, Otho, Vitellius, Vespasian)",
     showProp: showAD69,
     style: {
-      fillColor: "#b0486b",
+      fillColor: glColor("map-ad69-fill"),
       fillOpacity: 0.15,
-      lineColor: "#8c2f4d",
+      lineColor: glColor("map-ad69-line"),
       lineWidth: 2,
       lineOpacity: 0.8,
       lineDasharray: [4, 5],
@@ -93,9 +93,9 @@ export const createEmpireLayerConfig = (
     description: "Roman Empire at its greatest extent under Trajan in AD 117",
     showProp: showAD117,
     style: {
-      fillColor: "#6b8f5e",
+      fillColor: glColor("map-ad117-fill"),
       fillOpacity: 0.15,
-      lineColor: "#476b3d",
+      lineColor: glColor("map-ad117-line"),
       lineWidth: 2,
       lineOpacity: 0.8,
       lineDasharray: [3, 6],
@@ -109,9 +109,9 @@ export const createEmpireLayerConfig = (
     description: "Roman Empire around AD 200, during the Severan dynasty",
     showProp: showAD200,
     style: {
-      fillColor: "#d9743a",
+      fillColor: glColor("map-ad200-fill"),
       fillOpacity: 0.15,
-      lineColor: "#a84a1d",
+      lineColor: glColor("map-ad200-line"),
       lineWidth: 2,
       lineOpacity: 0.8,
       lineDasharray: [2, 7],
@@ -120,24 +120,25 @@ export const createEmpireLayerConfig = (
 })
 
 // Map styling configurations
-export const MAP_STYLES = {
-  // Province boundaries style
-  provinces: {
-    fillColor: "#c4622d", // Terracotta fill
-    fillOpacity: 0.12,
-    lineColor: "#8c3b2a", // Burnt umber border
-    lineWidth: 2,
-    lineOpacity: 0.8,
-    lineDasharray: [5, 5] as [number, number],
-  } satisfies EmpireLayerStyle,
+// Province boundaries style. A function because MapLibre needs the resolved
+// colours (see glColor), which only exist in the browser.
+export const provinceStyle = (): EmpireLayerStyle => ({
+  fillColor: glColor("map-province-fill"),
+  fillOpacity: 0.12,
+  lineColor: glColor("map-province-line"),
+  lineWidth: 2,
+  lineOpacity: 0.8,
+  lineDasharray: [5, 5],
+})
 
+export const MAP_STYLES = {
   // Mint marker style (plain dot, not the highlighted teardrop pin)
   mintMarker: {
     style: {
       width: "12px",
       height: "12px",
-      backgroundColor: PIN_PALETTE.rose,
-      border: `2px solid ${PIN_PALETTE.creamWarm}`,
+      backgroundColor: cssColor("pin-rose"),
+      border: `2px solid ${cssColor("pin-cream-warm")}`,
       borderRadius: "9999px",
       boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
     },
@@ -201,7 +202,7 @@ export const PROVINCE_LABEL_STYLES = {
     padding: "2px 6px",
     fontSize: "12px",
     fontWeight: 600,
-    color: "#2e1b12", // Dark umber ink, readable on the parchment
+    color: cssColor("map-ink"),
     fontFamily: "var(--font-display)", // The legends' inscriptional capitals
     letterSpacing: "0.06em",
     textAlign: "center",

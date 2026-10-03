@@ -1,4 +1,4 @@
-import { PIN_PALETTE } from "./pinStyle"
+import { cssColor } from "./mapColors"
 
 /**
  * SVG component for highlighted mint markers (sunset circular design)
@@ -20,16 +20,16 @@ export function HighlightedMintSvg({ displayName }: { displayName: string }) {
                 cx="12"
                 cy="12"
                 r="10"
-                fill={PIN_PALETTE.orangeSoft}
-                stroke={PIN_PALETTE.wine}
+                fill={cssColor("pin-orange-soft")}
+                stroke={cssColor("pin-wine")}
                 strokeWidth="2"
               />
-              <circle cx="12" cy="12" r="5" fill={PIN_PALETTE.sienna} />
-              <circle cx="12" cy="12" r="2" fill={PIN_PALETTE.cream} />
+              <circle cx="12" cy="12" r="5" fill={cssColor("pin-sienna")} />
+              <circle cx="12" cy="12" r="2" fill={cssColor("pin-cream")} />
             </svg>
           </div>
         </div>
-        <div className="font-display mt-1 text-center text-xs font-bold tracking-[0.06em] whitespace-nowrap text-[#2e1b12] uppercase">
+        <div className="font-display text-map-ink mt-1 text-center text-xs font-bold tracking-[0.06em] whitespace-nowrap uppercase">
           {displayName}
         </div>
       </div>

@@ -1,26 +1,8 @@
 // The one place that decides how a pin looks: old paper at sunset. A pin is
 // named by its kind and callers spread the result into the marker, so a retint
-// is an edit here and nothing else.
+// is an edit to the tokens in globals.css and nothing else.
 
-/** The colours behind every pin, cluster and pin label. */
-export const PIN_PALETTE = {
-  wine: "#6e2a3d",
-  wineMid: "#5a2238",
-  wineLight: "#8a3a4f",
-  wineDark: "#2f1220",
-  gold: "#e0a458",
-  goldSoft: "#f0c27a",
-  cream: "#fbeed3",
-  creamWarm: "#f3dca8",
-  orange: "#d9743a",
-  orangeSoft: "#e08a45",
-  sienna: "#b4492a",
-  rose: "#b0486b",
-  sage: "#5a7f55",
-  dusk: "#5b3f66",
-  umber: "#6a5a48",
-  ink: "#2e1b12",
-} as const
+import { cssColor } from "./mapColors"
 
 export type PinKind =
   | "event" // a timeline event
@@ -36,33 +18,31 @@ export type PinStyle = {
   className: string
 }
 
-const P = PIN_PALETTE
-
 const PIN_STYLES: Record<PinKind, PinStyle> = {
   event: {
-    fillColor: P.wine,
-    borderColor: P.goldSoft,
-    className: "text-[#6e2a3d]",
+    fillColor: cssColor("pin-wine"),
+    borderColor: cssColor("pin-gold-soft"),
+    className: "text-pin-wine",
   },
   minted: {
-    fillColor: P.orange,
-    borderColor: "#f6dfae",
-    className: "text-[#a8431f]",
+    fillColor: cssColor("pin-orange"),
+    borderColor: cssColor("pin-minted-edge"),
+    className: "text-pin-sienna",
   },
   found: {
-    fillColor: P.sage,
-    borderColor: "#ead6a6",
-    className: "text-[#3f5f3b]",
+    fillColor: cssColor("pin-sage"),
+    borderColor: cssColor("pin-found-edge"),
+    className: "text-pin-sage-dark",
   },
   "deity-place": {
-    fillColor: P.dusk,
-    borderColor: P.gold,
-    className: "text-[#5b3f66]",
+    fillColor: cssColor("pin-dusk"),
+    borderColor: cssColor("pin-gold"),
+    className: "text-pin-dusk",
   },
   artifact: {
-    fillColor: P.umber,
-    borderColor: "#d8c49a",
-    className: "text-[#5a4a38]",
+    fillColor: cssColor("pin-umber"),
+    borderColor: cssColor("pin-artifact-edge"),
+    className: "text-pin-umber-dark",
   },
 }
 

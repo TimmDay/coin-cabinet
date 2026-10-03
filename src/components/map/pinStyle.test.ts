@@ -4,12 +4,12 @@ import { pinStyle, type PinKind } from "./pinStyle"
 const KINDS: PinKind[] = ["event", "minted", "found", "deity-place", "artifact"]
 
 describe("pinStyle", () => {
-  it("gives every kind a fill, a border and a popup colour", () => {
+  it("gives every kind a fill, a border and a popup colour from the tokens", () => {
     for (const kind of KINDS) {
       const style = pinStyle(kind)
-      expect(style.fillColor).toMatch(/^#[0-9a-f]{6}$/i)
-      expect(style.borderColor).toMatch(/^#[0-9a-f]{6}$/i)
-      expect(style.className).toMatch(/^text-/)
+      expect(style.fillColor).toMatch(/^var\(--color-pin-[a-z-]+\)$/)
+      expect(style.borderColor).toMatch(/^var\(--color-pin-[a-z-]+\)$/)
+      expect(style.className).toMatch(/^text-pin-[a-z-]+$/)
     }
   })
 
