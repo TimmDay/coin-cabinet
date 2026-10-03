@@ -1,3 +1,5 @@
+import type { Citation } from "./schema-citations"
+
 export type Mint = {
   id: number
   name: string
@@ -8,7 +10,7 @@ export type Mint = {
   officina_marks?: string[] // ["A", "B", "Γ", "Δ", "E", "S", "T"]
   flavour_text?: string | null // Historical description
 
-  historical_sources?: string[] // Academic citations
+  citations?: Citation[]
   opened_by?: string | null // "Augustus", "Republic Temple of Juno Moneta"
   operation_periods?: [number, number, string][] | null // JSONB: [[-260, 476, "Republic"], [195, 197, "Clodius Albinus"]]
   coinage_materials?: string[] // ["bronze", "silver", "gold"]

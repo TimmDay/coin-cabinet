@@ -1,19 +1,25 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Event, EventKind } from "~/data/timelines/types"
 import type { Database } from "~/database/database.types"
+import { fetchCitations } from "~/database/queries/citations"
 import type { QueryResult } from "~/database/queries/types"
+import type { Citation } from "~/database/schema-citations"
 import type { Timeline } from "~/database/schema-timelines"
 
 type TimelineEventRow = Database["public"]["Tables"]["timeline_events"]["Row"]
 type PlaceRow = Database["public"]["Tables"]["places"]["Row"]
 
-function toEvent(row: TimelineEventRow, place: PlaceRow | undefined): Event {
+function toEvent(
+  row: TimelineEventRow,
+  place: PlaceRow | undefined,
+  citations: Citation[],
+): Event {
   return {
     kind: row.event_type as EventKind,
     name: row.name,
     year: row.event_year ?? 0,
     description: row.flavour_text ?? undefined,
-    source: row.historical_sources?.[0],
+    citations,
     place: place?.name ?? row.location_note ?? undefined,
     place_id: row.place_id !== null ? String(row.place_id) : undefined,
     lat: row.lat ?? place?.lat ?? undefined,
@@ -52,6 +58,13 @@ export async function fetchTimelines(
 
   if (placesError) return { data: null, error: placesError }
 
+  const citations = await fetchCitations(
+    supabase,
+    "timeline_event_id",
+    events.map((e) => e.id),
+  )
+  if (citations.error) return { data: null, error: citations.error }
+
   const placeById = new Map(places.map((p) => [p.id, p]))
   const eventsByTimelineId = new Map<number, TimelineEventRow[]>()
   for (const event of events) {
@@ -64,7 +77,11 @@ export async function fetchTimelines(
     id: row.id,
     name: row.name,
     timeline: (eventsByTimelineId.get(row.id) ?? []).map((event) =>
-      toEvent(event, event.place_id ? placeById.get(event.place_id) : undefined),
+      toEvent(
+        event,
+        event.place_id ? placeById.get(event.place_id) : undefined,
+        citations.data.get(event.id) ?? [],
+      ),
     ),
     created_at: row.created_at,
     updated_at: row.updated_at,

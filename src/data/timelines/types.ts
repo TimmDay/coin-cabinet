@@ -10,13 +10,18 @@ export type EventKind =
   | "unrest"
   | "other"
 
+import type { Citation } from "~/database/schema-citations"
+
 export type Event = {
   kind: EventKind // To choose icon.
   name: string
   year: number
   yearEnd?: number
   description?: string
+  /** A free-text source, for the hand-written timelines. */
   source?: string
+  /** Citations from the database (`sources` through `entity_sources`). */
+  citations?: Citation[]
   place?: string
   place_id?: string // Reference to place ID from places table
   lat?: number

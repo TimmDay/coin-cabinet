@@ -2,7 +2,7 @@
 // HISTORICAL FIGURES - Emperors, empresses, and other historical figures
 // ============================================================================
 
-import type { HistoricalSource } from "./types.ts"
+import type { Citation } from "./schema-citations"
 
 export type HistoricalFigure = {
   id: number
@@ -16,7 +16,7 @@ export type HistoricalFigure = {
   death?: number | null
   altNames?: string[] | null
   flavour_text?: string | null
-  historical_sources: HistoricalSource[] // Academic citations
+  citations?: Citation[]
 
   // Joins
   timeline_id?: number[] | null // join on timelines database

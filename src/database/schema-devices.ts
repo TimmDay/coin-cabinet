@@ -1,10 +1,12 @@
+import type { Citation } from "./schema-citations"
+
 export type Device = {
   id: string // uuid
   name: string
   translation?: string | null
   description: string
   category?: string | null
-  sources: string[] // jsonb stored as array of strings
+  citations?: Citation[]
   artifact_ids: string[] // uuid[]
   img?: string | null
   created_at: string
