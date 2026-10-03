@@ -347,7 +347,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       {/* Obverse and reverse: stacked on small screens, side by side on desktop */}
       <div
         ref={foldRef}
-        className={`flex flex-col gap-8 md:gap-12 lg:grid lg:content-center lg:justify-center lg:gap-x-2 lg:gap-y-6 xl:gap-x-8 ${
+        className={`[container-type:inline-size] flex flex-col gap-8 md:gap-12 lg:grid lg:content-center lg:justify-center lg:gap-x-2 lg:gap-y-6 xl:gap-x-8 ${
           coin.image_link_o && coin.image_link_r
             ? "lg:grid-cols-[auto_auto]"
             : "lg:grid-cols-[auto]"

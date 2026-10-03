@@ -88,12 +88,13 @@ export function CoinRow({
   }
 
   return (
-    // --coin-size: 350px at the least, then as big as the width (two coins side
-    // by side, with room for the clock buttons) and the height of the window
-    // allow, up to 580px.
+    // --coin-size: 350px at the least, then as big as the coin block's own width
+    // (100cqw, set by the container in CoinDeepDive: two coins side by side, each
+    // with 112px of room for the clock buttons, and the 32px gap) and the height
+    // of the window allow, up to 580px.
     // On desktop the root spans two rows of the parent grid (image, text) so
     // both faces line up row by row.
-    <div className="mx-auto flex max-w-7xl flex-col space-y-4 lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:justify-items-center lg:space-y-0 lg:[--coin-size:clamp(350px,min(calc((min(100vw,1600px)-336px)/2),calc(100vh-420px)),580px)]">
+    <div className="mx-auto flex max-w-7xl flex-col space-y-4 lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:justify-items-center lg:space-y-0 lg:[--coin-size:clamp(350px,min(calc((100cqw-256px)/2),calc(100vh-420px)),580px)]">
       {/* Images Section */}
       {/* Room above the coin only when a clock button hangs there */}
       <div
