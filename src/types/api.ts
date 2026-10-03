@@ -5,6 +5,14 @@
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
 
 /** A note pinned to a clock position on one face of a coin, ready to show. */
+export type ClockNoteLinkKind =
+  | "device"
+  | "deity"
+  | "place"
+  | "person"
+  | "mint"
+  | "artifact"
+
 export type ClockNote = {
   side: "obverse" | "reverse"
   /** 1 to 12 (12 is straight up, 3 is right). */
@@ -15,8 +23,8 @@ export type ClockNote = {
   linkLabel: string | null
   /** The linked entry's picture (a device's or an artifact's), if it has one. */
   imageUrl: string | null
-  /** Which icon shows in the circle. Free text for now. */
-  iconType: string | null
+  /** What the note links to, which decides its icon; null for a note of its own. */
+  linkKind: ClockNoteLinkKind | null
 }
 
 /**

@@ -1,6 +1,7 @@
 import CloudinaryImage from "~/components/CloudinaryImage"
 import { cn } from "~/lib/utils"
 import type { ClockNote } from "~/types/api"
+import { ClockNoteIcon } from "./ClockNoteIcon"
 import { TipIcon } from "./TipIcon"
 
 /**
@@ -66,6 +67,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           size="md"
           label={note.title ?? `Note at ${note.position} o'clock`}
           interactive={note.linkUrl !== null}
+          icon={<ClockNoteIcon kind={note.linkKind} />}
           className="absolute z-10 -translate-x-1/2 -translate-y-1/2 [--clock-gap:24px] sm:[--clock-gap:33px]"
           style={clockOffset(note.position)}
           popoverClassName={cn(

@@ -90,7 +90,19 @@ describe("resolveClockNotes", () => {
     expect(resolveClockNotes([row({ device_id: 99 })], entries())).toEqual([])
   })
 
-  it("sorts by side, then position, and passes link and icon through", () => {
+  it("names what a note links to, and nothing for a note of its own", () => {
+    const notes = resolveClockNotes(
+      [
+        row({ id: 1, clock_position: 1, device_id: 7 }),
+        row({ id: 2, clock_position: 2, deity_id: 2 }),
+        row({ id: 3, clock_position: 3, body: "Own" }),
+      ],
+      entries(),
+    )
+    expect(notes.map((n) => n.linkKind)).toEqual(["device", "deity", null])
+  })
+
+  it("sorts by side, then position, and passes the link through", () => {
     const notes = resolveClockNotes(
       [
         row({ id: 1, side: "reverse", clock_position: 2, body: "a" }),
@@ -101,7 +113,6 @@ describe("resolveClockNotes", () => {
           body: "b",
           link_url: "https://example.com",
           link_label: "More",
-          icon_type: "device",
         }),
         row({ id: 3, side: "obverse", clock_position: 1, body: "c" }),
       ],
@@ -115,7 +126,6 @@ describe("resolveClockNotes", () => {
     expect(notes[1]).toMatchObject({
       linkUrl: "https://example.com",
       linkLabel: "More",
-      iconType: "device",
     })
   })
 })

@@ -117,8 +117,39 @@ The same base row as the list, plus:
 - Every `coin_images` variant and side, in `sequence` order, becomes
   `image_link_altlight_o/_r`, `image_link_sketch_o/_r`, `image_link_zoom_o/_r`
   and `image_rotation`.
-- `item_clock_notes` become `clock_notes`; see `TODO_CLOCK_NOTES.md`.
+- `item_clock_notes` become `clock_notes`; see "Clock notes" below.
 - `public_find_events` becomes `found_event` (below).
+
+## Clock notes
+
+Short notes anchored to a point on a coin face, shown as small circles around the
+coin image at clock positions 1 to 12 (12 is straight up). A circle opens a
+popover with the note.
+
+- **Data:** table `item_clock_notes`, keyed to `collection.id`: one note per item,
+  side (`obverse` or `reverse`) and position. A note has an optional title, body,
+  link (URL and label) and at most one link to a device, deity, place, person,
+  mint or artifact. It needs a body or a linked entry that supplies one. Row level
+  security lets anon read the notes of public items. Notes are written in the
+  data-maintenance app, in the item form's "Clock Notes" section.
+- **Resolving:** `fetchClockNotes` (`queries/clock-notes.ts`) loads the rows,
+  fetches the linked entries (one query per kind in use) and `resolveClockNotes`,
+  a pure function with tests, builds the notes. A linked entry gives the title and
+  body (a device's description, or `flavour_text` for the others; a mint is named
+  after its place) and its picture if it has one (`image_url` of a device or an
+  artifact). Text written on the note wins. A note with nothing to show is
+  dropped. Notes come back sorted by side then position.
+- **Icon:** the circle's icon comes from what the note links to (`linkKind`), drawn
+  by `ClockNoteIcon`: a die stamp for a device, sun rays for a deity, a pin for a
+  place, a bust for a person, a beaded coin for a mint, a column for an artifact,
+  and a small dot for a note of its own. The `icon_type` column is no longer read.
+- **On the page:** `CoinClockTips` draws the circles with `TipIcon` (opens on
+  hover, focus and tap, closes on leave, blur, Escape or an outside click). Room
+  above and below a coin is reserved only when a circle hangs there (11, 12 or 1
+  for the top, 5, 6 or 7 for the bottom), decided across both faces together
+  (`clockNoteRoom`) so the coins and legends stay level. The popover opens away
+  from the coin: title in Cinzel, then the picture, the body and the link. Its
+  style is in `THEME.md`.
 
 ## What the site cannot read: provenance
 

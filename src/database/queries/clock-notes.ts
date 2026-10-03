@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
 import type { QueryResult } from "~/database/queries/types"
-import type { ClockNote } from "~/types/api"
+import type { ClockNote, ClockNoteLinkKind } from "~/types/api"
 
 type ClockNoteRow = Database["public"]["Tables"]["item_clock_notes"]["Row"]
 
@@ -12,7 +12,7 @@ export type LinkedEntry = {
   imageUrl?: string | null
 }
 
-type LinkKind = "device" | "deity" | "place" | "person" | "mint" | "artifact"
+type LinkKind = ClockNoteLinkKind
 
 export type LinkedEntries = Record<LinkKind, Map<number, LinkedEntry>>
 
@@ -71,7 +71,7 @@ export function resolveClockNotes(
       linkUrl: row.link_url,
       linkLabel: row.link_label,
       imageUrl: entry?.imageUrl ?? null,
-      iconType: row.icon_type,
+      linkKind: link?.kind ?? null,
     })
   }
 
