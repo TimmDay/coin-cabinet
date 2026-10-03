@@ -18,8 +18,8 @@ coin keeps the focus.
   title, description and image from that entry. Text on the note overrides it.
   A note needs a body or an authority link.
 - One note per position per face.
-- Coins with no notes show nothing: no empty circles. The layout still reserves
-  room for all 12 positions.
+- Coins with no notes show nothing: no empty circles, and no reserved room above
+  or below the coin (see step 11).
 - Ingestion (`somnus-data-ingestion`) gets a widget: pick obverse or reverse,
   pick a clock position, write the note or pick the linked entry, save.
   `coin-cabinet` stays read-only.
@@ -96,9 +96,10 @@ Each step is its own commit.
     Images: side, position, type, then own text or a linked-entry picker.
     Tested with component tests only. Not yet tried in the real app behind the
     login, and not merged.
-11. [ ] Only reserve the clock-button room (side padding, space above and below
-    the coin) for coins that have notes, if the roomy layout turns out to be
-    wanted only where there is something to show. For now it is always reserved.
+11. [x] Room above and below the coin is reserved only when a clock button
+    hangs there (11, 12 or 1 o'clock for the top, 5, 6 or 7 for the bottom).
+    The choice is made across both faces together, so the two coins and their
+    legends stay level on desktop. Room at the sides is still always kept.
 
 ## Next steps, in order
 
@@ -111,4 +112,7 @@ Each step is its own commit.
    four `dark:` variants, from `docs/SITE_THEME_PLAN.md`.
 
 Also done around the same work: the translation behind a small `TipIcon` at the
-end of each legend, and the description behind a large `TipIcon` in the swap row.
+end of each legend, and the description behind a scroll button in the bottom-left
+corner of the coin image (the timeline's scroll icon, 40px). The other images are
+small buttons in the bottom-right corner at every width. There is no swap row
+under the legend any more.

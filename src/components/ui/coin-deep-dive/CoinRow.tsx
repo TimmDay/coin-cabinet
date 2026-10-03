@@ -1,7 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import Image from "next/image"
+import { useId, useState } from "react"
 import CloudinaryImage from "~/components/CloudinaryImage"
+import { cn } from "~/lib/utils"
 import { FormattedLegendExpanded } from "~/components/FormattedLegendExpanded"
 import type { Device } from "~/database/schema-devices"
 import type { ClockNote } from "~/types/api"
@@ -23,6 +25,9 @@ type CoinRowProps = {
   flavourText?: string | null
   devices?: Device[]
   clockNotes?: ClockNote[]
+  /** Room above and below the coin for clock buttons. Decided for both faces together, so the two coins stay level. */
+  reserveTop?: boolean
+  reserveBottom?: boolean
   priority?: boolean
 }
 
@@ -38,6 +43,8 @@ export function CoinRow({
   flavourText,
   devices = [],
   clockNotes = [],
+  reserveTop = false,
+  reserveBottom = false,
   priority = false,
 }: CoinRowProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -81,16 +88,25 @@ export function CoinRow({
   }
 
   return (
-    // On desktop the root spans three rows of the parent grid (image, text,
-    // switcher) so both faces line up row by row.
-    <div className="mx-auto flex max-w-7xl flex-col space-y-4 lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:justify-items-center lg:space-y-0">
+    // --coin-size: 350px at the least, then as big as the coin block's own width
+    // (100cqw, set by the container in CoinDeepDive: two coins side by side, each
+    // with 112px of room for the clock buttons, and the 32px gap) and the height
+    // of the window allow, up to 580px.
+    // On desktop the root spans two rows of the parent grid (image, text) so
+    // both faces line up row by row.
+    <div className="mx-auto flex max-w-7xl flex-col space-y-4 lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:justify-items-center lg:space-y-0 lg:[--coin-size:clamp(350px,min(calc((100cqw-256px)/2),calc(100vh-420px)),580px)]">
       {/* Images Section */}
-      {/* Room all the way round for the clock buttons, used or not */}
-      <div className="flex justify-center px-14 pt-14 lg:row-start-1 lg:flex-shrink-0">
-        <div className="relative w-full max-w-md lg:h-[350px] lg:w-[350px] lg:max-w-none xl:h-[460px] xl:w-[460px]">
+      {/* Room above the coin only when a clock button hangs there */}
+      <div
+        className={cn(
+          "flex justify-center px-3 sm:px-14 lg:row-start-1 lg:flex-shrink-0",
+          reserveTop && "pt-10 sm:pt-14",
+        )}
+      >
+        <div className="relative w-full max-w-md lg:h-[var(--coin-size)] lg:w-[var(--coin-size)] lg:max-w-none">
           {/* Main displayed image */}
           <div
-            className="artemis-card flex aspect-square w-full cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105"
+            className="artemis-card flex aspect-square w-full cursor-pointer items-center justify-center"
             onClick={() => {
               const currentImage = availableImages[currentMobileImageIndex]
               if (currentImage) {
@@ -103,8 +119,8 @@ export function CoinRow({
                 <CloudinaryImage
                   src={availableImages[currentMobileImageIndex].src}
                   alt={availableImages[currentMobileImageIndex].alt}
-                  width={480}
-                  height={480}
+                  width={640}
+                  height={640}
                   priority={priority && currentMobileImageIndex === 0}
                   trim
                 />
@@ -113,12 +129,66 @@ export function CoinRow({
           </div>
 
           <CoinClockTips notes={clockNotes} />
+
+          {/* Description: the bottom-left corner, clear of the clock buttons */}
+          {description && (
+            <TipIcon
+              size="lg"
+              label="Show description"
+              icon={<ScrollIcon />}
+              interactive
+              className="absolute bottom-0 left-0 z-10"
+              popoverClassName="bottom-full top-auto left-0 mt-0 mb-2 w-[min(24rem,calc(100vw-2rem))] max-w-none translate-x-0 px-4 py-3 text-center text-base"
+            >
+              <DescriptionWithDeviceHighlights
+                text={description}
+                devices={devices}
+                className="leading-relaxed break-words italic"
+              />
+            </TipIcon>
+          )}
+
+          {/* The other images, as small buttons in the bottom-right corner (the
+              description is bottom-left). The first sits in the corner and any
+              more stack upward. */}
+          {availableImages.length > 1 && (
+            <div className="absolute right-0 bottom-0 z-10 flex flex-col-reverse gap-1">
+              {availableImages.map(
+                (image, index) =>
+                  index !== currentMobileImageIndex && (
+                    <button
+                      key={index}
+                      className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-slate-600 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setCurrentMobileImageIndex(index)
+                      }}
+                      aria-label={`Switch to ${image.label} image`}
+                    >
+                      <div className="h-full w-full overflow-hidden rounded-full">
+                        <CloudinaryImage
+                          src={image.src}
+                          alt={`${image.label} thumbnail`}
+                          width={40}
+                          height={40}
+                        />
+                      </div>
+                    </button>
+                  ),
+              )}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Text content */}
       {hasAnyText && (
-        <div className="mt-12 flex flex-col space-y-2 text-center lg:row-start-2 lg:w-[350px] xl:w-[460px]">
+        <div
+          className={cn(
+            "flex flex-col space-y-2 text-center lg:row-start-2 lg:w-[calc(var(--coin-size)+112px)]",
+            reserveBottom && "mt-9 sm:mt-12",
+          )}
+        >
           {(legendExpanded || mintMark) && (
             <p className="font-display relative text-[1.75rem] tracking-[0.08em] break-words text-slate-400 xl:text-[2rem]">
               {legendExpanded && (
@@ -151,51 +221,6 @@ export function CoinRow({
         </div>
       )}
 
-      {/* Switcher buttons for alternate images */}
-      {(description || availableImages.length > 1) && (
-        <div className="relative flex flex-row items-center justify-center gap-2 lg:row-start-3">
-          {description && (
-            <TipIcon
-              size="lg"
-              label="Show description"
-              interactive
-              popoverClassName="bottom-full top-auto mt-0 mb-2 w-[min(24rem,calc(100vw-2rem))] max-w-none px-4 py-3 text-center text-base"
-            >
-              <DescriptionWithDeviceHighlights
-                text={description}
-                devices={devices}
-                className="leading-relaxed break-words italic"
-              />
-            </TipIcon>
-          )}
-          {availableImages.length > 1 &&
-            availableImages.map((image, index) => (
-              <button
-                key={index}
-                className={`artemis-card flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none ${
-                  index === currentMobileImageIndex
-                    ? "border-slate-400"
-                    : "border-slate-600"
-                }`}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setCurrentMobileImageIndex(index)
-                }}
-                aria-label={`Switch to ${image.label} image`}
-              >
-                <div className="h-full w-full overflow-hidden rounded-full">
-                  <CloudinaryImage
-                    src={image.src}
-                    alt={`${image.label} thumbnail`}
-                    width={56}
-                    height={56}
-                  />
-                </div>
-              </button>
-            ))}
-        </div>
-      )}
-
       {/* Image Modal */}
       <ImageModal
         isOpen={isModalOpen}
@@ -209,19 +234,59 @@ export function CoinRow({
 
 /**
  * The small button at the end of a legend that shows its translation. The
- * popover centres on the legend's column (the nearest `relative` ancestor) so
- * it stays on the page. The button's bottom edge sits on the baseline, which
- * centres it on the capitals.
+ * popover opens directly to the left of the button, centred on it vertically.
+ * The button's bottom edge sits on the baseline, which centres it on the
+ * capitals.
  */
 function TranslationTip({ translation }: { translation: string }) {
   return (
     <TipIcon
       size="sm"
       label="Show translation"
-      className="ml-2 align-baseline"
-      popoverClassName="font-sans text-center font-normal tracking-normal normal-case"
+      className="relative ml-2 align-baseline"
+      popoverClassName="top-1/2 right-full left-auto mt-0 mr-2 max-w-[min(20rem,calc(100vw-6rem))] -translate-x-0 -translate-y-1/2 font-sans text-left font-normal tracking-normal normal-case"
     >
       {translation}
     </TipIcon>
+  )
+}
+
+/**
+ * The scroll from the timeline's events, drawn in the same colour as the
+ * button's border (moonlight, 70% until hover). The source image is black
+ * strokes on a light background with a faint checkerboard baked in, so a
+ * colour-matrix filter turns brightness into transparency (the checkerboard's
+ * greys fall below the cut-off and vanish) and paints what is left moonlight.
+ */
+function ScrollIcon() {
+  // CSS url(#id) cannot take the colons React puts in generated ids
+  const filterId = `scroll-tint-${useId().replace(/:/g, "")}`
+  return (
+    <>
+      <svg width="0" height="0" aria-hidden="true" className="absolute">
+        <filter
+          id={filterId}
+          x="0"
+          y="0"
+          width="1"
+          height="1"
+          colorInterpolationFilters="sRGB"
+        >
+          {/* moonlight is slate-400, rgb(148 163 184). Alpha is high for dark pixels only, and the region is the image itself so the empty margin is not painted. */}
+          <feColorMatrix
+            type="matrix"
+            values="0 0 0 0 0.5804  0 0 0 0 0.6392  0 0 0 0 0.7216  -0.8333 -0.8333 -0.8333 0 1.9"
+          />
+        </filter>
+      </svg>
+      <Image
+        src="/assets/icon-scroll.png"
+        alt=""
+        width={24}
+        height={24}
+        className="opacity-50 group-hover:opacity-100 group-focus-visible:opacity-100"
+        style={{ filter: `url(#${filterId})` }}
+      />
+    </>
   )
 }

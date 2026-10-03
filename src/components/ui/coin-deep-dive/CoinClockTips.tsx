@@ -3,11 +3,29 @@ import type { ClockNote } from "~/types/api"
 import { TipIcon } from "./TipIcon"
 
 /**
+ * Which positions hang above or below the coin and so need room there.
+ * 11, 12 and 1 clear the top edge, 5, 6 and 7 the bottom edge. The others sit
+ * beside the coin.
+ */
+const TOP_POSITIONS = [11, 12, 1]
+const BOTTOM_POSITIONS = [5, 6, 7]
+
+/** Whether any of these notes needs room above and/or below its coin. */
+export function clockNoteRoom(notes: ClockNote[]) {
+  return {
+    top: notes.some((n) => TOP_POSITIONS.includes(n.position)),
+    bottom: notes.some((n) => BOTTOM_POSITIONS.includes(n.position)),
+  }
+}
+
+/**
  * Where a clock position sits: on the coin's rim (half the box) plus a fixed
  * clearance of a button radius (22px) and a small gap, so a button never
  * overlaps a coin that fills its box.
  */
-const CLEARANCE = "33px"
+// A button radius plus a small gap. Set per breakpoint with --clock-gap below,
+// because the buttons are smaller on phones.
+const CLEARANCE = "var(--clock-gap)"
 
 function clockOffset(position: number) {
   const angle = ((position % 12) * 30 * Math.PI) / 180
@@ -47,7 +65,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           size="md"
           label={note.title ?? `Note at ${note.position} o'clock`}
           interactive={note.linkUrl !== null}
-          className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
+          className="absolute z-10 -translate-x-1/2 -translate-y-1/2 [--clock-gap:24px] sm:[--clock-gap:33px]"
           style={clockOffset(note.position)}
           popoverClassName={cn(
             "w-72 text-left sm:w-84",
