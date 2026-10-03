@@ -1,6 +1,7 @@
 "use client"
 
 import dynamic from "next/dynamic"
+import { useMemo } from "react"
 import { useArtifacts } from "~/api/artifacts"
 import { useDeities } from "~/api/deities"
 import { useDevices } from "~/api/devices"
@@ -64,13 +65,19 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
     coin.rev_device_ids?.includes(d.id),
   )
 
-  const coinMap = buildCoinMap(coin, {
-    timelines: dbTimelines,
-    mints,
-    places,
-    deities: allDeities,
-    artifacts,
-  })
+  // Memoised: the map rebuilds its marker index when `markers` changes, so
+  // the same coin and data must give the same array.
+  const coinMap = useMemo(
+    () =>
+      buildCoinMap(coin, {
+        timelines: dbTimelines,
+        mints,
+        places,
+        deities: allDeities,
+        artifacts,
+      }),
+    [coin, dbTimelines, mints, places, allDeities, artifacts],
+  )
 
   const clockNotes = coin.clock_notes ?? []
   const clockNotesFor = (side: "obverse" | "reverse") =>
