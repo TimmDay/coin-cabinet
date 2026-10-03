@@ -185,7 +185,7 @@ export function TipIcon({
           aria-label={interactive ? label : undefined}
           data-popover-container
           className={cn(
-            "border-line bg-field text-moonlight-bright absolute z-30 block rounded-md border px-3 py-2 text-sm",
+            "border-line bg-field text-moonlight-bright absolute z-30 block rounded-md border px-5 py-4 text-sm",
             "top-full left-1/2 mt-2 w-max max-w-xs -translate-x-1/2",
             popoverClassName,
           )}
