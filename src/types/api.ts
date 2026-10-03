@@ -54,7 +54,7 @@ export type CoinEnhanced = SomnusCollection & {
   /**
    * Where/when the coin was found, sourced from its `provenance_events` row
    * of type "find" via the `public_find_events` view (the only slice of
-   * provenance data that's public — see docs/SCHEMA_MIGRATION_READ_PATH.md).
+   * provenance data that's public — see docs/READ_PATH.md).
    * Null if there's no find event on record, or it has no location.
    */
   found_event?: {

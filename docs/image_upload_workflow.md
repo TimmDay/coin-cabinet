@@ -10,7 +10,7 @@
    - Windows: https://imagemagick.org/script/download.php#windows
 
 2. Your image files should be named according to the [Image file naming guide](../README.md#image-file-naming-guide).
-   There is a tool in the add-coins route (auth users only) that will auto format it for you.
+   The data-maintenance app (`somnus-data-ingestion`) has a tool that will auto format it for you.
 
 3. Upload images to Cloudinary using the CLI tool:
 
