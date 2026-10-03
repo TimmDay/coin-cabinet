@@ -30,7 +30,12 @@ function transformDeitiesToCards(
         subtitle: deity.subtitle ?? "",
         primaryInfo: deity.flavour_text ?? "",
         footer: deity.features_coinage?.map((f) => f.name).join(", ") ?? "",
-        image: artifact?.img_src ?? undefined,
+        // The deity's own pictures; else the artifact tied to it, if any
+        images: deity.image_links?.length
+          ? deity.image_links
+          : artifact?.img_src
+            ? [artifact.img_src]
+            : undefined,
         altText: artifact?.img_alt ?? deity.name ?? undefined,
         caption: artifact?.flavour_text ?? undefined,
       }

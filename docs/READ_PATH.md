@@ -69,7 +69,9 @@ missing is left out.
 
 ### `/api/deities` from `deities`, `deity_places`, `device_deities`, `devices`
 `deity_places` becomes `place_ids`. The names of the devices linked through
-`device_deities` fill the card footer.
+`device_deities` fill the card footer. `image_links` (a text array of Cloudinary
+ids or URLs) holds the deity's pictures: the open card shows one image, or a
+carousel you click through when there are several.
 
 ### `/api/timelines` from `timelines`, `timeline_events`, `places`
 The `timeline: Event[]` array is rebuilt from the event rows in `sequence`
@@ -183,10 +185,10 @@ in `src/data`. Nothing on the site displays citations yet.
 
 ## Known limitations
 
-- Deity and person cards show no illustrative photo, and a deity or person brings
-  no artifact pins to the map: `artifact_ids` has no home in the normalised
-  schema for those two kinds. A coin's own supporting images (`flavour_img`) still
-  name artifacts, and those get a pin.
+- A person's card shows no photo, and neither a deity nor a person brings
+  artifact pins to the map: `artifact_ids` has no home in the normalised schema
+  for those two kinds. A coin's own supporting images (`flavour_img`) still name
+  artifacts, and those get a pin.
 - What appears on the site depends on the data: items and sets with
   `is_hidden = TRUE` are invisible, and a set page is empty until its set is
   made visible in the data-maintenance app.

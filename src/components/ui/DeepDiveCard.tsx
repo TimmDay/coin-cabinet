@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import CloudinaryImage from "~/components/CloudinaryImage"
+import { ImageCarousel } from "./ImageCarousel"
 
 export type Source = {
   quote?: string
@@ -20,6 +20,8 @@ export type DeepDiveCardProps = {
   secondaryInfo?: string
   /** Image to display underneath secondary info */
   image?: string
+  /** Several images to step through; wins over `image` */
+  images?: string[]
   /** Alt text for the image */
   altText?: string
   /** Caption to display under the image */
@@ -44,6 +46,7 @@ export function DeepDiveCard({
   primaryInfo,
   secondaryInfo,
   image,
+  images,
   altText,
   caption,
   footer,
@@ -53,7 +56,9 @@ export function DeepDiveCard({
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   // Check if there's any content to show in the expandable section
-  const hasExpandableContent = primaryInfo || secondaryInfo || image
+  const pictures = images?.length ? images : image ? [image] : []
+  const hasExpandableContent =
+    primaryInfo || secondaryInfo || pictures.length > 0
 
   return (
     // Three rows: header, toggle with its content, footer. Inside the
@@ -123,15 +128,10 @@ export function DeepDiveCard({
           )}
 
           {/* Image */}
-          {image && (
+          {pictures.length > 0 && (
             <div className="mt-4">
               <div className="group relative flex w-full items-center justify-center overflow-hidden rounded-lg shadow-sm">
-                <CloudinaryImage
-                  src={image}
-                  alt={altText || ""}
-                  width={400}
-                  height={400}
-                />
+                <ImageCarousel images={pictures} alt={altText || title} />
                 {/* Tooltip on hover */}
                 {altText && (
                   <div className="bg-night/95 text-moonlight-bright pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-xs -translate-x-1/2 rounded-lg px-3 py-2 text-sm opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100">
@@ -139,7 +139,7 @@ export function DeepDiveCard({
                       {altText}
                     </div>
                     {/* Arrow pointing down */}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-night/95"></div>
+                    <div className="border-t-night/95 absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent"></div>
                   </div>
                 )}
               </div>
