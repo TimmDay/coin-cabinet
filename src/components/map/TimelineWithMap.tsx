@@ -3,7 +3,7 @@
 import { X } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useInViewport } from "~/hooks/useInViewport"
-import { MAP_HEIGHT } from "~/lib/constants"
+import { MAP_HEIGHT, MAP_HEIGHT_DESKTOP } from "~/lib/constants"
 import type {
   Event as TimelineEvent,
   Timeline as TimelineType,
@@ -412,9 +412,9 @@ export function TimelineWithMap({
         ? "text-amber-900"
         : isFound
           ? "text-emerald-900"
-          : "text-purple-900",
-      fillColor: isCoinMinted ? "#f59e0b" : isFound ? "#059669" : "#0f172a",
-      borderColor: isCoinMinted ? "#f59e0b" : isFound ? "#059669" : "#7c3aed",
+          : "text-[#6e2a3d]",
+      fillColor: isCoinMinted ? "#d9743a" : isFound ? "#5a7f55" : "#6e2a3d",
+      borderColor: isCoinMinted ? "#f6dfae" : isFound ? "#ead6a6" : "#f0c27a",
       isActive: index === selectedEventIndex,
       showPopup: false,
       onClick: () => handleTimelineMarkerSelection(event, index),
@@ -499,13 +499,13 @@ export function TimelineWithMap({
         {/* Desktop map and info */}
         {!isMobileViewport && (
           <div className="hidden lg:flex lg:flex-row">
-            <div className="h-[400px] lg:w-2/3">
+            <div className="h-[520px] lg:w-2/3">
               {isMapInViewport ? (
                 <Map
                   {...mapProps}
                   center={validatedInitialCenter}
                   zoom={initialZoom}
-                  height={MAP_HEIGHT}
+                  height={MAP_HEIGHT_DESKTOP}
                   width="100%"
                   showProvinceLabels={showProvinceLabels}
                   hideControls={true}
@@ -516,13 +516,13 @@ export function TimelineWithMap({
                   onNavigate={handleMapNavigate}
                 />
               ) : (
-                <div className="flex h-[400px] items-center justify-center bg-slate-100">
+                <div className="flex h-[520px] items-center justify-center bg-slate-100">
                   <div className="text-slate-600">Loading map...</div>
                 </div>
               )}
             </div>
 
-            <div className="h-[400px] lg:w-1/3">
+            <div className="h-[520px] lg:w-1/3">
               <TimelineInfoBox
                 event={currentEvent}
                 onPrevious={handlePreviousEvent}
@@ -553,7 +553,7 @@ export function TimelineWithMap({
 
       {isMobileViewport && isMobileModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex flex-col bg-slate-900 lg:hidden"
+          className="bg-night fixed inset-0 z-50 flex flex-col lg:hidden"
           role="dialog"
           aria-modal="true"
           aria-label="Map and timeline event details"
@@ -569,8 +569,8 @@ export function TimelineWithMap({
             </button>
           </div>
 
-          <div className="flex h-full flex-col bg-slate-900">
-            <div className="relative h-[52dvh] min-h-[360px] overflow-hidden border-b border-slate-700/70">
+          <div className="bg-night flex h-full flex-col">
+            <div className="border-line relative h-[52dvh] min-h-[360px] overflow-hidden border-b">
               <Map
                 {...mapProps}
                 center={mobilePreviewCenter}
@@ -588,14 +588,14 @@ export function TimelineWithMap({
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-slate-950/60 to-transparent" />
             </div>
 
-            <div className="min-h-0 flex-1 bg-slate-900 pt-3">
+            <div className="bg-night min-h-0 flex-1">
               <TimelineInfoBox
                 event={currentEvent}
                 onPrevious={handlePreviousEvent}
                 onNext={handleNextEvent}
                 hasPrevious={allEvents.length > 1}
                 hasNext={allEvents.length > 1}
-                className="h-full bg-slate-900"
+                className="h-full"
               />
             </div>
           </div>

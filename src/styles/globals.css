@@ -83,6 +83,45 @@
       opacity: 1;
     }
   }
+
+  /* The loading coin: it rolls along a line, turning as far as it travels (a
+     36px coin over a 204px track is 204 / (pi * 36) turns), leaving a trail
+     behind it like a progress bar. Roll, spin and trail share one easing so they
+     stay in step; the fade is on its own so it doesn't change that easing. */
+  --animate-coin-roll: coin-roll 2.4s ease-in-out infinite;
+  --animate-coin-spin: coin-spin 2.4s ease-in-out infinite;
+  --animate-coin-trail: coin-trail 2.4s ease-in-out infinite;
+  --animate-coin-fade: coin-fade 2.4s linear infinite;
+  @keyframes coin-roll {
+    to {
+      transform: translateX(var(--coin-travel));
+    }
+  }
+  @keyframes coin-spin {
+    to {
+      transform: rotate(650deg);
+    }
+  }
+  @keyframes coin-trail {
+    from {
+      transform: scaleX(0.08);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  @keyframes coin-fade {
+    0% {
+      opacity: 0;
+    }
+    10%,
+    88% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
 }
 
 @layer base {

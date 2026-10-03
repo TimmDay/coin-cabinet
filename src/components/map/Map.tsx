@@ -22,12 +22,14 @@ import {
 } from "./hooks"
 import {
   MAP_BOUNDS_LNGLAT,
+  MAP_PAN_BOUNDS_LNGLAT,
   MAP_STYLE_URL,
   MAP_STYLES,
   PROVINCE_LABEL_STYLES,
   createEmpireLayerConfig,
   type EmpireLayerConfigMap,
 } from "./mapConfig"
+import { applyOldPaperTheme } from "./mapTheme"
 import { MapEmbeddedControls } from "./MapEmbeddedControls"
 import {
   buildClusteredCustomMarkers,
@@ -104,6 +106,8 @@ export type MapProps = {
   zoom?: number
   /** Height of the map container */
   height?: string
+  /** Height from the lg breakpoint up; defaults to `height` */
+  desktopHeight?: string
   /** Width of the map container */
   width?: string
   /** Additional CSS class names */
@@ -162,6 +166,7 @@ export const Map: React.FC<MapProps> = ({
   center,
   zoom,
   height = MAP_HEIGHT,
+  desktopHeight,
   width = "100%",
   className = "",
   layout = "default",
@@ -241,7 +246,7 @@ export const Map: React.FC<MapProps> = ({
   >([...ROMAN_PROVINCES]) // Start with all provinces visible
   const [internalShowProvinceLabels, setInternalShowProvinceLabels] =
     useState(true)
-  const [currentZoom, setCurrentZoom] = useState<number>(config.defaultZoom)
+  const [currentZoom, setCurrentZoom] = useState<number>(safeZoom)
   const [viewportBounds, setViewportBounds] =
     useState<ViewportBounds>(MAP_BOUNDS_LNGLAT)
 
@@ -735,6 +740,9 @@ export const Map: React.FC<MapProps> = ({
   // Apply custom dimensions if provided, otherwise use Tailwind defaults
   const safeHeight = sanitizeCssDimension(height, MAP_HEIGHT)
   const safeWidth = sanitizeCssDimension(width, "100%")
+  const safeDesktopHeight = desktopHeight
+    ? sanitizeCssDimension(desktopHeight, safeHeight)
+    : null
 
   const updateViewportBounds = useCallback((map: MapLibreMap) => {
     const bounds = map.getBounds()
@@ -858,7 +866,14 @@ export const Map: React.FC<MapProps> = ({
             className={
               layout === "fullscreen"
                 ? "relative h-full w-full"
-                : `map-shell-sized relative ${width === "100%" ? "w-full" : ""}`
+                : `map-shell-sized relative ${width === "100%" ? "w-full" : ""} ${safeDesktopHeight ? "lg:h-(--map-desktop-height)!" : ""}`
+            }
+            style={
+              safeDesktopHeight
+                ? ({
+                    "--map-desktop-height": safeDesktopHeight,
+                  } as React.CSSProperties)
+                : undefined
             }
           >
             <MapGL
@@ -870,7 +885,7 @@ export const Map: React.FC<MapProps> = ({
               }}
               mapStyle={MAP_STYLE_URL}
               style={{ width: "100%", height: "100%" }}
-              maxBounds={MAP_BOUNDS_LNGLAT}
+              maxBounds={MAP_PAN_BOUNDS_LNGLAT}
               minZoom={config.minZoom}
               maxZoom={config.maxZoom}
               keyboard={false}
@@ -879,6 +894,7 @@ export const Map: React.FC<MapProps> = ({
                 setMapLoaded(true)
                 updateViewportBounds(e.target)
                 hideModernPlaceLabels(e.target)
+                applyOldPaperTheme(e.target)
                 collapseAttribution(e.target)
               }}
               onZoomEnd={(e) => {
@@ -987,7 +1003,7 @@ export const Map: React.FC<MapProps> = ({
                               : "",
                             description: mint.flavour_text ?? "",
                             className: isHighlighted
-                              ? "text-purple-900"
+                              ? "text-[#6e2a3d]"
                               : "text-blue-800",
                           },
                         )
@@ -1067,7 +1083,7 @@ export const Map: React.FC<MapProps> = ({
                     id="spider-legs-line"
                     type="line"
                     paint={{
-                      "line-color": "rgba(15, 23, 42, 0.55)",
+                      "line-color": "rgba(90, 34, 56, 0.6)",
                       "line-width": 2,
                       "line-opacity": 0.9,
                     }}

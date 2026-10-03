@@ -68,7 +68,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           className="absolute z-10 -translate-x-1/2 -translate-y-1/2 [--clock-gap:24px] sm:[--clock-gap:33px]"
           style={clockOffset(note.position)}
           popoverClassName={cn(
-            "w-72 text-left sm:w-84",
+            "text-moonlight w-72 px-7 text-left text-base sm:w-84",
             popoverPlacement(note.position),
           )}
         >

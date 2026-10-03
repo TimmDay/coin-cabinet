@@ -47,7 +47,7 @@ export function createReverseTeardropMarkerHtml({
           border-radius: 50% 50% 50% 0;
           background: ${fillColor};
           border: ${borderWidth}px solid ${borderColor};
-          box-shadow: 0 4px 10px rgba(15, 23, 42, 0.35);
+          box-shadow: 0 4px 10px rgba(46, 27, 18, 0.45);
         "
       ></div>
       <div
@@ -67,7 +67,7 @@ export function createReverseTeardropMarkerHtml({
         ${
           safeIconSrc
             ? `<img src="${safeIconSrc}" alt="" style="width: ${iconSize}px; height: ${iconSize}px; object-fit: contain; filter: brightness(0) invert(1);" />`
-            : `<div style="width: ${fallbackDotSize}px; height: ${fallbackDotSize}px; border-radius: 9999px; background: rgba(255,255,255,0.92);"></div>`
+            : `<div style="width: ${fallbackDotSize}px; height: ${fallbackDotSize}px; border-radius: 9999px; background: rgba(251,238,211,0.95);"></div>`
         }
       </div>
     </div>
@@ -103,9 +103,9 @@ export function createClusterMarkerHtml(count: number) {
           position: absolute;
           inset: 0;
           border-radius: 9999px;
-          background: radial-gradient(circle at 30% 30%, #1e293b 0%, #0f172a 58%, #020617 100%);
-          border: 2px solid #9ca3af;
-          box-shadow: 0 10px 24px rgba(15, 23, 42, 0.32), 0 0 0 6px rgba(15, 23, 42, 0.2);
+          background: radial-gradient(circle at 30% 30%, #8a3a4f 0%, #5a2238 58%, #2f1220 100%);
+          border: 2px solid #e0a458;
+          box-shadow: 0 10px 24px rgba(46, 27, 18, 0.4), 0 0 0 6px rgba(90, 34, 56, 0.25);
         "
       ></div>
       <div
@@ -115,7 +115,7 @@ export function createClusterMarkerHtml(count: number) {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #f8fafc;
+          color: #fbeed3;
           font-size: ${count >= 100 ? 11 : 12}px;
           font-weight: 700;
           letter-spacing: 0.02em;

@@ -280,7 +280,7 @@ export function CoinGrid({
             <div key={index} className="group w-fit cursor-pointer text-center">
               <div className="flex justify-center gap-2">
                 <div className="flex h-[200px] w-[200px] flex-shrink-0 items-center justify-center">
-                  <div className="h-[200px] w-[200px] animate-pulse rounded bg-slate-800/20"></div>
+                  <div className="h-[200px] w-[200px] animate-pulse rounded-full bg-slate-800/20"></div>
                 </div>
               </div>
             </div>

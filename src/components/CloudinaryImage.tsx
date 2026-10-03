@@ -7,6 +7,7 @@ type Props = {
   height?: number
   alt?: string
   onLoad?: () => void
+  onError?: () => void
   priority?: boolean
   /** Crop the empty margin first so the subject fills the whole box. */
   trim?: boolean
@@ -40,6 +41,7 @@ export default function CloudinaryImage({
   height = 200,
   alt = "",
   onLoad,
+  onError,
   priority = false,
   trim = false,
 }: Props) {
@@ -66,6 +68,7 @@ export default function CloudinaryImage({
       sizes={`${width}px`}
       className="max-h-full max-w-full object-contain"
       onLoad={onLoad}
+      onError={onError}
       priority={priority}
     />
   )

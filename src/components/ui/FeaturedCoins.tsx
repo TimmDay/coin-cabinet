@@ -11,7 +11,7 @@ import { generateCoinUrl } from "~/lib/utils/url-helpers"
 const COIN_CONTAINER_CLASSES =
   "group max-w-[154px] min-w-0 flex-1 sm:max-w-[252px] lg:max-w-[250px]"
 const COIN_IMAGE_CONTAINER_CLASSES =
-  "flex aspect-square min-h-[140px] w-full items-center justify-center sm:min-h-[210px] lg:min-h-[225px]"
+  "flex aspect-square w-full items-center justify-center"
 const LOADING_DOTS_CLASSES = "text-xs text-slate-800"
 
 type FeaturedCoin = {

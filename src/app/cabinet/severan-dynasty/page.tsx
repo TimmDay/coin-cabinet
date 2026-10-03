@@ -4,12 +4,12 @@ import { Quote } from "~/components/ui/Quote"
 
 export default function SeveranDynastyPage() {
   return (
-    <main className="content-wrapper">
+    <main className="content-wrapper min-h-[calc(100dvh-9.5rem)]">
       <PageTitle>Severan Dynasty</PageTitle>
 
       <CoinGrid filterSet="Severan" />
 
-      <div className="mt-12">
+      <div className="mt-12 md:mt-auto">
         <Quote
           quote="Be harmonious with each other, enrich the soldiers, and scorn all other men."
           attribution="Cassius Dio, Roman History Book 77, Part 15"

@@ -49,9 +49,9 @@ export const createEmpireLayerConfig = (
     showProp: showBC60,
     onChange: onBC60Change,
     style: {
-      fillColor: "#DEB887",
+      fillColor: "#d99a2b",
       fillOpacity: 0.15,
-      lineColor: "#8B4513",
+      lineColor: "#8a5a12",
       lineWidth: 2,
       lineOpacity: 0.8,
       lineDasharray: [6, 3],
@@ -66,9 +66,9 @@ export const createEmpireLayerConfig = (
     showProp: showAD14,
     onChange: onAD14Change,
     style: {
-      fillColor: "#87CEEB",
+      fillColor: "#5f7f9c",
       fillOpacity: 0.15,
-      lineColor: "#4169E1",
+      lineColor: "#3d5a78",
       lineWidth: 2,
       lineOpacity: 0.8,
       lineDasharray: [5, 4],
@@ -84,9 +84,9 @@ export const createEmpireLayerConfig = (
     showProp: showAD69,
     onChange: onAD69Change,
     style: {
-      fillColor: "#FFB6C1",
+      fillColor: "#b0486b",
       fillOpacity: 0.15,
-      lineColor: "#DC143C",
+      lineColor: "#8c2f4d",
       lineWidth: 2,
       lineOpacity: 0.8,
       lineDasharray: [4, 5],
@@ -101,9 +101,9 @@ export const createEmpireLayerConfig = (
     showProp: showAD117,
     onChange: onAD117Change,
     style: {
-      fillColor: "#90EE90",
+      fillColor: "#6b8f5e",
       fillOpacity: 0.15,
-      lineColor: "#228B22",
+      lineColor: "#476b3d",
       lineWidth: 2,
       lineOpacity: 0.8,
       lineDasharray: [3, 6],
@@ -118,9 +118,9 @@ export const createEmpireLayerConfig = (
     showProp: showAD200,
     onChange: onAD200Change,
     style: {
-      fillColor: "#FFE4B5",
+      fillColor: "#d9743a",
       fillOpacity: 0.15,
-      lineColor: "#FF8C00",
+      lineColor: "#a84a1d",
       lineWidth: 2,
       lineOpacity: 0.8,
       lineDasharray: [2, 7],
@@ -132,9 +132,9 @@ export const createEmpireLayerConfig = (
 export const MAP_STYLES = {
   // Province boundaries style
   provinces: {
-    fillColor: "#8b5cf6", // Purple fill
-    fillOpacity: 0.2,
-    lineColor: "#7c3aed", // Purple border
+    fillColor: "#c4622d", // Terracotta fill
+    fillOpacity: 0.12,
+    lineColor: "#8c3b2a", // Burnt umber border
     lineWidth: 2,
     lineOpacity: 0.8,
     lineDasharray: [5, 5] as [number, number],
@@ -145,8 +145,8 @@ export const MAP_STYLES = {
     style: {
       width: "12px",
       height: "12px",
-      backgroundColor: "#a78bfa",
-      border: "2px solid var(--color-map-label)",
+      backgroundColor: "#b0486b",
+      border: "2px solid #f3dca8",
       borderRadius: "9999px",
       boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
     },
@@ -176,6 +176,28 @@ export const MAP_BOUNDS_LNGLAT: [number, number, number, number] = [
   MAP_BOUNDS.maxBounds[0][0], // north
 ]
 
+// How far the map can be panned: the coverage above plus half its width again
+// on the west and east sides, and half its height again on the south side, so
+// the edges are easy to drag past. Only the
+// MapLibre maxBounds use this; coin locations are still filtered against
+// MAP_BOUNDS.
+const PAN_EXTRA_LNG = (MAP_BOUNDS_LNGLAT[2] - MAP_BOUNDS_LNGLAT[0]) * 0.5
+const PAN_EXTRA_LAT = (MAP_BOUNDS_LNGLAT[3] - MAP_BOUNDS_LNGLAT[1]) * 0.5
+export const MAP_PAN_BOUNDS_LNGLAT: [number, number, number, number] = [
+  MAP_BOUNDS_LNGLAT[0] - PAN_EXTRA_LNG,
+  MAP_BOUNDS_LNGLAT[1] - PAN_EXTRA_LAT,
+  MAP_BOUNDS_LNGLAT[2] + PAN_EXTRA_LNG,
+  MAP_BOUNDS_LNGLAT[3],
+]
+
+// Where the deep-dive maps open: as far out as the map allows (its minimum
+// zoom, see useMapConfiguration) and centred on the heel of Italy (Santa Maria
+// di Leuca), which puts most of the empire in view.
+export const DEEP_DIVE_MAP_VIEW = {
+  center: [39.8, 18.36] as [number, number],
+  zoom: 3,
+}
+
 // MapLibre style URL -- OpenFreeMap's "dark" style: free, no API key, no
 // usage cap. Replaces the CartoDB raster tiles, which stopped serving
 // anonymous requests and now show an "API KEY REQUIRED" watermark instead.
@@ -188,7 +210,9 @@ export const PROVINCE_LABEL_STYLES = {
     padding: "2px 6px",
     fontSize: "12px",
     fontWeight: 600,
-    color: "var(--color-map-label)",
+    color: "#2e1b12", // Dark umber ink, readable on the parchment
+    fontFamily: "var(--font-display)", // The legends' inscriptional capitals
+    letterSpacing: "0.06em",
     textAlign: "center",
     whiteSpace: "pre",
     lineHeight: 1.2,

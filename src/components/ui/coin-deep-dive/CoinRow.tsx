@@ -53,6 +53,13 @@ export function CoinRow({
 
   // State for mobile image switching
   const [currentMobileImageIndex, setCurrentMobileImageIndex] = useState(0)
+  // Images that have finished loading (or failed), by src. The swap buttons
+  // wait on the displayed image so a second click can't pile up on a first.
+  const [settledSrcs, setSettledSrcs] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  )
+  const markSettled = (src: string) =>
+    setSettledSrcs((prev) => (prev.has(src) ? prev : new Set(prev).add(src)))
 
   const hasAnyText = Boolean(
     legendExpanded || legendTranslation || mintMark || flavourText,
@@ -80,6 +87,9 @@ export function CoinRow({
         ]
       : []),
   ]
+
+  const currentImage = availableImages[currentMobileImageIndex]
+  const isSwapping = currentImage ? !settledSrcs.has(currentImage.src) : false
 
   const handleImageClick = (imageUrl: string, altText: string) => {
     setModalImageUrl(imageUrl)
@@ -123,6 +133,12 @@ export function CoinRow({
                   height={640}
                   priority={priority && currentMobileImageIndex === 0}
                   trim
+                  onLoad={() =>
+                    markSettled(availableImages[currentMobileImageIndex]!.src)
+                  }
+                  onError={() =>
+                    markSettled(availableImages[currentMobileImageIndex]!.src)
+                  }
                 />
               )}
             </div>
@@ -158,21 +174,33 @@ export function CoinRow({
                   index !== currentMobileImageIndex && (
                     <button
                       key={index}
-                      className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-slate-600 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none"
+                      className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-slate-600 transition-all duration-200 hover:border-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-500 focus:outline-none disabled:cursor-wait disabled:hover:border-slate-600"
+                      disabled={isSwapping}
                       onClick={(e) => {
                         e.stopPropagation()
                         setCurrentMobileImageIndex(index)
                       }}
-                      aria-label={`Switch to ${image.label} image`}
+                      aria-label={
+                        isSwapping
+                          ? "Loading image"
+                          : `Switch to ${image.label} image`
+                      }
                     >
-                      <div className="h-full w-full overflow-hidden rounded-full">
-                        <CloudinaryImage
-                          src={image.src}
-                          alt={`${image.label} thumbnail`}
-                          width={40}
-                          height={40}
+                      {isSwapping ? (
+                        <span
+                          aria-hidden="true"
+                          className="border-t-moonlight h-5 w-5 animate-spin rounded-full border-2 border-slate-600"
                         />
-                      </div>
+                      ) : (
+                        <div className="h-full w-full overflow-hidden rounded-full">
+                          <CloudinaryImage
+                            src={image.src}
+                            alt={`${image.label} thumbnail`}
+                            width={40}
+                            height={40}
+                          />
+                        </div>
+                      )}
                     </button>
                   ),
               )}
@@ -244,7 +272,7 @@ function TranslationTip({ translation }: { translation: string }) {
       size="sm"
       label="Show translation"
       className="relative ml-2 align-baseline"
-      popoverClassName="top-1/2 right-full left-auto mt-0 mr-2 max-w-[min(20rem,calc(100vw-6rem))] -translate-x-0 -translate-y-1/2 font-sans text-left font-normal tracking-normal normal-case"
+      popoverClassName="top-1/2 right-full left-auto mt-0 mr-2 max-w-[min(20rem,calc(100vw-6rem))] -translate-x-0 -translate-y-1/2 px-7 font-sans text-base text-left font-normal text-moonlight tracking-normal normal-case"
     >
       {translation}
     </TipIcon>
