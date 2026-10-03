@@ -1205,6 +1205,9 @@ export type Database = {
           created_at: string
           flavour_text: string | null
           id: number
+          image_alt_text: string | null
+          image_credit: string | null
+          image_url: string | null
           mint_marks: string[] | null
           officina_marks: string[] | null
           opened_by: string | null
@@ -1216,6 +1219,9 @@ export type Database = {
           created_at?: string
           flavour_text?: string | null
           id?: never
+          image_alt_text?: string | null
+          image_credit?: string | null
+          image_url?: string | null
           mint_marks?: string[] | null
           officina_marks?: string[] | null
           opened_by?: string | null
@@ -1227,6 +1233,9 @@ export type Database = {
           created_at?: string
           flavour_text?: string | null
           id?: never
+          image_alt_text?: string | null
+          image_credit?: string | null
+          image_url?: string | null
           mint_marks?: string[] | null
           officina_marks?: string[] | null
           opened_by?: string | null
@@ -1331,6 +1340,9 @@ export type Database = {
           established_year: number | null
           flavour_text: string | null
           id: number
+          image_alt_text: string | null
+          image_credit: string | null
+          image_url: string | null
           lat: number | null
           lng: number | null
           location_description: string | null
@@ -1344,6 +1356,9 @@ export type Database = {
           established_year?: number | null
           flavour_text?: string | null
           id?: never
+          image_alt_text?: string | null
+          image_credit?: string | null
+          image_url?: string | null
           lat?: number | null
           lng?: number | null
           location_description?: string | null
@@ -1357,6 +1372,9 @@ export type Database = {
           established_year?: number | null
           flavour_text?: string | null
           id?: never
+          image_alt_text?: string | null
+          image_credit?: string | null
+          image_url?: string | null
           lat?: number | null
           lng?: number | null
           location_description?: string | null

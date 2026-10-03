@@ -41,11 +41,23 @@ export function MintDeepDiveCard({ mintId }: MintDeepDiveCardProps) {
       ? mint.mint_marks.join(", ")
       : undefined
 
+  const images = mint.image_url
+    ? [
+        {
+          src: mint.image_url,
+          alt: mint.image_alt_text ?? mint.name,
+          name: mint.name,
+          credit: mint.image_credit ?? undefined,
+        },
+      ]
+    : undefined
+
   return (
     <DeepDiveCard
       title={mint.name}
       subtitle={subtitle}
       primaryInfo={mint.flavour_text}
+      images={images}
       footer={mintMarksFooter}
       defaultOpen={false}
     />
