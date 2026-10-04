@@ -197,7 +197,7 @@ export const MODERN_DETAIL_ZOOM = { from: 13, to: 14 } as const
 
 // The ancient overlay (provinces, empire extents) is gone well before the
 // basemap starts showing minor waterways (canals at zoom 12, streams at 13).
-export const OVERLAY_FADE_ZOOM = { from: 7, to: 8 } as const
+export const OVERLAY_FADE_ZOOM = { from: 6, to: 7 } as const
 
 /** An opacity that rises from 0 to 1 across the modern detail zoom range. */
 export const fadeInWithZoom = (): ExpressionSpecification => [
