@@ -4,10 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild": "node scripts/copy-maplibre-assets.mjs",
     "build": "next build",
     "check": "next lint && tsc --noEmit",
     "postinstall": "node scripts/copy-maplibre-assets.mjs",
     "db:types": "dotenv -e .env -- bash -c 'supabase gen types typescript --project-id \"$SUPABASE_PROJECT_REF\" --schema public > src/database/database.types.ts.tmp && mv src/database/database.types.ts.tmp src/database/database.types.ts'",
+    "predev": "node scripts/copy-maplibre-assets.mjs",
     "dev": "next dev",
     "new-article": "node scripts/new-article.js",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx}\" --cache",
