@@ -157,6 +157,8 @@ export const Map: React.FC<MapProps> = ({
   const provinces = useMemo(() => provinceStyle(), [])
 
   const mapRef = useRef<MapRef>(null)
+  // Once the visitor zooms, an event or pin selection pans without changing it
+  const userHasZoomed = useRef(false)
   const [mapLoaded, setMapLoaded] = useState(false)
 
   const [currentZoom, setCurrentZoom] = useState<number>(safeZoom)
@@ -380,18 +382,20 @@ export const Map: React.FC<MapProps> = ({
             map.resize()
           }
 
+          const targetZoom = userHasZoomed.current ? map.getZoom() : numZoom
+
           try {
             if (hasValidCurrentCenter && hasValidSize) {
               map.flyTo({
                 center: [numLng, numLat],
-                zoom: numZoom,
+                zoom: targetZoom,
                 duration: window.matchMedia("(prefers-reduced-motion: reduce)")
                   .matches
                   ? 0
                   : 1500,
               })
             } else {
-              map.jumpTo({ center: [numLng, numLat], zoom: numZoom })
+              map.jumpTo({ center: [numLng, numLat], zoom: targetZoom })
             }
           } catch {
             // Ignore navigation attempts on disposed/hidden maps
@@ -491,6 +495,9 @@ export const Map: React.FC<MapProps> = ({
                 collapseAttribution(e.target)
               }}
               onZoomEnd={(e) => {
+                // Only a visitor's own zoom (wheel, pinch, double click) carries
+                // the original event; flyTo does not
+                if (e.originalEvent) userHasZoomed.current = true
                 setCurrentZoom(e.viewState.zoom)
                 updateViewportBounds(e.target)
               }}
