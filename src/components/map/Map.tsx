@@ -24,7 +24,7 @@ import {
   PROVINCE_LABEL_STYLES,
   createEmpireLayerConfig,
   fadeOutWithZoom,
-  MODERN_DETAIL_ZOOM,
+  OVERLAY_FADE_ZOOM,
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
 import { markerPopup, type CustomMapMarker } from "./mapMarkers"
@@ -517,7 +517,7 @@ export const Map: React.FC<MapProps> = ({
                     <Layer
                       id={`${key}-fill`}
                       type="fill"
-                      maxzoom={MODERN_DETAIL_ZOOM.to}
+                      maxzoom={OVERLAY_FADE_ZOOM.to}
                       paint={{
                         "fill-color": layerConfig.style.fillColor,
                         "fill-opacity": fadeOutWithZoom(
@@ -528,7 +528,7 @@ export const Map: React.FC<MapProps> = ({
                     <Layer
                       id={`${key}-line`}
                       type="line"
-                      maxzoom={MODERN_DETAIL_ZOOM.to}
+                      maxzoom={OVERLAY_FADE_ZOOM.to}
                       paint={{
                         "line-color": layerConfig.style.lineColor,
                         "line-width": layerConfig.style.lineWidth,
@@ -552,7 +552,7 @@ export const Map: React.FC<MapProps> = ({
                   <Layer
                     id="provinces-fill"
                     type="fill"
-                    maxzoom={MODERN_DETAIL_ZOOM.to}
+                    maxzoom={OVERLAY_FADE_ZOOM.to}
                     paint={{
                       "fill-color": provinces.fillColor,
                       "fill-opacity": fadeOutWithZoom(provinces.fillOpacity),
@@ -561,7 +561,7 @@ export const Map: React.FC<MapProps> = ({
                   <Layer
                     id="provinces-line"
                     type="line"
-                    maxzoom={MODERN_DETAIL_ZOOM.to}
+                    maxzoom={OVERLAY_FADE_ZOOM.to}
                     paint={{
                       "line-color": provinces.lineColor,
                       "line-width": provinces.lineWidth,
@@ -575,7 +575,7 @@ export const Map: React.FC<MapProps> = ({
               {/* Province Labels */}
               {showProvinceLabels &&
                 currentZoom > PROVINCE_LABEL_STYLES.minZoomLevel &&
-                currentZoom < MODERN_DETAIL_ZOOM.to &&
+                currentZoom < OVERLAY_FADE_ZOOM.to &&
                 provinceLabels.map((label) => (
                   <Marker
                     key={`label-${label.name}`}

@@ -191,9 +191,14 @@ export const DEEP_DIVE_MAP_VIEW = {
   zoom: 3,
 }
 
-// Zooming in past `from`, the ancient overlay (provinces, empire extents) fades
-// out and the modern streets, buildings and landmarks fade in, fully by `to`.
+// Zooming in, the modern streets, buildings and landmarks fade in over this
+// range (zoom 13 to 14).
 export const MODERN_DETAIL_ZOOM = { from: 13, to: 14 } as const
+
+// The ancient overlay (provinces, empire extents) is gone before the basemap
+// starts showing minor waterways: its canals come in at zoom 12, its streams
+// and ditches at 13.
+export const OVERLAY_FADE_ZOOM = { from: 11, to: 12 } as const
 
 /** An opacity that rises from 0 to 1 across the modern detail zoom range. */
 export const fadeInWithZoom = (): ExpressionSpecification => [
@@ -206,14 +211,14 @@ export const fadeInWithZoom = (): ExpressionSpecification => [
   1,
 ]
 
-/** An opacity that falls from `opacity` to 0 across the modern detail zoom range. */
+/** An opacity that falls from `opacity` to 0 across the overlay fade range. */
 export const fadeOutWithZoom = (opacity: number): ExpressionSpecification => [
   "interpolate",
   ["linear"],
   ["zoom"],
-  MODERN_DETAIL_ZOOM.from,
+  OVERLAY_FADE_ZOOM.from,
   opacity,
-  MODERN_DETAIL_ZOOM.to,
+  OVERLAY_FADE_ZOOM.to,
   0,
 ]
 
