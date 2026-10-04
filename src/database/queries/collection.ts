@@ -6,10 +6,7 @@ import {
   fetchDeityDeviceNames,
 } from "~/database/queries/deities"
 import type { QueryResult } from "~/database/queries/types"
-import type {
-  NotableFeature,
-  SomnusCollection,
-} from "~/database/schema-somnus-collection"
+import type { SomnusCollection } from "~/database/schema-somnus-collection"
 import type { CoinEnhanced } from "~/types/api"
 
 type PublicItemRow = Database["public"]["Views"]["public_items"]["Row"]
@@ -20,8 +17,6 @@ type SetRow = Database["public"]["Tables"]["sets"]["Row"]
 type ItemDeityRow = Database["public"]["Tables"]["item_deities"]["Row"]
 type CatalogueReferenceRow =
   Database["public"]["Tables"]["coin_catalogue_references"]["Row"]
-type NotableFeatureRow =
-  Database["public"]["Tables"]["coin_notable_features"]["Row"]
 type CoinDeviceRow = Database["public"]["Tables"]["coin_devices"]["Row"]
 type ItemPersonRow = Database["public"]["Tables"]["item_persons"]["Row"]
 type PersonRow = Database["public"]["Tables"]["persons"]["Row"]
@@ -124,7 +119,6 @@ function toBaseCoin(
     notes: null,
     notes_history: item.historical_note,
     sets,
-    notable_features: [],
     ex_collection: null,
     is_hidden: false,
     deity_id: deityIds.map(String),
@@ -300,7 +294,6 @@ export async function fetchCollectionDetail(
   const [
     imagesResult,
     catalogueRefsResult,
-    notableFeaturesResult,
     coinDevicesResult,
     itemSetsResult,
     itemDeitiesResult,
@@ -324,13 +317,6 @@ export async function fetchCollectionDetail(
           .eq("coin_id", coinId)
           .returns<CatalogueReferenceRow[]>()
       : Promise.resolve({ data: [] as CatalogueReferenceRow[], error: null }),
-    coinId
-      ? supabase
-          .from("coin_notable_features")
-          .select("*")
-          .eq("coin_id", coinId)
-          .returns<NotableFeatureRow[]>()
-      : Promise.resolve({ data: [] as NotableFeatureRow[], error: null }),
     coinId
       ? supabase
           .from("coin_devices")
@@ -392,7 +378,6 @@ export async function fetchCollectionDetail(
   for (const { error } of [
     imagesResult,
     catalogueRefsResult,
-    notableFeaturesResult,
     coinDevicesResult,
     itemSetsResult,
     itemDeitiesResult,
@@ -497,13 +482,6 @@ export async function fetchCollectionDetail(
     ? `${primaryRef.system} ${primaryRef.reference_code}`
     : null
   base.reference_link = primaryRef?.external_uri ?? null
-  base.notable_features = (notableFeaturesResult.data ?? []).map(
-    (f): NotableFeature => ({
-      name: f.name,
-      subtitle: f.subtitle ?? undefined,
-      description: f.description ?? undefined,
-    }),
-  )
   base.obv_device_ids = obvDeviceIds
   base.rev_device_ids = revDeviceIds
   base.historical_figures_id = itemPersonRows.map((p) => String(p.person_id))

@@ -1,12 +1,6 @@
 // ============================================================================
 // SOMNUS COLLECTION - Your coin collection (CURRENT schema - not yet normalized)
 // ============================================================================
-export type NotableFeature = {
-  name: string
-  subtitle?: string
-  description?: string
-}
-
 export type SomnusCollection = {
   // Primary key and metadata
   id: number
@@ -84,7 +78,6 @@ export type SomnusCollection = {
 
   // Set classifications
   sets?: string[] | null
-  notable_features?: NotableFeature[] | null
 
   // Collection status
   ex_collection?: boolean | null
@@ -154,7 +147,6 @@ export const SOMNUS_COLLECTION_SELECT_FIELDS = [
   "notes",
   "notes_history",
   "sets",
-  "notable_features",
   "ex_collection",
   "is_hidden",
   "deity_id",

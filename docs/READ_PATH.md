@@ -113,7 +113,7 @@ them for anon, so there is nothing to filter in code.
 ### `/api/somnus-collection/[id]` (detail)
 The same base row as the list, plus:
 
-- `coin_catalogue_references`, `coin_notable_features` passed through.
+- `coin_catalogue_references` passed through.
 - `coin_devices` become `obv_device_ids` and `rev_device_ids` (strings).
 - `item_deities` with `deities` become `deities[]`.
 - `item_persons` with `persons` become `historical_figures[]`: `title` becomes
