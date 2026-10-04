@@ -1,6 +1,8 @@
+import type { SupabaseClient } from "@supabase/supabase-js"
 import { describe, expect, it } from "vitest"
 import type { Database } from "~/database/database.types"
 import {
+  fetchClockNotes,
   resolveClockNotes,
   type LinkedEntries,
 } from "~/database/queries/clock-notes"
@@ -129,5 +131,38 @@ describe("resolveClockNotes", () => {
       linkUrl: "https://example.com",
       linkLabel: "More",
     })
+  })
+})
+
+describe("fetchClockNotes for a deity link", () => {
+  it("shows the deity's name as the title and its subtitle as the body", async () => {
+    const selected: string[] = []
+    const client = {
+      from: (table: string) => ({
+        select: (columns: string) => {
+          if (table === "deities") selected.push(columns)
+          const result =
+            table === "item_clock_notes"
+              ? { data: [row({ deity_id: 2 })], error: null }
+              : {
+                  data: [{ id: 2, name: "Sol", subtitle: "God of the sun" }],
+                  error: null,
+                }
+          const query = {
+            eq: () => query,
+            in: () => query,
+            returns: () => Promise.resolve(result),
+          }
+          return query
+        },
+      }),
+    } as unknown as SupabaseClient<Database>
+
+    const { data } = await fetchClockNotes(client, 10)
+
+    expect(data).toMatchObject([
+      { title: "Sol", body: "God of the sun", linkKind: "deity" },
+    ])
+    expect(selected).toEqual(["id, name, subtitle"])
   })
 })

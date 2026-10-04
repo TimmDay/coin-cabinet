@@ -83,7 +83,12 @@ export function resolveClockNotes(
   )
 }
 
-type NamedRow = { id: number; name: string; flavour_text: string | null }
+type NamedRow = {
+  id: number
+  name: string
+  flavour_text: string | null
+  subtitle?: string | null
+}
 
 /** Fetches the entries the notes link to, one query per kind that is used. */
 async function fetchLinkedEntries(
@@ -101,12 +106,13 @@ async function fetchLinkedEntries(
   const named = async (
     table: "deities" | "places" | "persons",
     kind: LinkKind,
+    columns = "id, name, flavour_text",
   ) => {
     const wanted = ids(kind)
     if (wanted.length === 0) return { data: [] as NamedRow[], error: null }
     return supabase
       .from(table)
-      .select("id, name, flavour_text")
+      .select(columns)
       .in("id", wanted)
       .returns<NamedRow[]>()
   }
@@ -131,7 +137,8 @@ async function fetchLinkedEntries(
               }[]
             >()
         : Promise.resolve({ data: [], error: null }),
-      named("deities", "deity"),
+      // A deity note reads as its name and its subtitle
+      named("deities", "deity", "id, name, subtitle"),
       named("places", "place"),
       named("persons", "person"),
       artifactIds.length > 0
@@ -187,7 +194,8 @@ async function fetchLinkedEntries(
     typeof deities,
   ][]) {
     for (const row of result.data ?? []) {
-      entries[kind].set(row.id, { title: row.name, body: row.flavour_text })
+      const body = kind === "deity" ? row.subtitle : row.flavour_text
+      entries[kind].set(row.id, { title: row.name, body: body ?? null })
     }
   }
   for (const a of artifacts.data ?? []) {

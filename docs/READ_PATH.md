@@ -142,8 +142,8 @@ popover with the note.
 - **Resolving:** `fetchClockNotes` (`queries/clock-notes.ts`) loads the rows,
   fetches the linked entries (one query per kind in use) and `resolveClockNotes`,
   a pure function with tests, builds the notes. A linked entry gives the title and
-  body (a device's description, or `flavour_text` for the others; a mint is named
-  after its place) and its picture if it has one (`image_url` of a device or an
+  body (a device's description, a deity's `subtitle`, or `flavour_text` for the
+  others; a mint is named after its place) and its picture if it has one (`image_url` of a device or an
   artifact), with the artifact's `image_credit` shown under it. Text written on
   the note wins. A note with nothing to show is
   dropped. Notes come back sorted by side then position.
