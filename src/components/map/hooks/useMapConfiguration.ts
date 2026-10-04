@@ -15,7 +15,8 @@ export const useMapConfiguration = (): MapConfiguration => {
     () => ({
       defaultZoom: 5,
       minZoom: 3,
-      maxZoom: 14,
+      // Vector tiles end at zoom 14; past that the same data is drawn larger
+      maxZoom: 16,
     }),
     [],
   )

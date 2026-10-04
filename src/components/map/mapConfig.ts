@@ -1,3 +1,4 @@
+import type { ExpressionSpecification } from "maplibre-gl"
 import { cssColor, glColor } from "./mapColors"
 
 export type EmpireLayerStyle = {
@@ -189,6 +190,36 @@ export const DEEP_DIVE_MAP_VIEW = {
   center: [39.8, 18.36] as [number, number],
   zoom: 3,
 }
+
+// Zooming in, the modern streets, buildings and landmarks fade in over this
+// range (zoom 13 to 14).
+export const MODERN_DETAIL_ZOOM = { from: 13, to: 14 } as const
+
+// The ancient overlay (provinces, empire extents) is gone well before the
+// basemap starts showing minor waterways (canals at zoom 12, streams at 13).
+export const OVERLAY_FADE_ZOOM = { from: 6, to: 7 } as const
+
+/** An opacity that rises from 0 to 1 across the modern detail zoom range. */
+export const fadeInWithZoom = (): ExpressionSpecification => [
+  "interpolate",
+  ["linear"],
+  ["zoom"],
+  MODERN_DETAIL_ZOOM.from,
+  0,
+  MODERN_DETAIL_ZOOM.to,
+  1,
+]
+
+/** An opacity that falls from `opacity` to 0 across the overlay fade range. */
+export const fadeOutWithZoom = (opacity: number): ExpressionSpecification => [
+  "interpolate",
+  ["linear"],
+  ["zoom"],
+  OVERLAY_FADE_ZOOM.from,
+  opacity,
+  OVERLAY_FADE_ZOOM.to,
+  0,
+]
 
 // MapLibre style URL -- OpenFreeMap's "dark" style: free, no API key, no
 // usage cap. Replaces the CartoDB raster tiles, which stopped serving

@@ -23,6 +23,8 @@ import {
   provinceStyle,
   PROVINCE_LABEL_STYLES,
   createEmpireLayerConfig,
+  fadeOutWithZoom,
+  OVERLAY_FADE_ZOOM,
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
 import { markerPopup, type CustomMapMarker } from "./mapMarkers"
@@ -155,6 +157,8 @@ export const Map: React.FC<MapProps> = ({
   const provinces = useMemo(() => provinceStyle(), [])
 
   const mapRef = useRef<MapRef>(null)
+  // Once the visitor zooms, an event or pin selection pans without changing it
+  const userHasZoomed = useRef(false)
   const [mapLoaded, setMapLoaded] = useState(false)
 
   const [currentZoom, setCurrentZoom] = useState<number>(safeZoom)
@@ -378,18 +382,20 @@ export const Map: React.FC<MapProps> = ({
             map.resize()
           }
 
+          const targetZoom = userHasZoomed.current ? map.getZoom() : numZoom
+
           try {
             if (hasValidCurrentCenter && hasValidSize) {
               map.flyTo({
                 center: [numLng, numLat],
-                zoom: numZoom,
+                zoom: targetZoom,
                 duration: window.matchMedia("(prefers-reduced-motion: reduce)")
                   .matches
                   ? 0
                   : 1500,
               })
             } else {
-              map.jumpTo({ center: [numLng, numLat], zoom: numZoom })
+              map.jumpTo({ center: [numLng, numLat], zoom: targetZoom })
             }
           } catch {
             // Ignore navigation attempts on disposed/hidden maps
@@ -489,6 +495,9 @@ export const Map: React.FC<MapProps> = ({
                 collapseAttribution(e.target)
               }}
               onZoomEnd={(e) => {
+                // Only a visitor's own zoom (wheel, pinch, double click) carries
+                // the original event; flyTo does not
+                if (e.originalEvent) userHasZoomed.current = true
                 setCurrentZoom(e.viewState.zoom)
                 updateViewportBounds(e.target)
               }}
@@ -508,18 +517,24 @@ export const Map: React.FC<MapProps> = ({
                     <Layer
                       id={`${key}-fill`}
                       type="fill"
+                      maxzoom={OVERLAY_FADE_ZOOM.to}
                       paint={{
                         "fill-color": layerConfig.style.fillColor,
-                        "fill-opacity": layerConfig.style.fillOpacity,
+                        "fill-opacity": fadeOutWithZoom(
+                          layerConfig.style.fillOpacity,
+                        ),
                       }}
                     />
                     <Layer
                       id={`${key}-line`}
                       type="line"
+                      maxzoom={OVERLAY_FADE_ZOOM.to}
                       paint={{
                         "line-color": layerConfig.style.lineColor,
                         "line-width": layerConfig.style.lineWidth,
-                        "line-opacity": layerConfig.style.lineOpacity,
+                        "line-opacity": fadeOutWithZoom(
+                          layerConfig.style.lineOpacity,
+                        ),
                         "line-dasharray": layerConfig.style.lineDasharray,
                       }}
                     />
@@ -537,18 +552,20 @@ export const Map: React.FC<MapProps> = ({
                   <Layer
                     id="provinces-fill"
                     type="fill"
+                    maxzoom={OVERLAY_FADE_ZOOM.to}
                     paint={{
                       "fill-color": provinces.fillColor,
-                      "fill-opacity": provinces.fillOpacity,
+                      "fill-opacity": fadeOutWithZoom(provinces.fillOpacity),
                     }}
                   />
                   <Layer
                     id="provinces-line"
                     type="line"
+                    maxzoom={OVERLAY_FADE_ZOOM.to}
                     paint={{
                       "line-color": provinces.lineColor,
                       "line-width": provinces.lineWidth,
-                      "line-opacity": provinces.lineOpacity,
+                      "line-opacity": fadeOutWithZoom(provinces.lineOpacity),
                       "line-dasharray": provinces.lineDasharray,
                     }}
                   />
@@ -558,6 +575,7 @@ export const Map: React.FC<MapProps> = ({
               {/* Province Labels */}
               {showProvinceLabels &&
                 currentZoom > PROVINCE_LABEL_STYLES.minZoomLevel &&
+                currentZoom < OVERLAY_FADE_ZOOM.to &&
                 provinceLabels.map((label) => (
                   <Marker
                     key={`label-${label.name}`}
