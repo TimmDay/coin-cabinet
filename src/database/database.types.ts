@@ -73,6 +73,42 @@ export type Database = {
           },
         ]
       }
+      calendar: {
+        Row: {
+          created_at: string
+          end_date: string | null
+          event_name: string
+          event_note: string | null
+          event_type: string
+          id: number
+          roman_date_name: string | null
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          end_date?: string | null
+          event_name: string
+          event_note?: string | null
+          event_type: string
+          id?: never
+          roman_date_name?: string | null
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string | null
+          event_name?: string
+          event_note?: string | null
+          event_type?: string
+          id?: never
+          roman_date_name?: string | null
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       coin_catalogue_references: {
         Row: {
           coin_id: number
@@ -390,7 +426,6 @@ export type Database = {
           flavour_text: string | null
           god_of: string[] | null
           id: number
-          image_links: string[] | null
           legends_coinage: string[] | null
           name: string
           secondary_info: string | null
@@ -406,7 +441,6 @@ export type Database = {
           flavour_text?: string | null
           god_of?: string[] | null
           id?: never
-          image_links?: string[] | null
           legends_coinage?: string[] | null
           name: string
           secondary_info?: string | null
@@ -422,7 +456,6 @@ export type Database = {
           flavour_text?: string | null
           god_of?: string[] | null
           id?: never
-          image_links?: string[] | null
           legends_coinage?: string[] | null
           name?: string
           secondary_info?: string | null
@@ -455,6 +488,36 @@ export type Database = {
           },
           {
             foreignKeyName: "deity_artifacts_deity_id_fkey"
+            columns: ["deity_id"]
+            isOneToOne: false
+            referencedRelation: "deities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deity_calendar: {
+        Row: {
+          calendar_id: number
+          deity_id: number
+        }
+        Insert: {
+          calendar_id: number
+          deity_id: number
+        }
+        Update: {
+          calendar_id?: number
+          deity_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deity_calendar_calendar_id_fkey"
+            columns: ["calendar_id"]
+            isOneToOne: false
+            referencedRelation: "calendar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deity_calendar_deity_id_fkey"
             columns: ["deity_id"]
             isOneToOne: false
             referencedRelation: "deities"
@@ -565,6 +628,7 @@ export type Database = {
         Row: {
           applies_to: string | null
           artifact_id: number | null
+          calendar_id: number | null
           created_at: string
           deity_id: number | null
           device_id: number | null
@@ -579,6 +643,7 @@ export type Database = {
         Insert: {
           applies_to?: string | null
           artifact_id?: number | null
+          calendar_id?: number | null
           created_at?: string
           deity_id?: number | null
           device_id?: number | null
@@ -593,6 +658,7 @@ export type Database = {
         Update: {
           applies_to?: string | null
           artifact_id?: number | null
+          calendar_id?: number | null
           created_at?: string
           deity_id?: number | null
           device_id?: number | null
@@ -610,6 +676,13 @@ export type Database = {
             columns: ["artifact_id"]
             isOneToOne: false
             referencedRelation: "artifacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "entity_sources_calendar_id_fkey"
+            columns: ["calendar_id"]
+            isOneToOne: false
+            referencedRelation: "calendar"
             referencedColumns: ["id"]
           },
           {
