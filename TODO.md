@@ -29,7 +29,6 @@
 - [ ] timeline - elagabalus
 - [ ] photos - gordy tranquillina
 
-- [ ] notable features track obv/rev and clockAxis, so that in the UI we can put an asterix around the coin that can be hovered/tapped to see popover with text about the feature.
 - [ ] make a timeline table in the db
 - [ ] add/ edit functionality on a edit-timeline page
 

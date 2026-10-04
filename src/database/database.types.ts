@@ -188,38 +188,6 @@ export type Database = {
           },
         ]
       }
-      coin_notable_features: {
-        Row: {
-          coin_id: number
-          description: string | null
-          id: number
-          name: string
-          subtitle: string | null
-        }
-        Insert: {
-          coin_id: number
-          description?: string | null
-          id?: never
-          name: string
-          subtitle?: string | null
-        }
-        Update: {
-          coin_id?: number
-          description?: string | null
-          id?: never
-          name?: string
-          subtitle?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "coin_notable_features_coin_id_fkey"
-            columns: ["coin_id"]
-            isOneToOne: false
-            referencedRelation: "coins"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       coins: {
         Row: {
           created_at: string
