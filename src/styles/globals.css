@@ -100,6 +100,13 @@
   --color-map-ink: #2e1b12; /* province and mint names on the parchment */
   --color-map-label: var(--color-pin-wine); /* popup titles, active controls */
 
+  /* Modern streets, buildings and landmarks, shown only when zoomed right in. */
+  --color-map-road: #bba982;
+  --color-map-road-casing: #6e5c42;
+  --color-map-building: #86734f;
+  --color-map-street-label-halo: #b5a27c;
+  --color-map-landmark: #5b3a29;
+
   /* Provinces and the five empire extents: fill and line each. */
   --color-map-province-fill: #c4622d;
   --color-map-province-line: #8c3b2a;

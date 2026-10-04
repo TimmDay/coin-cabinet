@@ -23,6 +23,8 @@ import {
   provinceStyle,
   PROVINCE_LABEL_STYLES,
   createEmpireLayerConfig,
+  fadeOutWithZoom,
+  MODERN_DETAIL_ZOOM,
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
 import { markerPopup, type CustomMapMarker } from "./mapMarkers"
@@ -508,18 +510,24 @@ export const Map: React.FC<MapProps> = ({
                     <Layer
                       id={`${key}-fill`}
                       type="fill"
+                      maxzoom={MODERN_DETAIL_ZOOM.to}
                       paint={{
                         "fill-color": layerConfig.style.fillColor,
-                        "fill-opacity": layerConfig.style.fillOpacity,
+                        "fill-opacity": fadeOutWithZoom(
+                          layerConfig.style.fillOpacity,
+                        ),
                       }}
                     />
                     <Layer
                       id={`${key}-line`}
                       type="line"
+                      maxzoom={MODERN_DETAIL_ZOOM.to}
                       paint={{
                         "line-color": layerConfig.style.lineColor,
                         "line-width": layerConfig.style.lineWidth,
-                        "line-opacity": layerConfig.style.lineOpacity,
+                        "line-opacity": fadeOutWithZoom(
+                          layerConfig.style.lineOpacity,
+                        ),
                         "line-dasharray": layerConfig.style.lineDasharray,
                       }}
                     />
@@ -537,18 +545,20 @@ export const Map: React.FC<MapProps> = ({
                   <Layer
                     id="provinces-fill"
                     type="fill"
+                    maxzoom={MODERN_DETAIL_ZOOM.to}
                     paint={{
                       "fill-color": provinces.fillColor,
-                      "fill-opacity": provinces.fillOpacity,
+                      "fill-opacity": fadeOutWithZoom(provinces.fillOpacity),
                     }}
                   />
                   <Layer
                     id="provinces-line"
                     type="line"
+                    maxzoom={MODERN_DETAIL_ZOOM.to}
                     paint={{
                       "line-color": provinces.lineColor,
                       "line-width": provinces.lineWidth,
-                      "line-opacity": provinces.lineOpacity,
+                      "line-opacity": fadeOutWithZoom(provinces.lineOpacity),
                       "line-dasharray": provinces.lineDasharray,
                     }}
                   />
@@ -558,6 +568,7 @@ export const Map: React.FC<MapProps> = ({
               {/* Province Labels */}
               {showProvinceLabels &&
                 currentZoom > PROVINCE_LABEL_STYLES.minZoomLevel &&
+                currentZoom < MODERN_DETAIL_ZOOM.to &&
                 provinceLabels.map((label) => (
                   <Marker
                     key={`label-${label.name}`}
