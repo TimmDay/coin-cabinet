@@ -1,22 +1,16 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import { useMemo } from "react"
-import { useArtifacts } from "~/api/artifacts"
-import { useDeities } from "~/api/deities"
 import { useDevices } from "~/api/devices"
-import { useMints } from "~/api/mints"
-import { usePlaces } from "~/api/places"
-import { useTimelines } from "~/api/timelines"
 import { DEEP_DIVE_MAP_VIEW } from "~/components/map/mapConfig"
 import { useFoldFill } from "~/hooks/useFoldFill"
 import { MAP_HEIGHT_DESKTOP } from "~/lib/constants"
 import { cn } from "~/lib/utils"
 import type { CoinEnhanced } from "~/types/api"
 import { clockNoteRoom } from "./CoinClockTips"
-import { buildCoinMap } from "./coinMap"
 import { CoinRow } from "./CoinRow"
 import { DeepDiveCardsSection } from "./DeepDiveCardsSection"
+import { useCoinMap } from "./useCoinMap"
 
 // Dynamically import Map component to prevent SSR issues with Leaflet
 const Map = dynamic(
@@ -51,12 +45,7 @@ type CoinDeepDiveProps = {
 const FOLD_PEEK_PX = 32
 
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
-  const { data: dbTimelines } = useTimelines()
-  const { data: allDeities } = useDeities()
   const { data: allDevices = [] } = useDevices()
-  const { data: mints } = useMints()
-  const { data: artifacts } = useArtifacts()
-  const { data: places } = usePlaces()
 
   const obvDevices = allDevices.filter((d) =>
     coin.obv_device_ids?.includes(d.id),
@@ -65,19 +54,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
     coin.rev_device_ids?.includes(d.id),
   )
 
-  // Memoised: the map rebuilds its marker index when `markers` changes, so
-  // the same coin and data must give the same array.
-  const coinMap = useMemo(
-    () =>
-      buildCoinMap(coin, {
-        timelines: dbTimelines,
-        mints,
-        places,
-        deities: allDeities,
-        artifacts,
-      }),
-    [coin, dbTimelines, mints, places, allDeities, artifacts],
-  )
+  const coinMap = useCoinMap(coin)
 
   const clockNotes = coin.clock_notes ?? []
   const clockNotesFor = (side: "obverse" | "reverse") =>
