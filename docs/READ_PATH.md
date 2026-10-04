@@ -85,7 +85,7 @@ event's position is `COALESCE(event.lat, place.lat)`, and likewise for longitude
 
 ### `/api/artifacts` from `artifacts`, `places`
 The institution name and coordinates come from the joined place and are
-flattened onto the output fields `artifact-helpers.ts` reads. `image_url`
+flattened onto the output fields `coin-deep-dive/artifact-helpers.ts` reads. `image_url`
 becomes `img_src`, `image_alt_text` becomes `img_alt`, `image_credit` becomes
 `img_credit` and `location_note` becomes `location_name`. The numeric `id` is sent as a string.
 
@@ -167,7 +167,7 @@ an anonymous visitor, so the site shows no provenance chip or footer line.
 One narrow exception: the detail route reads `public_find_events`, a view that
 exposes only `item_id, event_date, find_lat, find_lng, notes` for events of type
 `find`. It powers the "found here" pin on the deep dive map and timeline
-(`CoinDeepDive.tsx`, `lib/utils/provenance-helpers.ts`). If the view is missing
+(`CoinDeepDive.tsx`, `coin-deep-dive/provenance-helpers.ts`). If the view is missing
 or errors, the coin loads without a found event instead of failing.
 
 ## Set names

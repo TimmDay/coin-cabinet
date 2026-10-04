@@ -7,9 +7,9 @@ import type { Mint } from "~/database/schema-mints"
 import type { Place } from "~/database/schema-places"
 import type { Timeline } from "~/database/schema-timelines"
 import type { Timeline as TimelineEvents } from "~/data/timelines/types"
-import { getArtifactLocationData } from "~/lib/utils/artifact-helpers"
-import { addCoinMintingEventToTimeline } from "~/lib/utils/coin-timeline"
-import { addFoundEventToTimeline } from "~/lib/utils/provenance-helpers"
+import { getArtifactLocationData } from "./artifact-helpers"
+import { addCoinMintingEventToTimeline } from "./coin-timeline"
+import { addFoundEventToTimeline } from "./provenance-helpers"
 import type { CoinEnhanced } from "~/types/api"
 
 /** The reference data a coin's map is built from. Each may still be loading. */
