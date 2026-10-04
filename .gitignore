@@ -59,3 +59,7 @@ yarn-error.log*
 
 # local Supabase CLI link/config state (machine-specific, not shared)
 /supabase/.temp/
+
+# maplibre worker files, copied from node_modules on postinstall (scripts/copy-maplibre-assets.mjs)
+/public/maplibre-gl-worker.mjs
+/public/maplibre-gl-shared.mjs

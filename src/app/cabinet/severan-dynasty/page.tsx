@@ -4,7 +4,7 @@ import { Quote } from "~/components/ui/Quote"
 
 export default function SeveranDynastyPage() {
   return (
-    <main className="content-wrapper min-h-[calc(100dvh-9.5rem)]">
+    <div className="content-wrapper min-h-[calc(100dvh-9.5rem)]">
       <PageTitle>Severan Dynasty</PageTitle>
 
       <CoinGrid filterSet="Severan" />
@@ -16,6 +16,6 @@ export default function SeveranDynastyPage() {
           link="https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Cassius_Dio/77*.html#15"
         />
       </div>
-    </main>
+    </div>
   )
 }

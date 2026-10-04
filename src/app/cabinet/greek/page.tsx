@@ -3,9 +3,9 @@ import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function GreekPage() {
   return (
-    <main className="content-wrapper">
+    <div className="content-wrapper">
       <PageTitle>Greek</PageTitle>
       <CoinGrid filterCiv="Ancient Greece" />
-    </main>
+    </div>
   )
 }

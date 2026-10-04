@@ -3,9 +3,9 @@ import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function JudeaPage() {
   return (
-    <main className="content-wrapper">
+    <div className="content-wrapper">
       <PageTitle>Judea</PageTitle>
       <CoinGrid filterCiv="Judea" />
-    </main>
+    </div>
   )
 }

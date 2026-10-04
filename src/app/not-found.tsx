@@ -3,7 +3,7 @@ import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-12">
         <div className="mx-auto max-w-2xl text-center">
           <PageTitle className="mb-6">Page Not Found</PageTitle>
@@ -18,6 +18,6 @@ export default function NotFound() {
           </Link>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

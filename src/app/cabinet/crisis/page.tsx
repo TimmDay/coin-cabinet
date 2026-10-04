@@ -3,7 +3,7 @@ import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function CrisisPage() {
   return (
-    <main className="content-wrapper">
+    <div className="content-wrapper">
       <PageTitle>Crisis</PageTitle>
 
       <CoinGrid filterSet="Crisis" />
@@ -17,6 +17,6 @@ export default function CrisisPage() {
           economic turmoil and breakaway states.
         </p>
       </div>
-    </main>
+    </div>
   )
 }

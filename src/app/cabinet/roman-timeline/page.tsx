@@ -3,9 +3,9 @@ import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function RomanTimelinePage() {
   return (
-    <main className="content-wrapper">
+    <div className="content-wrapper">
       <PageTitle>Roman</PageTitle>
       <CoinGrid filterSet="Roman Timeline" />
-    </main>
+    </div>
   )
 }

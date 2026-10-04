@@ -109,7 +109,9 @@ export function createArticleLayout(articleMetadata: ArticleMetadata) {
       <>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replaceAll("<", "\\u003c"),
+          }}
         />
         {children}
       </>

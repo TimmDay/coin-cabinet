@@ -3,9 +3,9 @@ import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function PersianPage() {
   return (
-    <main className="content-wrapper">
+    <div className="content-wrapper">
       <PageTitle>Persian</PageTitle>
       <CoinGrid filterSet="Persian" />
-    </main>
+    </div>
   )
 }

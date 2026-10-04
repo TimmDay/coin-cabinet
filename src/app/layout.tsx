@@ -44,6 +44,12 @@ export default function RootLayout({
     >
       <body>
         <ReactQueryProvider>
+          <a
+            href="#main-content"
+            className="focus:bg-night focus:text-moonlight-bright focus:border-line sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:border focus:px-4 focus:py-2"
+          >
+            Skip to content
+          </a>
           <Navbar />
           <PageWrapper>{children}</PageWrapper>
           <ScrollToTop />

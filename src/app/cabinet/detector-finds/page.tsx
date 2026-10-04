@@ -3,10 +3,10 @@ import { PageTitle } from "~/components/ui/PageTitle"
 
 export default function DetectorFindsPage() {
   return (
-    <main className="content-wrapper">
+    <div className="content-wrapper">
       <PageTitle>Detector Finds</PageTitle>
 
       <CoinGrid filterSet="Detector" />
-    </main>
+    </div>
   )
 }

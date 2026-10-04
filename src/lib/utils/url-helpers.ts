@@ -69,3 +69,19 @@ export function extractIdFromSlug(slug: string): number {
 export function isValidCoinSlug(slug: string): boolean {
   return /^\d+-/.test(slug)
 }
+
+/**
+ * A link from the database that is safe to put in an href: an http(s) URL or a
+ * path on this site. Anything else (a `javascript:` URL, say) comes back null.
+ */
+export function safeLinkUrl(url: string | null | undefined): string | null {
+  if (!url) return null
+  const value = url.trim()
+  if (value.startsWith("/") && !value.startsWith("//")) return value
+  try {
+    const { protocol } = new URL(value)
+    return protocol === "http:" || protocol === "https:" ? value : null
+  } catch {
+    return null
+  }
+}

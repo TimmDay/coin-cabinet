@@ -4,7 +4,7 @@ import { featuredSets } from "~/data/sets"
 
 export default function CabinetPage() {
   return (
-    <main className="content-wrapper">
+    <div className="content-wrapper">
       <PageTitle>The Coin Cabinet</PageTitle>
 
       {/* Featured Sets Grid */}
@@ -20,6 +20,6 @@ export default function CabinetPage() {
           />
         ))}
       </div>
-    </main>
+    </div>
   )
 }

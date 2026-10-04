@@ -24,7 +24,9 @@ export function PageWrapper({ children }: PageWrapperProps) {
       )}
 
       {/* Main page content */}
-      <main className="container mx-auto flex-1 px-6 pb-8">{children}</main>
+      <main id="main-content" className="container mx-auto flex-1 px-6 pb-8">
+        {children}
+      </main>
 
       <Footer />
     </div>
