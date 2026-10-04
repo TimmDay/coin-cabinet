@@ -13,6 +13,7 @@ import type { MapRef } from "react-map-gl/maplibre"
 import { useMints } from "~/api/mints"
 import { MAP_HEIGHT } from "~/lib/constants"
 import { ROMAN_PROVINCES } from "./constants/provinces"
+import { parseLatLng, parseZoom, ROME } from "./coordinates"
 import { useEmpireLayerData, useMapConfiguration, useMapData } from "./hooks"
 import {
   MAP_BOUNDS_LNGLAT,
@@ -139,43 +140,12 @@ export const Map: React.FC<MapProps> = ({
   customMarkers = [],
   onNavigate,
 }) => {
-  // Validate and sanitize center prop to prevent NaN coordinates
-  const safeCenter = useMemo((): [number, number] => {
-    if (!center || !Array.isArray(center) || center.length !== 2) {
-      return [41.9028, 12.4964] // Rome default
-    }
-
-    const [lat, lng] = center
-    // Explicitly convert to numbers in case they're strings
-    const numLat = typeof lat === "string" ? Number(lat) : lat
-    const numLng = typeof lng === "string" ? Number(lng) : lng
-
-    const safeLat =
-      typeof numLat === "number" && isFinite(numLat) && !isNaN(numLat)
-        ? numLat
-        : 41.9028
-    const safeLng =
-      typeof numLng === "number" && isFinite(numLng) && !isNaN(numLng)
-        ? numLng
-        : 12.4964
-
-    return [safeLat, safeLng]
-  }, [center])
-
-  // Validate and sanitize zoom prop
-  const safeZoom = useMemo(() => {
-    const numZoom = typeof zoom === "string" ? Number(zoom) : zoom
-
-    if (
-      typeof numZoom !== "number" ||
-      !isFinite(numZoom) ||
-      isNaN(numZoom) ||
-      numZoom <= 0
-    ) {
-      return 5
-    }
-    return numZoom
-  }, [zoom])
+  // A bad center or zoom would hand MapLibre NaN, so fall back to the defaults
+  const safeCenter = useMemo(
+    () => (center ? (parseLatLng(center[0], center[1]) ?? ROME) : ROME),
+    [center],
+  )
+  const safeZoom = parseZoom(zoom, 5)
 
   // Use custom hooks for configuration and data management
   const config = useMapConfiguration()
@@ -379,25 +349,11 @@ export const Map: React.FC<MapProps> = ({
         const navigate = (center: [number, number], zoom: number) => {
           if (isDisposed) return
 
-          const [lat, lng] = center
-          const numLat = typeof lat === "string" ? Number(lat) : lat
-          const numLng = typeof lng === "string" ? Number(lng) : lng
-          const numZoom = typeof zoom === "string" ? Number(zoom) : zoom
+          const position = parseLatLng(center[0], center[1])
+          const numZoom = parseZoom(zoom, 0)
 
-          if (
-            typeof numLat !== "number" ||
-            typeof numLng !== "number" ||
-            typeof numZoom !== "number" ||
-            !isFinite(numLat) ||
-            !isFinite(numLng) ||
-            !isFinite(numZoom) ||
-            isNaN(numLat) ||
-            isNaN(numLng) ||
-            isNaN(numZoom) ||
-            numZoom <= 0
-          ) {
-            return
-          }
+          if (!position || numZoom <= 0) return
+          const [numLat, numLng] = position
 
           let liveCanvas: HTMLCanvasElement | null = null
           try {

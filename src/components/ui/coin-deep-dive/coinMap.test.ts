@@ -64,6 +64,25 @@ describe("buildCoinMap", () => {
     ])
   })
 
+  it("leaves out a mint or find with unusable coordinates, and keeps a zero", () => {
+    const equator = { id: 2, name: "Equator mint", lat: 20, lng: 0 }
+    const map = buildCoinMap(
+      coin({
+        mint_id: 2,
+        found_event: { lat: Number.NaN, lng: 3, notes: null, event_date: "1" },
+      } as Partial<CoinEnhanced>),
+      reference({ mints: [equator] }),
+    )
+
+    expect(map?.markers.map((m) => m.id)).toEqual(["coin-mint-7"])
+    expect(
+      buildCoinMap(
+        coin({ mint_id: 3 }),
+        reference({ mints: [{ ...rome, id: 3, lat: Number.NaN }] }),
+      ),
+    ).toBeNull()
+  })
+
   it("pins a deity's places, naming every deity that shares one", () => {
     const map = buildCoinMap(
       coin({ deity_id: ["1", "2"] }),

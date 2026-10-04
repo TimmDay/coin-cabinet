@@ -11,28 +11,14 @@ import type {
 import { Timeline } from "../ui/Timeline"
 import { TimelineInfoBox } from "../ui/TimelineInfoBox"
 import { Map, type CustomMapMarker } from "./Map"
+import { type LatLng, parseLatLng, ROME } from "./coordinates"
 import { pinStyle } from "./pinStyle"
 
 const NO_MARKERS: CustomMapMarker[] = []
 const NO_EVENTS: TimelineEvent[] = []
-const ROME_DEFAULT: [number, number] = [41.9028, 12.4964]
-
-/**
- * Validates and sanitizes coordinates, returning safe values or Rome default
- */
-function sanitizeCoordinates(
-  lat: number | undefined | null,
-  lng: number | undefined | null,
-): [number, number] {
-  const validLat =
-    typeof lat === "number" && isFinite(lat) && !isNaN(lat)
-      ? lat
-      : ROME_DEFAULT[0]
-  const validLng =
-    typeof lng === "number" && isFinite(lng) && !isNaN(lng)
-      ? lng
-      : ROME_DEFAULT[1]
-  return [validLat, validLng]
+/** Where an event sits on the map, or null when it has no usable coordinates. */
+function eventPosition(event: TimelineEvent): LatLng | null {
+  return parseLatLng(event.lat, event.lng)
 }
 
 export type TimelineWithMapProps = {
@@ -83,7 +69,7 @@ export type TimelineWithMapProps = {
 export function TimelineWithMap({
   timeline,
   className = "",
-  initialCenter = [41.9028, 12.4964], // Rome default
+  initialCenter = ROME,
   previewCenter,
   initialZoom = 5,
   eventZoomLevel = 5,
@@ -93,18 +79,10 @@ export function TimelineWithMap({
   additionalMarkers = NO_MARKERS,
   showDefaultMintMarkers = true,
 }: TimelineWithMapProps) {
-  // Validate initialCenter and use Rome as fallback
-  const validatedInitialCenter: [number, number] =
-    Array.isArray(initialCenter) &&
-    initialCenter.length === 2 &&
-    typeof initialCenter[0] === "number" &&
-    typeof initialCenter[1] === "number" &&
-    !isNaN(initialCenter[0]) &&
-    !isNaN(initialCenter[1]) &&
-    isFinite(initialCenter[0]) &&
-    isFinite(initialCenter[1])
-      ? initialCenter
-      : ROME_DEFAULT
+  const validatedInitialCenter = useMemo(
+    () => parseLatLng(initialCenter[0], initialCenter[1]) ?? ROME,
+    [initialCenter],
+  )
 
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false)
   const [isMobileViewport, setIsMobileViewport] = useState(false)
@@ -143,46 +121,16 @@ export function TimelineWithMap({
     }
   }, [])
 
-  // Helper function to validate coordinates
-  const hasValidCoordinates = useCallback((event: TimelineEvent): boolean => {
-    return (
-      event.lat !== undefined &&
-      event.lng !== undefined &&
-      event.lat !== null &&
-      event.lng !== null &&
-      !isNaN(event.lat) &&
-      !isNaN(event.lng) &&
-      typeof event.lat === "number" &&
-      typeof event.lng === "number"
-    )
-  }, [])
-
   const currentEvent = allEvents[selectedEventIndex] || null
 
-  const mobilePreviewCenter = (() => {
+  const mobilePreviewCenter: LatLng = (() => {
     const birthEvent = allEvents.find(
-      (event) => event.kind === "birth" && hasValidCoordinates(event),
+      (event) => event.kind === "birth" && eventPosition(event),
     )
+    const firstLocated = allEvents.find((event) => eventPosition(event))
+    const located = birthEvent ?? firstLocated
 
-    if (birthEvent?.lat !== undefined && birthEvent.lng !== undefined) {
-      return sanitizeCoordinates(birthEvent.lat, birthEvent.lng)
-    }
-
-    const firstEventWithCoordinates = allEvents.find((event) =>
-      hasValidCoordinates(event),
-    )
-
-    if (
-      firstEventWithCoordinates?.lat !== undefined &&
-      firstEventWithCoordinates.lng !== undefined
-    ) {
-      return sanitizeCoordinates(
-        firstEventWithCoordinates.lat,
-        firstEventWithCoordinates.lng,
-      )
-    }
-
-    return validatedInitialCenter
+    return (located && eventPosition(located)) ?? validatedInitialCenter
   })()
 
   // Callback to receive navigate function from Map
@@ -192,12 +140,9 @@ export function TimelineWithMap({
 
       if (!isMobileModalOpen) return
 
-      if (currentEvent && hasValidCoordinates(currentEvent)) {
-        const [validLat, validLng] = sanitizeCoordinates(
-          currentEvent.lat!,
-          currentEvent.lng!,
-        )
-        navigateFn([validLat, validLng], eventZoomLevel)
+      const position = currentEvent && eventPosition(currentEvent)
+      if (position) {
+        navigateFn(position, eventZoomLevel)
       } else {
         navigateFn(mobilePreviewCenter, initialZoom)
       }
@@ -205,7 +150,6 @@ export function TimelineWithMap({
     [
       currentEvent,
       eventZoomLevel,
-      hasValidCoordinates,
       initialZoom,
       isMobileModalOpen,
       mobilePreviewCenter,
@@ -239,15 +183,11 @@ export function TimelineWithMap({
   useEffect(() => {
     if (!isMobileModalOpen || !currentEvent) return
 
-    if (!navigateMapRef.current || !hasValidCoordinates(currentEvent)) return
+    const position = eventPosition(currentEvent)
+    if (!navigateMapRef.current || !position) return
 
-    const [validLat, validLng] = sanitizeCoordinates(
-      currentEvent.lat!,
-      currentEvent.lng!,
-    )
-
-    navigateMapRef.current([validLat, validLng], eventZoomLevel)
-  }, [currentEvent, eventZoomLevel, hasValidCoordinates, isMobileModalOpen])
+    navigateMapRef.current(position, eventZoomLevel)
+  }, [currentEvent, eventZoomLevel, isMobileModalOpen])
 
   // No automatic initialization - map stays on Rome until user interacts
   // The selectedEventIndex starts at 0 to show first event in info box
@@ -257,17 +197,12 @@ export function TimelineWithMap({
    */
   const navigateToEvent = useCallback(
     (event: TimelineEvent) => {
-      if (!hasValidCoordinates(event) || !navigateMapRef.current) return
+      const position = eventPosition(event)
+      if (!position || !navigateMapRef.current) return
 
-      const lat = event.lat!
-      const lng = event.lng!
-
-      if (!isFinite(lat) || !isFinite(lng) || isNaN(lat) || isNaN(lng)) return
-
-      const [validLat, validLng] = sanitizeCoordinates(lat, lng)
-      navigateMapRef.current([validLat, validLng], eventZoomLevel)
+      navigateMapRef.current(position, eventZoomLevel)
     },
-    [eventZoomLevel, hasValidCoordinates],
+    [eventZoomLevel],
   )
 
   // Handle timeline event click - update selected event index and info box
@@ -343,9 +278,10 @@ export function TimelineWithMap({
     const timelineMarkers: CustomMapMarker[] = []
 
     for (const [index, event] of allEvents.entries()) {
-      if (!hasValidCoordinates(event)) continue
+      const position = eventPosition(event)
+      if (!position) continue
 
-      const [lat, lng] = sanitizeCoordinates(event.lat!, event.lng!)
+      const [lat, lng] = position
       const isCoinMinted = event.kind === "coin-minted"
       const isFound = event.kind === "found"
 
@@ -373,7 +309,6 @@ export function TimelineWithMap({
     allEvents,
     additionalMarkers,
     selectedEventIndex,
-    hasValidCoordinates,
     handleTimelineMarkerSelection,
   ])
 

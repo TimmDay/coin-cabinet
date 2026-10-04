@@ -1,5 +1,5 @@
 import type { CustomMapMarker } from "~/components/map/Map"
-import { MAP_BOUNDS } from "~/components/map/mapConfig"
+import { parseMapPosition } from "~/components/map/coordinates"
 import { pinStyle } from "~/components/map/pinStyle"
 import type { Artifact } from "~/database/schema-artifacts"
 import type { Deity } from "~/database/schema-deities"
@@ -32,12 +32,6 @@ export type CoinMapReference = {
 export type CoinMap =
   | { kind: "timeline"; timeline: TimelineEvents; markers: CustomMapMarker[] }
   | { kind: "markers"; markers: CustomMapMarker[] }
-
-function isWithinMapBounds(lat: number, lng: number) {
-  const [[maxLat, minLng], [minLat, maxLng]] = MAP_BOUNDS.maxBounds
-
-  return lat <= maxLat && lat >= minLat && lng >= minLng && lng <= maxLng
-}
 
 /**
  * The artifacts tied to this coin: the ones in its own supporting images
@@ -89,11 +83,9 @@ function deityPlaceMarkers(
 
   return [...deityNamesByPlaceId.entries()].flatMap(([placeId, names]) => {
     const place = places.find((candidate) => Number(candidate.id) === placeId)
-    const lat = Number(place?.lat)
-    const lng = Number(place?.lng)
-
-    if (!place || !Number.isFinite(lat) || !Number.isFinite(lng)) return []
-    if (!isWithinMapBounds(lat, lng)) return []
+    const position = place && parseMapPosition(place.lat, place.lng)
+    if (!place || !position) return []
+    const [lat, lng] = position
 
     return [
       {
@@ -124,14 +116,15 @@ function artifactMarkers(
     if (!artifact) return []
 
     const location = getArtifactLocationData(artifact, places)
-    if (location.lat === null || location.lng === null) return []
-    if (!isWithinMapBounds(location.lat, location.lng)) return []
+    const position = parseMapPosition(location.lat, location.lng)
+    if (!position) return []
+    const [lat, lng] = position
 
     return [
       {
         id: `artifact-${artifact.id}`,
-        lat: location.lat,
-        lng: location.lng,
+        lat,
+        lng,
         title: artifact.name,
         subtitle:
           location.institutionName ?? artifact.location_name ?? undefined,
@@ -147,13 +140,14 @@ function artifactMarkers(
 
 function foundMarker(coin: CoinEnhanced): CustomMapMarker[] {
   const found = coin.found_event
-  if (!found) return []
+  const position = found && parseMapPosition(found.lat, found.lng)
+  if (!found || !position) return []
 
   return [
     {
       id: `coin-found-${coin.id}`,
-      lat: found.lat,
-      lng: found.lng,
+      lat: position[0],
+      lng: position[1],
       title: "Coin Found",
       subtitle: "This coin was found here",
       description: found.notes ?? undefined,
@@ -168,13 +162,14 @@ function mintMarker(coin: CoinEnhanced, mints: Mint[] | undefined) {
   if (!coin.mint_id || !mints) return []
 
   const mint = mints.find((candidate) => candidate.id === coin.mint_id)
-  if (!mint?.lat || !mint?.lng || !mint.name) return []
+  const position = mint && parseMapPosition(mint.lat, mint.lng)
+  if (!mint?.name || !position) return []
 
   return [
     {
       id: `coin-mint-${coin.id}`,
-      lat: mint.lat,
-      lng: mint.lng,
+      lat: position[0],
+      lng: position[1],
       title: mint.name,
       subtitle: "This coin was minted here",
       description:
