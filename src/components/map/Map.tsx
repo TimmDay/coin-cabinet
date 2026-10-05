@@ -14,7 +14,8 @@ import { useMints } from "~/api/mints"
 import { MAP_HEIGHT } from "~/lib/constants"
 import { ROMAN_PROVINCES } from "./constants/provinces"
 import { parseLatLng, parseZoom, ROME } from "./coordinates"
-import { useEmpireLayerData, useMapConfiguration, useMapData } from "./hooks"
+import { useGeoJsonLayers, useMapConfiguration } from "./hooks"
+import type { GeoJsonLayerSpec } from "./hooks"
 import {
   MAP_BOUNDS_LNGLAT,
   MAP_PAN_BOUNDS_LNGLAT,
@@ -152,7 +153,6 @@ export const Map: React.FC<MapProps> = ({
   // Use custom hooks for configuration and data management
   const config = useMapConfiguration()
   const { data: mints } = useMints()
-  const { provincesData, provincesLabelsData } = useMapData()
 
   const provinces = useMemo(() => provinceStyle(), [])
 
@@ -236,7 +236,24 @@ export const Map: React.FC<MapProps> = ({
     [showBC60, showAD14, showAD69, showAD117, showAD200],
   )
 
-  const { isLayerVisible, getLayerData } = useEmpireLayerData(empireLayerConfig)
+  // Every GeoJSON file the map wants, declared in one place. The empire
+  // extents stay lazy: their specs are only enabled once their toggle is on.
+  const layerSpecs = useMemo<GeoJsonLayerSpec[]>(
+    () => [
+      { key: "provinces", path: "/data/provinces.geojson" },
+      { key: "provinceLabels", path: "/data/provinces_label.geojson" },
+      ...Object.entries(empireLayerConfig).map(([key, layerConfig]) => ({
+        key,
+        path: `/data/${layerConfig.filename}`,
+        enabled: layerConfig.showProp === true,
+      })),
+    ],
+    [empireLayerConfig],
+  )
+
+  const { layers } = useGeoJsonLayers(layerSpecs)
+  const provincesData = layers.provinces
+  const provincesLabelsData = layers.provinceLabels
 
   // Get province labels from labels data
   const provinceLabels = useMemo(() => {
@@ -286,17 +303,12 @@ export const Map: React.FC<MapProps> = ({
       ids.push("provinces-fill")
     }
     for (const key of Object.keys(empireLayerConfig)) {
-      if (isLayerVisible(key) && getLayerData(key)) {
+      if (layers[key]) {
         ids.push(`${key}-fill`)
       }
     }
     return ids
-  }, [
-    filteredProvincesGeoJSON,
-    empireLayerConfig,
-    isLayerVisible,
-    getLayerData,
-  ])
+  }, [filteredProvincesGeoJSON, empireLayerConfig, layers])
 
   const handleMapClick = useCallback(
     (e: MapLayerMouseEvent) => {
@@ -509,8 +521,8 @@ export const Map: React.FC<MapProps> = ({
             >
               {/* Empire extent layers */}
               {Object.entries(empireLayerConfig).map(([key, layerConfig]) => {
-                const data = getLayerData(key)
-                if (!isLayerVisible(key) || !data) return null
+                const data = layers[key]
+                if (!data) return null
 
                 return (
                   <Source key={key} id={key} type="geojson" data={data}>

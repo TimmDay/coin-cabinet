@@ -1,112 +1,102 @@
-import { useEffect, useState } from "react"
-import type { EmpireLayerConfigMap } from "../mapConfig"
+import { useEffect, useMemo, useRef, useState } from "react"
 
-type UseMapDataResult = {
-  provincesData: GeoJSON.FeatureCollection | null
-  provincesLabelsData: GeoJSON.FeatureCollection | null
+/**
+ * One GeoJSON file the map may want. A layer is declared rather than
+ * hardcoded, so adding a layer is a entry in a list rather than another
+ * bespoke fetch and another piece of state.
+ */
+export type GeoJsonLayerSpec = {
+  /** Stable name the caller looks the loaded data up by. */
+  key: string
+  /** Path under `/public`, e.g. `/data/provinces.geojson`. */
+  path: string
+  /**
+   * Fetch only once this is true. Layers already fetched stay cached, so
+   * toggling one off and on again costs nothing.
+   */
+  enabled?: boolean
+}
+
+type UseGeoJsonLayersResult = {
+  /**
+   * Declared key to its loaded collection, or null while it is still in
+   * flight or the layer is disabled. Stable between renders, so callers can
+   * depend on it in a memo.
+   */
+  layers: Record<string, GeoJSON.FeatureCollection | null>
+  /** True while at least one enabled layer is still in flight. */
   loading: boolean
+  /** The most recent load failure, if any. */
   error: string | null
 }
 
 /**
- * Custom hook for loading and managing map data (provinces and labels)
+ * Loads the declared GeoJSON layers, lazily and at most once each.
+ *
+ * Caching is by path rather than by key, so two keys pointing at the same file
+ * share a single fetch. Pass a memoised `specs` array: it is read through a
+ * primitive derived from the enabled paths, so an unstable array identity
+ * won't refetch, but it will churn the memo.
  */
-export const useMapData = (): UseMapDataResult => {
-  const [provincesData, setProvincesData] =
-    useState<GeoJSON.FeatureCollection | null>(null)
-  const [provincesLabelsData, setProvincesLabelsData] =
-    useState<GeoJSON.FeatureCollection | null>(null)
-  const [loading, setLoading] = useState(false)
+export const useGeoJsonLayers = (
+  specs: GeoJsonLayerSpec[],
+): UseGeoJsonLayersResult => {
+  const [data, setData] = useState<Record<string, GeoJSON.FeatureCollection>>(
+    {},
+  )
   const [error, setError] = useState<string | null>(null)
+  // Paths already requested, successfully or not. A failed fetch stays here so
+  // a broken file is not retried on every render.
+  const attempted = useRef<Set<string>>(new Set())
+
+  const enabledPaths = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          specs.filter((s) => s.enabled !== false).map((spec) => spec.path),
+        ),
+      ).sort(),
+    [specs],
+  )
+  // A primitive so the effect doesn't rerun on array identity alone.
+  const enabledKey = enabledPaths.join("|")
 
   useEffect(() => {
-    const loadData = async () => {
-      if (provincesData && provincesLabelsData) return // Already loaded
+    const paths = enabledKey ? enabledKey.split("|") : []
 
-      setLoading(true)
-      setError(null)
-
-      try {
-        // Load both provinces and province labels data
-        const [provincesResponse, labelsResponse] = await Promise.all([
-          fetch("/data/provinces.geojson"),
-          fetch("/data/provinces_label.geojson"),
-        ])
-
-        if (!provincesResponse.ok) {
-          throw new Error(
-            `Failed to load provinces data: ${provincesResponse.statusText}`,
-          )
-        }
-        if (!labelsResponse.ok) {
-          throw new Error(
-            `Failed to load province labels data: ${labelsResponse.statusText}`,
-          )
-        }
-
-        const [provincesData, labelsData] = await Promise.all([
-          provincesResponse.json() as Promise<GeoJSON.FeatureCollection>,
-          labelsResponse.json() as Promise<GeoJSON.FeatureCollection>,
-        ])
-
-        setProvincesData(provincesData)
-        setProvincesLabelsData(labelsData)
-      } catch (error) {
-        console.error("Error loading map data:", error)
-        setError(
-          error instanceof Error ? error.message : "Failed to load map data",
-        )
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    void loadData()
-  }, [provincesData, provincesLabelsData])
-
-  return {
-    provincesData,
-    provincesLabelsData,
-    loading,
-    error,
-  }
-}
-
-/**
- * Loads each empire extent layer's GeoJSON the first time it is shown. Which
- * layers are shown comes from the config's `showProp`, so the caller owns it.
- */
-export const useEmpireLayerData = (empireLayerConfig: EmpireLayerConfigMap) => {
-  const [layerData, setLayerData] = useState<
-    Record<string, GeoJSON.FeatureCollection>
-  >({})
-
-  const isLayerVisible = (key: string): boolean =>
-    empireLayerConfig[key as keyof EmpireLayerConfigMap]?.showProp === true
-
-  useEffect(() => {
-    for (const [key, config] of Object.entries(empireLayerConfig)) {
-      if (config.showProp !== true || layerData[key]) continue
+    for (const path of paths) {
+      if (attempted.current.has(path)) continue
+      attempted.current.add(path)
 
       void (async () => {
-        let data: GeoJSON.FeatureCollection
         try {
-          const response = await fetch(`/data/${config.filename}`)
+          const response = await fetch(path)
           if (!response.ok) {
-            throw new Error(`Failed to load GeoJSON: ${response.statusText}`)
+            throw new Error(`${path}: ${response.statusText}`)
           }
-          data = (await response.json()) as GeoJSON.FeatureCollection
-        } catch (error) {
-          console.error(`Error loading Roman Empire ${key} data:`, error)
-          data = { type: "FeatureCollection", features: [] }
+          const collection =
+            (await response.json()) as GeoJSON.FeatureCollection
+          setData((prev) => ({ ...prev, [path]: collection }))
+        } catch (cause) {
+          console.error("Error loading map layer:", cause)
+          setError(
+            cause instanceof Error ? cause.message : `Failed to load ${path}`,
+          )
         }
-        setLayerData((prev) => ({ ...prev, [key]: data }))
       })()
     }
-  }, [empireLayerConfig, layerData])
+  }, [enabledKey])
 
-  const getLayerData = (key: string): GeoJSON.FeatureCollection | null =>
-    layerData[key] ?? null
+  const layers = useMemo(() => {
+    const lookup: Record<string, GeoJSON.FeatureCollection | null> = {}
+    for (const spec of specs) {
+      lookup[spec.key] =
+        spec.enabled === false ? null : (data[spec.path] ?? null)
+    }
+    return lookup
+  }, [specs, data])
 
-  return { isLayerVisible, getLayerData }
+  const loading = enabledPaths.some((path) => !data[path])
+
+  return { layers, loading, error }
 }
