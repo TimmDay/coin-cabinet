@@ -108,6 +108,18 @@
   --color-map-landmark: #5b3a29;
 
   /* Provinces and the five empire extents: fill and line each. */
+  /* Realm Tier identity colours. Okabe-Ito, validated against the map's land
+     surface (#948060) for lightness band, chroma floor, all-pairs CVD and
+     normal-vision separation. CVD separation lands in the 6-8 band, which is
+     only legal alongside secondary encoding, and contrast over the land is
+     below 3:1 -- both are why realms carry direct labels. Five tokens serve
+     ten realms: no two realms sharing one are ever on screen together. */
+  --color-map-realm-1: #0072b2;
+  --color-map-realm-2: #d55e00;
+  --color-map-realm-3: #009e73;
+  --color-map-realm-4: #cc79a7;
+  --color-map-realm-5: #e69f00;
+
   --color-map-province-fill: #c4622d;
   --color-map-province-line: #8c3b2a;
   --color-map-bc60-fill: #d99a2b;

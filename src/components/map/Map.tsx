@@ -12,9 +12,20 @@ import { Layer, Map as MapGL, Marker, Source } from "react-map-gl/maplibre"
 import type { MapRef } from "react-map-gl/maplibre"
 import { useMints } from "~/api/mints"
 import { MAP_HEIGHT } from "~/lib/constants"
-import { ROMAN_PROVINCES } from "./constants/provinces"
 import { parseLatLng, parseZoom, ROME } from "./coordinates"
-import { useEmpireLayerData, useMapConfiguration, useMapData } from "./hooks"
+import {
+  useGeoJsonLayers,
+  useJurisdictionCorpus,
+  useMapConfiguration,
+} from "./hooks"
+import type { GeoJsonLayerSpec } from "./hooks"
+import {
+  boundsOf,
+  formatYear,
+  labelPointOf,
+  resolveAtYear,
+  type Tier,
+} from "./jurisdictions"
 import {
   MAP_BOUNDS_LNGLAT,
   MAP_PAN_BOUNDS_LNGLAT,
@@ -22,9 +33,10 @@ import {
   MAP_STYLES,
   provinceStyle,
   PROVINCE_LABEL_STYLES,
-  createEmpireLayerConfig,
   fadeOutWithZoom,
   OVERLAY_FADE_ZOOM,
+  jurisdictionColourExpression,
+  REALM_LABEL_STYLES,
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
 import { markerPopup, type CustomMapMarker } from "./mapMarkers"
@@ -96,17 +108,20 @@ export type MapProps = {
   className?: string
   /** 'fullscreen' makes the map fill its parent's height */
   layout?: "default" | "fullscreen"
-  /** Show BC 60 empire extent layer */
-  showBC60?: boolean
-  /** Show AD 14 empire extent layer */
-  showAD14?: boolean
-  /** Show AD 69 empire extent layer */
-  showAD69?: boolean
-  /** Show AD 117 empire extent layer */
-  showAD117?: boolean
-  /** Show AD 200 empire extent layer */
-  showAD200?: boolean
-  /** Provinces to draw; all of them by default */
+  /**
+   * The year to draw. When set, the map shows the Jurisdictions of that year
+   * instead of the always-on province layer.
+   */
+  selectedYear?: number
+  /** Which Tier to draw at the Selected year; all Tiers when omitted. */
+  tier?: Tier
+  /** Receives a function that fits the view to what is currently drawn. */
+  onFitExtent?: (fit: () => void) => void
+  /**
+   * Provinces to draw. Omitted means all of them: the Jurisdiction layer must
+   * not be filtered against a list that predates it, or names it does not
+   * recognise (the regiones, Alpes Graiae) would silently vanish.
+   */
   selectedProvinces?: string[]
   /** Show province labels */
   showProvinceLabels?: boolean
@@ -130,12 +145,10 @@ export const Map: React.FC<MapProps> = ({
   width = "100%",
   className = "",
   layout = "default",
-  showBC60 = false,
-  showAD14 = false,
-  showAD69 = false,
-  showAD117 = false,
-  showAD200 = false,
-  selectedProvinces = ROMAN_PROVINCES,
+  selectedYear,
+  tier,
+  onFitExtent,
+  selectedProvinces,
   showProvinceLabels = true,
   highlightMint,
   showMintMarkers = true,
@@ -152,7 +165,6 @@ export const Map: React.FC<MapProps> = ({
   // Use custom hooks for configuration and data management
   const config = useMapConfiguration()
   const { data: mints } = useMints()
-  const { provincesData, provincesLabelsData } = useMapData()
 
   const provinces = useMemo(() => provinceStyle(), [])
 
@@ -223,80 +235,96 @@ export const Map: React.FC<MapProps> = ({
     [openPopup],
   )
 
-  // Empire extent layer configuration
-  const empireLayerConfig = useMemo(
+  const showsYear = selectedYear !== undefined
+
+  const corpus = useJurisdictionCorpus(showsYear)
+
+  const resolution = useMemo(
     () =>
-      createEmpireLayerConfig(
-        showBC60,
-        showAD14,
-        showAD69,
-        showAD117,
-        showAD200,
-      ),
-    [showBC60, showAD14, showAD69, showAD117, showAD200],
+      corpus && selectedYear !== undefined
+        ? resolveAtYear(corpus, selectedYear, tier)
+        : null,
+    [corpus, selectedYear, tier],
   )
 
-  const { isLayerVisible, getLayerData } = useEmpireLayerData(empireLayerConfig)
+  // Built after mount: glColor reads the page's computed styles.
+  const jurisdictionColour = useMemo(
+    () => (showsYear ? jurisdictionColourExpression() : null),
+    [showsYear],
+  )
 
-  // Get province labels from labels data
-  const provinceLabels = useMemo(() => {
-    if (!provincesLabelsData) return []
-
-    // Show labels only for selected provinces
-    return provincesLabelsData.features
-      .filter((feature) => {
-        const provinceName = feature.properties?.name as string
-        return selectedProvinces.includes(provinceName)
-      })
-      .map((feature) => {
-        const name = feature.properties?.name as string
-        if (!name || feature.geometry.type !== "Point") return null
-
-        const [lng, lat] = feature.geometry.coordinates as [number, number]
-
-        return { name, lng, lat }
+  /**
+   * Realm names. Not decoration: the identity palette's CVD separation sits in
+   * the band that is only legal alongside secondary encoding, and its contrast
+   * over the map's land is under 3:1. The labels are what discharge both.
+   */
+  const jurisdictionLabels = useMemo(() => {
+    if (!resolution) return []
+    return resolution.jurisdictions
+      .map((j) => {
+        const point = labelPointOf(j.feature)
+        return point
+          ? { name: j.name, tier: j.tier, lng: point[0], lat: point[1] }
+          : null
       })
       .filter(
-        (label): label is { name: string; lng: number; lat: number } =>
-          label !== null,
+        (
+          label,
+        ): label is {
+          name: string
+          tier: Tier
+          lng: number
+          lat: number
+        } => Boolean(label),
       )
-  }, [provincesLabelsData, selectedProvinces])
+  }, [resolution])
 
-  // GeoJSON for the provinces overlay, filtered to the current selection
-  const filteredProvincesGeoJSON = useMemo(() => {
-    if (!provincesData) return null
+  const jurisdictionsGeoJSON = useMemo<GeoJSON.FeatureCollection | null>(() => {
+    if (!resolution || resolution.jurisdictions.length === 0) return null
+    // Which Jurisdictions to show is a separate axis from which ones existed,
+    // so the selection narrows what the year already resolved.
+    const features = resolution.jurisdictions
+      .filter(
+        (j) =>
+          !selectedProvinces ||
+          j.tier !== "province" ||
+          selectedProvinces.includes(j.name),
+      )
+      // `attested` has to reach MapLibre as a property: a reconstruction is
+      // drawn with a broken outline, and dasharray cannot be data-driven, so
+      // the two cases are split across two line layers filtered on this.
+      .map((j) => ({
+        ...j.feature,
+        properties: { ...j.feature.properties, attested: j.attested },
+      }))
+    if (features.length === 0) return null
+    return { type: "FeatureCollection", features }
+  }, [resolution, selectedProvinces])
 
-    const filteredFeatures = provincesData.features.filter((feature) => {
-      const provinceName = feature.properties?.name as string
-      return selectedProvinces.includes(provinceName)
-    })
+  // Framing is the visitor's business: the camera never moves on its own as
+  // the year changes, so this is the escape hatch when they've panned away.
+  const fitExtent = useCallback(() => {
+    const bounds = resolution ? boundsOf(resolution.jurisdictions) : null
+    if (!bounds) return
+    mapRef.current?.fitBounds(
+      [
+        [bounds[0], bounds[1]],
+        [bounds[2], bounds[3]],
+      ],
+      { padding: 40, duration: 600 },
+    )
+  }, [resolution])
 
-    return {
-      type: "FeatureCollection",
-      features: filteredFeatures,
-    } as GeoJSON.FeatureCollection
-  }, [provincesData, selectedProvinces])
+  useEffect(() => {
+    onFitExtent?.(fitExtent)
+  }, [onFitExtent, fitExtent])
 
-  // Layer ids currently eligible for click interaction -- must match
-  // whichever fill layers are actually mounted below, or MapLibre has
-  // nothing to hit-test against.
-  const interactiveLayerIds = useMemo(() => {
-    const ids: string[] = []
-    if (filteredProvincesGeoJSON) {
-      ids.push("provinces-fill")
-    }
-    for (const key of Object.keys(empireLayerConfig)) {
-      if (isLayerVisible(key) && getLayerData(key)) {
-        ids.push(`${key}-fill`)
-      }
-    }
-    return ids
-  }, [
-    filteredProvincesGeoJSON,
-    empireLayerConfig,
-    isLayerVisible,
-    getLayerData,
-  ])
+  // Must match whichever fill layers are actually mounted below, or MapLibre
+  // has nothing to hit-test against.
+  const interactiveLayerIds = useMemo(
+    () => (jurisdictionsGeoJSON ? ["jurisdictions-fill"] : []),
+    [jurisdictionsGeoJSON],
+  )
 
   const handleMapClick = useCallback(
     (e: MapLayerMouseEvent) => {
@@ -305,30 +333,24 @@ export const Map: React.FC<MapProps> = ({
 
       const layerId = feature.layer.id
 
-      if (layerId === "provinces-fill") {
-        const name = feature.properties?.name as string | undefined
-        if (!name) return
+      if (layerId !== "jurisdictions-fill") return
 
-        openPopup(e.originalEvent.clientX, e.originalEvent.clientY, {
-          title: name,
-          // TODO: hook this up to a data file with info for provinces.
-          description: "Roman Territory",
-          className: "text-map-label",
-        })
-        return
-      }
+      const name = feature.properties?.name as string | undefined
+      if (!name) return
 
-      const empireLayer = Object.values(empireLayerConfig).find(
-        (layerConfig) => `${layerConfig.id}-fill` === layerId,
-      )
-      if (empireLayer) {
-        openPopup(e.originalEvent.clientX, e.originalEvent.clientY, {
-          title: empireLayer.title,
-          description: empireLayer.description,
-        })
-      }
+      const basisYear = feature.properties?.basisYear as number | undefined
+      const attested = feature.properties?.attested as boolean | undefined
+
+      openPopup(e.originalEvent.clientX, e.originalEvent.clientY, {
+        title: name,
+        description:
+          attested === false && typeof basisYear === "number"
+            ? `Outline as at ${formatYear(basisYear)}, reconstructed for this year`
+            : "Roman territory",
+        className: "text-map-label",
+      })
     },
-    [empireLayerConfig, openPopup],
+    [openPopup],
   )
 
   // Register the imperative navigate function with the parent once the map
@@ -507,87 +529,80 @@ export const Map: React.FC<MapProps> = ({
               }}
               onClick={handleMapClick}
             >
-              {/* Empire extent layers */}
-              {Object.entries(empireLayerConfig).map(([key, layerConfig]) => {
-                const data = getLayerData(key)
-                if (!isLayerVisible(key) || !data) return null
-
-                return (
-                  <Source key={key} id={key} type="geojson" data={data}>
-                    <Layer
-                      id={`${key}-fill`}
-                      type="fill"
-                      maxzoom={OVERLAY_FADE_ZOOM.to}
-                      paint={{
-                        "fill-color": layerConfig.style.fillColor,
-                        "fill-opacity": fadeOutWithZoom(
-                          layerConfig.style.fillOpacity,
-                        ),
-                      }}
-                    />
-                    <Layer
-                      id={`${key}-line`}
-                      type="line"
-                      maxzoom={OVERLAY_FADE_ZOOM.to}
-                      paint={{
-                        "line-color": layerConfig.style.lineColor,
-                        "line-width": layerConfig.style.lineWidth,
-                        "line-opacity": fadeOutWithZoom(
-                          layerConfig.style.lineOpacity,
-                        ),
-                        "line-dasharray": layerConfig.style.lineDasharray,
-                      }}
-                    />
-                  </Source>
-                )
-              })}
-
-              {/* Selected Provinces Layer */}
-              {filteredProvincesGeoJSON && (
+              {/* Jurisdictions at the Selected year */}
+              {jurisdictionsGeoJSON && (
                 <Source
-                  id="provinces"
+                  id="jurisdictions"
                   type="geojson"
-                  data={filteredProvincesGeoJSON}
+                  data={jurisdictionsGeoJSON}
                 >
                   <Layer
-                    id="provinces-fill"
+                    id="jurisdictions-fill"
                     type="fill"
                     maxzoom={OVERLAY_FADE_ZOOM.to}
                     paint={{
-                      "fill-color": provinces.fillColor,
-                      "fill-opacity": fadeOutWithZoom(provinces.fillOpacity),
+                      "fill-color": jurisdictionColour ?? provinces.fillColor,
+                      "fill-opacity": fadeOutWithZoom([
+                        "case",
+                        ["==", ["get", "attested"], false],
+                        0.13,
+                        0.22,
+                      ] as unknown as number),
                     }}
                   />
                   <Layer
-                    id="provinces-line"
+                    id="jurisdictions-line"
                     type="line"
                     maxzoom={OVERLAY_FADE_ZOOM.to}
+                    filter={["==", ["get", "attested"], true]}
                     paint={{
-                      "line-color": provinces.lineColor,
-                      "line-width": provinces.lineWidth,
-                      "line-opacity": fadeOutWithZoom(provinces.lineOpacity),
-                      "line-dasharray": provinces.lineDasharray,
+                      "line-color": jurisdictionColour ?? provinces.lineColor,
+                      "line-width": 2,
+                      "line-opacity": fadeOutWithZoom(0.9),
+                    }}
+                  />
+                  {/* A reconstruction gets a broken outline, so uncertainty is
+                      visible without having to read anything. */}
+                  <Layer
+                    id="jurisdictions-line-inferred"
+                    type="line"
+                    maxzoom={OVERLAY_FADE_ZOOM.to}
+                    filter={["==", ["get", "attested"], false]}
+                    paint={{
+                      "line-color": jurisdictionColour ?? provinces.lineColor,
+                      "line-width": 1.5,
+                      "line-opacity": fadeOutWithZoom(0.75),
+                      "line-dasharray": [3, 3],
                     }}
                   />
                 </Source>
               )}
 
-              {/* Province Labels */}
-              {showProvinceLabels &&
-                currentZoom > PROVINCE_LABEL_STYLES.minZoomLevel &&
-                currentZoom < OVERLAY_FADE_ZOOM.to &&
-                provinceLabels.map((label) => (
-                  <Marker
-                    key={`label-${label.name}`}
-                    longitude={label.lng}
-                    latitude={label.lat}
-                    anchor="center"
-                  >
-                    <div style={PROVINCE_LABEL_STYLES.container}>
-                      {label.name.replace(/\s/, "\n")}
-                    </div>
-                  </Marker>
-                ))}
+              {/* Jurisdiction names. For Realms these are the palette's
+                  secondary encoding, so they are required rather than optional. */}
+              {currentZoom < OVERLAY_FADE_ZOOM.to &&
+                jurisdictionLabels
+                  .filter(
+                    (label) => label.tier === "realm" || showProvinceLabels,
+                  )
+                  .map((label) => (
+                    <Marker
+                      key={`jurisdiction-${label.name}`}
+                      longitude={label.lng}
+                      latitude={label.lat}
+                      anchor="center"
+                    >
+                      <div
+                        style={
+                          label.tier === "realm"
+                            ? REALM_LABEL_STYLES.container
+                            : PROVINCE_LABEL_STYLES.container
+                        }
+                      >
+                        {label.name}
+                      </div>
+                    </Marker>
+                  ))}
 
               {/* Mint Markers */}
               {showMintMarkers &&

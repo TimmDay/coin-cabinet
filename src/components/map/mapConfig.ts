@@ -1,7 +1,8 @@
 import type { ExpressionSpecification } from "maplibre-gl"
-import { cssColor, glColor } from "./mapColors"
+import { cssColor, glColor, type MapColor } from "./mapColors"
+import { REALM_COLOUR_SLOT } from "./jurisdictions"
 
-export type EmpireLayerStyle = {
+export type OverlayStyle = {
   fillColor: string
   fillOpacity: number
   lineColor: string
@@ -10,120 +11,10 @@ export type EmpireLayerStyle = {
   lineDasharray: [number, number]
 }
 
-export type EmpireLayerConfig = {
-  id: string
-  name: string
-  title: string
-  filename: string
-  description: string
-  showProp?: boolean
-  style: EmpireLayerStyle
-}
-
-export type EmpireLayerConfigMap = {
-  bc60: EmpireLayerConfig
-  ad14: EmpireLayerConfig
-  ad69: EmpireLayerConfig
-  ad117: EmpireLayerConfig
-  ad200: EmpireLayerConfig
-}
-
-// Empire extent layer configurations
-export const createEmpireLayerConfig = (
-  showBC60?: boolean,
-  showAD14?: boolean,
-  showAD69?: boolean,
-  showAD117?: boolean,
-  showAD200?: boolean,
-): EmpireLayerConfigMap => ({
-  bc60: {
-    id: "bc60",
-    name: "BC 60",
-    title: "Roman Republic BC 60",
-    filename: "roman_empire_bc_60_extent.geojson",
-    description:
-      "Roman Republic around 60 BCE, during the First Triumvirate (Caesar, Pompey, Crassus)",
-    showProp: showBC60,
-    style: {
-      fillColor: glColor("map-bc60-fill"),
-      fillOpacity: 0.15,
-      lineColor: glColor("map-bc60-line"),
-      lineWidth: 2,
-      lineOpacity: 0.8,
-      lineDasharray: [6, 3],
-    },
-  },
-  ad14: {
-    id: "ad14",
-    name: "AD 14",
-    title: "Roman Empire AD 14",
-    filename: "roman_empire_ad_14_extent.geojson",
-    description: "Roman Empire at the death of Augustus in AD 14",
-    showProp: showAD14,
-    style: {
-      fillColor: glColor("map-ad14-fill"),
-      fillOpacity: 0.15,
-      lineColor: glColor("map-ad14-line"),
-      lineWidth: 2,
-      lineOpacity: 0.8,
-      lineDasharray: [5, 4],
-    },
-  },
-  ad69: {
-    id: "ad69",
-    name: "AD 69",
-    title: "Roman Empire AD 69",
-    filename: "roman_empire_ad_69_extent.geojson",
-    description:
-      "Roman Empire in AD 69, the Year of the Four Emperors (Galba, Otho, Vitellius, Vespasian)",
-    showProp: showAD69,
-    style: {
-      fillColor: glColor("map-ad69-fill"),
-      fillOpacity: 0.15,
-      lineColor: glColor("map-ad69-line"),
-      lineWidth: 2,
-      lineOpacity: 0.8,
-      lineDasharray: [4, 5],
-    },
-  },
-  ad117: {
-    id: "ad117",
-    name: "AD 117",
-    title: "Roman Empire AD 117",
-    filename: "roman_empire_ad_117_extent.geojson",
-    description: "Roman Empire at its greatest extent under Trajan in AD 117",
-    showProp: showAD117,
-    style: {
-      fillColor: glColor("map-ad117-fill"),
-      fillOpacity: 0.15,
-      lineColor: glColor("map-ad117-line"),
-      lineWidth: 2,
-      lineOpacity: 0.8,
-      lineDasharray: [3, 6],
-    },
-  },
-  ad200: {
-    id: "ad200",
-    name: "AD 200",
-    title: "Roman Empire AD 200",
-    filename: "roman_empire_AD_200_extent.geojson",
-    description: "Roman Empire around AD 200, during the Severan dynasty",
-    showProp: showAD200,
-    style: {
-      fillColor: glColor("map-ad200-fill"),
-      fillOpacity: 0.15,
-      lineColor: glColor("map-ad200-line"),
-      lineWidth: 2,
-      lineOpacity: 0.8,
-      lineDasharray: [2, 7],
-    },
-  },
-})
-
 // Map styling configurations
 // Province boundaries style. A function because MapLibre needs the resolved
 // colours (see glColor), which only exist in the browser.
-export const provinceStyle = (): EmpireLayerStyle => ({
+export const provinceStyle = (): OverlayStyle => ({
   fillColor: glColor("map-province-fill"),
   fillOpacity: 0.12,
   lineColor: glColor("map-province-line"),
@@ -244,3 +135,57 @@ export const PROVINCE_LABEL_STYLES = {
   },
   minZoomLevel: 4,
 } as const
+
+/**
+ * Paints each Realm in its own identity colour, matched on the Jurisdiction's
+ * slug so a year with fewer realms never repaints the survivors.
+ */
+export const jurisdictionColourExpression = (): ExpressionSpecification =>
+  [
+    "match",
+    ["get", "tier"],
+    "realm",
+    realmColourExpression(),
+    "city",
+    glColor("map-province-line"),
+    glColor("map-province-fill"),
+  ] as unknown as ExpressionSpecification
+
+export const realmColourExpression = (): ExpressionSpecification => {
+  const slots: MapColor[] = [
+    "map-realm-1",
+    "map-realm-2",
+    "map-realm-3",
+    "map-realm-4",
+    "map-realm-5",
+  ]
+  const cases = Object.entries(REALM_COLOUR_SLOT).flatMap(([slug, slot]) => [
+    slug,
+    glColor(slots[slot - 1] as MapColor),
+  ])
+  return [
+    "match",
+    ["get", "slug"],
+    ...cases,
+    glColor("map-realm-1"),
+  ] as unknown as ExpressionSpecification
+}
+
+/** Realm names sit above province names and stay legible when zoomed out. */
+export const REALM_LABEL_STYLES = {
+  container: {
+    borderRadius: "4px",
+    padding: "2px 8px",
+    fontSize: "13px",
+    fontWeight: 700,
+    color: cssColor("map-ink"),
+    fontFamily: "var(--font-display)",
+    letterSpacing: "0.08em",
+    textAlign: "center" as const,
+    textTransform: "uppercase" as const,
+    whiteSpace: "nowrap" as const,
+    pointerEvents: "none" as const,
+    textShadow:
+      "0 1px 0 rgba(255,255,255,0.45), 0 -1px 0 rgba(255,255,255,0.45), 1px 0 0 rgba(255,255,255,0.45), -1px 0 0 rgba(255,255,255,0.45)",
+  },
+}

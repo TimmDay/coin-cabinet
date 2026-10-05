@@ -60,6 +60,11 @@ export type TimelineWithMapProps = {
    * Whether default mint pins from the mints table should be shown.
    */
   showDefaultMintMarkers?: boolean
+  /**
+   * The year the map draws its Jurisdictions at. Omitted or null leaves the
+   * Jurisdiction layer off entirely.
+   */
+  selectedYear?: number | null
 }
 
 /**
@@ -78,6 +83,7 @@ export function TimelineWithMap({
   mapProps = {},
   additionalMarkers = NO_MARKERS,
   showDefaultMintMarkers = true,
+  selectedYear,
 }: TimelineWithMapProps) {
   const validatedInitialCenter = useMemo(
     () => parseLatLng(initialCenter[0], initialCenter[1]) ?? ROME,
@@ -332,6 +338,11 @@ export function TimelineWithMap({
     showProvinceLabels,
     showMintMarkers: showDefaultMintMarkers,
     customMarkers: combinedCustomMarkers,
+    // A coin's map shows the provinces of the coin's own year. Null leaves the
+    // Jurisdiction layer off rather than drawing some other year's geography.
+    ...(selectedYear !== null && selectedYear !== undefined
+      ? { selectedYear, tier: "province" as const }
+      : {}),
   }
 
   return (

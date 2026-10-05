@@ -11,16 +11,20 @@ old paper at sunset to sit with the rest of the site (`THEME.md`).
 | `Map.tsx` | The map: base style, province and empire layers, mint markers, popup |
 | `CustomMarkerLayer.tsx` | Draws a set of markers inside the map: clusters, the fan of a cluster at one spot, the markers |
 | `useMarkerClusters.ts` | The layer's logic: clustering for the current view, what a cluster click does, when the fan closes |
-| `MapControls.tsx` | The empire layer and province panel on the `/map` page (behind the `dev` flag); `Map` itself has no controls and is driven by props |
+| `MapControls.tsx` | The province selection and display panel on the `/map` page (behind the `dev` flag); `Map` itself has no controls and is driven by props |
+| `YearSlider.tsx` | The year slider, 200 BC to AD 1453, with Change year ticks and the fit-to-extent button |
+| `TierControl.tsx` | Realm / Province / City selector; Tiers with no content at the Selected year are disabled |
+| `ProvenanceNote.tsx` | The derived line naming active Sources and admitting what is reconstructed |
+| `jurisdictions.ts` | Pure: resolves Jurisdictions, provenance, available Tiers and Change years for a year |
 | `TimelineWithMap.tsx` | A timeline's map with its event reader and the timeline strip underneath |
-| `mapConfig.ts` | Bounds, province and empire layer styles, the deep dive opening view |
+| `mapConfig.ts` | Bounds, overlay and Realm layer styles, label styles, the deep dive opening view |
 | `mapTheme.ts` | Recolours the vendor base style as old paper |
 | `pinStyle.ts` | `pinStyle(kind)`: how every pin looks |
 | `mapColors.ts` | Names the colour tokens; `cssColor` and `glColor` read them |
 | `mapMarkers.ts` | HTML for pins and cluster bubbles, and `markerPopup` (what a marker click opens) |
 | `mapMarkerClustering.ts` | Clustering and spiderfy maths |
 | `MintMarkerSvg.tsx` | The highlighted mint marker |
-| `hooks/` | `useMapConfiguration` (zoom limits), province selection, map data |
+| `hooks/` | `useMapConfiguration` (zoom limits), `useGeoJsonLayers` (one declarative loader, cached at module scope), `useJurisdictionCorpus` |
 
 ## Base map
 
@@ -56,17 +60,42 @@ sources never finish loading.
 
 ## Layers
 
-- **Provinces:** `public/data/provinces.geojson` (53 features), a `fill` layer
-  and a dashed `line` layer in terracotta, with names from
-  `provinces_label.geojson` drawn as HTML markers in Cinzel. Names show above
-  zoom 4. Every feature carries placeholder `year_start` and `year_end`
-  properties spanning the whole period.
-- **Empire extents:** five GeoJSON files in `public/data/` (BC 60, AD 14, AD 69,
-  AD 117, AD 200), each toggled on its own with its own ink colour
-  (`createEmpireLayerConfig`).
+The map draws the administrative geography of one year, the Selected year. The
+vocabulary (Jurisdiction, Tier, Span, Change year, Attested, Inferred, Coverage,
+Basis year) is defined in `CONTEXT.md`.
 
-Province and extent boundaries are approximate; see the README for where the
-data comes from.
+- **Jurisdictions:** `public/data/jurisdictions/realms.geojson` and
+  `provinces.geojson`, with `sources.json` holding each Source's Coverage,
+  licence and known defects. `jurisdictions.ts` resolves what to draw: given the
+  corpus, a Selected year and a Tier it returns the Jurisdictions, a provenance
+  summary and which Tiers hold anything that year. It also derives the Change
+  years the slider ticks.
+- **Tiers:** Realm, Province and City. A Tier with nothing in it at the Selected
+  year is disabled rather than hidden. The Province Tier is genuinely empty
+  across most of the Byzantine range, because no open boundary data exists for
+  themes or dioceses.
+- **Realm colours:** five `--color-map-realm-*` tokens serve ten Realms, matched
+  on the Jurisdiction's slug so a year with fewer Realms never repaints the
+  survivors. Realms sharing a token are never on screen together, which
+  `jurisdictions.test.ts` asserts for every year. The palette is Okabe-Ito,
+  validated against the map's land surface; its colour-blind separation sits in
+  the band that is only legal with secondary encoding, so Realm names are drawn
+  as a requirement rather than as decoration.
+- **Attested and Inferred:** derived by testing the Selected year against each
+  Source's Coverage, never stored per feature. Inferred geometry gets a broken
+  outline and a lighter fill, in a separate line layer because MapLibre cannot
+  vary a dash pattern by data.
+
+Every province outline is one AD 117-ish snapshot reused across every Span, so a
+Jurisdiction's existence can be Attested while its shape is not. `basisYear`
+records which year the geometry actually depicts.
+
+`scripts/build-jurisdictions.mjs` builds the committed layers from upstream open
+data (`pnpm data:jurisdictions`). It is deliberately not part of `prebuild`: the
+upstream archives run to tens of megabytes, so they are cached under `.cache/`
+and only the simplified output is committed, with the upstream revision recorded
+in `sources.json`. `scripts/province-spans.mjs` holds the curated Spans; those
+marked `placeholder` are not scholarship and report as Inferred.
 
 ## Markers
 
@@ -124,6 +153,11 @@ a pin, moves the map to it (`eventZoomLevel`, 6 on deep dives).
 
 ## On a deep dive page
 
+A coin's map draws the Jurisdictions of the coin's own earliest minting year
+(`selectedYearForCoin`). A coin with no recorded minting year gets no
+Jurisdiction layer, matching `createCoinMintingEvent`, which likewise produces
+nothing without a year.
+
 `buildCoinMap(coin, reference)` (`ui/coin-deep-dive/coinMap.ts`) answers what the
 coin's map shows: a timeline map with its pins, a map of pins (where the coin was
 struck, the places and artifacts tied to it, where it was found), or nothing.
@@ -133,7 +167,10 @@ struck, the places and artifacts tied to it, where it was found), or nothing.
 ## Tests
 
 `pinStyle`, the colour tokens, `markerPopup`, the clustering and spiderfy maths,
-`useMarkerClusters` (with a fake map) and `buildCoinMap` have unit tests. `Map.tsx`
+`useMarkerClusters` (with a fake map), `buildCoinMap` and `jurisdictions.ts` have
+unit tests. `jurisdictionData.test.ts` asserts the shape of the committed
+Jurisdiction layers, including that every Source carries its licence and that
+changes were declared. `Map.tsx`
 itself and `CustomMarkerLayer` do not, so check the map by eye on a deep dive
 page, a timeline page and a phone after changing them. Spiderfy needs markers at
 the same coordinates, which no real coin has, so it takes a temporary page to see.

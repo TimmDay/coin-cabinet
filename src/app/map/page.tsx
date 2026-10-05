@@ -1,9 +1,17 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import { useState } from "react"
-import { ROMAN_PROVINCES } from "~/components/map/constants/provinces"
+import { useCallback, useMemo, useRef, useState } from "react"
+import { useJurisdictionCorpus } from "~/components/map/hooks"
+import {
+  changeYears,
+  resolveAtYear,
+  type Tier,
+} from "~/components/map/jurisdictions"
 import { MapControls } from "~/components/map/MapControls"
+import { ProvenanceNote } from "~/components/map/ProvenanceNote"
+import { TierControl } from "~/components/map/TierControl"
+import { YearSlider } from "~/components/map/YearSlider"
 import { NotFound404 } from "~/components/ui/NotFound404"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 
@@ -18,19 +26,52 @@ const Map = dynamic(
   },
 )
 
+/** Opens on Trajan's empire: the most recognisable shape on the slider. */
+const INITIAL_YEAR = 117
+
 export default function MapPage() {
   const isDevMode = useTypedFeatureFlag("dev")
 
   // Map state
-  const [showBC60, setShowBC60] = useState(false)
-  const [showAD14, setShowAD14] = useState(false)
-  const [showAD69, setShowAD69] = useState(false)
-  const [showAD117, setShowAD117] = useState(false)
-  const [showAD200, setShowAD200] = useState(false)
-  const [selectedProvinces, setSelectedProvinces] = useState<string[]>([
-    ...ROMAN_PROVINCES,
-  ])
+  const [selectedYear, setSelectedYear] = useState(INITIAL_YEAR)
+  const [tier, setTier] = useState<Tier>("province")
+  const [selectedProvinces, setSelectedProvinces] = useState<string[] | null>(
+    null,
+  )
   const [showProvinceLabels, setShowProvinceLabels] = useState(true)
+
+  // Shared with the map through a module-level cache, so asking for it here
+  // costs no second fetch.
+  const corpus = useJurisdictionCorpus()
+  const ticks = useMemo(() => (corpus ? changeYears(corpus) : []), [corpus])
+
+  // Passing the Tier gives a provenance sentence about what is actually drawn,
+  // while availableTiers still reflects every Tier with content that year.
+  const resolution = useMemo(
+    () => (corpus ? resolveAtYear(corpus, selectedYear, tier) : null),
+    [corpus, selectedYear, tier],
+  )
+
+  /** Every province name the corpus can draw, for the selection control. */
+  const provinceNames = useMemo(() => {
+    if (!corpus) return []
+    return [
+      ...new Set(
+        corpus.features
+          .filter((f) => f.properties.tier === "province")
+          .map((f) => f.properties.name),
+      ),
+    ].sort()
+  }, [corpus])
+
+  // Everything selected until the visitor says otherwise; the list is not
+  // known until the corpus arrives, so it cannot be the initial state.
+  const effectiveProvinces = selectedProvinces ?? provinceNames
+
+  const fitRef = useRef<(() => void) | null>(null)
+  const receiveFit = useCallback((fit: () => void) => {
+    fitRef.current = fit
+  }, [])
 
   // Show 404-like message if feature flag is not enabled
   if (!isDevMode) {
@@ -40,39 +81,49 @@ export default function MapPage() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Full-size Map Container */}
-      <div className="h-[calc(100vh-140px)] flex-shrink-0">
+      <div className="h-[calc(100vh-240px)] flex-shrink-0">
         <div className="h-full p-4 sm:p-6 lg:p-8">
           <div className="bg-paper h-full w-full overflow-hidden rounded-lg shadow-lg">
             <Map
               layout="fullscreen"
               height="100%"
-              showBC60={showBC60}
-              showAD14={showAD14}
-              showAD69={showAD69}
-              showAD117={showAD117}
-              showAD200={showAD200}
-              selectedProvinces={selectedProvinces}
+              selectedYear={selectedYear}
+              tier={tier}
+              onFitExtent={receiveFit}
+              selectedProvinces={effectiveProvinces}
               showProvinceLabels={showProvinceLabels}
             />
           </div>
         </div>
       </div>
 
+      <div className="flex-shrink-0 px-4 sm:px-6 lg:px-8">
+        <YearSlider
+          value={selectedYear}
+          onChange={setSelectedYear}
+          changeYears={ticks}
+          onFitExtent={() => fitRef.current?.()}
+        />
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+          <TierControl
+            value={tier}
+            onChange={setTier}
+            available={resolution?.availableTiers ?? []}
+          />
+          <ProvenanceNote
+            provenance={resolution?.provenance ?? null}
+            corpus={corpus}
+            className="max-w-prose"
+          />
+        </div>
+      </div>
+
       {/* Map Controls */}
       <div className="flex-shrink-0 px-4 py-4 sm:px-6 lg:px-8">
         <MapControls
-          showBC60={showBC60}
-          onBC60Change={setShowBC60}
-          showAD14={showAD14}
-          onAD14Change={setShowAD14}
-          showAD69={showAD69}
-          onAD69Change={setShowAD69}
-          showAD117={showAD117}
-          onAD117Change={setShowAD117}
-          showAD200={showAD200}
-          onAD200Change={setShowAD200}
-          selectedProvinces={selectedProvinces}
+          selectedProvinces={effectiveProvinces}
           onProvincesChange={setSelectedProvinces}
+          provinceNames={provinceNames}
           showProvinceLabels={showProvinceLabels}
           onProvinceLabelsChange={setShowProvinceLabels}
         />

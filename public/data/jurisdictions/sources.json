@@ -1,0 +1,69 @@
+{
+  "pazout": {
+    "title": "Roman provinces AD 200 (Pazout correction of AWMC), via roman-road-networks",
+    "url": "https://github.com/MatteoMazzamurro/roman-road-networks",
+    "licence": "CC BY-SA 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "retrieved": "2026-10-05",
+    "coverage": {
+      "from": 117,
+      "to": 136
+    },
+    "modified": "Converted from shapefile, simplified, Iudaea given its Syria Palaestina successor, Spans attached, and Roma separated onto the City Tier.",
+    "defects": [
+      "Published as AD 200, but its contents date it to roughly AD 117-136: Dacia and Arabia present (after 106), no Mesopotamia or Armenia (after 117), Iudaea not yet Syria Palaestina (before the rename, which is dated after 132 with a diploma of 139 as the terminus).",
+      "Syria is undivided, though the Severan split into Coele and Phoenice was around 194. Splitting it needs real geometry and is not attempted here.",
+      "Britannia is undivided, though it was split around 197-216.",
+      "Geometry is one snapshot reused across every Span, so a province's existence may be attested while its outline is not."
+    ]
+  },
+  "ohm": {
+    "title": "OpenHistoricalMap",
+    "url": "https://www.openhistoricalmap.org/",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "retrieved": "2026-10-05",
+    "coverage": {
+      "from": -250,
+      "to": 700
+    },
+    "modified": "Dated administrative relations normalised onto Pazout's province names, and merged where OHM splits a province Pazout keeps whole.",
+    "defects": [
+      "Coverage is uneven: Anatolia and the Balkans are thin, and some entries are anachronistic carryovers.",
+      "Some provinces appear at more than one admin level; duplicates were merged by name."
+    ]
+  },
+  "placeholder": {
+    "title": "Spans not yet curated",
+    "placeholder": true,
+    "retrieved": "2026-10-05",
+    "coverage": {
+      "from": 1,
+      "to": 0
+    },
+    "modified": "Provinces OpenHistoricalMap does not date are given the Principate (27 BC to AD 284) as a placeholder, pending the cataloguer's dates.",
+    "defects": [
+      "These Spans are a placeholder, not scholarship. A province resting on one appears across the Principate regardless of when it actually existed."
+    ]
+  },
+  "cliopatria": {
+    "title": "Cliopatria (Seshat Global History Databank)",
+    "url": "https://github.com/Seshat-Global-History-Databank/cliopatria",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "upstreamCommit": "5f43337713",
+    "retrieved": "2026-10-05",
+    "coverage": {
+      "from": -200,
+      "to": 1453
+    },
+    "modified": "Filtered to Roman-world polities, clamped to 200 BC - AD 1453, the eastern/Byzantine label switch merged into one Jurisdiction, and geometry simplified.",
+    "defects": [
+      "Dates the Gallic Empire 261-282; the standard dating is 260-274.",
+      "Dates the Palmyrene Empire 261-269, which matches neither the 260-273 kingdom nor the 270-273 empire.",
+      "Two Byzantine segments run past the fall of Constantinople (1440-1467, 1468-1474); truncated here at 1453.",
+      "Byzantine Empire has no segments for 1227-1278 or 1402-1406; the successor states cover those years.",
+      "Its Wikidata links are unreliable (Roman Empire -> Q12544, which is Byzantine Empire; Byzantine Empire -> Q112039853, which is Foreign relations of the Byzantine Empire), so they are not imported."
+    ]
+  }
+}

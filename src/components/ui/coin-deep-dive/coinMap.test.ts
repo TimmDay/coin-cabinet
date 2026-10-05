@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 import type { CoinEnhanced } from "~/types/api"
-import { buildCoinMap, type CoinMapReference } from "./coinMap"
+import {
+  buildCoinMap,
+  selectedYearForCoin,
+  type CoinMapReference,
+} from "./coinMap"
 
 const coin = (overrides: Partial<CoinEnhanced> = {}) =>
   ({
@@ -185,4 +189,32 @@ describe("buildCoinMap", () => {
 
     expect(map?.kind).toBe("markers")
   })
+})
+
+describe("selectedYearForCoin", () => {
+  it("uses the coin's earliest minting year", () => {
+    expect(selectedYearForCoin({ mint_year_earliest: 117 })).toBe(117)
+  })
+
+  it("collapses a range to its earliest year", () => {
+    expect(
+      selectedYearForCoin({ mint_year_earliest: 193, mint_year_latest: 211 }),
+    ).toBe(193)
+  })
+
+  it("keeps BC years negative rather than treating them as missing", () => {
+    expect(selectedYearForCoin({ mint_year_earliest: -44 })).toBe(-44)
+  })
+
+  // A coin struck in AD 1 must not be mistaken for a coin with no date.
+  it("treats year zero as a real year", () => {
+    expect(selectedYearForCoin({ mint_year_earliest: 0 })).toBe(0)
+  })
+
+  it.each([[null], [undefined]])(
+    "gives no year, and so no Jurisdiction layer, for %s",
+    (value) => {
+      expect(selectedYearForCoin({ mint_year_earliest: value })).toBeNull()
+    },
+  )
 })
