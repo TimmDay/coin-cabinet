@@ -35,11 +35,6 @@ export default function MapPage() {
   // Map state
   const [selectedYear, setSelectedYear] = useState(INITIAL_YEAR)
   const [tier, setTier] = useState<Tier>("province")
-  const [showBC60, setShowBC60] = useState(false)
-  const [showAD14, setShowAD14] = useState(false)
-  const [showAD69, setShowAD69] = useState(false)
-  const [showAD117, setShowAD117] = useState(false)
-  const [showAD200, setShowAD200] = useState(false)
   const [selectedProvinces, setSelectedProvinces] = useState<string[] | null>(
     null,
   )
@@ -95,11 +90,6 @@ export default function MapPage() {
               selectedYear={selectedYear}
               tier={tier}
               onFitExtent={receiveFit}
-              showBC60={showBC60}
-              showAD14={showAD14}
-              showAD69={showAD69}
-              showAD117={showAD117}
-              showAD200={showAD200}
               selectedProvinces={effectiveProvinces}
               showProvinceLabels={showProvinceLabels}
             />
@@ -131,16 +121,6 @@ export default function MapPage() {
       {/* Map Controls */}
       <div className="flex-shrink-0 px-4 py-4 sm:px-6 lg:px-8">
         <MapControls
-          showBC60={showBC60}
-          onBC60Change={setShowBC60}
-          showAD14={showAD14}
-          onAD14Change={setShowAD14}
-          showAD69={showAD69}
-          onAD69Change={setShowAD69}
-          showAD117={showAD117}
-          onAD117Change={setShowAD117}
-          showAD200={showAD200}
-          onAD200Change={setShowAD200}
           selectedProvinces={effectiveProvinces}
           onProvincesChange={setSelectedProvinces}
           provinceNames={provinceNames}

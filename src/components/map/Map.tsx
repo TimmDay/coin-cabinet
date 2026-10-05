@@ -12,7 +12,6 @@ import { Layer, Map as MapGL, Marker, Source } from "react-map-gl/maplibre"
 import type { MapRef } from "react-map-gl/maplibre"
 import { useMints } from "~/api/mints"
 import { MAP_HEIGHT } from "~/lib/constants"
-import { ROMAN_PROVINCES } from "./constants/provinces"
 import { parseLatLng, parseZoom, ROME } from "./coordinates"
 import {
   useGeoJsonLayers,
@@ -22,6 +21,7 @@ import {
 import type { GeoJsonLayerSpec } from "./hooks"
 import {
   boundsOf,
+  formatYear,
   labelPointOf,
   resolveAtYear,
   type Tier,
@@ -33,7 +33,6 @@ import {
   MAP_STYLES,
   provinceStyle,
   PROVINCE_LABEL_STYLES,
-  createEmpireLayerConfig,
   fadeOutWithZoom,
   OVERLAY_FADE_ZOOM,
   jurisdictionColourExpression,
@@ -109,16 +108,6 @@ export type MapProps = {
   className?: string
   /** 'fullscreen' makes the map fill its parent's height */
   layout?: "default" | "fullscreen"
-  /** Show BC 60 empire extent layer */
-  showBC60?: boolean
-  /** Show AD 14 empire extent layer */
-  showAD14?: boolean
-  /** Show AD 69 empire extent layer */
-  showAD69?: boolean
-  /** Show AD 117 empire extent layer */
-  showAD117?: boolean
-  /** Show AD 200 empire extent layer */
-  showAD200?: boolean
   /**
    * The year to draw. When set, the map shows the Jurisdictions of that year
    * instead of the always-on province layer.
@@ -156,11 +145,6 @@ export const Map: React.FC<MapProps> = ({
   width = "100%",
   className = "",
   layout = "default",
-  showBC60 = false,
-  showAD14 = false,
-  showAD69 = false,
-  showAD117 = false,
-  showAD200 = false,
   selectedYear,
   tier,
   onFitExtent,
@@ -251,41 +235,7 @@ export const Map: React.FC<MapProps> = ({
     [openPopup],
   )
 
-  // Empire extent layer configuration
-  const empireLayerConfig = useMemo(
-    () =>
-      createEmpireLayerConfig(
-        showBC60,
-        showAD14,
-        showAD69,
-        showAD117,
-        showAD200,
-      ),
-    [showBC60, showAD14, showAD69, showAD117, showAD200],
-  )
-
-  // Every GeoJSON file the map wants, declared in one place. The empire
-  // extents stay lazy: their specs are only enabled once their toggle is on.
-  const layerSpecs = useMemo<GeoJsonLayerSpec[]>(
-    () => [
-      { key: "provinces", path: "/data/provinces.geojson" },
-      { key: "provinceLabels", path: "/data/provinces_label.geojson" },
-      ...Object.entries(empireLayerConfig).map(([key, layerConfig]) => ({
-        key,
-        path: `/data/${layerConfig.filename}`,
-        enabled: layerConfig.showProp === true,
-      })),
-    ],
-    [empireLayerConfig],
-  )
-
-  const { layers } = useGeoJsonLayers(layerSpecs)
-
-  // The year-resolved layer and the legacy always-on province layer are two
-  // answers to the same question, so a map showing a year hides the old one.
   const showsYear = selectedYear !== undefined
-  const provincesData = showsYear ? null : layers.provinces
-  const provincesLabelsData = showsYear ? null : layers.provinceLabels
 
   const corpus = useJurisdictionCorpus(showsYear)
 
@@ -369,70 +319,12 @@ export const Map: React.FC<MapProps> = ({
     onFitExtent?.(fitExtent)
   }, [onFitExtent, fitExtent])
 
-  // Get province labels from labels data
-  const provinceLabels = useMemo(() => {
-    if (!provincesLabelsData) return []
-
-    // Show labels only for selected provinces
-    const allowed = selectedProvinces ?? ROMAN_PROVINCES
-    return provincesLabelsData.features
-      .filter((feature) => {
-        const provinceName = feature.properties?.name as string
-        return allowed.includes(provinceName)
-      })
-      .map((feature) => {
-        const name = feature.properties?.name as string
-        if (!name || feature.geometry.type !== "Point") return null
-
-        const [lng, lat] = feature.geometry.coordinates as [number, number]
-
-        return { name, lng, lat }
-      })
-      .filter(
-        (label): label is { name: string; lng: number; lat: number } =>
-          label !== null,
-      )
-  }, [provincesLabelsData, selectedProvinces])
-
-  // GeoJSON for the provinces overlay, filtered to the current selection
-  const filteredProvincesGeoJSON = useMemo(() => {
-    if (!provincesData) return null
-
-    const allowed = selectedProvinces ?? ROMAN_PROVINCES
-    const filteredFeatures = provincesData.features.filter((feature) => {
-      const provinceName = feature.properties?.name as string
-      return allowed.includes(provinceName)
-    })
-
-    return {
-      type: "FeatureCollection",
-      features: filteredFeatures,
-    } as GeoJSON.FeatureCollection
-  }, [provincesData, selectedProvinces])
-
-  // Layer ids currently eligible for click interaction -- must match
-  // whichever fill layers are actually mounted below, or MapLibre has
-  // nothing to hit-test against.
-  const interactiveLayerIds = useMemo(() => {
-    const ids: string[] = []
-    if (jurisdictionsGeoJSON) {
-      ids.push("jurisdictions-fill")
-    }
-    if (filteredProvincesGeoJSON) {
-      ids.push("provinces-fill")
-    }
-    for (const key of Object.keys(empireLayerConfig)) {
-      if (layers[key]) {
-        ids.push(`${key}-fill`)
-      }
-    }
-    return ids
-  }, [
-    jurisdictionsGeoJSON,
-    filteredProvincesGeoJSON,
-    empireLayerConfig,
-    layers,
-  ])
+  // Must match whichever fill layers are actually mounted below, or MapLibre
+  // has nothing to hit-test against.
+  const interactiveLayerIds = useMemo(
+    () => (jurisdictionsGeoJSON ? ["jurisdictions-fill"] : []),
+    [jurisdictionsGeoJSON],
+  )
 
   const handleMapClick = useCallback(
     (e: MapLayerMouseEvent) => {
@@ -441,30 +333,24 @@ export const Map: React.FC<MapProps> = ({
 
       const layerId = feature.layer.id
 
-      if (layerId === "provinces-fill") {
-        const name = feature.properties?.name as string | undefined
-        if (!name) return
+      if (layerId !== "jurisdictions-fill") return
 
-        openPopup(e.originalEvent.clientX, e.originalEvent.clientY, {
-          title: name,
-          // TODO: hook this up to a data file with info for provinces.
-          description: "Roman Territory",
-          className: "text-map-label",
-        })
-        return
-      }
+      const name = feature.properties?.name as string | undefined
+      if (!name) return
 
-      const empireLayer = Object.values(empireLayerConfig).find(
-        (layerConfig) => `${layerConfig.id}-fill` === layerId,
-      )
-      if (empireLayer) {
-        openPopup(e.originalEvent.clientX, e.originalEvent.clientY, {
-          title: empireLayer.title,
-          description: empireLayer.description,
-        })
-      }
+      const basisYear = feature.properties?.basisYear as number | undefined
+      const attested = feature.properties?.attested as boolean | undefined
+
+      openPopup(e.originalEvent.clientX, e.originalEvent.clientY, {
+        title: name,
+        description:
+          attested === false && typeof basisYear === "number"
+            ? `Outline as at ${formatYear(basisYear)}, reconstructed for this year`
+            : "Roman territory",
+        className: "text-map-label",
+      })
     },
-    [empireLayerConfig, openPopup],
+    [openPopup],
   )
 
   // Register the imperative navigate function with the parent once the map
@@ -643,41 +529,6 @@ export const Map: React.FC<MapProps> = ({
               }}
               onClick={handleMapClick}
             >
-              {/* Empire extent layers */}
-              {Object.entries(empireLayerConfig).map(([key, layerConfig]) => {
-                const data = layers[key]
-                if (!data) return null
-
-                return (
-                  <Source key={key} id={key} type="geojson" data={data}>
-                    <Layer
-                      id={`${key}-fill`}
-                      type="fill"
-                      maxzoom={OVERLAY_FADE_ZOOM.to}
-                      paint={{
-                        "fill-color": layerConfig.style.fillColor,
-                        "fill-opacity": fadeOutWithZoom(
-                          layerConfig.style.fillOpacity,
-                        ),
-                      }}
-                    />
-                    <Layer
-                      id={`${key}-line`}
-                      type="line"
-                      maxzoom={OVERLAY_FADE_ZOOM.to}
-                      paint={{
-                        "line-color": layerConfig.style.lineColor,
-                        "line-width": layerConfig.style.lineWidth,
-                        "line-opacity": fadeOutWithZoom(
-                          layerConfig.style.lineOpacity,
-                        ),
-                        "line-dasharray": layerConfig.style.lineDasharray,
-                      }}
-                    />
-                  </Source>
-                )
-              })}
-
               {/* Jurisdictions at the Selected year */}
               {jurisdictionsGeoJSON && (
                 <Source
@@ -727,74 +578,31 @@ export const Map: React.FC<MapProps> = ({
                 </Source>
               )}
 
-              {/* Selected Provinces Layer */}
-              {filteredProvincesGeoJSON && (
-                <Source
-                  id="provinces"
-                  type="geojson"
-                  data={filteredProvincesGeoJSON}
-                >
-                  <Layer
-                    id="provinces-fill"
-                    type="fill"
-                    maxzoom={OVERLAY_FADE_ZOOM.to}
-                    paint={{
-                      "fill-color": provinces.fillColor,
-                      "fill-opacity": fadeOutWithZoom(provinces.fillOpacity),
-                    }}
-                  />
-                  <Layer
-                    id="provinces-line"
-                    type="line"
-                    maxzoom={OVERLAY_FADE_ZOOM.to}
-                    paint={{
-                      "line-color": provinces.lineColor,
-                      "line-width": provinces.lineWidth,
-                      "line-opacity": fadeOutWithZoom(provinces.lineOpacity),
-                      "line-dasharray": provinces.lineDasharray,
-                    }}
-                  />
-                </Source>
-              )}
-
               {/* Jurisdiction names. For Realms these are the palette's
                   secondary encoding, so they are required rather than optional. */}
               {currentZoom < OVERLAY_FADE_ZOOM.to &&
-                jurisdictionLabels.map((label) => (
-                  <Marker
-                    key={`jurisdiction-${label.name}`}
-                    longitude={label.lng}
-                    latitude={label.lat}
-                    anchor="center"
-                  >
-                    <div
-                      style={
-                        label.tier === "realm"
-                          ? REALM_LABEL_STYLES.container
-                          : PROVINCE_LABEL_STYLES.container
-                      }
+                jurisdictionLabels
+                  .filter(
+                    (label) => label.tier === "realm" || showProvinceLabels,
+                  )
+                  .map((label) => (
+                    <Marker
+                      key={`jurisdiction-${label.name}`}
+                      longitude={label.lng}
+                      latitude={label.lat}
+                      anchor="center"
                     >
-                      {label.name}
-                    </div>
-                  </Marker>
-                ))}
-
-              {/* Province Labels */}
-              {showProvinceLabels &&
-                currentZoom > PROVINCE_LABEL_STYLES.minZoomLevel &&
-                currentZoom < OVERLAY_FADE_ZOOM.to &&
-                provinceLabels.map((label) => (
-                  <Marker
-                    key={`label-${label.name}`}
-                    longitude={label.lng}
-                    latitude={label.lat}
-                    anchor="center"
-                  >
-                    <div style={PROVINCE_LABEL_STYLES.container}>
-                      {label.name.replace(/\s/, "\n")}
-                    </div>
-                  </Marker>
-                ))}
+                      <div
+                        style={
+                          label.tier === "realm"
+                            ? REALM_LABEL_STYLES.container
+                            : PROVINCE_LABEL_STYLES.container
+                        }
+                      >
+                        {label.name}
+                      </div>
+                    </Marker>
+                  ))}
 
               {/* Mint Markers */}
               {showMintMarkers &&
