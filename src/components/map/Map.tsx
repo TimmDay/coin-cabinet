@@ -13,12 +13,7 @@ import type { MapRef } from "react-map-gl/maplibre"
 import { useMints } from "~/api/mints"
 import { MAP_HEIGHT } from "~/lib/constants"
 import { parseLatLng, parseZoom, ROME } from "./coordinates"
-import {
-  useGeoJsonLayers,
-  useJurisdictionCorpus,
-  useMapConfiguration,
-} from "./hooks"
-import type { GeoJsonLayerSpec } from "./hooks"
+import { useJurisdictionCorpus, useMapConfiguration } from "./hooks"
 import {
   boundsOf,
   formatYear,

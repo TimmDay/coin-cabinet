@@ -74,7 +74,9 @@ function load(path: string): Promise<void> {
 export const useGeoJsonLayers = (
   specs: GeoJsonLayerSpec[],
 ): UseGeoJsonLayersResult => {
-  const [, setVersion] = useState(0)
+  // Bumped whenever a load settles, so memos below have an honest dependency
+  // on module-level cache state that React cannot see.
+  const [version, setVersion] = useState(0)
 
   const enabledPaths = useMemo(
     () =>
@@ -109,10 +111,7 @@ export const useGeoJsonLayers = (
         spec.enabled === false ? null : (cache.get(spec.path) ?? null)
     }
     return lookup
-    // `cache` is mutable module state; the subscription above drives rerenders,
-    // and enabledKey changing is what can alter which paths are read.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [specs, enabledKey, cache.size])
+  }, [specs, version])
 
   const loading = enabledPaths.some(
     (path) => !cache.has(path) && !failed.has(path),
