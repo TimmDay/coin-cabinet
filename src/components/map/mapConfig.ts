@@ -1,5 +1,6 @@
 import type { ExpressionSpecification } from "maplibre-gl"
-import { cssColor, glColor } from "./mapColors"
+import { cssColor, glColor, type MapColor } from "./mapColors"
+import { REALM_COLOUR_SLOT } from "./jurisdictions"
 
 export type EmpireLayerStyle = {
   fillColor: string
@@ -244,3 +245,46 @@ export const PROVINCE_LABEL_STYLES = {
   },
   minZoomLevel: 4,
 } as const
+
+/**
+ * Paints each Realm in its own identity colour, matched on the Jurisdiction's
+ * slug so a year with fewer realms never repaints the survivors.
+ */
+export const realmColourExpression = (): ExpressionSpecification => {
+  const slots: MapColor[] = [
+    "map-realm-1",
+    "map-realm-2",
+    "map-realm-3",
+    "map-realm-4",
+    "map-realm-5",
+  ]
+  const cases = Object.entries(REALM_COLOUR_SLOT).flatMap(([slug, slot]) => [
+    slug,
+    glColor(slots[slot - 1] as MapColor),
+  ])
+  return [
+    "match",
+    ["get", "slug"],
+    ...cases,
+    glColor("map-realm-1"),
+  ] as unknown as ExpressionSpecification
+}
+
+/** Realm names sit above province names and stay legible when zoomed out. */
+export const REALM_LABEL_STYLES = {
+  container: {
+    borderRadius: "4px",
+    padding: "2px 8px",
+    fontSize: "13px",
+    fontWeight: 700,
+    color: cssColor("map-ink"),
+    fontFamily: "var(--font-display)",
+    letterSpacing: "0.08em",
+    textAlign: "center" as const,
+    textTransform: "uppercase" as const,
+    whiteSpace: "nowrap" as const,
+    pointerEvents: "none" as const,
+    textShadow:
+      "0 1px 0 rgba(255,255,255,0.45), 0 -1px 0 rgba(255,255,255,0.45), 1px 0 0 rgba(255,255,255,0.45), -1px 0 0 rgba(255,255,255,0.45)",
+  },
+}

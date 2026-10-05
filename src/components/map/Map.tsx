@@ -20,7 +20,12 @@ import {
   useMapConfiguration,
 } from "./hooks"
 import type { GeoJsonLayerSpec } from "./hooks"
-import { boundsOf, resolveAtYear, type Tier } from "./jurisdictions"
+import {
+  boundsOf,
+  labelPointOf,
+  resolveAtYear,
+  type Tier,
+} from "./jurisdictions"
 import {
   MAP_BOUNDS_LNGLAT,
   MAP_PAN_BOUNDS_LNGLAT,
@@ -31,6 +36,8 @@ import {
   createEmpireLayerConfig,
   fadeOutWithZoom,
   OVERLAY_FADE_ZOOM,
+  realmColourExpression,
+  REALM_LABEL_STYLES,
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
 import { markerPopup, type CustomMapMarker } from "./mapMarkers"
@@ -285,6 +292,30 @@ export const Map: React.FC<MapProps> = ({
         : null,
     [corpus, selectedYear, tier],
   )
+
+  // Built after mount: glColor reads the page's computed styles.
+  const realmColour = useMemo(
+    () => (showsYear ? realmColourExpression() : null),
+    [showsYear],
+  )
+
+  /**
+   * Realm names. Not decoration: the identity palette's CVD separation sits in
+   * the band that is only legal alongside secondary encoding, and its contrast
+   * over the map's land is under 3:1. The labels are what discharge both.
+   */
+  const realmLabels = useMemo(() => {
+    if (!resolution) return []
+    return resolution.jurisdictions
+      .filter((j) => j.tier === "realm")
+      .map((j) => {
+        const point = labelPointOf(j.feature)
+        return point ? { name: j.name, lng: point[0], lat: point[1] } : null
+      })
+      .filter((label): label is { name: string; lng: number; lat: number } =>
+        Boolean(label),
+      )
+  }, [resolution])
 
   const jurisdictionsGeoJSON = useMemo<GeoJSON.FeatureCollection | null>(() => {
     if (!resolution || resolution.jurisdictions.length === 0) return null
@@ -631,8 +662,8 @@ export const Map: React.FC<MapProps> = ({
                     type="fill"
                     maxzoom={OVERLAY_FADE_ZOOM.to}
                     paint={{
-                      "fill-color": provinces.fillColor,
-                      "fill-opacity": fadeOutWithZoom(provinces.fillOpacity),
+                      "fill-color": realmColour ?? provinces.fillColor,
+                      "fill-opacity": fadeOutWithZoom(0.22),
                     }}
                   />
                   <Layer
@@ -640,9 +671,9 @@ export const Map: React.FC<MapProps> = ({
                     type="line"
                     maxzoom={OVERLAY_FADE_ZOOM.to}
                     paint={{
-                      "line-color": provinces.lineColor,
-                      "line-width": provinces.lineWidth,
-                      "line-opacity": fadeOutWithZoom(provinces.lineOpacity),
+                      "line-color": realmColour ?? provinces.lineColor,
+                      "line-width": 2,
+                      "line-opacity": fadeOutWithZoom(0.9),
                     }}
                   />
                 </Source>
@@ -677,6 +708,19 @@ export const Map: React.FC<MapProps> = ({
                   />
                 </Source>
               )}
+
+              {/* Realm names: the palette's secondary encoding, not decoration */}
+              {currentZoom < OVERLAY_FADE_ZOOM.to &&
+                realmLabels.map((label) => (
+                  <Marker
+                    key={`realm-${label.name}`}
+                    longitude={label.lng}
+                    latitude={label.lat}
+                    anchor="center"
+                  >
+                    <div style={REALM_LABEL_STYLES.container}>{label.name}</div>
+                  </Marker>
+                ))}
 
               {/* Province Labels */}
               {showProvinceLabels &&

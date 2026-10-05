@@ -256,3 +256,101 @@ export function boundsOf(
 
   return west === Infinity ? null : [west, south, east, north]
 }
+
+/**
+ * Which identity colour a Jurisdiction wears, as a slot number 1-5 matching
+ * the `--color-map-realm-N` tokens.
+ *
+ * Colour follows the entity, never its position in the list, so a year with
+ * fewer realms never repaints the survivors. Five slots cover ten realms
+ * because the invariant that matters is narrower than "all distinct": no two
+ * realms sharing a slot are ever on screen in the same year. The Roman
+ * mainline keeps one slot throughout, so the thread stays readable as it
+ * passes from Republic to Empire to West.
+ *
+ * The palette is Okabe-Ito, validated against the map's land surface. Its CVD
+ * separation sits in the band that is only legal with secondary encoding,
+ * which is why realms are always drawn with their names.
+ */
+export const REALM_COLOUR_SLOT: Record<string, 1 | 2 | 3 | 4 | 5> = {
+  // The Roman mainline, never concurrent with itself.
+  "roman-republic": 2,
+  "roman-empire": 2,
+  "western-roman-empire": 2,
+  // The east, running 395 to 1453 and concurrent with everything after it.
+  "eastern-roman-empire": 1,
+  // The third-century breakaways, concurrent with the Empire and each other.
+  "gallic-empire": 3,
+  "palmyrene-empire": 4,
+  // The post-1204 successors, concurrent with the east and each other.
+  "latin-empire": 2,
+  "nicaean-empire": 3,
+  "empire-of-trebizond": 4,
+  "despotate-of-epirus": 5,
+}
+
+export function colourSlotOf(slug: string): 1 | 2 | 3 | 4 | 5 {
+  return REALM_COLOUR_SLOT[slug] ?? 1
+}
+
+/**
+ * Where a Jurisdiction's name should sit: the centroid of its largest ring.
+ *
+ * The centroid of the whole feature would drift into the sea for anything
+ * crescent-shaped around the Mediterranean, and the centre of the bounding
+ * box is worse again.
+ */
+export function labelPointOf(
+  feature: JurisdictionFeature,
+): [number, number] | null {
+  const geometry = feature.geometry
+  if (!geometry || !("coordinates" in geometry)) return null
+
+  let bestRing: number[][] | null = null
+  let bestArea = 0
+
+  const considerRing = (ring: unknown): void => {
+    if (!Array.isArray(ring) || ring.length < 3) return
+    const points = ring as number[][]
+    if (typeof points[0]?.[0] !== "number") return
+
+    let area = 0
+    for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+      const a = points[j]
+      const b = points[i]
+      if (!a || !b) continue
+      area += (a[0] ?? 0) * (b[1] ?? 0) - (b[0] ?? 0) * (a[1] ?? 0)
+    }
+    area = Math.abs(area / 2)
+    if (area > bestArea) {
+      bestArea = area
+      bestRing = points
+    }
+  }
+
+  const walk = (node: unknown, depth: number): void => {
+    if (!Array.isArray(node)) return
+    // A ring is the level whose children are [lng, lat] pairs.
+    if (
+      Array.isArray(node[0]) &&
+      typeof (node[0] as number[])[0] === "number"
+    ) {
+      considerRing(node)
+      return
+    }
+    if (depth > 4) return
+    for (const child of node) walk(child, depth + 1)
+  }
+
+  walk(geometry.coordinates, 0)
+  if (!bestRing) return null
+
+  const ring = bestRing as number[][]
+  let lngSum = 0
+  let latSum = 0
+  for (const point of ring) {
+    lngSum += point[0] ?? 0
+    latSum += point[1] ?? 0
+  }
+  return [lngSum / ring.length, latSum / ring.length]
+}

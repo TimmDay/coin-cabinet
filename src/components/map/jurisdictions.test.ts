@@ -3,6 +3,10 @@ import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 import {
   changeYears,
+  colourSlotOf,
+  labelPointOf,
+  REALM_COLOUR_SLOT,
+  SLIDER_START,
   formatYear,
   joinList,
   resolveAtYear,
@@ -377,5 +381,127 @@ describe("against the committed Realm Tier corpus", () => {
 
   it("treats everything as Attested, since Coverage spans the slider", () => {
     expect(resolveAtYear(realCorpus, 800).provenance.anyInferred).toBe(false)
+  })
+})
+
+describe("realm identity colours", () => {
+  it("assigns every Realm in the committed corpus a slot", () => {
+    const dataDir = join(process.cwd(), "public", "data", "jurisdictions")
+    const features = (
+      JSON.parse(
+        readFileSync(join(dataDir, "realms.geojson"), "utf8"),
+      ) as GeoJSON.FeatureCollection
+    ).features as JurisdictionFeature[]
+
+    for (const slug of new Set(features.map((f) => f.properties.slug))) {
+      expect(REALM_COLOUR_SLOT[slug]).toBeDefined()
+    }
+  })
+
+  // Five tokens serve ten realms, which is only safe because realms sharing a
+  // token never appear in the same year. That is an invariant of the data, not
+  // of the palette, so the data is what has to prove it.
+  it("never puts two Realms of the same colour on screen together", () => {
+    const dataDir = join(process.cwd(), "public", "data", "jurisdictions")
+    const realCorpus: Corpus = {
+      features: (
+        JSON.parse(
+          readFileSync(join(dataDir, "realms.geojson"), "utf8"),
+        ) as GeoJSON.FeatureCollection
+      ).features as JurisdictionFeature[],
+      sources: JSON.parse(
+        readFileSync(join(dataDir, "sources.json"), "utf8"),
+      ) as Record<string, never>,
+    }
+
+    const clashes: string[] = []
+    for (let year = SLIDER_START; year <= SLIDER_END; year++) {
+      const drawn = resolveAtYear(realCorpus, year, "realm").jurisdictions
+      const bySlot = new Map<number, string>()
+      for (const j of drawn) {
+        const slot = colourSlotOf(j.slug)
+        const held = bySlot.get(slot)
+        if (held && held !== j.slug) {
+          clashes.push(
+            `${formatYear(year)}: ${held} and ${j.slug} share slot ${slot}`,
+          )
+        }
+        bySlot.set(slot, j.slug)
+      }
+    }
+
+    expect(clashes.slice(0, 5)).toEqual([])
+  })
+
+  it("keeps the Roman mainline on one colour as it passes between entities", () => {
+    expect(colourSlotOf("roman-republic")).toBe(colourSlotOf("roman-empire"))
+    expect(colourSlotOf("roman-empire")).toBe(
+      colourSlotOf("western-roman-empire"),
+    )
+  })
+
+  it("falls back rather than throwing for an unknown slug", () => {
+    expect(colourSlotOf("not-a-realm")).toBe(1)
+  })
+})
+
+describe("labelPointOf", () => {
+  it("returns the centroid of the largest ring, ignoring small islands", () => {
+    const feature: JurisdictionFeature = {
+      type: "Feature",
+      geometry: {
+        type: "MultiPolygon",
+        coordinates: [
+          // A big square around (10, 10).
+          [
+            [
+              [0, 0],
+              [20, 0],
+              [20, 20],
+              [0, 20],
+              [0, 0],
+            ],
+          ],
+          // A tiny island far away that must not drag the label off.
+          [
+            [
+              [100, 100],
+              [101, 100],
+              [101, 101],
+              [100, 101],
+              [100, 100],
+            ],
+          ],
+        ],
+      },
+      properties: {
+        slug: "x",
+        name: "X",
+        tier: "realm",
+        kind: "realm",
+        source: "src",
+        basisYear: 0,
+        segmentStart: 0,
+        segmentEnd: 1,
+        spanStart: 0,
+        spanEnd: 1,
+      },
+    }
+    const point = labelPointOf(feature)
+    expect(point?.[0]).toBeGreaterThan(5)
+    expect(point?.[0]).toBeLessThan(15)
+    expect(point?.[1]).toBeGreaterThan(5)
+    expect(point?.[1]).toBeLessThan(15)
+  })
+
+  it("gives every drawn Realm somewhere to put its name", () => {
+    const dataDir = join(process.cwd(), "public", "data", "jurisdictions")
+    const features = (
+      JSON.parse(
+        readFileSync(join(dataDir, "realms.geojson"), "utf8"),
+      ) as GeoJSON.FeatureCollection
+    ).features as JurisdictionFeature[]
+
+    expect(features.filter((f) => labelPointOf(f) === null)).toHaveLength(0)
   })
 })
