@@ -128,7 +128,11 @@ export type MapProps = {
   tier?: Tier
   /** Receives a function that fits the view to what is currently drawn. */
   onFitExtent?: (fit: () => void) => void
-  /** Provinces to draw; all of them by default */
+  /**
+   * Provinces to draw. Omitted means all of them: the Jurisdiction layer must
+   * not be filtered against a list that predates it, or names it does not
+   * recognise (the regiones, Alpes Graiae) would silently vanish.
+   */
   selectedProvinces?: string[]
   /** Show province labels */
   showProvinceLabels?: boolean
@@ -160,7 +164,7 @@ export const Map: React.FC<MapProps> = ({
   selectedYear,
   tier,
   onFitExtent,
-  selectedProvinces = ROMAN_PROVINCES,
+  selectedProvinces,
   showProvinceLabels = true,
   highlightMint,
   showMintMarkers = true,
@@ -331,7 +335,10 @@ export const Map: React.FC<MapProps> = ({
     // so the selection narrows what the year already resolved.
     const features = resolution.jurisdictions
       .filter(
-        (j) => j.tier !== "province" || selectedProvinces.includes(j.name),
+        (j) =>
+          !selectedProvinces ||
+          j.tier !== "province" ||
+          selectedProvinces.includes(j.name),
       )
       // `attested` has to reach MapLibre as a property: a reconstruction is
       // drawn with a broken outline, and dasharray cannot be data-driven, so
@@ -367,10 +374,11 @@ export const Map: React.FC<MapProps> = ({
     if (!provincesLabelsData) return []
 
     // Show labels only for selected provinces
+    const allowed = selectedProvinces ?? ROMAN_PROVINCES
     return provincesLabelsData.features
       .filter((feature) => {
         const provinceName = feature.properties?.name as string
-        return selectedProvinces.includes(provinceName)
+        return allowed.includes(provinceName)
       })
       .map((feature) => {
         const name = feature.properties?.name as string
@@ -390,9 +398,10 @@ export const Map: React.FC<MapProps> = ({
   const filteredProvincesGeoJSON = useMemo(() => {
     if (!provincesData) return null
 
+    const allowed = selectedProvinces ?? ROMAN_PROVINCES
     const filteredFeatures = provincesData.features.filter((feature) => {
       const provinceName = feature.properties?.name as string
-      return selectedProvinces.includes(provinceName)
+      return allowed.includes(provinceName)
     })
 
     return {

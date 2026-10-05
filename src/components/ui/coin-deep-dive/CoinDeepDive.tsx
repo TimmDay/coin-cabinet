@@ -136,6 +136,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
               eventZoomLevel={6}
               additionalMarkers={coinMap.markers}
               showDefaultMintMarkers={false}
+              selectedYear={coinMap.selectedYear}
               mapProps={{
                 height: "400px",
               }}
@@ -149,6 +150,12 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                 customMarkers={coinMap.markers}
                 height="400px"
                 desktopHeight={MAP_HEIGHT_DESKTOP}
+                {...(coinMap.selectedYear !== null
+                  ? {
+                      selectedYear: coinMap.selectedYear,
+                      tier: "province" as const,
+                    }
+                  : {})}
               />
             </div>
           )}

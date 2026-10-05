@@ -29,9 +29,36 @@ export type CoinMapReference = {
  * On the timeline map the strip supplies the mint and find pins itself, so
  * `markers` there leaves them out.
  */
-export type CoinMap =
+export type CoinMap = (
   | { kind: "timeline"; timeline: TimelineEvents; markers: CustomMapMarker[] }
   | { kind: "markers"; markers: CustomMapMarker[] }
+) & {
+  /**
+   * The year the map draws its Jurisdictions at, or null when the coin has no
+   * recorded minting year. See `selectedYearForCoin`.
+   */
+  selectedYear: number | null
+}
+
+/**
+ * Which year a coin's map should show: the coin's own earliest minting year.
+ *
+ * A range collapses to its earliest year so the behaviour is predictable
+ * rather than arbitrary. Null means no Jurisdiction layer at all, matching
+ * `createCoinMintingEvent`, which likewise produces nothing without a year:
+ * drawing some other year's geography beside a coin would be worse than
+ * drawing none.
+ *
+ * The mint's own operating period is deliberately not used. That is when the
+ * mint was open, not when this coin was struck.
+ */
+export function selectedYearForCoin(coin: {
+  mint_year_earliest?: number | null
+}): number | null {
+  return typeof coin.mint_year_earliest === "number"
+    ? coin.mint_year_earliest
+    : null
+}
 
 /**
  * The artifacts tied to this coin: the ones in its own supporting images
@@ -218,9 +245,12 @@ export function buildCoinMap(
     ...artifactMarkers(coin, artifacts, places),
   ]
 
+  const selectedYear = selectedYearForCoin(coin)
+
   const timeline = coinTimeline(coin, timelines, mints)
-  if (timeline) return { kind: "timeline", timeline, markers: related }
+  if (timeline)
+    return { kind: "timeline", timeline, markers: related, selectedYear }
 
   const markers = [...mintMarker(coin, mints), ...related, ...foundMarker(coin)]
-  return markers.length > 0 ? { kind: "markers", markers } : null
+  return markers.length > 0 ? { kind: "markers", markers, selectedYear } : null
 }
