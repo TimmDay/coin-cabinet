@@ -333,7 +333,13 @@ export const Map: React.FC<MapProps> = ({
       .filter(
         (j) => j.tier !== "province" || selectedProvinces.includes(j.name),
       )
-      .map((j) => j.feature)
+      // `attested` has to reach MapLibre as a property: a reconstruction is
+      // drawn with a broken outline, and dasharray cannot be data-driven, so
+      // the two cases are split across two line layers filtered on this.
+      .map((j) => ({
+        ...j.feature,
+        properties: { ...j.feature.properties, attested: j.attested },
+      }))
     if (features.length === 0) return null
     return { type: "FeatureCollection", features }
   }, [resolution, selectedProvinces])
@@ -676,17 +682,37 @@ export const Map: React.FC<MapProps> = ({
                     maxzoom={OVERLAY_FADE_ZOOM.to}
                     paint={{
                       "fill-color": jurisdictionColour ?? provinces.fillColor,
-                      "fill-opacity": fadeOutWithZoom(0.22),
+                      "fill-opacity": fadeOutWithZoom([
+                        "case",
+                        ["==", ["get", "attested"], false],
+                        0.13,
+                        0.22,
+                      ] as unknown as number),
                     }}
                   />
                   <Layer
                     id="jurisdictions-line"
                     type="line"
                     maxzoom={OVERLAY_FADE_ZOOM.to}
+                    filter={["==", ["get", "attested"], true]}
                     paint={{
                       "line-color": jurisdictionColour ?? provinces.lineColor,
                       "line-width": 2,
                       "line-opacity": fadeOutWithZoom(0.9),
+                    }}
+                  />
+                  {/* A reconstruction gets a broken outline, so uncertainty is
+                      visible without having to read anything. */}
+                  <Layer
+                    id="jurisdictions-line-inferred"
+                    type="line"
+                    maxzoom={OVERLAY_FADE_ZOOM.to}
+                    filter={["==", ["get", "attested"], false]}
+                    paint={{
+                      "line-color": jurisdictionColour ?? provinces.lineColor,
+                      "line-width": 1.5,
+                      "line-opacity": fadeOutWithZoom(0.75),
+                      "line-dasharray": [3, 3],
                     }}
                   />
                 </Source>

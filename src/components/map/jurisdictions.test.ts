@@ -505,3 +505,123 @@ describe("labelPointOf", () => {
     expect(features.filter((f) => labelPointOf(f) === null)).toHaveLength(0)
   })
 })
+
+describe("against the committed Province Tier corpus", () => {
+  const dataDir = join(process.cwd(), "public", "data", "jurisdictions")
+  const read = (file: string) =>
+    (
+      JSON.parse(
+        readFileSync(join(dataDir, file), "utf8"),
+      ) as GeoJSON.FeatureCollection
+    ).features as JurisdictionFeature[]
+
+  const full: Corpus = {
+    features: [...read("realms.geojson"), ...read("provinces.geojson")],
+    sources: JSON.parse(
+      readFileSync(join(dataDir, "sources.json"), "utf8"),
+    ) as Record<string, never>,
+  }
+
+  // Sicilia's real Span opens in 241 BC, before the slider does, so the
+  // pipeline clamps it to the window's start rather than leaving it
+  // unreachable.
+  it("has Sicilia from the slider's first year, and little else", () => {
+    const names = resolveAtYear(
+      full,
+      SLIDER_START,
+      "province",
+    ).jurisdictions.map((j) => j.name)
+    expect(names).toContain("Sicilia")
+    expect(names).not.toContain("Dacia")
+    expect(names).not.toContain("Hispania Citerior")
+  })
+
+  it("adds Hispania Citerior once its Span opens in 197 BC", () => {
+    const has = (year: number) =>
+      resolveAtYear(full, year, "province").jurisdictions.some(
+        (j) => j.name === "Hispania Citerior",
+      )
+    expect(has(-198)).toBe(false)
+    expect(has(-196)).toBe(true)
+  })
+
+  // The bug this feature exists to fix.
+  it("does not draw Dacia or Arabia around a Republican coin", () => {
+    const names = resolveAtYear(full, -100, "province").jurisdictions.map(
+      (j) => j.name,
+    )
+    expect(names).not.toContain("Dacia")
+    expect(names).not.toContain("Arabia")
+    expect(names).not.toContain("Germania Inferior")
+  })
+
+  it("draws Dacia only across its attested Span", () => {
+    const has = (year: number) =>
+      resolveAtYear(full, year, "province").jurisdictions.some(
+        (j) => j.name === "Dacia",
+      )
+    expect(has(105)).toBe(false)
+    expect(has(150)).toBe(true)
+    expect(has(300)).toBe(false)
+  })
+
+  it("replaces Iudaea with Syria Palaestina at the rename", () => {
+    const namesAt = (year: number) =>
+      resolveAtYear(full, year, "province").jurisdictions.map((j) => j.name)
+    expect(namesAt(100)).toContain("Iudaea")
+    expect(namesAt(100)).not.toContain("Syria Palaestina")
+    expect(namesAt(200)).toContain("Syria Palaestina")
+    expect(namesAt(200)).not.toContain("Iudaea")
+  })
+
+  it("reports geometry as Inferred outside the snapshot's Basis window", () => {
+    // Every province shape is an AD 117-ish snapshot, so a Republican view is
+    // a reconstruction however well attested the Span is.
+    const republican = resolveAtYear(full, -100, "province")
+    expect(republican.jurisdictions.length).toBeGreaterThan(0)
+    expect(republican.jurisdictions.every((j) => !j.attested)).toBe(true)
+    expect(republican.provenance.anyInferred).toBe(true)
+    expect(republican.provenance.sentence).toMatch(
+      /Reconstructed for this year/,
+    )
+  })
+
+  it("names the Province Tier's Sources", () => {
+    const { provenance } = resolveAtYear(full, 117, "province")
+    expect(provenance.sourceKeys).toContain("pazout")
+    expect(provenance.sentence).toMatch(/Boundaries after/)
+  })
+
+  it("leaves the Province Tier unavailable deep into the Byzantine range", () => {
+    const { availableTiers } = resolveAtYear(full, 900)
+    expect(availableTiers).toContain("realm")
+    expect(availableTiers).not.toContain("province")
+  })
+
+  it("keeps Roma on the City Tier", () => {
+    const city = resolveAtYear(full, 117, "city").jurisdictions
+    expect(city.map((j) => j.name)).toEqual(["Roma"])
+  })
+
+  it("marks the regiones as belonging to no Tier of their own", () => {
+    const regiones = full.features.filter((f) => f.properties.kind === "regio")
+    expect(regiones).toHaveLength(11)
+    expect(regiones.every((f) => f.properties.tier === "province")).toBe(true)
+  })
+
+  it("rests nothing on a placeholder Span without reporting it as Inferred", () => {
+    const placeheld = full.features.filter(
+      (f) => f.properties.spanSource === "placeholder",
+    )
+    expect(placeheld.length).toBeGreaterThan(0)
+    for (const feature of placeheld) {
+      const year = feature.properties.spanStart + 1
+      const drawn = resolveAtYear(
+        full,
+        year,
+        feature.properties.tier,
+      ).jurisdictions.find((j) => j.slug === feature.properties.slug)
+      expect(drawn?.attested).toBe(false)
+    }
+  })
+})

@@ -9,6 +9,7 @@ import {
   type Tier,
 } from "~/components/map/jurisdictions"
 import { MapControls } from "~/components/map/MapControls"
+import { ProvenanceNote } from "~/components/map/ProvenanceNote"
 import { TierControl } from "~/components/map/TierControl"
 import { YearSlider } from "~/components/map/YearSlider"
 import { NotFound404 } from "~/components/ui/NotFound404"
@@ -49,9 +50,11 @@ export default function MapPage() {
   const corpus = useJurisdictionCorpus()
   const ticks = useMemo(() => (corpus ? changeYears(corpus) : []), [corpus])
 
+  // Passing the Tier gives a provenance sentence about what is actually drawn,
+  // while availableTiers still reflects every Tier with content that year.
   const resolution = useMemo(
-    () => (corpus ? resolveAtYear(corpus, selectedYear) : null),
-    [corpus, selectedYear],
+    () => (corpus ? resolveAtYear(corpus, selectedYear, tier) : null),
+    [corpus, selectedYear, tier],
   )
 
   /** Every province name the corpus can draw, for the selection control. */
@@ -111,11 +114,16 @@ export default function MapPage() {
           changeYears={ticks}
           onFitExtent={() => fitRef.current?.()}
         />
-        <div className="mt-2">
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
           <TierControl
             value={tier}
             onChange={setTier}
             available={resolution?.availableTiers ?? []}
+          />
+          <ProvenanceNote
+            provenance={resolution?.provenance ?? null}
+            corpus={corpus}
+            className="max-w-prose"
           />
         </div>
       </div>
