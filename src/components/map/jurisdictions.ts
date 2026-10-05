@@ -225,3 +225,34 @@ export function changeYears(corpus: Corpus, tier?: Tier): number[] {
 
   return [...years].sort((a, b) => a - b)
 }
+
+/** [west, south, east, north] covering every drawn Jurisdiction, or null. */
+export function boundsOf(
+  jurisdictions: ResolvedJurisdiction[],
+): [number, number, number, number] | null {
+  let west = Infinity
+  let south = Infinity
+  let east = -Infinity
+  let north = -Infinity
+
+  const visit = (coords: unknown): void => {
+    if (!Array.isArray(coords)) return
+    if (typeof coords[0] === "number" && typeof coords[1] === "number") {
+      const [lng, lat] = coords as [number, number]
+      west = Math.min(west, lng)
+      east = Math.max(east, lng)
+      south = Math.min(south, lat)
+      north = Math.max(north, lat)
+      return
+    }
+    for (const child of coords) visit(child)
+  }
+
+  for (const { feature } of jurisdictions) {
+    if (feature.geometry && "coordinates" in feature.geometry) {
+      visit(feature.geometry.coordinates)
+    }
+  }
+
+  return west === Infinity ? null : [west, south, east, north]
+}

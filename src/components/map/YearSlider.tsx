@@ -1,0 +1,113 @@
+"use client"
+
+import { useMemo } from "react"
+import { formatYear, SLIDER_END, SLIDER_START } from "./jurisdictions"
+
+type YearSliderProps = {
+  /** The year the map is currently showing. */
+  value: number
+  onChange: (year: number) => void
+  /**
+   * Years in which something begins or ends. Drawn as ticks so a visitor can
+   * see that long flat stretches genuinely held steady, rather than reading
+   * an unmoving map as a broken control.
+   */
+  changeYears?: number[]
+  /** Fits the map to what is currently drawn. Hidden when not supplied. */
+  onFitExtent?: () => void
+  className?: string
+}
+
+/** Where a year sits along the track, 0 to 1. */
+function positionOf(year: number): number {
+  return (year - SLIDER_START) / (SLIDER_END - SLIDER_START)
+}
+
+const DECADE_MARKS = [-200, 1, 300, 600, 900, 1200, 1453]
+
+export function YearSlider({
+  value,
+  onChange,
+  changeYears = [],
+  onFitExtent,
+  className = "",
+}: YearSliderProps) {
+  // Ticks crowd where history was busy, which is the point, but duplicates at
+  // the same pixel are wasted DOM. Round to a tenth of a percent.
+  const tickPositions = useMemo(() => {
+    const seen = new Set<number>()
+    for (const year of changeYears) {
+      if (year < SLIDER_START || year > SLIDER_END) continue
+      seen.add(Math.round(positionOf(year) * 1000))
+    }
+    return [...seen].map((thousandth) => thousandth / 10)
+  }, [changeYears])
+
+  return (
+    <div
+      className={`border-paper-edge bg-paper rounded-lg border p-4 shadow-sm ${className}`}
+    >
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+        <div className="flex items-baseline gap-3">
+          <label
+            htmlFor="year-slider"
+            className="text-paper-ink-muted text-xs tracking-wide uppercase"
+          >
+            Year
+          </label>
+          <output
+            htmlFor="year-slider"
+            className="text-paper-ink font-display text-xl tabular-nums"
+          >
+            {formatYear(value)}
+          </output>
+        </div>
+
+        {onFitExtent && (
+          <button
+            type="button"
+            onClick={onFitExtent}
+            className="border-paper-edge text-paper-ink-muted hover:text-paper-ink rounded border px-2 py-1 text-xs"
+          >
+            Fit to extent
+          </button>
+        )}
+      </div>
+
+      <div className="relative">
+        {/* Ticks sit behind the input. The track is inset by roughly half a
+            thumb width at each end, so positions are nudged to match. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-3"
+        >
+          {tickPositions.map((percent) => (
+            <span
+              key={percent}
+              className="bg-paper-edge absolute top-0 h-2 w-px"
+              style={{ left: `calc(${percent}% * 0.98 + 1%)` }}
+            />
+          ))}
+        </div>
+
+        <input
+          id="year-slider"
+          type="range"
+          min={SLIDER_START}
+          max={SLIDER_END}
+          step={1}
+          value={value}
+          onChange={(event) => onChange(Number(event.target.value))}
+          className="accent-map-label relative mt-3 w-full cursor-pointer"
+          aria-valuetext={formatYear(value)}
+        />
+      </div>
+
+      <div className="text-paper-ink-muted mt-1 flex justify-between text-[10px] tabular-nums">
+        {DECADE_MARKS.map((year) => (
+          <span key={year}>{formatYear(year)}</span>
+        ))}
+      </div>
+    </div>
+  )
+}

@@ -14,8 +14,13 @@ import { useMints } from "~/api/mints"
 import { MAP_HEIGHT } from "~/lib/constants"
 import { ROMAN_PROVINCES } from "./constants/provinces"
 import { parseLatLng, parseZoom, ROME } from "./coordinates"
-import { useGeoJsonLayers, useMapConfiguration } from "./hooks"
+import {
+  useGeoJsonLayers,
+  useJurisdictionCorpus,
+  useMapConfiguration,
+} from "./hooks"
 import type { GeoJsonLayerSpec } from "./hooks"
+import { boundsOf, resolveAtYear, type Tier } from "./jurisdictions"
 import {
   MAP_BOUNDS_LNGLAT,
   MAP_PAN_BOUNDS_LNGLAT,
@@ -107,6 +112,15 @@ export type MapProps = {
   showAD117?: boolean
   /** Show AD 200 empire extent layer */
   showAD200?: boolean
+  /**
+   * The year to draw. When set, the map shows the Jurisdictions of that year
+   * instead of the always-on province layer.
+   */
+  selectedYear?: number
+  /** Which Tier to draw at the Selected year; all Tiers when omitted. */
+  tier?: Tier
+  /** Receives a function that fits the view to what is currently drawn. */
+  onFitExtent?: (fit: () => void) => void
   /** Provinces to draw; all of them by default */
   selectedProvinces?: string[]
   /** Show province labels */
@@ -136,6 +150,9 @@ export const Map: React.FC<MapProps> = ({
   showAD69 = false,
   showAD117 = false,
   showAD200 = false,
+  selectedYear,
+  tier,
+  onFitExtent,
   selectedProvinces = ROMAN_PROVINCES,
   showProvinceLabels = true,
   highlightMint,
@@ -252,8 +269,48 @@ export const Map: React.FC<MapProps> = ({
   )
 
   const { layers } = useGeoJsonLayers(layerSpecs)
-  const provincesData = layers.provinces
-  const provincesLabelsData = layers.provinceLabels
+
+  // The year-resolved layer and the legacy always-on province layer are two
+  // answers to the same question, so a map showing a year hides the old one.
+  const showsYear = selectedYear !== undefined
+  const provincesData = showsYear ? null : layers.provinces
+  const provincesLabelsData = showsYear ? null : layers.provinceLabels
+
+  const corpus = useJurisdictionCorpus(showsYear)
+
+  const resolution = useMemo(
+    () =>
+      corpus && selectedYear !== undefined
+        ? resolveAtYear(corpus, selectedYear, tier)
+        : null,
+    [corpus, selectedYear, tier],
+  )
+
+  const jurisdictionsGeoJSON = useMemo<GeoJSON.FeatureCollection | null>(() => {
+    if (!resolution || resolution.jurisdictions.length === 0) return null
+    return {
+      type: "FeatureCollection",
+      features: resolution.jurisdictions.map((j) => j.feature),
+    }
+  }, [resolution])
+
+  // Framing is the visitor's business: the camera never moves on its own as
+  // the year changes, so this is the escape hatch when they've panned away.
+  const fitExtent = useCallback(() => {
+    const bounds = resolution ? boundsOf(resolution.jurisdictions) : null
+    if (!bounds) return
+    mapRef.current?.fitBounds(
+      [
+        [bounds[0], bounds[1]],
+        [bounds[2], bounds[3]],
+      ],
+      { padding: 40, duration: 600 },
+    )
+  }, [resolution])
+
+  useEffect(() => {
+    onFitExtent?.(fitExtent)
+  }, [onFitExtent, fitExtent])
 
   // Get province labels from labels data
   const provinceLabels = useMemo(() => {
@@ -299,6 +356,9 @@ export const Map: React.FC<MapProps> = ({
   // nothing to hit-test against.
   const interactiveLayerIds = useMemo(() => {
     const ids: string[] = []
+    if (jurisdictionsGeoJSON) {
+      ids.push("jurisdictions-fill")
+    }
     if (filteredProvincesGeoJSON) {
       ids.push("provinces-fill")
     }
@@ -308,7 +368,12 @@ export const Map: React.FC<MapProps> = ({
       }
     }
     return ids
-  }, [filteredProvincesGeoJSON, empireLayerConfig, layers])
+  }, [
+    jurisdictionsGeoJSON,
+    filteredProvincesGeoJSON,
+    empireLayerConfig,
+    layers,
+  ])
 
   const handleMapClick = useCallback(
     (e: MapLayerMouseEvent) => {
@@ -553,6 +618,35 @@ export const Map: React.FC<MapProps> = ({
                   </Source>
                 )
               })}
+
+              {/* Jurisdictions at the Selected year */}
+              {jurisdictionsGeoJSON && (
+                <Source
+                  id="jurisdictions"
+                  type="geojson"
+                  data={jurisdictionsGeoJSON}
+                >
+                  <Layer
+                    id="jurisdictions-fill"
+                    type="fill"
+                    maxzoom={OVERLAY_FADE_ZOOM.to}
+                    paint={{
+                      "fill-color": provinces.fillColor,
+                      "fill-opacity": fadeOutWithZoom(provinces.fillOpacity),
+                    }}
+                  />
+                  <Layer
+                    id="jurisdictions-line"
+                    type="line"
+                    maxzoom={OVERLAY_FADE_ZOOM.to}
+                    paint={{
+                      "line-color": provinces.lineColor,
+                      "line-width": provinces.lineWidth,
+                      "line-opacity": fadeOutWithZoom(provinces.lineOpacity),
+                    }}
+                  />
+                </Source>
+              )}
 
               {/* Selected Provinces Layer */}
               {filteredProvincesGeoJSON && (

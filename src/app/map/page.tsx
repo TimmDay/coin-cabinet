@@ -1,9 +1,12 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import { useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { ROMAN_PROVINCES } from "~/components/map/constants/provinces"
+import { useJurisdictionCorpus } from "~/components/map/hooks"
+import { changeYears } from "~/components/map/jurisdictions"
 import { MapControls } from "~/components/map/MapControls"
+import { YearSlider } from "~/components/map/YearSlider"
 import { NotFound404 } from "~/components/ui/NotFound404"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 
@@ -18,10 +21,14 @@ const Map = dynamic(
   },
 )
 
+/** Opens on Trajan's empire: the most recognisable shape on the slider. */
+const INITIAL_YEAR = 117
+
 export default function MapPage() {
   const isDevMode = useTypedFeatureFlag("dev")
 
   // Map state
+  const [selectedYear, setSelectedYear] = useState(INITIAL_YEAR)
   const [showBC60, setShowBC60] = useState(false)
   const [showAD14, setShowAD14] = useState(false)
   const [showAD69, setShowAD69] = useState(false)
@@ -32,6 +39,16 @@ export default function MapPage() {
   ])
   const [showProvinceLabels, setShowProvinceLabels] = useState(true)
 
+  // Shared with the map through a module-level cache, so asking for it here
+  // costs no second fetch.
+  const corpus = useJurisdictionCorpus()
+  const ticks = useMemo(() => (corpus ? changeYears(corpus) : []), [corpus])
+
+  const fitRef = useRef<(() => void) | null>(null)
+  const receiveFit = useCallback((fit: () => void) => {
+    fitRef.current = fit
+  }, [])
+
   // Show 404-like message if feature flag is not enabled
   if (!isDevMode) {
     return <NotFound404 />
@@ -40,12 +57,14 @@ export default function MapPage() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Full-size Map Container */}
-      <div className="h-[calc(100vh-140px)] flex-shrink-0">
+      <div className="h-[calc(100vh-240px)] flex-shrink-0">
         <div className="h-full p-4 sm:p-6 lg:p-8">
           <div className="bg-paper h-full w-full overflow-hidden rounded-lg shadow-lg">
             <Map
               layout="fullscreen"
               height="100%"
+              selectedYear={selectedYear}
+              onFitExtent={receiveFit}
               showBC60={showBC60}
               showAD14={showAD14}
               showAD69={showAD69}
@@ -56,6 +75,15 @@ export default function MapPage() {
             />
           </div>
         </div>
+      </div>
+
+      <div className="flex-shrink-0 px-4 sm:px-6 lg:px-8">
+        <YearSlider
+          value={selectedYear}
+          onChange={setSelectedYear}
+          changeYears={ticks}
+          onFitExtent={() => fitRef.current?.()}
+        />
       </div>
 
       {/* Map Controls */}

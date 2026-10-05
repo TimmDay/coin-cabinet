@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 /**
  * One GeoJSON file the map may want. A layer is declared rather than
- * hardcoded, so adding a layer is a entry in a list rather than another
+ * hardcoded, so adding a layer is an entry in a list rather than another
  * bespoke fetch and another piece of state.
  */
 export type GeoJsonLayerSpec = {
@@ -30,24 +30,51 @@ type UseGeoJsonLayersResult = {
   error: string | null
 }
 
+// Module scope, not per hook instance: the year slider's corpus is wanted by
+// both the map and the controls beside it, and these files run to megabytes.
+// Caching per component would fetch each one once per consumer.
+const cache = new Map<string, GeoJSON.FeatureCollection>()
+const inFlight = new Map<string, Promise<void>>()
+const failed = new Map<string, string>()
+const subscribers = new Set<() => void>()
+
+function notify() {
+  for (const callback of subscribers) callback()
+}
+
+function load(path: string): Promise<void> {
+  const existing = inFlight.get(path)
+  if (existing) return existing
+
+  const request = (async () => {
+    try {
+      const response = await fetch(path)
+      if (!response.ok) throw new Error(`${path}: ${response.statusText}`)
+      cache.set(path, (await response.json()) as GeoJSON.FeatureCollection)
+    } catch (cause) {
+      console.error("Error loading map layer:", cause)
+      failed.set(
+        path,
+        cause instanceof Error ? cause.message : `Failed to load ${path}`,
+      )
+    } finally {
+      notify()
+    }
+  })()
+
+  inFlight.set(path, request)
+  return request
+}
+
 /**
- * Loads the declared GeoJSON layers, lazily and at most once each.
- *
- * Caching is by path rather than by key, so two keys pointing at the same file
- * share a single fetch. Pass a memoised `specs` array: it is read through a
- * primitive derived from the enabled paths, so an unstable array identity
- * won't refetch, but it will churn the memo.
+ * Loads the declared GeoJSON layers, lazily and at most once each across the
+ * whole page. A failed fetch is remembered, so a broken file is not retried
+ * on every render.
  */
 export const useGeoJsonLayers = (
   specs: GeoJsonLayerSpec[],
 ): UseGeoJsonLayersResult => {
-  const [data, setData] = useState<Record<string, GeoJSON.FeatureCollection>>(
-    {},
-  )
-  const [error, setError] = useState<string | null>(null)
-  // Paths already requested, successfully or not. A failed fetch stays here so
-  // a broken file is not retried on every render.
-  const attempted = useRef<Set<string>>(new Set())
+  const [, setVersion] = useState(0)
 
   const enabledPaths = useMemo(
     () =>
@@ -62,28 +89,16 @@ export const useGeoJsonLayers = (
   const enabledKey = enabledPaths.join("|")
 
   useEffect(() => {
-    const paths = enabledKey ? enabledKey.split("|") : []
+    const rerender = () => setVersion((v) => v + 1)
+    subscribers.add(rerender)
 
-    for (const path of paths) {
-      if (attempted.current.has(path)) continue
-      attempted.current.add(path)
+    for (const path of enabledKey ? enabledKey.split("|") : []) {
+      if (cache.has(path) || failed.has(path)) continue
+      void load(path)
+    }
 
-      void (async () => {
-        try {
-          const response = await fetch(path)
-          if (!response.ok) {
-            throw new Error(`${path}: ${response.statusText}`)
-          }
-          const collection =
-            (await response.json()) as GeoJSON.FeatureCollection
-          setData((prev) => ({ ...prev, [path]: collection }))
-        } catch (cause) {
-          console.error("Error loading map layer:", cause)
-          setError(
-            cause instanceof Error ? cause.message : `Failed to load ${path}`,
-          )
-        }
-      })()
+    return () => {
+      subscribers.delete(rerender)
     }
   }, [enabledKey])
 
@@ -91,12 +106,18 @@ export const useGeoJsonLayers = (
     const lookup: Record<string, GeoJSON.FeatureCollection | null> = {}
     for (const spec of specs) {
       lookup[spec.key] =
-        spec.enabled === false ? null : (data[spec.path] ?? null)
+        spec.enabled === false ? null : (cache.get(spec.path) ?? null)
     }
     return lookup
-  }, [specs, data])
+    // `cache` is mutable module state; the subscription above drives rerenders,
+    // and enabledKey changing is what can alter which paths are read.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [specs, enabledKey, cache.size])
 
-  const loading = enabledPaths.some((path) => !data[path])
+  const loading = enabledPaths.some(
+    (path) => !cache.has(path) && !failed.has(path),
+  )
+  const error = enabledPaths.map((path) => failed.get(path)).find(Boolean)
 
-  return { layers, loading, error }
+  return { layers, loading, error: error ?? null }
 }

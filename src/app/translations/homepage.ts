@@ -1,5 +1,6 @@
 // {quip1} etc. place an info icon that shows the matching quipN string.
 const text = {
+  what: `This site shows a collection of ancient coins. `,
   welcome: `I can hold a coin that someone else held 2000 years ago. 
   Someone who lived a different life, but not entirely different. We both held this coin. 
   They remind me that I am a blip on a timeline of people who are buying lunch at the market, getting through tough times.
