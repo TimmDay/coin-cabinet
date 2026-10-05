@@ -3,6 +3,7 @@ import type { Corpus, JurisdictionFeature, Source } from "../jurisdictions"
 import { useGeoJsonLayers, type GeoJsonLayerSpec } from "./useMapData"
 
 const REALMS = "/data/jurisdictions/realms.geojson"
+const PROVINCES = "/data/jurisdictions/provinces.geojson"
 const SOURCES = "/data/jurisdictions/sources.json"
 
 // The Source records are a plain object rather than a FeatureCollection, so
@@ -21,7 +22,10 @@ export const useJurisdictionCorpus = (enabled = true): Corpus | null => {
   )
 
   const specs = useMemo<GeoJsonLayerSpec[]>(
-    () => [{ key: "realms", path: REALMS, enabled }],
+    () => [
+      { key: "realms", path: REALMS, enabled },
+      { key: "provinces", path: PROVINCES, enabled },
+    ],
     [enabled],
   )
   const { layers } = useGeoJsonLayers(specs)
@@ -53,9 +57,18 @@ export const useJurisdictionCorpus = (enabled = true): Corpus | null => {
     }
   }, [enabled, sources])
 
+  // One corpus across every Tier: the resolver narrows by Tier itself, and a
+  // Tier control has to know which Tiers hold anything at the Selected year,
+  // which it cannot do from a partially loaded corpus.
   return useMemo(() => {
-    const realms = layers.realms
-    if (!realms || !sources) return null
-    return { features: realms.features as JurisdictionFeature[], sources }
-  }, [layers.realms, sources])
+    const { realms, provinces } = layers
+    if (!realms || !provinces || !sources) return null
+    return {
+      features: [
+        ...(realms.features as JurisdictionFeature[]),
+        ...(provinces.features as JurisdictionFeature[]),
+      ],
+      sources,
+    }
+  }, [layers.realms, layers.provinces, sources])
 }

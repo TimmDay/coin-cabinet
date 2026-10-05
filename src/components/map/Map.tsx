@@ -36,7 +36,7 @@ import {
   createEmpireLayerConfig,
   fadeOutWithZoom,
   OVERLAY_FADE_ZOOM,
-  realmColourExpression,
+  jurisdictionColourExpression,
   REALM_LABEL_STYLES,
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
@@ -294,8 +294,8 @@ export const Map: React.FC<MapProps> = ({
   )
 
   // Built after mount: glColor reads the page's computed styles.
-  const realmColour = useMemo(
-    () => (showsYear ? realmColourExpression() : null),
+  const jurisdictionColour = useMemo(
+    () => (showsYear ? jurisdictionColourExpression() : null),
     [showsYear],
   )
 
@@ -304,26 +304,39 @@ export const Map: React.FC<MapProps> = ({
    * the band that is only legal alongside secondary encoding, and its contrast
    * over the map's land is under 3:1. The labels are what discharge both.
    */
-  const realmLabels = useMemo(() => {
+  const jurisdictionLabels = useMemo(() => {
     if (!resolution) return []
     return resolution.jurisdictions
-      .filter((j) => j.tier === "realm")
       .map((j) => {
         const point = labelPointOf(j.feature)
-        return point ? { name: j.name, lng: point[0], lat: point[1] } : null
+        return point
+          ? { name: j.name, tier: j.tier, lng: point[0], lat: point[1] }
+          : null
       })
-      .filter((label): label is { name: string; lng: number; lat: number } =>
-        Boolean(label),
+      .filter(
+        (
+          label,
+        ): label is {
+          name: string
+          tier: Tier
+          lng: number
+          lat: number
+        } => Boolean(label),
       )
   }, [resolution])
 
   const jurisdictionsGeoJSON = useMemo<GeoJSON.FeatureCollection | null>(() => {
     if (!resolution || resolution.jurisdictions.length === 0) return null
-    return {
-      type: "FeatureCollection",
-      features: resolution.jurisdictions.map((j) => j.feature),
-    }
-  }, [resolution])
+    // Which Jurisdictions to show is a separate axis from which ones existed,
+    // so the selection narrows what the year already resolved.
+    const features = resolution.jurisdictions
+      .filter(
+        (j) => j.tier !== "province" || selectedProvinces.includes(j.name),
+      )
+      .map((j) => j.feature)
+    if (features.length === 0) return null
+    return { type: "FeatureCollection", features }
+  }, [resolution, selectedProvinces])
 
   // Framing is the visitor's business: the camera never moves on its own as
   // the year changes, so this is the escape hatch when they've panned away.
@@ -662,7 +675,7 @@ export const Map: React.FC<MapProps> = ({
                     type="fill"
                     maxzoom={OVERLAY_FADE_ZOOM.to}
                     paint={{
-                      "fill-color": realmColour ?? provinces.fillColor,
+                      "fill-color": jurisdictionColour ?? provinces.fillColor,
                       "fill-opacity": fadeOutWithZoom(0.22),
                     }}
                   />
@@ -671,7 +684,7 @@ export const Map: React.FC<MapProps> = ({
                     type="line"
                     maxzoom={OVERLAY_FADE_ZOOM.to}
                     paint={{
-                      "line-color": realmColour ?? provinces.lineColor,
+                      "line-color": jurisdictionColour ?? provinces.lineColor,
                       "line-width": 2,
                       "line-opacity": fadeOutWithZoom(0.9),
                     }}
@@ -709,16 +722,25 @@ export const Map: React.FC<MapProps> = ({
                 </Source>
               )}
 
-              {/* Realm names: the palette's secondary encoding, not decoration */}
+              {/* Jurisdiction names. For Realms these are the palette's
+                  secondary encoding, so they are required rather than optional. */}
               {currentZoom < OVERLAY_FADE_ZOOM.to &&
-                realmLabels.map((label) => (
+                jurisdictionLabels.map((label) => (
                   <Marker
-                    key={`realm-${label.name}`}
+                    key={`jurisdiction-${label.name}`}
                     longitude={label.lng}
                     latitude={label.lat}
                     anchor="center"
                   >
-                    <div style={REALM_LABEL_STYLES.container}>{label.name}</div>
+                    <div
+                      style={
+                        label.tier === "realm"
+                          ? REALM_LABEL_STYLES.container
+                          : PROVINCE_LABEL_STYLES.container
+                      }
+                    >
+                      {label.name}
+                    </div>
                   </Marker>
                 ))}
 

@@ -250,6 +250,17 @@ export const PROVINCE_LABEL_STYLES = {
  * Paints each Realm in its own identity colour, matched on the Jurisdiction's
  * slug so a year with fewer realms never repaints the survivors.
  */
+export const jurisdictionColourExpression = (): ExpressionSpecification =>
+  [
+    "match",
+    ["get", "tier"],
+    "realm",
+    realmColourExpression(),
+    "city",
+    glColor("map-province-line"),
+    glColor("map-province-fill"),
+  ] as unknown as ExpressionSpecification
+
 export const realmColourExpression = (): ExpressionSpecification => {
   const slots: MapColor[] = [
     "map-realm-1",

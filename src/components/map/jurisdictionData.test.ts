@@ -132,9 +132,7 @@ describe("sources.json", () => {
     }
   })
 
-  // CC BY 4.0 requires attribution and a statement that changes were made;
-  // the pipeline filters, clamps and simplifies, so the notice is not optional.
-  it.each(["title", "url", "licence", "licenceUrl", "modified", "coverage"])(
+  it.each(["title", "modified", "coverage"])(
     "records %s for every Source",
     (key) => {
       for (const source of Object.values(sources)) {
@@ -143,11 +141,32 @@ describe("sources.json", () => {
     },
   )
 
-  it("carries the upstream revision the output was built from", () => {
+  // CC BY and CC BY-SA both require attribution and a statement that changes
+  // were made; the pipeline filters, clamps and simplifies, so the notice is
+  // not optional. A placeholder is not a bibliographic Source and is exempt.
+  it.each(["url", "licence", "licenceUrl"])(
+    "records %s for every citable Source",
+    (key) => {
+      for (const source of Object.values(sources)) {
+        if (source.placeholder) continue
+        expect(source[key]).toBeTruthy()
+      }
+    },
+  )
+
+  it("marks a placeholder as uncitable and gives it empty Coverage", () => {
+    const placeholder = sources.placeholder
+    expect(placeholder?.placeholder).toBe(true)
+    const coverage = placeholder?.coverage as { from: number; to: number }
+    // Empty by construction, so everything resting on it reports as Inferred.
+    expect(coverage.from).toBeGreaterThan(coverage.to)
+  })
+
+  it("carries the date the output was built from its Sources", () => {
     for (const source of Object.values(sources)) {
-      expect(source.upstreamCommit).not.toBe("unknown")
       expect(source.retrieved).toMatch(/^\d{4}-\d{2}-\d{2}$/)
     }
+    expect(sources.cliopatria?.upstreamCommit).not.toBe("unknown")
   })
 
   it("records known upstream defects rather than silently correcting them", () => {

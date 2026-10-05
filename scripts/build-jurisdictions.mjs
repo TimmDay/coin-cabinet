@@ -14,8 +14,15 @@
 // Node needs a raised heap for the 165MB parse; the package.json script passes
 // --max-old-space-size.
 import { execFileSync } from "node:child_process"
+import {
+  isRegio,
+  PLACEHOLDER_SPAN,
+  PROVINCE_SPANS,
+  SUCCESSORS,
+  TIER_OVERRIDES,
+} from "./province-spans.mjs"
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
-import { dirname, join } from "node:path"
+import { basename, dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -26,6 +33,64 @@ const outDir = join(root, "public", "data", "jurisdictions")
 /** The slider's window. Nothing outside it is reachable, so everything clamps. */
 const SLIDER_START = -200
 const SLIDER_END = 1453
+
+const PAZOUT = {
+  key: "pazout",
+  title:
+    "Roman provinces AD 200 (Pazout correction of AWMC), via roman-road-networks",
+  url: "https://github.com/MatteoMazzamurro/roman-road-networks",
+  base: "https://raw.githubusercontent.com/MatteoMazzamurro/roman-road-networks/main/data/roman_provinces_simple/roman_provinces",
+  licence: "CC BY-SA 4.0",
+  licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+  // Published as AD 200, but its contents date it to roughly 117-136, and the
+  // Basis year is what the geometry actually depicts. Outside this window the
+  // shapes are a reconstruction, which is what Coverage is for.
+  coverage: { from: 117, to: 136 },
+  basisYear: 117,
+  modified:
+    "Converted from shapefile, simplified, Iudaea given its Syria Palaestina " +
+    "successor, Spans attached, and Roma separated onto the City Tier.",
+  defects: [
+    "Published as AD 200, but its contents date it to roughly AD 117-136: Dacia and Arabia present (after 106), no Mesopotamia or Armenia (after 117), Iudaea not yet Syria Palaestina (before the rename, which is dated after 132 with a diploma of 139 as the terminus).",
+    "Syria is undivided, though the Severan split into Coele and Phoenice was around 194. Splitting it needs real geometry and is not attempted here.",
+    "Britannia is undivided, though it was split around 197-216.",
+    "Geometry is one snapshot reused across every Span, so a province's existence may be attested while its outline is not.",
+  ],
+}
+
+const OHM = {
+  key: "ohm",
+  title: "OpenHistoricalMap",
+  url: "https://www.openhistoricalmap.org/",
+  licence: "CC0 1.0",
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+  // Supplies Spans, not geometry, across the window queried.
+  coverage: { from: -250, to: 700 },
+  modified:
+    "Dated administrative relations normalised onto Pazout's province names, " +
+    "and merged where OHM splits a province Pazout keeps whole.",
+  defects: [
+    "Coverage is uneven: Anatolia and the Balkans are thin, and some entries are anachronistic carryovers.",
+    "Some provinces appear at more than one admin level; duplicates were merged by name.",
+  ],
+}
+
+// Not a Source in the bibliographic sense: a marker saying these dates have
+// not been curated yet. Its Coverage is deliberately empty, so the resolver
+// reports everything resting on it as Inferred.
+const PLACEHOLDER = {
+  key: "placeholder",
+  title: "Spans not yet curated",
+  // Not a bibliographic Source: nothing to cite and no licence to carry.
+  placeholder: true,
+  coverage: { from: 1, to: 0 },
+  modified:
+    "Provinces OpenHistoricalMap does not date are given the Principate " +
+    "(27 BC to AD 284) as a placeholder, pending the cataloguer's dates.",
+  defects: [
+    "These Spans are a placeholder, not scholarship. A province resting on one appears across the Principate regardless of when it actually existed.",
+  ],
+}
 
 const CLIOPATRIA = {
   key: "cliopatria",
@@ -185,7 +250,7 @@ function buildRealms(member) {
 }
 
 function simplify(collection, outPath, percentage) {
-  const tmp = join(cacheDir, "realms-full.geojson")
+  const tmp = join(cacheDir, `${basename(outPath, ".geojson")}-full.geojson`)
   writeFileSync(tmp, JSON.stringify(collection))
   execFileSync(
     join(root, "node_modules", ".bin", "mapshaper"),
@@ -206,6 +271,119 @@ function simplify(collection, outPath, percentage) {
   )
 }
 
+function slugify(name) {
+  return name
+    .toLowerCase()
+    .replace(/\(regio [ivx]+\)/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+}
+
+function ensureProvinceShapefile() {
+  mkdirSync(cacheDir, { recursive: true })
+  const shp = join(cacheDir, "roman_provinces.shp")
+  if (existsSync(shp)) return shp
+
+  console.log("Downloading Pazout province shapefile (~53MB)...")
+  for (const ext of ["shp", "dbf", "shx", "prj"]) {
+    execFileSync(
+      "curl",
+      [
+        "-sSL",
+        "-o",
+        join(cacheDir, `roman_provinces.${ext}`),
+        `${PAZOUT.base}.${ext}`,
+      ],
+      { stdio: "inherit" },
+    )
+  }
+  return shp
+}
+
+function buildProvinces() {
+  const shp = ensureProvinceShapefile()
+  const converted = join(cacheDir, "provinces-converted.geojson")
+
+  // Convert only. All simplification happens in one later pass, so there is a
+  // single place that controls fidelity rather than two compounding ones.
+  execFileSync(
+    join(root, "node_modules", ".bin", "mapshaper"),
+    [shp, "-o", "format=geojson", converted],
+    { stdio: "inherit" },
+  )
+
+  const raw = JSON.parse(readFileSync(converted, "utf8"))
+  const features = []
+  const byName = new Map()
+
+  for (const f of raw.features) {
+    const name = String(f.properties?.province ?? "").trim()
+    if (!name) continue
+    byName.set(name, f.geometry)
+
+    const span = PROVINCE_SPANS[name]
+    const window = clamp(
+      span?.start ?? PLACEHOLDER_SPAN.start,
+      span?.end ?? PLACEHOLDER_SPAN.end,
+    )
+    if (!window) continue
+
+    const tier = TIER_OVERRIDES[name] ?? "province"
+
+    features.push({
+      type: "Feature",
+      properties: {
+        slug: slugify(name),
+        name,
+        tier,
+        kind: tier === "city" ? "city" : isRegio(name) ? "regio" : "province",
+        source: PAZOUT.key,
+        spanSource: span?.source ?? PLACEHOLDER.key,
+        basisYear: PAZOUT.basisYear,
+        segmentStart: window.start,
+        segmentEnd: window.end,
+        spanStart: window.start,
+        spanEnd: window.end,
+      },
+      geometry: f.geometry,
+    })
+  }
+
+  // A rename ends one Jurisdiction and begins its successor over the same
+  // ground, so the successor reuses the predecessor's geometry.
+  for (const succ of SUCCESSORS) {
+    const geometry = byName.get(succ.from)
+    if (!geometry) continue
+    const window = clamp(succ.start, succ.end)
+    if (!window) continue
+    features.push({
+      type: "Feature",
+      properties: {
+        slug: succ.slug,
+        name: succ.name,
+        tier: "province",
+        kind: "province",
+        source: PAZOUT.key,
+        spanSource: succ.source,
+        basisYear: PAZOUT.basisYear,
+        segmentStart: window.start,
+        segmentEnd: window.end,
+        spanStart: window.start,
+        spanEnd: window.end,
+        succeeds: slugify(succ.from),
+      },
+      geometry,
+    })
+  }
+
+  features.sort(
+    (a, b) =>
+      a.properties.segmentStart - b.properties.segmentStart ||
+      a.properties.slug.localeCompare(b.properties.slug),
+  )
+  return features
+}
+
 const member = ensureArchive()
 const { features, spans } = buildRealms(member)
 mkdirSync(outDir, { recursive: true })
@@ -213,7 +391,31 @@ mkdirSync(outDir, { recursive: true })
 const realmsPath = join(outDir, "realms.geojson")
 simplify({ type: "FeatureCollection", features }, realmsPath, 4)
 
+const provinceFeatures = buildProvinces()
+const provincesPath = join(outDir, "provinces.geojson")
+// Province outlines are read at regional zoom at most, so 0.3% is ample; it
+// keeps all 59 Jurisdictions and the layer gzips to about 60KB.
+simplify(
+  { type: "FeatureCollection", features: provinceFeatures },
+  provincesPath,
+  0.3,
+)
+
+const describe = (s) => ({
+  title: s.title,
+  ...(s.placeholder ? { placeholder: true } : {}),
+  ...(s.url ? { url: s.url } : {}),
+  ...(s.licence ? { licence: s.licence, licenceUrl: s.licenceUrl } : {}),
+  retrieved: new Date().toISOString().slice(0, 10),
+  coverage: s.coverage,
+  modified: s.modified,
+  defects: s.defects,
+})
+
 const sources = {
+  [PAZOUT.key]: describe(PAZOUT),
+  [OHM.key]: describe(OHM),
+  [PLACEHOLDER.key]: describe(PLACEHOLDER),
   [CLIOPATRIA.key]: {
     title: CLIOPATRIA.title,
     url: CLIOPATRIA.url,
@@ -237,3 +439,14 @@ for (const [slug, span] of [...spans].sort((a, b) => a[1].start - b[1].start)) {
   console.log(`  ${slug.padEnd(22)} ${span.start} .. ${span.end}`)
 }
 console.log(`realms.geojson: ${(bytes / 1024).toFixed(0)} KB`)
+
+const attested = provinceFeatures.filter(
+  (f) => f.properties.spanSource !== PLACEHOLDER.key,
+).length
+console.log(
+  `\nProvince Tier: ${provinceFeatures.length} Jurisdictions ` +
+    `(${attested} with attested Spans, ${provinceFeatures.length - attested} on placeholders)`,
+)
+console.log(
+  `provinces.geojson: ${(readFileSync(provincesPath).length / 1024).toFixed(0)} KB`,
+)

@@ -31,6 +31,12 @@ type MapControlsProps = {
   showProvinceLabels: boolean
   /** Callback when province labels toggle changes */
   onProvinceLabelsChange: (show: boolean) => void
+  /**
+   * Province names to offer. Supplied by callers that already hold the
+   * Jurisdiction corpus, so the list matches what the map can actually draw
+   * rather than a separately fetched file.
+   */
+  provinceNames?: string[]
 }
 
 export function MapControls({
@@ -48,14 +54,16 @@ export function MapControls({
   onProvincesChange,
   showProvinceLabels,
   onProvinceLabelsChange,
+  provinceNames,
 }: MapControlsProps) {
   // Provinces data loading
   const [provincesData, setProvincesData] =
     useState<GeoJSON.FeatureCollection | null>(null)
   const [provincesLoading, setProvincesLoading] = useState(false)
 
-  // Load provinces data
+  // Load provinces data, unless the caller already has the names.
   useEffect(() => {
+    if (provinceNames) return
     setProvincesLoading(true)
     fetch("/data/provinces.geojson")
       .then((response) => response.json())
@@ -68,10 +76,15 @@ export function MapControls({
       .finally(() => {
         setProvincesLoading(false)
       })
-  }, [])
+  }, [provinceNames])
 
   // Generate province options from loaded data
   const provinceOptions = useMemo(() => {
+    if (provinceNames) {
+      return provinceNames
+        .map((name) => ({ value: name, label: name }))
+        .sort((a, b) => a.label.localeCompare(b.label))
+    }
     if (!provincesData?.features) return []
 
     return provincesData.features
@@ -85,7 +98,7 @@ export function MapControls({
       }))
       .filter((option) => option.value)
       .sort((a, b) => a.label.localeCompare(b.label))
-  }, [provincesData])
+  }, [provincesData, provinceNames])
 
   const hasAnyEmpireLayerVisible = () => {
     return showBC60 || showAD14 || showAD69 || showAD117 || showAD200

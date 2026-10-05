@@ -2,10 +2,14 @@
 
 import dynamic from "next/dynamic"
 import { useCallback, useMemo, useRef, useState } from "react"
-import { ROMAN_PROVINCES } from "~/components/map/constants/provinces"
 import { useJurisdictionCorpus } from "~/components/map/hooks"
-import { changeYears } from "~/components/map/jurisdictions"
+import {
+  changeYears,
+  resolveAtYear,
+  type Tier,
+} from "~/components/map/jurisdictions"
 import { MapControls } from "~/components/map/MapControls"
+import { TierControl } from "~/components/map/TierControl"
 import { YearSlider } from "~/components/map/YearSlider"
 import { NotFound404 } from "~/components/ui/NotFound404"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
@@ -29,20 +33,42 @@ export default function MapPage() {
 
   // Map state
   const [selectedYear, setSelectedYear] = useState(INITIAL_YEAR)
+  const [tier, setTier] = useState<Tier>("province")
   const [showBC60, setShowBC60] = useState(false)
   const [showAD14, setShowAD14] = useState(false)
   const [showAD69, setShowAD69] = useState(false)
   const [showAD117, setShowAD117] = useState(false)
   const [showAD200, setShowAD200] = useState(false)
-  const [selectedProvinces, setSelectedProvinces] = useState<string[]>([
-    ...ROMAN_PROVINCES,
-  ])
+  const [selectedProvinces, setSelectedProvinces] = useState<string[] | null>(
+    null,
+  )
   const [showProvinceLabels, setShowProvinceLabels] = useState(true)
 
   // Shared with the map through a module-level cache, so asking for it here
   // costs no second fetch.
   const corpus = useJurisdictionCorpus()
   const ticks = useMemo(() => (corpus ? changeYears(corpus) : []), [corpus])
+
+  const resolution = useMemo(
+    () => (corpus ? resolveAtYear(corpus, selectedYear) : null),
+    [corpus, selectedYear],
+  )
+
+  /** Every province name the corpus can draw, for the selection control. */
+  const provinceNames = useMemo(() => {
+    if (!corpus) return []
+    return [
+      ...new Set(
+        corpus.features
+          .filter((f) => f.properties.tier === "province")
+          .map((f) => f.properties.name),
+      ),
+    ].sort()
+  }, [corpus])
+
+  // Everything selected until the visitor says otherwise; the list is not
+  // known until the corpus arrives, so it cannot be the initial state.
+  const effectiveProvinces = selectedProvinces ?? provinceNames
 
   const fitRef = useRef<(() => void) | null>(null)
   const receiveFit = useCallback((fit: () => void) => {
@@ -64,13 +90,14 @@ export default function MapPage() {
               layout="fullscreen"
               height="100%"
               selectedYear={selectedYear}
+              tier={tier}
               onFitExtent={receiveFit}
               showBC60={showBC60}
               showAD14={showAD14}
               showAD69={showAD69}
               showAD117={showAD117}
               showAD200={showAD200}
-              selectedProvinces={selectedProvinces}
+              selectedProvinces={effectiveProvinces}
               showProvinceLabels={showProvinceLabels}
             />
           </div>
@@ -84,6 +111,13 @@ export default function MapPage() {
           changeYears={ticks}
           onFitExtent={() => fitRef.current?.()}
         />
+        <div className="mt-2">
+          <TierControl
+            value={tier}
+            onChange={setTier}
+            available={resolution?.availableTiers ?? []}
+          />
+        </div>
       </div>
 
       {/* Map Controls */}
@@ -99,8 +133,9 @@ export default function MapPage() {
           onAD117Change={setShowAD117}
           showAD200={showAD200}
           onAD200Change={setShowAD200}
-          selectedProvinces={selectedProvinces}
+          selectedProvinces={effectiveProvinces}
           onProvincesChange={setSelectedProvinces}
+          provinceNames={provinceNames}
           showProvinceLabels={showProvinceLabels}
           onProvinceLabelsChange={setShowProvinceLabels}
         />
