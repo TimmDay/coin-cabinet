@@ -63,3 +63,6 @@ yarn-error.log*
 # maplibre worker files, copied from node_modules on postinstall (scripts/copy-maplibre-assets.mjs)
 /public/maplibre-gl-worker.mjs
 /public/maplibre-gl-shared.mjs
+
+# local data-pipeline cache (see scripts/build-jurisdictions.mjs)
+.cache/
