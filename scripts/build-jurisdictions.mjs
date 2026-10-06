@@ -32,7 +32,7 @@ const cacheDir = join(root, ".cache", "jurisdictions")
 const outDir = join(root, "public", "data", "jurisdictions")
 
 /** The slider's window. Nothing outside it is reachable, so everything clamps. */
-const SLIDER_START = -275
+const SLIDER_START = -400
 const SLIDER_END = 1453
 
 const PAZOUT = {
@@ -105,7 +105,9 @@ const CLIOPATRIA = {
   // Coverage is what the Source actually speaks to. Outside it, a claim is
   // Inferred rather than Attested -- the resolver derives that, so this range
   // is the single place to correct if the assessment changes.
-  coverage: { from: -275, to: 1453 },
+  // Tracks the slider window rather than repeating it, so widening the window
+  // cannot leave this claiming less than the data actually covers.
+  coverage: { from: SLIDER_START, to: SLIDER_END },
   modified:
     "Filtered to Roman-world polities, clamped to 275 BC - AD 1453, the " +
     "eastern/Byzantine label switch merged into one Jurisdiction, and " +

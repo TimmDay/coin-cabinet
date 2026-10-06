@@ -588,18 +588,28 @@ describe("against the committed Province Tier corpus", () => {
     ) as Record<string, never>,
   }
 
-  // The slider opens before the First Punic War, when Rome held no provinces
-  // at all. Anything drawn then beyond Italy is there because its dates are
-  // assumed rather than sourced, and it says so: this is the cost of giving
-  // the placeholders a wide Span, and it is paid in the open.
-  it("marks everything it cannot date at the slider's first year", () => {
-    const drawn = resolveAtYear(full, SLIDER_START, "province").jurisdictions
+  // The slider now opens in 400 BC, when Rome was one city among many and
+  // held nothing worth calling a province.
+  it("draws no provinces at the slider's first year", () => {
+    expect(
+      resolveAtYear(full, SLIDER_START, "province").jurisdictions,
+    ).toHaveLength(0)
+  })
+
+  // Undated provinces are floored at 241 BC, Rome's first province, rather
+  // than at the slider's edge. At that floor the map shows Italia and
+  // Sicilia, and nothing is drawn whose dates are neither sourced nor
+  // openly flagged as assumed.
+  it("either sources or flags every province at the placeholder floor", () => {
+    const drawn = resolveAtYear(full, -240, "province").jurisdictions
     const names = drawn.map((j) => j.name)
     expect(names).toContain("Italia")
+    expect(names).toContain("Sicilia")
 
     for (const jurisdiction of drawn) {
-      if (jurisdiction.name === "Italia") continue
-      expect(jurisdiction.datesAssumed).toBe(true)
+      const sourced =
+        jurisdiction.feature.properties.spanSource !== "placeholder"
+      expect(sourced || jurisdiction.datesAssumed).toBe(true)
     }
   })
 
@@ -826,10 +836,18 @@ describe("clients and adversaries", () => {
     expect(worst).toBeLessThanOrEqual(5)
   })
 
-  it("omits polities whose whole span predates the slider", () => {
-    // Both end before 275 BC, so they clamp away to nothing.
-    const slugs = new Set(c.features.map((f) => f.properties.slug))
-    expect(slugs).not.toContain("achaemenid-empire")
-    expect(slugs).not.toContain("macedonian-empire")
+  // The slider opens at 400 BC specifically so these two are not clipped out
+  // of existence: the Achaemenid empire ends in 327 and the Macedonian in 292.
+  it("reaches back far enough to show the Achaemenids and Alexander's empire", () => {
+    const names = at(-350).map((j) => j.name)
+    expect(names).toContain("Achaemenid Empire")
+    expect(names).toContain("Macedonian Empire")
+  })
+
+  it("ends both of them on time", () => {
+    expect(at(-330).map((j) => j.name)).toContain("Achaemenid Empire")
+    expect(at(-320).map((j) => j.name)).not.toContain("Achaemenid Empire")
+    expect(at(-300).map((j) => j.name)).toContain("Macedonian Empire")
+    expect(at(-280).map((j) => j.name)).not.toContain("Macedonian Empire")
   })
 })

@@ -36,11 +36,13 @@ const EXPECTED_ROMAN_SLUGS = [
 
 /** Clients and adversaries, which share the Tier but not the palette. */
 const EXPECTED_OUTSIDER_SLUGS = [
+  "achaemenid-empire",
   "antigonid-macedonia",
   "carthage",
   "kingdom-of-armenia",
   "kingdom-of-numidia",
   "kingdom-of-pontus",
+  "macedonian-empire",
   "nabataeans",
   "parthian-empire",
   "ptolemaic-kingdom",

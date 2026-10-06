@@ -54,7 +54,7 @@
     "upstreamCommit": "5f43337713",
     "retrieved": "2026-10-06",
     "coverage": {
-      "from": -275,
+      "from": -400,
       "to": 1453
     },
     "modified": "Filtered to Roman-world polities, clamped to 275 BC - AD 1453, the eastern/Byzantine label switch merged into one Jurisdiction, and geometry simplified.",

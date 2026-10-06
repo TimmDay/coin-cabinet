@@ -19,7 +19,12 @@
 // collapsing under Diocletian at the other. Spanning the era instead means
 // these never pop in or out mid-slider, and the one edge that remains, 476,
 // is a real one.
-export const PLACEHOLDER_SPAN = { start: -275, end: 476 }
+// Anchored to history rather than to wherever the slider happens to begin.
+// 241 BC is Sicilia, the first province Rome held; starting earlier would
+// draw provinces into a century when Rome had none. Previously this tracked
+// the slider's first year, which meant widening the window silently invented
+// more provincial history.
+export const PLACEHOLDER_SPAN = { start: -241, end: 476 }
 
 export const PROVINCE_SPANS = {
   // Attested by OpenHistoricalMap.

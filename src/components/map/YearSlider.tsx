@@ -45,7 +45,7 @@ function positionOf(year: number): number {
   return (year - SLIDER_START) / (SLIDER_END - SLIDER_START)
 }
 
-const DECADE_MARKS = [-275, 1, 300, 600, 900, 1200, 1453]
+const DECADE_MARKS = [-400, -200, 1, 300, 600, 900, 1200, 1453]
 
 export function YearSlider<M extends Moment>({
   value,

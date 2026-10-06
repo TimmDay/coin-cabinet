@@ -26,7 +26,7 @@ export const TIERS: Tier[] = ["realm", "province", "city"]
 export const COIN_PAGE_TIER: Tier = "realm"
 
 /** The slider's window. Nothing outside it is reachable. */
-export const SLIDER_START = -275
+export const SLIDER_START = -400
 export const SLIDER_END = 1453
 
 export type JurisdictionProperties = {
