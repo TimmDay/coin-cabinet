@@ -666,27 +666,27 @@ export const Map: React.FC<MapProps> = ({
                   longitude={place.lng}
                   latitude={place.lat}
                   anchor="center"
-                  onClick={(e) =>
-                    openPopup(
-                      e.originalEvent.clientX,
-                      e.originalEvent.clientY,
-                      {
+                >
+                  <MapPin
+                    label={`${place.name}, ${place.kind}`}
+                    onActivate={(point) =>
+                      openPopup(point.clientX, point.clientY, {
                         title: place.name,
                         subtitle: place.kind === "city" ? "City" : place.kind,
                         description: place.flavour_text ?? "",
                         className: "text-map-label",
-                      },
-                    )
-                  }
-                >
-                  <div
-                    style={
-                      place.kind === "city"
-                        ? MAP_STYLES.cityMarker.style
-                        : MAP_STYLES.placeMarker.style
+                      })
                     }
-                    data-place={place.name}
-                  />
+                  >
+                    <div
+                      style={
+                        place.kind === "city"
+                          ? MAP_STYLES.cityMarker.style
+                          : MAP_STYLES.placeMarker.style
+                      }
+                      data-place={place.name}
+                    />
+                  </MapPin>
                 </Marker>
               ))}
 
