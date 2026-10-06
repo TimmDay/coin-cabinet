@@ -63,7 +63,7 @@ export const PROVINCE_SPANS = {
   // The city existed for the whole of the slider's range. Its outline is still
   // the AD 117 snapshot, so it reports as Inferred on geometry; the placeholder
   // marker here says only that no source was cited for the dates.
-  Roma: { start: -200, end: 1453, source: "placeholder" },
+  Roma: { start: -275, end: 1453, source: "placeholder" },
 }
 
 /**
@@ -82,7 +82,7 @@ export const PROVINCE_SPANS = {
 export const ITALIA = {
   name: "Italia",
   slug: "italia",
-  start: -200,
+  start: -275,
   end: 6,
   source: "placeholder",
 }

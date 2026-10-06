@@ -46,6 +46,22 @@ const MARKER_OPTIONS = [
  */
 const MOMENTS = [
   {
+    label: "After 1st Punic",
+    year: -241,
+    tier: "province" as Tier,
+    title:
+      "241 BC. Sicily, taken from Carthage, becomes the first province Rome ever had. Until now the map shows only Italy, which was never one.",
+  },
+  {
+    // 197, not 201. The war ended in 201, but Rome did not organise the Spains
+    // into provinces until 197, and 197 is what the data attests.
+    label: "After 2nd Punic",
+    year: -197,
+    tier: "province" as Tier,
+    title:
+      "197 BC. Rome organises the Spains into provinces, four years after the war ended.",
+  },
+  {
     label: "Augustus",
     year: 7,
     tier: "province" as Tier,
@@ -72,11 +88,15 @@ const MOMENTS = [
     title: "AD 265. The Gallic and Palmyrene breakaways, either side of Rome.",
   },
   {
+    // 284, his accession, not 293, the reorganisation. The corpus has no
+    // geometry for the provinces he made, so 293 shows the empire emptying
+    // out when in fact he roughly doubled the province count. 284 is the last
+    // year the old arrangement is drawn whole.
     label: "Diocletian",
-    year: 293,
+    year: 284,
     tier: "province" as Tier,
     title:
-      "AD 293. The reorganisation: the Italian regiones end and the provinces are remade.",
+      "AD 284. The empire as Diocletian found it. He went on to roughly double the number of provinces; this map has no geometry for the ones he made, so it stops here rather than showing them.",
   },
   {
     label: "East and West",

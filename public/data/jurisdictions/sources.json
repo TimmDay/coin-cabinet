@@ -54,10 +54,10 @@
     "upstreamCommit": "5f43337713",
     "retrieved": "2026-10-06",
     "coverage": {
-      "from": -200,
+      "from": -275,
       "to": 1453
     },
-    "modified": "Filtered to Roman-world polities, clamped to 200 BC - AD 1453, the eastern/Byzantine label switch merged into one Jurisdiction, and geometry simplified.",
+    "modified": "Filtered to Roman-world polities, clamped to 275 BC - AD 1453, the eastern/Byzantine label switch merged into one Jurisdiction, and geometry simplified.",
     "defects": [
       "Dates the Gallic Empire 261-282; the standard dating is 260-274.",
       "Dates the Palmyrene Empire 261-269, which matches neither the 260-273 kingdom nor the 270-273 empire.",

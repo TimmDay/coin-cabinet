@@ -276,7 +276,11 @@ describe("changeYears", () => {
 
   it("does not mark the window's own edges", () => {
     const c = corpus([
-      feature({ slug: "all", segmentStart: -200, segmentEnd: SLIDER_END }),
+      feature({
+        slug: "all",
+        segmentStart: SLIDER_START,
+        segmentEnd: SLIDER_END,
+      }),
     ])
     expect(changeYears(c)).toEqual([])
   })
@@ -523,18 +527,25 @@ describe("against the committed Province Tier corpus", () => {
     ) as Record<string, never>,
   }
 
-  // Sicilia's real Span opens in 241 BC, before the slider does, so the
-  // pipeline clamps it to the window's start rather than leaving it
-  // unreachable.
-  it("has Sicilia from the slider's first year, and little else", () => {
+  // The slider opens before the First Punic War, so Rome has no provinces at
+  // all yet: only Italy, which was never one.
+  it("has no provinces at the slider's first year, only Italy", () => {
     const names = resolveAtYear(
       full,
       SLIDER_START,
       "province",
     ).jurisdictions.map((j) => j.name)
-    expect(names).toContain("Sicilia")
-    expect(names).not.toContain("Dacia")
-    expect(names).not.toContain("Hispania Citerior")
+    expect(names).toEqual(["Italia"])
+  })
+
+  // Sicilia, taken from Carthage in 241 BC, was the first province Rome had.
+  it("gains Sicilia in 241 BC and not before", () => {
+    const has = (year: number) =>
+      resolveAtYear(full, year, "province").jurisdictions.some(
+        (j) => j.name === "Sicilia",
+      )
+    expect(has(-242)).toBe(false)
+    expect(has(-241)).toBe(true)
   })
 
   it("adds Hispania Citerior once its Span opens in 197 BC", () => {
@@ -665,7 +676,7 @@ describe("the Tier a coin's map opens at", () => {
   })
 
   it("still has something to show across the whole slider", () => {
-    for (const year of [-200, -50, 117, 400, 800, 1200, 1453]) {
+    for (const year of [SLIDER_START, -50, 117, 400, 800, 1200, 1453]) {
       expect(drawnAt(year, COIN_PAGE_TIER)).toBeGreaterThan(0)
     }
   })
