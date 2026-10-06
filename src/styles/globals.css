@@ -92,10 +92,18 @@
   --color-map-woods: #887555;
   --color-map-town: #8d7a5a;
   --color-map-ice: #a39578;
-  --color-map-water: #6b5860;
-  --color-map-waterway: #5f4e55;
+  /* Darker than the dusk mauve it started as. At the old value the sea sat
+     1.73:1 against the land, so coastlines barely registered, and the water
+     label was 3.99:1 against it, under the 4.5:1 AA asks for text.
+
+     This value is where the coast itself clears 3:1, the floor WCAG sets for
+     a graphical boundary, at 3.08:1. The label follows to 7.10:1. Rivers are
+     drawn over land rather than water, so they are set against the land
+     instead and reach 3.45:1. */
+  --color-map-water: #43343a;
+  --color-map-waterway: #3a2d31;
   --color-map-water-label: #d9c4cc;
-  --color-map-water-label-halo: #5a474e;
+  --color-map-water-label-halo: #352a2e;
   --color-map-border: #a8604a;
   --color-map-ink: #2e1b12; /* province and mint names on the parchment */
   --color-map-label: var(--color-pin-wine); /* popup titles, active controls */
