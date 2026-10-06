@@ -180,6 +180,16 @@ export function ImageModal({
           <div
             className={`transition-opacity duration-300 ${isLoading ? "opacity-0" : "opacity-100"}`}
           >
+            {/* Deliberately a plain <img> rather than next/image. The source
+                is already a Cloudinary transform requesting a padded
+                2400x2400, so the optimisation this rule asks for is done
+                upstream. The element also has no intrinsic size to declare:
+                it is constrained to the viewport and then scaled and
+                translated by CSS for zoom and pan, which next/image's own
+                sizing fights. Converting it would also require adding
+                res.cloudinary.com to images.remotePatterns, which this
+                project does not configure at all. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={largeImageUrl}
               alt={alt}

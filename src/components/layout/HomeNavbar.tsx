@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 import NextLink from "next/link"
 import { useFeatureFlagQuery } from "~/lib/hooks/useFeatureFlagQuery"
 import { DesktopNav } from "./DesktopNav"
@@ -21,11 +22,13 @@ export default function HomeNavbar() {
       {/* Large centered logo, nudged 8px right on desktop for visual alignment */}
       <div className="flex justify-center lg:translate-x-2">
         <NextLink href={withFeatureQuery("/")} className="">
-          <div className="flex h-32 w-32 cursor-pointer items-center justify-center lg:h-40 lg:w-40">
-            <img
+          <div className="relative flex h-32 w-32 cursor-pointer items-center justify-center lg:h-40 lg:w-40">
+            <Image
               src="/assets/logo-white.svg"
               alt="Coin Cabinet Logo"
-              className="h-full w-full object-contain"
+              fill
+              priority
+              className="object-contain"
             />
           </div>
         </NextLink>

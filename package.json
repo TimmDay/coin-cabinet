@@ -6,7 +6,7 @@
   "scripts": {
     "prebuild": "node scripts/copy-maplibre-assets.mjs",
     "build": "next build",
-    "check": "eslint . && tsc --noEmit",
+    "check": "eslint . --max-warnings 0 && tsc --noEmit",
     "postinstall": "node scripts/copy-maplibre-assets.mjs",
     "db:types": "dotenv -e .env -- bash -c 'supabase gen types typescript --project-id \"$SUPABASE_PROJECT_REF\" --schema public > src/database/database.types.ts.tmp && mv src/database/database.types.ts.tmp src/database/database.types.ts'",
     "predev": "node scripts/copy-maplibre-assets.mjs",
@@ -14,7 +14,7 @@
     "new-article": "node scripts/new-article.js",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx}\" --cache",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "preview": "next build && next start",
     "start": "next start",
