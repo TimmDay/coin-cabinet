@@ -79,6 +79,7 @@ export function TimelineInfoBox({
         <div className="mb-6">
           <p className="font-display text-bronze-light text-center text-base tracking-[0.12em] sm:text-lg">
             {formatYear(event.year)}
+            {event.place && `, ${event.place}`}
           </p>
         </div>
 
@@ -86,17 +87,6 @@ export function TimelineInfoBox({
           <div className="mb-5">
             <p className="text-moonlight text-base leading-8 tracking-[0.01em]">
               {event.description}
-            </p>
-          </div>
-        )}
-
-        {event.place && (
-          <div className="border-line mb-4 border-t pt-4">
-            <p className="font-display text-moonlight text-sm tracking-[0.18em] uppercase">
-              Location
-            </p>
-            <p className="text-moonlight-bright mt-2 text-base">
-              {event.place}
             </p>
           </div>
         )}
