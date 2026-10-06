@@ -35,6 +35,28 @@ export const MAP_STYLES = {
       boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
     },
   },
+  // Cities and other places, deliberately smaller and cooler than a mint, so
+  // a mint still reads first when several kinds are shown at once.
+  cityMarker: {
+    style: {
+      width: "9px",
+      height: "9px",
+      backgroundColor: cssColor("pin-gold"),
+      border: `2px solid ${cssColor("pin-umber-dark")}`,
+      borderRadius: "9999px",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.35)",
+    },
+  },
+  placeMarker: {
+    style: {
+      width: "7px",
+      height: "7px",
+      backgroundColor: cssColor("pin-sage"),
+      border: `2px solid ${cssColor("pin-sage-dark")}`,
+      borderRadius: "9999px",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.35)",
+    },
+  },
 } as const
 
 // Map bounds configuration. Kept in [[lat, lng], [lat, lng]] shape (not

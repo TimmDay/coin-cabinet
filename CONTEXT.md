@@ -22,7 +22,10 @@ _Avoid_: Type, category, class
 **Tier**:
 A level in the administrative hierarchy, such that Jurisdictions at the same
 Tier are siblings rather than containers of one another. Which Tiers exist
-varies by era.
+varies by era. The middle Tier is shown to readers as "administrative areas",
+not "provinces": it holds the Augustan regiones of Italy alongside the
+provinces proper, so the narrower word would be wrong for most of what is in
+it.
 _Avoid_: Level, layer, scale, granularity
 
 **Succession**:

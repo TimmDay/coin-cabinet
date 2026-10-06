@@ -60,11 +60,16 @@ export function createPublicQuery<T>({
   label,
   staleTime,
 }: PublicQueryConfig) {
-  return function usePublicQuery() {
+  /**
+   * `enabled: false` holds the request until a caller actually wants the data,
+   * so a layer nobody has switched on costs nothing to fetch.
+   */
+  return function usePublicQuery(options?: { enabled?: boolean }) {
     return useQuery({
       queryKey: key,
       queryFn: () => fetchPublic<T>(path, label),
       staleTime,
+      enabled: options?.enabled ?? true,
     })
   }
 }

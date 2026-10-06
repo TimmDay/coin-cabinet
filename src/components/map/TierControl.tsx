@@ -2,9 +2,12 @@
 
 import { TIERS, type Tier } from "./jurisdictions"
 
+// The Province Tier holds more than provinces: the eleven Augustan regiones
+// of Italy sit in it too, and later units would. "Administrative areas" is
+// what it is; "Provinces" was only ever what most of it was.
 const LABELS: Record<Tier, string> = {
   realm: "Realms",
-  province: "Provinces",
+  province: "Admin areas",
   city: "Cities",
 }
 

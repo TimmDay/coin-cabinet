@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Layer, Map as MapGL, Marker, Source } from "react-map-gl/maplibre"
 import type { MapRef } from "react-map-gl/maplibre"
 import { useMints } from "~/api/mints"
+import { usePlaces } from "~/api/places"
 import { MAP_HEIGHT } from "~/lib/constants"
 import { parseLatLng, parseZoom, ROME } from "./coordinates"
 import { useJurisdictionCorpus, useMapConfiguration } from "./hooks"
@@ -37,6 +38,7 @@ import { applyOldPaperTheme } from "./mapTheme"
 import { markerPopup, type CustomMapMarker } from "./mapMarkers"
 import { CustomMarkerLayer, type ClickPoint } from "./CustomMarkerLayer"
 import { MapPopup } from "./MapPopup"
+import { TierRadio } from "./TierRadio"
 import type { ViewportBounds } from "./useMarkerClusters"
 import { HighlightedMintSvg } from "./MintMarkerSvg"
 
@@ -110,6 +112,12 @@ export type MapProps = {
   selectedYear?: number
   /** Which Tier to draw at the Selected year; all Tiers when omitted. */
   tier?: Tier
+  /**
+   * Lets the visitor change Tier from a small control over the map itself.
+   * Supplied by pages with no room for a control panel; omitted leaves the
+   * Tier fixed by the `tier` prop.
+   */
+  onTierChange?: (tier: Tier) => void
   /** Receives a function that fits the view to what is currently drawn. */
   onFitExtent?: (fit: () => void) => void
   /**
@@ -124,6 +132,10 @@ export type MapProps = {
   highlightMint?: string
   /** Whether default mint markers from the mints table should be displayed */
   showMintMarkers?: boolean
+  /** Show places of kind "city" from the places table. */
+  showCityMarkers?: boolean
+  /** Show every place in the places table, cities included. */
+  showPlaceMarkers?: boolean
   /** Custom markers to render for coin detail pages and other specialized views */
   customMarkers?: CustomMapMarker[]
   /** Callback to receive the navigate function */
@@ -142,11 +154,14 @@ export const Map: React.FC<MapProps> = ({
   layout = "default",
   selectedYear,
   tier,
+  onTierChange,
   onFitExtent,
   selectedProvinces,
   showProvinceLabels = true,
   highlightMint,
   showMintMarkers = true,
+  showCityMarkers = false,
+  showPlaceMarkers = false,
   customMarkers = [],
   onNavigate,
 }) => {
@@ -160,6 +175,19 @@ export const Map: React.FC<MapProps> = ({
   // Use custom hooks for configuration and data management
   const config = useMapConfiguration()
   const { data: mints } = useMints()
+  // Only fetched once something asks for them.
+  const { data: places } = usePlaces({
+    enabled: showCityMarkers || showPlaceMarkers,
+  })
+
+  // "Show POI" is every place, cities included, so the two selections union
+  // rather than stacking a second marker on top of each city.
+  const placeMarkers = useMemo(() => {
+    if (!places) return []
+    if (showPlaceMarkers) return places
+    if (showCityMarkers) return places.filter((place) => place.kind === "city")
+    return []
+  }, [places, showCityMarkers, showPlaceMarkers])
 
   const provinces = useMemo(() => provinceStyle(), [])
 
@@ -599,6 +627,37 @@ export const Map: React.FC<MapProps> = ({
                     </Marker>
                   ))}
 
+              {/* Places: cities, or everything, by the visitor's choice */}
+              {placeMarkers.map((place) => (
+                <Marker
+                  key={`place-${place.id}`}
+                  longitude={place.lng}
+                  latitude={place.lat}
+                  anchor="center"
+                  onClick={(e) =>
+                    openPopup(
+                      e.originalEvent.clientX,
+                      e.originalEvent.clientY,
+                      {
+                        title: place.name,
+                        subtitle: place.kind === "city" ? "City" : place.kind,
+                        description: place.flavour_text ?? "",
+                        className: "text-map-label",
+                      },
+                    )
+                  }
+                >
+                  <div
+                    style={
+                      place.kind === "city"
+                        ? MAP_STYLES.cityMarker.style
+                        : MAP_STYLES.placeMarker.style
+                    }
+                    data-place={place.name}
+                  />
+                </Marker>
+              ))}
+
               {/* Mint Markers */}
               {showMintMarkers &&
                 mints?.map((mint) => {
@@ -646,6 +705,15 @@ export const Map: React.FC<MapProps> = ({
                 onMarkerClick={handleCustomMarkerClick}
               />
             </MapGL>
+
+            {/* Sits over the map, bottom left, for pages with no panel. */}
+            {onTierChange && tier && (
+              <TierRadio
+                value={tier}
+                onChange={onTierChange}
+                className="absolute bottom-3 left-3 z-10"
+              />
+            )}
           </div>
         </div>
       </div>

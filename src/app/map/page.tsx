@@ -9,7 +9,7 @@ import {
   type Tier,
 } from "~/components/map/jurisdictions"
 import { MapControls } from "~/components/map/MapControls"
-import { ProvenanceNote } from "~/components/map/ProvenanceNote"
+import { DataSources } from "~/components/map/DataSources"
 import { TierControl } from "~/components/map/TierControl"
 import { YearSlider } from "~/components/map/YearSlider"
 import { NotFound404 } from "~/components/ui/NotFound404"
@@ -39,6 +39,11 @@ export default function MapPage() {
     null,
   )
   const [showProvinceLabels, setShowProvinceLabels] = useState(true)
+  // Pins stay off until asked for: the map is about territory first, and a
+  // hundred mint dots over it is not a default anyone chose.
+  const [showMints, setShowMints] = useState(false)
+  const [showCities, setShowCities] = useState(false)
+  const [showPois, setShowPois] = useState(false)
 
   // Shared with the map through a module-level cache, so asking for it here
   // costs no second fetch.
@@ -92,6 +97,9 @@ export default function MapPage() {
               onFitExtent={receiveFit}
               selectedProvinces={effectiveProvinces}
               showProvinceLabels={showProvinceLabels}
+              showMintMarkers={showMints}
+              showCityMarkers={showCities}
+              showPlaceMarkers={showPois}
             />
           </div>
         </div>
@@ -110,10 +118,10 @@ export default function MapPage() {
             onChange={setTier}
             available={resolution?.availableTiers ?? []}
           />
-          <ProvenanceNote
+          <DataSources
             provenance={resolution?.provenance ?? null}
             corpus={corpus}
-            className="max-w-prose"
+            year={selectedYear}
           />
         </div>
       </div>
@@ -121,11 +129,17 @@ export default function MapPage() {
       {/* Map Controls */}
       <div className="flex-shrink-0 px-4 py-4 sm:px-6 lg:px-8">
         <MapControls
-          selectedProvinces={effectiveProvinces}
+          selectedProvinces={selectedProvinces}
           onProvincesChange={setSelectedProvinces}
           provinceNames={provinceNames}
           showProvinceLabels={showProvinceLabels}
           onProvinceLabelsChange={setShowProvinceLabels}
+          showMints={showMints}
+          onShowMintsChange={setShowMints}
+          showCities={showCities}
+          onShowCitiesChange={setShowCities}
+          showPois={showPois}
+          onShowPoisChange={setShowPois}
         />
       </div>
     </div>
