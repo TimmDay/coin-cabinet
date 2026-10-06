@@ -37,6 +37,7 @@ import {
 import { applyOldPaperTheme } from "./mapTheme"
 import { markerPopup, type CustomMapMarker } from "./mapMarkers"
 import { CustomMarkerLayer, type ClickPoint } from "./CustomMarkerLayer"
+import { MapPin } from "./MapPin"
 import { MapPopup } from "./MapPopup"
 import { TierControl } from "./TierControl"
 import type { ViewportBounds } from "./useMarkerClusters"
@@ -669,11 +670,15 @@ export const Map: React.FC<MapProps> = ({
                       longitude={mint.lng}
                       latitude={mint.lat}
                       anchor={isHighlighted ? "bottom" : "center"}
-                      onClick={(e) =>
-                        openPopup(
-                          e.originalEvent.clientX,
-                          e.originalEvent.clientY,
-                          {
+                    >
+                      <MapPin
+                        label={
+                          isHighlighted
+                            ? `${mint.name}, where this coin was struck`
+                            : `${mint.name}, mint`
+                        }
+                        onActivate={(point) =>
+                          openPopup(point.clientX, point.clientY, {
                             title: mint.name,
                             subtitle: isHighlighted
                               ? "This coin was struck here"
@@ -682,18 +687,18 @@ export const Map: React.FC<MapProps> = ({
                             className: isHighlighted
                               ? "text-pin-wine"
                               : "text-map-label",
-                          },
-                        )
-                      }
-                    >
-                      {isHighlighted ? (
-                        <HighlightedMintSvg displayName={mint.name} />
-                      ) : (
-                        <div
-                          style={MAP_STYLES.mintMarker.style}
-                          data-mint={mint.name}
-                        />
-                      )}
+                          })
+                        }
+                      >
+                        {isHighlighted ? (
+                          <HighlightedMintSvg displayName={mint.name} />
+                        ) : (
+                          <div
+                            style={MAP_STYLES.mintMarker.style}
+                            data-mint={mint.name}
+                          />
+                        )}
+                      </MapPin>
                     </Marker>
                   )
                 })}
