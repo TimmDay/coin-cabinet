@@ -319,6 +319,10 @@ export function TimelineWithMap({
     handleTimelineMarkerSelection,
   ])
 
+  // Above the early return: a hook after it is only called on some renders,
+  // which changes hook order the moment the timeline loads and throws.
+  const [tier, setTier] = useState<Tier>(COIN_PAGE_TIER)
+
   // Don't render until we have data
   if (allEvents.length === 0) {
     return (
@@ -332,8 +336,6 @@ export function TimelineWithMap({
 
   // What the three maps (preview, desktop, full screen) have in common; each
   // adds its own centre and height
-  const [tier, setTier] = useState<Tier>(COIN_PAGE_TIER)
-
   const sharedMapProps = {
     ...mapProps,
     zoom: initialZoom,

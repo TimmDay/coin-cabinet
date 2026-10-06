@@ -74,9 +74,13 @@ function load(path: string): Promise<void> {
 export const useGeoJsonLayers = (
   specs: GeoJsonLayerSpec[],
 ): UseGeoJsonLayersResult => {
-  // Bumped whenever a load settles, so memos below have an honest dependency
-  // on module-level cache state that React cannot see.
-  const [version, setVersion] = useState(0)
+  // A snapshot of the module-level cache, mirrored into state. React cannot
+  // see a mutable Map, so the subscription below republishes it whenever a
+  // load settles; everything downstream then depends on a value it genuinely
+  // reads rather than on a counter standing in for one.
+  const [snapshot, setSnapshot] = useState<
+    ReadonlyMap<string, GeoJSON.FeatureCollection>
+  >(() => new Map(cache))
 
   const enabledPaths = useMemo(
     () =>
@@ -91,8 +95,11 @@ export const useGeoJsonLayers = (
   const enabledKey = enabledPaths.join("|")
 
   useEffect(() => {
-    const rerender = () => setVersion((v) => v + 1)
-    subscribers.add(rerender)
+    const republish = () => setSnapshot(new Map(cache))
+    subscribers.add(republish)
+
+    // A load may already have settled between render and effect.
+    republish()
 
     for (const path of enabledKey ? enabledKey.split("|") : []) {
       if (cache.has(path) || failed.has(path)) continue
@@ -100,7 +107,7 @@ export const useGeoJsonLayers = (
     }
 
     return () => {
-      subscribers.delete(rerender)
+      subscribers.delete(republish)
     }
   }, [enabledKey])
 
@@ -108,13 +115,13 @@ export const useGeoJsonLayers = (
     const lookup: Record<string, GeoJSON.FeatureCollection | null> = {}
     for (const spec of specs) {
       lookup[spec.key] =
-        spec.enabled === false ? null : (cache.get(spec.path) ?? null)
+        spec.enabled === false ? null : (snapshot.get(spec.path) ?? null)
     }
     return lookup
-  }, [specs, version])
+  }, [specs, snapshot])
 
   const loading = enabledPaths.some(
-    (path) => !cache.has(path) && !failed.has(path),
+    (path) => !snapshot.has(path) && !failed.has(path),
   )
   const error = enabledPaths.map((path) => failed.get(path)).find(Boolean)
 
