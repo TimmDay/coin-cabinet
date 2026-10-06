@@ -41,7 +41,11 @@ export function MobileTimelineDrawer({
 
   const currentEvent = events[currentEventIndex]
 
-  // Handle drawer opening/closing animations
+  // Handle drawer opening/closing animations. The drawer animates in and out
+  // rather than appearing, so it has to stay mounted through the closing
+  // transition. That makes visibility a timed sequence driven by the prop,
+  // which cannot be derived during render.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true)

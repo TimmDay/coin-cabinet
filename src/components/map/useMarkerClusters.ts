@@ -74,8 +74,11 @@ export function useMarkerClusters(
     [active, zoom, index, lookup, bounds],
   )
 
-  // A different set of markers closes any open fan.
+  // A different set of markers closes any open fan. The fan is opened by a
+  // click and must survive re-renders, so it is state that gets reset rather
+  // than something derivable from the markers.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSpiderfied(null)
   }, [key])
 

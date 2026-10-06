@@ -3,6 +3,7 @@
 import { ArrowLeft, ChevronRight, Menu, X } from "lucide-react"
 import NextLink from "next/link"
 import { usePathname, useRouter } from "next/navigation"
+import { useIsClient } from "~/hooks/useIsClient"
 import { useEffect, useMemo, useState } from "react"
 import { createPortal } from "react-dom"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
@@ -37,14 +38,8 @@ export function MobileNavigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [menuStack, setMenuStack] = useState<MenuLevel[]>([])
   const [isAnimating, setIsAnimating] = useState(false)
-  const [mounted, setMounted] = useState(false)
+  const mounted = useIsClient()
   const [animatingInIndex, setAnimatingInIndex] = useState<number | null>(null)
-
-  // Mount effect for portal
-  useEffect(() => {
-    setMounted(true)
-    return () => setMounted(false)
-  }, [])
 
   // Helper functions to get submenu items (same as desktop navbar)
   const getMainSubmenuItems = (itemName: string): MenuItem[] => {
@@ -95,9 +90,12 @@ export function MobileNavigation() {
     [visibleNavItems],
   )
 
-  // Initialize menu stack on first open
+  // Initialize menu stack on first open. The stack is only meaningful while
+  // the menu is open, so it is seeded on opening rather than derived: the
+  // visitor can navigate into submenus and the stack must survive that.
   useEffect(() => {
     if (isOpen && menuStack.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMenuStack([mainMenu])
     }
   }, [isOpen, menuStack.length, mainMenu])

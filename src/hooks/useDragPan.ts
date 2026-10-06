@@ -34,7 +34,10 @@ export function useDragPan({ enabled, scale, origin }: UseDragPanOptions) {
   const justDragged = useRef(false)
 
   // Return to the centred position whenever the zoom is released or moved.
+  // A reset on prop change, not a derivation: the offset is otherwise owned
+  // by pointer events, so it cannot be computed during render.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOffset({ x: 0, y: 0 })
   }, [enabled, origin.x, origin.y])
 

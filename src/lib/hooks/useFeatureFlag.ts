@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useSyncExternalStore } from "react"
 import { type FeatureFlagName } from "../feature-flags"
 
 const FEATURE_FLAG_STORAGE_KEY = "feat-flags"
@@ -6,61 +6,24 @@ const FEATURE_FLAG_STORAGE_KEY = "feat-flags"
 /** `?feat=off` turns everything back off. Not a flag name. */
 export const OFF_PARAM = "off"
 
-/**
- * Hook to check for feature flags with localStorage persistence
- * Checks URL first, then localStorage, and persists URL flags to localStorage
- * @param flagName - The name of the feature flag to check
- * @returns boolean indicating if the feature flag is enabled
- */
-export function useFeatureFlag(flagName: FeatureFlagName) {
-  const [isEnabled, setIsEnabled] = useState(false)
+// Flags live in localStorage, which React cannot see. Rather than copy them
+// into state inside an effect, they are exposed as an external store: the
+// component reads the live value during render and re-reads when it changes.
+// That keeps the one source of truth in localStorage instead of mirroring it.
+const listeners = new Set<() => void>()
 
-  useEffect(() => {
-    // Safely check URL params without causing SSR issues
-    const checkUrlParams = () => {
-      if (typeof window === "undefined") return null
-      try {
-        const params = new URLSearchParams(window.location.search)
-        return params.get("feat")
-      } catch {
-        return null
-      }
-    }
+function emit() {
+  for (const listener of listeners) listener()
+}
 
-    const urlFeatParam = checkUrlParams()
-
-    // `?feat=off` clears every flag. Flags are enabled by URL and persisted
-    // to localStorage, so without this there would be no way to turn one off
-    // again once the Feature Flags page was removed from the UI.
-    if (urlFeatParam === OFF_PARAM) {
-      setIsEnabled(false)
-      try {
-        localStorage.removeItem(FEATURE_FLAG_STORAGE_KEY)
-      } catch {
-        // A browser refusing storage has no flags to clear anyway.
-      }
-      return
-    }
-
-    // Check URL first - if found, enable and persist to localStorage
-    if (urlFeatParam === flagName) {
-      setIsEnabled(true)
-      // Persist to localStorage for future sessions
-      const storedFlags = getStoredFeatureFlags()
-      storedFlags[flagName] = true
-      localStorage.setItem(
-        FEATURE_FLAG_STORAGE_KEY,
-        JSON.stringify(storedFlags),
-      )
-      return
-    }
-
-    // Check localStorage for previously enabled flags
-    const storedFlags = getStoredFeatureFlags()
-    setIsEnabled(storedFlags[flagName] === true)
-  }, [flagName])
-
-  return isEnabled
+function subscribe(onChange: () => void) {
+  listeners.add(onChange)
+  // Another tab setting a flag should reach this one too.
+  window.addEventListener("storage", onChange)
+  return () => {
+    listeners.delete(onChange)
+    window.removeEventListener("storage", onChange)
+  }
 }
 
 /**
@@ -75,6 +38,63 @@ function getStoredFeatureFlags(): Record<string, boolean> {
   } catch {
     return {}
   }
+}
+
+/** The `feat` query parameter, or null. Reads `window` directly. */
+function urlFlagParam(): string | null {
+  if (typeof window === "undefined") return null
+  try {
+    return new URLSearchParams(window.location.search).get("feat")
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Applies whatever `?feat=` asks for: enabling a flag, or clearing them all.
+ *
+ * This is a genuine side effect on storage, so it stays in an effect. The
+ * value a component renders comes from the store rather than from here.
+ */
+function applyUrlParam(): void {
+  const param = urlFlagParam()
+  if (!param) return
+
+  try {
+    if (param === OFF_PARAM) {
+      localStorage.removeItem(FEATURE_FLAG_STORAGE_KEY)
+    } else {
+      const stored = getStoredFeatureFlags()
+      if (stored[param] === true) return
+      stored[param] = true
+      localStorage.setItem(FEATURE_FLAG_STORAGE_KEY, JSON.stringify(stored))
+    }
+  } catch {
+    // A browser refusing storage keeps whatever it had, which is nothing.
+    return
+  }
+  emit()
+}
+
+/**
+ * Whether a feature flag is on, from the URL or from a previous visit.
+ *
+ * `?feat=<name>` turns one on and remembers it; `?feat=off` clears them all.
+ * The server always renders flags as off, since it cannot know, so anything
+ * behind one appears after hydration.
+ */
+export function useFeatureFlag(flagName: FeatureFlagName) {
+  const isEnabled = useSyncExternalStore(
+    subscribe,
+    () => getStoredFeatureFlags()[flagName] === true,
+    () => false,
+  )
+
+  useEffect(() => {
+    applyUrlParam()
+  }, [])
+
+  return isEnabled
 }
 
 /**
@@ -92,6 +112,7 @@ export function setFeatureFlag(flagName: FeatureFlagName, enabled: boolean) {
     delete storedFlags[flagName]
   }
   localStorage.setItem(FEATURE_FLAG_STORAGE_KEY, JSON.stringify(storedFlags))
+  emit()
 }
 
 /**
@@ -100,6 +121,7 @@ export function setFeatureFlag(flagName: FeatureFlagName, enabled: boolean) {
 export function clearFeatureFlags() {
   if (typeof window === "undefined") return
   localStorage.removeItem(FEATURE_FLAG_STORAGE_KEY)
+  emit()
 }
 
 /**
@@ -109,4 +131,3 @@ export function clearFeatureFlags() {
 export function useTypedFeatureFlag(flagName: FeatureFlagName) {
   return useFeatureFlag(flagName)
 }
-
