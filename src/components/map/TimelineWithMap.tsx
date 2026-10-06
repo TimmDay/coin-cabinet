@@ -351,7 +351,7 @@ export function TimelineWithMap({
     // A coin's map shows the geography of the coin's own year. Null leaves the
     // Jurisdiction layer off rather than drawing some other year's geography.
     ...(selectedYear !== null && selectedYear !== undefined
-      ? { selectedYear, tier, onTierChange: setTier }
+      ? { selectedYear, tier, onTierChange: setTier, showYearLabel: true }
       : {}),
   }
 
