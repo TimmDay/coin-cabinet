@@ -281,6 +281,10 @@ export function TimelineWithMap({
 
   // The same markers for the same events and selection, so the map does not
   // rebuild its marker index on every render.
+  // The markers hold an onClick that reaches navigateMapRef, but only when a
+  // click fires, which is not during render. The rule follows the closure
+  // rather than the call.
+  /* eslint-disable react-hooks/refs */
   const combinedCustomMarkers = useMemo(() => {
     const timelineMarkers: CustomMapMarker[] = []
 
@@ -318,6 +322,7 @@ export function TimelineWithMap({
     selectedEventIndex,
     handleTimelineMarkerSelection,
   ])
+  /* eslint-enable react-hooks/refs */
 
   // Above the early return: a hook after it is only called on some renders,
   // which changes hook order the moment the timeline loads and throws.

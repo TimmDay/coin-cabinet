@@ -1,4 +1,15 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useSyncExternalStore } from "react"
+
+/** Nothing pushes a new `?feat=` without a navigation, which remounts. */
+const subscribe = () => () => {}
+
+function readFeatParam(): string | null {
+  try {
+    return new URLSearchParams(window.location.search).get("feat")
+  } catch {
+    return null
+  }
+}
 
 /**
  * Returns a function that appends the current `?feat=` query param (if any)
@@ -7,17 +18,13 @@ import { useCallback, useEffect, useState } from "react"
  * first click. Reads window.location directly (like useFeatureFlag) rather
  * than next/navigation's useSearchParams, so nav components using this
  * don't force every page in the root layout out of static rendering.
+ *
+ * The parameter is read as an external store rather than copied into state
+ * on mount: the server has no URL to read, so it reports null and the real
+ * value arrives at hydration without a second render pass.
  */
 export function useFeatureFlagQuery() {
-  const [feat, setFeat] = useState<string | null>(null)
-
-  useEffect(() => {
-    try {
-      setFeat(new URLSearchParams(window.location.search).get("feat"))
-    } catch {
-      setFeat(null)
-    }
-  }, [])
+  const feat = useSyncExternalStore(subscribe, readFeatParam, () => null)
 
   return useCallback(
     (href: string) => (feat ? `${href}?feat=${feat}` : href),

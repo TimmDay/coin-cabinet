@@ -85,9 +85,13 @@ export function ImageModal({
     document.addEventListener("keydown", handleKeyDown)
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
+    // The modal reopens on the same element rather than remounting, so its
+    // view state is reset here. A key would remount the image and refetch it.
+    /* eslint-disable react-hooks/set-state-in-effect */
     setIsLoading(true)
     setIsZoomed(false)
     setZoomOrigin({ x: 50, y: 50 })
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown)

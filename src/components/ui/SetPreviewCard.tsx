@@ -43,8 +43,12 @@ export function SetPreviewCard({
 
   useEffect(() => {
     if (candidates.length > 1) {
+      // Random, so it must not run during render: the server would pick a
+      // different picture from the client and the two would not match.
+      /* eslint-disable react-hooks/set-state-in-effect */
       setShown(candidates[Math.floor(Math.random() * candidates.length)])
       setReady(true)
+      /* eslint-enable react-hooks/set-state-in-effect */
     }
     // candidates comes from a constant list, so its length is the only input;
     // depending on the array itself would reshuffle the picture every render.

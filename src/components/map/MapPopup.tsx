@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useIsClient } from "~/hooks/useIsClient"
+import { useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import { MapCard } from "./MapCard"
 
@@ -27,13 +28,8 @@ export function MapPopup({
   position,
   content,
 }: MapPopupProps) {
-  const [mounted, setMounted] = useState(false)
+  const mounted = useIsClient()
   const popupRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    setMounted(true)
-    return () => setMounted(false)
-  }, [])
 
   useEffect(() => {
     if (!isVisible) return

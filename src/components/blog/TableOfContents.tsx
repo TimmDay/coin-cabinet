@@ -33,6 +33,10 @@ export function TableOfContents() {
       }
     })
 
+    // The table of contents is read off the rendered DOM, which is the only
+    // place the headings exist. There is nothing to derive it from during
+    // render, so measuring then storing is the shape this has to take.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTocItems(items)
 
     // Function to find the current active heading based on scroll position
