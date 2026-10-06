@@ -187,6 +187,61 @@ const OUTSIDERS = {
     role: "client",
   },
   Nabataeans: { slug: "nabataeans", name: "Nabataeans", role: "client" },
+
+  // What succeeded the Sasanians, and then faced the eastern empire for the
+  // rest of its life. Without these the map empties east of Constantinople
+  // after 643 and Byzantium appears to stand against nobody for 800 years,
+  // which is the same emptiness the Republican end of the slider had.
+  "Rashidun Caliphate": {
+    slug: "rashidun-caliphate",
+    name: "Rashidun Caliphate",
+    role: "adversary",
+  },
+  "Umayyad Caliphate": {
+    slug: "umayyad-caliphate",
+    name: "Umayyad Caliphate",
+    role: "adversary",
+  },
+  "Abbasid Caliphate": {
+    slug: "abbasid-caliphate",
+    name: "Abbasid Caliphate",
+    role: "adversary",
+  },
+  "Fatimid Caliphate": {
+    slug: "fatimid-caliphate",
+    name: "Fatimid Caliphate",
+    role: "adversary",
+  },
+  // Manzikert, 1071, falls inside this one.
+  "Great Seljuk Empire": {
+    slug: "great-seljuk-empire",
+    name: "Great Seljuk Empire",
+    role: "adversary",
+  },
+  "Ayyubid Sultanate": {
+    slug: "ayyubid-sultanate",
+    name: "Ayyubid Sultanate",
+    role: "adversary",
+  },
+  "Mamluk Sultanate": {
+    slug: "mamluk-sultanate",
+    name: "Mamluk Sultanate",
+    role: "adversary",
+  },
+  Ilkhanate: { slug: "ilkhanate", name: "Ilkhanate", role: "adversary" },
+  // Timur beat the Ottomans at Ankara in 1402, which is why Cliopatria has no
+  // Byzantine segment for 1402-1406. Including him explains that gap.
+  "Timurid Empire": {
+    slug: "timurid-empire",
+    name: "Timurid Empire",
+    role: "adversary",
+  },
+  // The power that ends the eastern empire at the slider's last year.
+  "Ottoman Empire": {
+    slug: "ottoman-empire",
+    name: "Ottoman Empire",
+    role: "adversary",
+  },
 }
 
 // Upstream polity name -> local slug. Two names deliberately share a slug:

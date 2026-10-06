@@ -838,6 +838,28 @@ describe("clients and adversaries", () => {
 
   // The slider opens at 400 BC specifically so these two are not clipped out
   // of existence: the Achaemenid empire ends in 327 and the Macedonian in 292.
+  // Before this chain existed the map emptied east of Constantinople after
+  // 643 and Byzantium appeared to face nobody for eight centuries.
+  it("never leaves the east empty once the Sasanians fall", () => {
+    for (const year of [650, 700, 800, 900, 1000, 1100, 1200, 1300, 1400]) {
+      expect(at(year).length).toBeGreaterThan(0)
+    }
+  })
+
+  it("hands Persia from the Sasanians to the caliphates", () => {
+    expect(at(600).map((j) => j.name)).toContain("Sasanian Empire")
+    expect(at(700).map((j) => j.name)).toContain("Umayyad Caliphate")
+    expect(at(700).map((j) => j.name)).not.toContain("Sasanian Empire")
+  })
+
+  it("has the Great Seljuks on the map at Manzikert", () => {
+    expect(at(1071).map((j) => j.name)).toContain("Great Seljuk Empire")
+  })
+
+  it("puts the Ottomans there for the fall of Constantinople", () => {
+    expect(at(SLIDER_END).map((j) => j.name)).toContain("Ottoman Empire")
+  })
+
   it("reaches back far enough to show the Achaemenids and Alexander's empire", () => {
     const names = at(-350).map((j) => j.name)
     expect(names).toContain("Achaemenid Empire")

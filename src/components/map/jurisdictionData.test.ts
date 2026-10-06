@@ -36,18 +36,28 @@ const EXPECTED_ROMAN_SLUGS = [
 
 /** Clients and adversaries, which share the Tier but not the palette. */
 const EXPECTED_OUTSIDER_SLUGS = [
+  "abbasid-caliphate",
   "achaemenid-empire",
   "antigonid-macedonia",
+  "ayyubid-sultanate",
   "carthage",
+  "fatimid-caliphate",
+  "great-seljuk-empire",
+  "ilkhanate",
   "kingdom-of-armenia",
   "kingdom-of-numidia",
   "kingdom-of-pontus",
   "macedonian-empire",
+  "mamluk-sultanate",
   "nabataeans",
+  "ottoman-empire",
   "parthian-empire",
   "ptolemaic-kingdom",
+  "rashidun-caliphate",
   "sasanian-empire",
   "seleucid-empire",
+  "timurid-empire",
+  "umayyad-caliphate",
 ]
 
 const props = realms.features.map((f) => f.properties as Record<string, never>)
