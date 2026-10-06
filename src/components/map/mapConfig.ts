@@ -179,11 +179,13 @@ export const PROVINCE_LABEL_STYLES = {
 export const jurisdictionColourExpression = (): ExpressionSpecification =>
   [
     "case",
-    // Everything that is not Rome shares one neutral treatment, so the five
-    // validated identity slots stay with the Roman line and the palette
-    // never has to stretch to eight concurrent hues.
-    ["!=", ["coalesce", ["get", "role"], "roman"], "roman"],
-    glColor("map-outsider"),
+    // The non-Roman world stays subordinate to the five validated Roman
+    // slots, carrying only the client/adversary distinction rather than an
+    // identity hue each.
+    ["==", ["coalesce", ["get", "role"], "roman"], "client"],
+    glColor("map-client"),
+    ["==", ["coalesce", ["get", "role"], "roman"], "adversary"],
+    glColor("map-adversary"),
     ["==", ["get", "tier"], "realm"],
     realmColourExpression(),
     ["==", ["get", "tier"], "city"],

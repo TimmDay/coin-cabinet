@@ -114,12 +114,20 @@
      only legal alongside secondary encoding, and contrast over the land is
      below 3:1 -- both are why realms carry direct labels. Five tokens serve
      ten realms: no two realms sharing one are ever on screen together. */
-  /* One neutral treatment for everything that is not Rome. Deliberately not
-     a sixth identity hue: eight concurrent realms will not pass all-pairs
-     colour-blind separation, and the question these answer is "who else was
-     there", not "which specific one". Low chroma so it reads as annotation,
-     and 3.42:1 against the land, clearing the 3:1 floor for graphics. */
-  --color-map-outsider: #332f3d;
+  /* The non-Roman world. Two muted annotation colours, not identity hues:
+     eight concurrent realms will not pass all-pairs colour-blind separation,
+     so these stay subordinate to the five validated Roman slots and carry
+     only the client/adversary distinction.
+
+     Both were picked with the palette validator, not by eye. They separate
+     from each other at dE 16.1, and the green separates from the Roman
+     slot-3 green at dE 18.8, which matters because the Gallic Empire and
+     Armenia are on screen together in the 260s. Two other greens were
+     rejected for failing exactly that check. Contrast over the land is
+     1.9:1 for the green, discharged by the name every Jurisdiction carries,
+     the same relief the Roman palette relies on. */
+  --color-map-adversary: #332f3d;
+  --color-map-client: #4a5d3a;
 
   --color-map-realm-1: #0072b2;
   --color-map-realm-2: #d55e00;

@@ -117,7 +117,12 @@ const INITIAL_YEAR = 117
 export default function MapPage() {
   // Map state
   const [selectedYear, setSelectedYear] = useState(INITIAL_YEAR)
-  const [outsiderRoles, setOutsiderRoles] = useState<Role[]>([])
+  // On by default: the Republic in particular is unreadable without its
+  // rivals, since Rome spent those centuries as one power among several.
+  const [outsiderRoles, setOutsiderRoles] = useState<Role[]>([
+    "client",
+    "adversary",
+  ])
   const [tier, setTier] = useState<Tier>("realm")
   const [selectedProvinces, setSelectedProvinces] = useState<string[] | null>(
     null,
