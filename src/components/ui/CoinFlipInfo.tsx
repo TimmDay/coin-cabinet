@@ -1,5 +1,6 @@
 "use client"
 
+import type { ReactNode } from "react"
 import { useMints } from "~/api/mints"
 import { formatYearRange } from "~/lib/utils/date-formatting"
 import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
@@ -16,7 +17,7 @@ type CoinFlipInfoProps = {
  */
 export function CoinFlipInfo({ coin, className = "" }: CoinFlipInfoProps) {
   const { data: mints } = useMints()
-  const lines: string[] = []
+  const lines: ReactNode[] = []
 
   // Line 1: diameter | mass | die axis
   const physicalInfo = formatPhysicalCharacteristicsCompact({
@@ -35,7 +36,25 @@ export function CoinFlipInfo({ coin, className = "" }: CoinFlipInfoProps) {
   }
 
   // Line 3: reference
-  if (coin.reference) lines.push(coin.reference)
+  if (coin.reference) {
+    // Only a web address becomes a link; the column is free text.
+    const link =
+      coin.reference_link && /^https?:\/\//i.test(coin.reference_link)
+    lines.push(
+      link ? (
+        <a
+          href={coin.reference_link!}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline decoration-stone-900/40 underline-offset-4 hover:decoration-stone-900"
+        >
+          {coin.reference}
+        </a>
+      ) : (
+        coin.reference
+      ),
+    )
+  }
 
   // Line 4: Mint year and name (year first, then mint name on same line)
   let mintYearName = ""
@@ -63,8 +82,10 @@ export function CoinFlipInfo({ coin, className = "" }: CoinFlipInfoProps) {
   if (lines.length === 0) return null
 
   return (
-    <div className={`leading-loose whitespace-pre-line ${className}`}>
-      {lines.join("\n")}
+    <div className={`leading-loose ${className}`}>
+      {lines.map((line, index) => (
+        <div key={index}>{line}</div>
+      ))}
     </div>
   )
 }
