@@ -3,6 +3,9 @@ import { type FeatureFlagName } from "../feature-flags"
 
 const FEATURE_FLAG_STORAGE_KEY = "feat-flags"
 
+/** `?feat=off` turns everything back off. Not a flag name. */
+export const OFF_PARAM = "off"
+
 /**
  * Hook to check for feature flags with localStorage persistence
  * Checks URL first, then localStorage, and persists URL flags to localStorage
@@ -25,6 +28,19 @@ export function useFeatureFlag(flagName: FeatureFlagName) {
     }
 
     const urlFeatParam = checkUrlParams()
+
+    // `?feat=off` clears every flag. Flags are enabled by URL and persisted
+    // to localStorage, so without this there would be no way to turn one off
+    // again once the Feature Flags page was removed from the UI.
+    if (urlFeatParam === OFF_PARAM) {
+      setIsEnabled(false)
+      try {
+        localStorage.removeItem(FEATURE_FLAG_STORAGE_KEY)
+      } catch {
+        // A browser refusing storage has no flags to clear anyway.
+      }
+      return
+    }
 
     // Check URL first - if found, enable and persist to localStorage
     if (urlFeatParam === flagName) {

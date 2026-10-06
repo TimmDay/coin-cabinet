@@ -40,7 +40,6 @@ export function DesktopNav({
 }: DesktopNavProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const isDevMode = useTypedFeatureFlag("dev")
   const isArticlesMode = useTypedFeatureFlag("articles")
   const withFeatureQuery = useFeatureFlagQuery()
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null)
@@ -230,11 +229,6 @@ export function DesktopNav({
 
   // Filter navigation items based on feature flags
   const visibleNavItems = navigationItems.filter((item) => {
-    // "Feature Flags" is for whoever is turning flags on, so it stays behind
-    // one. The map is public.
-    if (item.name === "Feature Flags") {
-      return isDevMode
-    }
     // "Articles" (and everything under it) is gated by its own flag
     if (item.name === "Articles") {
       return isArticlesMode

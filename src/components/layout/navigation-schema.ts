@@ -2,7 +2,6 @@ export const navigationItems = [
   { name: "Cabinet", href: "/cabinet", hasSubmenu: true },
   { name: "Articles", href: "/articles", hasSubmenu: true },
   { name: "Map", href: "/map" },
-  { name: "Feature Flags", href: "/feature-flags" },
 ]
 
 export type SubmenuTypes = "Cabinet" | "Articles" | "cabinetRoman"
