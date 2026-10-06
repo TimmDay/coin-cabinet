@@ -1,11 +1,5 @@
 // Define all available feature flags in one central location
 export const FEATURE_FLAGS = {
-  dev: {
-    name: "dev",
-    displayName: "Development Features",
-    description:
-      "Enables development-only features like the Caracalla and Geta blog post",
-  },
   articles: {
     name: "articles",
     displayName: "Articles",

@@ -104,17 +104,9 @@ export function clearFeatureFlags() {
 
 /**
  * Convenience hook for checking feature flags with TypeScript autocomplete
- * Usage: const isDevMode = useTypedFeatureFlag('dev')
+ * Usage: const showArticles = useTypedFeatureFlag('articles')
  */
 export function useTypedFeatureFlag(flagName: FeatureFlagName) {
   return useFeatureFlag(flagName)
 }
 
-/**
- * @deprecated Use useTypedFeatureFlag instead for better type safety
- * Convenience hook specifically for checking the 'dev' feature flag
- * Usage: const isDevMode = useDevFeatureFlag()
- */
-export function useDevFeatureFlag() {
-  return useFeatureFlag("dev")
-}
