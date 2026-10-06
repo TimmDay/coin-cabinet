@@ -9,6 +9,7 @@ import {
   type Tier,
 } from "~/components/map/jurisdictions"
 import { MapControls } from "~/components/map/MapControls"
+import { SegmentedControl } from "~/components/ui/SegmentedControl"
 import { DataSources } from "~/components/map/DataSources"
 import { TierControl } from "~/components/map/TierControl"
 import { YearSlider } from "~/components/map/YearSlider"
@@ -26,6 +27,15 @@ const Map = dynamic(
   },
 )
 
+type MarkerMode = "none" | "mints" | "cities" | "poi"
+
+const MARKER_OPTIONS = [
+  { value: "none", label: "No pins" },
+  { value: "mints", label: "Mints" },
+  { value: "cities", label: "Cities" },
+  { value: "poi", label: "POI" },
+] as const
+
 /** Opens on Trajan's empire: the most recognisable shape on the slider. */
 const INITIAL_YEAR = 117
 
@@ -40,10 +50,9 @@ export default function MapPage() {
   )
   const [showProvinceLabels, setShowProvinceLabels] = useState(true)
   // Pins stay off until asked for: the map is about territory first, and a
-  // hundred mint dots over it is not a default anyone chose.
-  const [showMints, setShowMints] = useState(false)
-  const [showCities, setShowCities] = useState(false)
-  const [showPois, setShowPois] = useState(false)
+  // hundred mint dots over it is not a default anyone chose. One choice at a
+  // time, since POI already contains every city.
+  const [markers, setMarkers] = useState<MarkerMode>("none")
 
   // Shared with the map through a module-level cache, so asking for it here
   // costs no second fetch.
@@ -97,9 +106,9 @@ export default function MapPage() {
               onFitExtent={receiveFit}
               selectedProvinces={effectiveProvinces}
               showProvinceLabels={showProvinceLabels}
-              showMintMarkers={showMints}
-              showCityMarkers={showCities}
-              showPlaceMarkers={showPois}
+              showMintMarkers={markers === "mints"}
+              showCityMarkers={markers === "cities"}
+              showPlaceMarkers={markers === "poi"}
             />
           </div>
         </div>
@@ -113,11 +122,21 @@ export default function MapPage() {
           onFitExtent={() => fitRef.current?.()}
         />
         <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-          <TierControl
-            value={tier}
-            onChange={setTier}
-            available={resolution?.availableTiers ?? []}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <TierControl
+              value={tier}
+              onChange={setTier}
+              available={resolution?.availableTiers ?? []}
+            />
+            <SegmentedControl
+              legend="Which pins to show"
+              name="map-markers"
+              size="sm"
+              options={MARKER_OPTIONS}
+              value={markers}
+              onChange={setMarkers}
+            />
+          </div>
           <DataSources
             provenance={resolution?.provenance ?? null}
             corpus={corpus}
@@ -134,12 +153,6 @@ export default function MapPage() {
           provinceNames={provinceNames}
           showProvinceLabels={showProvinceLabels}
           onProvinceLabelsChange={setShowProvinceLabels}
-          showMints={showMints}
-          onShowMintsChange={setShowMints}
-          showCities={showCities}
-          onShowCitiesChange={setShowCities}
-          showPois={showPois}
-          onShowPoisChange={setShowPois}
         />
       </div>
     </div>

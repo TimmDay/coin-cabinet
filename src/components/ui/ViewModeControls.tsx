@@ -1,3 +1,5 @@
+import { SegmentedControl } from "./SegmentedControl"
+
 type ViewMode = "obverse" | "reverse" | "both"
 type ClickMode = "browse" | "dive"
 
@@ -14,64 +16,6 @@ type ViewModeControlsProps = {
   onViewModeChange: (mode: ViewMode) => void
   clickMode?: ClickMode
   onClickModeChange?: (mode: ClickMode) => void
-}
-
-type SegmentedControlProps<T extends string> = {
-  /** Name of the group: read by screen readers, hidden visually */
-  legend: string
-  /** Radio group name */
-  name: string
-  /** Share the full width of the column */
-  fill?: boolean
-  options: readonly { value: T; label: string }[]
-  value: T
-  onChange: (value: T) => void
-}
-
-/**
- * A pill of radio buttons. Real radios under the visible labels, so arrow
- * keys, grouping and state work natively; the fieldset names the group, and
- * the focused option gets a visible moonlight ring.
- */
-function SegmentedControl<T extends string>({
-  legend,
-  name,
-  fill = false,
-  options,
-  value,
-  onChange,
-}: SegmentedControlProps<T>) {
-  return (
-    <fieldset
-      className={`border-line bg-field flex items-center rounded-full border p-1 ${fill ? "flex-1 md:w-full" : ""}`}
-    >
-      <legend className="sr-only">{legend}</legend>
-      {options.map((option) => (
-        <label
-          key={option.value}
-          className={`relative cursor-pointer ${fill ? "flex-1" : ""}`}
-        >
-          <input
-            type="radio"
-            name={name}
-            value={option.value}
-            checked={value === option.value}
-            onChange={() => onChange(option.value)}
-            className="peer sr-only"
-          />
-          <div
-            className={`peer-focus-visible:ring-moonlight/70 font-display rounded-full px-2 py-2 text-center text-sm tracking-wide uppercase transition-colors duration-200 peer-focus-visible:ring-2 md:px-4 md:tracking-widest ${
-              value === option.value
-                ? "bg-line text-ink"
-                : "text-field-muted hover:bg-line/50 hover:text-ink"
-            }`}
-          >
-            {option.label}
-          </div>
-        </label>
-      ))}
-    </fieldset>
-  )
 }
 
 const VIEW_MODE_OPTIONS = [

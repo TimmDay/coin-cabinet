@@ -38,7 +38,7 @@ import { applyOldPaperTheme } from "./mapTheme"
 import { markerPopup, type CustomMapMarker } from "./mapMarkers"
 import { CustomMarkerLayer, type ClickPoint } from "./CustomMarkerLayer"
 import { MapPopup } from "./MapPopup"
-import { TierRadio } from "./TierRadio"
+import { TierControl } from "./TierControl"
 import type { ViewportBounds } from "./useMarkerClusters"
 import { HighlightedMintSvg } from "./MintMarkerSvg"
 
@@ -708,10 +708,11 @@ export const Map: React.FC<MapProps> = ({
 
             {/* Sits over the map, bottom left, for pages with no panel. */}
             {onTierChange && tier && (
-              <TierRadio
+              <TierControl
                 value={tier}
                 onChange={onTierChange}
-                className="absolute bottom-3 left-3 z-10"
+                available={resolution?.availableTiers ?? []}
+                className="absolute bottom-3 left-3 z-10 shadow-lg"
               />
             )}
           </div>

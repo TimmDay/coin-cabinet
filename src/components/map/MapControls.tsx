@@ -22,15 +22,6 @@ type MapControlsProps = {
    * rather than a separately fetched file.
    */
   provinceNames?: string[]
-  /** Mint pins from the mints table. */
-  showMints: boolean
-  onShowMintsChange: (show: boolean) => void
-  /** Places of kind "city" from the places table. */
-  showCities: boolean
-  onShowCitiesChange: (show: boolean) => void
-  /** Every place in the places table, cities included. */
-  showPois: boolean
-  onShowPoisChange: (show: boolean) => void
 }
 
 export function MapControls({
@@ -39,12 +30,6 @@ export function MapControls({
   showProvinceLabels,
   onProvinceLabelsChange,
   provinceNames,
-  showMints,
-  onShowMintsChange,
-  showCities,
-  onShowCitiesChange,
-  showPois,
-  onShowPoisChange,
 }: MapControlsProps) {
   // Provinces data loading
   const [provincesData, setProvincesData] =
@@ -110,34 +95,7 @@ export function MapControls({
                 Show administrative area labels
               </span>
             </label>
-
-            {(
-              [
-                ["Show mints", showMints, onShowMintsChange],
-                ["Show cities", showCities, onShowCitiesChange],
-                ["Show POI", showPois, onShowPoisChange],
-              ] as const
-            ).map(([label, checked, onChange]) => (
-              <label
-                key={label}
-                className="flex cursor-pointer items-center space-x-2"
-              >
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={(e) => onChange(e.target.checked)}
-                  className="border-paper-edge text-map-label focus:ring-map-label h-4 w-4 rounded"
-                />
-                <span className="text-paper-ink text-sm">{label}</span>
-              </label>
-            ))}
           </div>
-
-          {showPois && showCities && (
-            <p className="text-paper-ink-muted text-xs">
-              POI already includes cities, so they are drawn once.
-            </p>
-          )}
         </div>
       </div>
 
