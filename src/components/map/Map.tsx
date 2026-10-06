@@ -20,6 +20,7 @@ import {
   formatYear,
   labelPointOf,
   resolveAtYear,
+  type Role,
   type Tier,
 } from "./jurisdictions"
 import {
@@ -32,6 +33,7 @@ import {
   fadeOutWithZoom,
   OVERLAY_FADE_ZOOM,
   jurisdictionColourExpression,
+  jurisdictionFillOpacity,
   REALM_LABEL_STYLES,
 } from "./mapConfig"
 import { applyOldPaperTheme } from "./mapTheme"
@@ -114,6 +116,11 @@ export type MapProps = {
   /** Which Tier to draw at the Selected year; all Tiers when omitted. */
   tier?: Tier
   /**
+   * Which non-Roman Roles to draw alongside Rome. Empty by default: the map
+   * is about the Roman world, and the rest is opt-in context.
+   */
+  outsiderRoles?: Role[]
+  /**
    * Lets the visitor change Tier from a small control over the map itself.
    * Supplied by pages with no room for a control panel; omitted leaves the
    * Tier fixed by the `tier` prop.
@@ -151,6 +158,9 @@ export type MapProps = {
   ) => void
 }
 
+/** Stable empty default, so the memo below is not invalidated every render. */
+const NO_OUTSIDERS: Role[] = []
+
 export const Map: React.FC<MapProps> = ({
   center,
   zoom,
@@ -161,6 +171,7 @@ export const Map: React.FC<MapProps> = ({
   layout = "default",
   selectedYear,
   tier,
+  outsiderRoles = NO_OUTSIDERS,
   onTierChange,
   initialBounds,
   onFitExtent,
@@ -323,6 +334,7 @@ export const Map: React.FC<MapProps> = ({
     // Which Jurisdictions to show is a separate axis from which ones existed,
     // so the selection narrows what the year already resolved.
     const features = resolution.jurisdictions
+      .filter((j) => j.role === "roman" || outsiderRoles.includes(j.role))
       .filter(
         (j) =>
           !selectedProvinces ||
@@ -338,7 +350,7 @@ export const Map: React.FC<MapProps> = ({
       }))
     if (features.length === 0) return null
     return { type: "FeatureCollection", features }
-  }, [resolution, selectedProvinces])
+  }, [resolution, selectedProvinces, outsiderRoles])
 
   // Framing is the visitor's business: the camera never moves on its own as
   // the year changes, so this is the escape hatch when they've panned away.
@@ -588,12 +600,9 @@ export const Map: React.FC<MapProps> = ({
                     maxzoom={OVERLAY_FADE_ZOOM.to}
                     paint={{
                       "fill-color": jurisdictionColour ?? provinces.fillColor,
-                      "fill-opacity": fadeOutWithZoom([
-                        "case",
-                        ["==", ["get", "attested"], false],
-                        0.13,
-                        0.22,
-                      ] as unknown as number),
+                      "fill-opacity": fadeOutWithZoom(
+                        jurisdictionFillOpacity() as unknown as number,
+                      ),
                     }}
                   />
                   <Layer

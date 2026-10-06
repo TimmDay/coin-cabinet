@@ -114,6 +114,13 @@
      only legal alongside secondary encoding, and contrast over the land is
      below 3:1 -- both are why realms carry direct labels. Five tokens serve
      ten realms: no two realms sharing one are ever on screen together. */
+  /* One neutral treatment for everything that is not Rome. Deliberately not
+     a sixth identity hue: eight concurrent realms will not pass all-pairs
+     colour-blind separation, and the question these answer is "who else was
+     there", not "which specific one". Low chroma so it reads as annotation,
+     and 3.42:1 against the land, clearing the 3:1 floor for graphics. */
+  --color-map-outsider: #332f3d;
+
   --color-map-realm-1: #0072b2;
   --color-map-realm-2: #d55e00;
   --color-map-realm-3: #009e73;

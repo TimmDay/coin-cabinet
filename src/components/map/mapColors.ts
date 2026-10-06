@@ -18,6 +18,7 @@ export const MAP_COLORS = [
   "map-building",
   "map-street-label-halo",
   "map-landmark",
+  "map-outsider",
   "map-realm-1",
   "map-realm-2",
   "map-realm-3",

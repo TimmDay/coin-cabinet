@@ -119,6 +119,74 @@ const CLIOPATRIA = {
   ],
 }
 
+// The non-Roman world: client kingdoms and rival powers, from the same
+// Cliopatria download as the Roman chain, so no new source and no new licence.
+//
+// Role is a cataloguing judgement and several of these changed over time.
+// Numidia was a client before Jugurtha and an enemy after; Armenia spent
+// centuries as a buffer claimed by both Rome and Parthia; Pontus was an ally
+// long before Mithridates. One Role per polity is a simplification, recorded
+// here in one place so it is cheap for the cataloguer to revise.
+//
+// Two of these never render: the Achaemenid and Macedonian empires both end
+// before the slider's 200 BC start, so they clamp away to nothing. They are
+// listed anyway, so they appear on their own if the window is ever widened.
+const OUTSIDERS = {
+  Carthage: { slug: "carthage", name: "Carthage", role: "adversary" },
+  "Achaemenid Empire": {
+    slug: "achaemenid-empire",
+    name: "Achaemenid Empire",
+    role: "adversary",
+  },
+  "Macedonian Empire": {
+    slug: "macedonian-empire",
+    name: "Macedonian Empire",
+    role: "adversary",
+  },
+  "Seleucid Empire": {
+    slug: "seleucid-empire",
+    name: "Seleucid Empire",
+    role: "adversary",
+  },
+  "Ptolemaic Kingdom": {
+    slug: "ptolemaic-kingdom",
+    name: "Ptolemaic Kingdom",
+    role: "adversary",
+  },
+  "Antigonid Macedonia": {
+    slug: "antigonid-macedonia",
+    name: "Antigonid Macedonia",
+    role: "adversary",
+  },
+  "Parthian Empire": {
+    slug: "parthian-empire",
+    name: "Parthian Empire",
+    role: "adversary",
+  },
+  "Sasanian Empire": {
+    slug: "sasanian-empire",
+    name: "Sasanian Empire",
+    role: "adversary",
+  },
+  "Kingdom of Pontus": {
+    slug: "kingdom-of-pontus",
+    name: "Kingdom of Pontus",
+    role: "adversary",
+  },
+  // Client kingdoms: inside Rome's orbit rather than opposing it.
+  "Kingdom of Armenia": {
+    slug: "kingdom-of-armenia",
+    name: "Kingdom of Armenia",
+    role: "client",
+  },
+  "Kingdom of Numidia": {
+    slug: "kingdom-of-numidia",
+    name: "Kingdom of Numidia",
+    role: "client",
+  },
+  Nabataeans: { slug: "nabataeans", name: "Nabataeans", role: "client" },
+}
+
 // Upstream polity name -> local slug. Two names deliberately share a slug:
 // Cliopatria's switch from "Eastern Roman Empire" to "Byzantine Empire" at 633
 // is a segment boundary in their data, not a historical event. CONTEXT.md says
@@ -202,7 +270,7 @@ function buildRealms(member) {
     // alliances and allegiances ("(Allegiance of Ostrogothic Kingdom to
     // Eastern Roman Empire)") -- those are relationships, not Jurisdictions.
     if (p.Type !== "POLITY") continue
-    const realm = REALMS[p.Name]
+    const realm = REALMS[p.Name] ?? OUTSIDERS[p.Name]
     if (!realm) continue
 
     const window = clamp(p.FromYear, p.ToYear)
@@ -216,6 +284,8 @@ function buildRealms(member) {
         ...(realm.altNames ? { altNames: realm.altNames } : {}),
         tier: "realm",
         kind: "realm",
+        // Roman unless the polity came from the outsiders table.
+        role: realm.role ?? "roman",
         source: CLIOPATRIA.key,
         // Each Cliopatria segment carries its own geometry for its own years,
         // so the Basis year is the segment's own start -- unlike the province
@@ -474,8 +544,21 @@ writeFileSync(
 
 const bytes = readFileSync(realmsPath).length
 console.log(`\nJurisdictions: ${features.length} segments`)
+const roleOf = new Map(
+  features.map((f) => [f.properties.slug, f.properties.role]),
+)
 for (const [slug, span] of [...spans].sort((a, b) => a[1].start - b[1].start)) {
-  console.log(`  ${slug.padEnd(22)} ${span.start} .. ${span.end}`)
+  console.log(
+    `  ${slug.padEnd(22)} ${String(span.start).padStart(5)} .. ${String(span.end).padEnd(5)}  ${roleOf.get(slug)}`,
+  )
+}
+const missing = Object.entries(OUTSIDERS)
+  .filter(([, o]) => !spans.has(o.slug))
+  .map(([name]) => name)
+if (missing.length > 0) {
+  console.log(
+    `  (outside the slider window, nothing drawn: ${missing.join(", ")})`,
+  )
 }
 console.log(`realms.geojson: ${(bytes / 1024).toFixed(0)} KB`)
 

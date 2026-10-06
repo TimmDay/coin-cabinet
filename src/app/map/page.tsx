@@ -7,6 +7,7 @@ import {
   changeYears,
   resolveAtYear,
   type Tier,
+  type Role,
 } from "~/components/map/jurisdictions"
 import { TRAJAN_BOUNDS } from "~/components/map/mapConfig"
 import { MapControls } from "~/components/map/MapControls"
@@ -27,6 +28,16 @@ const Map = dynamic(
 )
 
 type MarkerLayer = "mints" | "cities" | "poi"
+
+/**
+ * The non-Roman world, off by default. The map is about Rome; everything it
+ * fought, absorbed or bordered is opt-in context, which also keeps the Realm
+ * identity palette from having to stretch past its validated five slots.
+ */
+const OUTSIDER_OPTIONS = [
+  { value: "client", label: "Clients" },
+  { value: "adversary", label: "Adversaries" },
+] as const
 
 const MARKER_OPTIONS = [
   { value: "mints", label: "Mints" },
@@ -106,6 +117,7 @@ const INITIAL_YEAR = 117
 export default function MapPage() {
   // Map state
   const [selectedYear, setSelectedYear] = useState(INITIAL_YEAR)
+  const [outsiderRoles, setOutsiderRoles] = useState<Role[]>([])
   const [tier, setTier] = useState<Tier>("realm")
   const [selectedProvinces, setSelectedProvinces] = useState<string[] | null>(
     null,
@@ -173,6 +185,7 @@ export default function MapPage() {
               initialBounds={TRAJAN_BOUNDS}
               selectedYear={selectedYear}
               tier={tier}
+              outsiderRoles={outsiderRoles}
               onFitExtent={receiveFit}
               selectedProvinces={effectiveProvinces}
               showProvinceLabels={showProvinceLabels}
@@ -202,6 +215,13 @@ export default function MapPage() {
               value={tier}
               onChange={setTier}
               available={resolution?.availableTiers ?? []}
+            />
+            <ToggleGroup
+              legend="Show clients and adversaries"
+              size="sm"
+              options={OUTSIDER_OPTIONS}
+              value={outsiderRoles}
+              onChange={setOutsiderRoles}
             />
             <ToggleGroup
               legend="Which pins to show"

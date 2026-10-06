@@ -178,13 +178,28 @@ export const PROVINCE_LABEL_STYLES = {
  */
 export const jurisdictionColourExpression = (): ExpressionSpecification =>
   [
-    "match",
-    ["get", "tier"],
-    "realm",
+    "case",
+    // Everything that is not Rome shares one neutral treatment, so the five
+    // validated identity slots stay with the Roman line and the palette
+    // never has to stretch to eight concurrent hues.
+    ["!=", ["coalesce", ["get", "role"], "roman"], "roman"],
+    glColor("map-outsider"),
+    ["==", ["get", "tier"], "realm"],
     realmColourExpression(),
-    "city",
+    ["==", ["get", "tier"], "city"],
     glColor("map-province-line"),
     glColor("map-province-fill"),
+  ] as unknown as ExpressionSpecification
+
+/** A client or adversary is drawn as annotation, not as a rival identity. */
+export const jurisdictionFillOpacity = (): ExpressionSpecification =>
+  [
+    "case",
+    ["!=", ["coalesce", ["get", "role"], "roman"], "roman"],
+    0.08,
+    ["==", ["get", "attested"], false],
+    0.13,
+    0.22,
   ] as unknown as ExpressionSpecification
 
 export const realmColourExpression = (): ExpressionSpecification => {

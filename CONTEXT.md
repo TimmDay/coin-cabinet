@@ -29,6 +29,13 @@ Italia, the city of Rome and the Augustan regiones of Italy belong there too,
 and none of those was a province.
 _Avoid_: Level, layer, scale, granularity
 
+**Role**:
+A Jurisdiction's relationship to Rome: Roman, a client, or an adversary. Role
+describes a relationship, not a kind of administration, so a Parthian empire
+and a Roman province can share a Tier while differing in Role.
+_Avoid_: Allegiance (which implies subordination, wrong for an adversary),
+alignment, side, status, faction
+
 **Succession**:
 The relationship between a Jurisdiction that ends and the one or more
 Jurisdictions that take over its territory. A Jurisdiction is never renamed: if

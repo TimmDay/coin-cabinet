@@ -342,9 +342,11 @@ describe("against the committed Realm Tier corpus", () => {
     ) as Record<string, never>,
   }
 
+  /** The Roman line only; clients and adversaries share this Tier now. */
   const slugsAt = (year: number) =>
     resolveAtYear(realCorpus, year)
-      .jurisdictions.map((j) => j.slug)
+      .jurisdictions.filter((j) => j.role === "roman")
+      .map((j) => j.slug)
       .sort()
 
   it("shows the Republic at the slider's start", () => {
@@ -442,7 +444,7 @@ describe("assumed dates", () => {
 })
 
 describe("realm identity colours", () => {
-  it("assigns every Realm in the committed corpus a slot", () => {
+  it("assigns every Roman Realm in the committed corpus a slot", () => {
     const dataDir = join(process.cwd(), "public", "data", "jurisdictions")
     const features = (
       JSON.parse(
@@ -450,7 +452,10 @@ describe("realm identity colours", () => {
       ) as GeoJSON.FeatureCollection
     ).features as JurisdictionFeature[]
 
-    for (const slug of new Set(features.map((f) => f.properties.slug))) {
+    const roman = features.filter(
+      (f) => (f.properties.role ?? "roman") === "roman",
+    )
+    for (const slug of new Set(roman.map((f) => f.properties.slug))) {
       expect(REALM_COLOUR_SLOT[slug]).toBeDefined()
     }
   })
@@ -473,7 +478,11 @@ describe("realm identity colours", () => {
 
     const clashes: string[] = []
     for (let year = SLIDER_START; year <= SLIDER_END; year++) {
-      const drawn = resolveAtYear(realCorpus, year, "realm").jurisdictions
+      const drawn = resolveAtYear(
+        realCorpus,
+        year,
+        "realm",
+      ).jurisdictions.filter((j) => j.role === "roman")
       const bySlot = new Map<number, string>()
       for (const j of drawn) {
         const slot = colourSlotOf(j.slug)
@@ -711,8 +720,12 @@ describe("the Tier a coin's map opens at", () => {
   }
 
   // Every drawn Jurisdiction carries a label, so the count is the crowding.
+  // Roman only: a coin page shows no clients or adversaries unless asked, so
+  // counting them here would measure something the page never draws.
   const drawnAt = (year: number, tier: Tier) =>
-    resolveAtYear(full, year, tier).jurisdictions.length
+    resolveAtYear(full, year, tier).jurisdictions.filter(
+      (j) => j.role === "roman",
+    ).length
 
   it.each([
     ["a Severan denarius", 200],
@@ -735,5 +748,88 @@ describe("the Tier a coin's map opens at", () => {
     for (const year of [SLIDER_START, -50, 117, 400, 800, 1200, 1453]) {
       expect(drawnAt(year, COIN_PAGE_TIER)).toBeGreaterThan(0)
     }
+  })
+})
+
+describe("clients and adversaries", () => {
+  const dataDir = join(process.cwd(), "public", "data", "jurisdictions")
+  const corpusOf = (): Corpus => ({
+    features: (
+      JSON.parse(
+        readFileSync(join(dataDir, "realms.geojson"), "utf8"),
+      ) as GeoJSON.FeatureCollection
+    ).features as JurisdictionFeature[],
+    sources: JSON.parse(
+      readFileSync(join(dataDir, "sources.json"), "utf8"),
+    ) as Record<string, never>,
+  })
+  const c = corpusOf()
+
+  const at = (year: number) =>
+    resolveAtYear(c, year, "realm").jurisdictions.filter(
+      (j) => j.role !== "roman",
+    )
+
+  it("puts the Republic among rivals rather than in empty space", () => {
+    // The point of the feature: 200 BC was not Rome alone.
+    const names = at(-200).map((j) => j.name)
+    expect(names).toContain("Carthage")
+    expect(names).toContain("Seleucid Empire")
+    expect(names).toContain("Ptolemaic Kingdom")
+    expect(names.length).toBeGreaterThanOrEqual(5)
+  })
+
+  it("retires Carthage after its destruction", () => {
+    expect(at(-150).map((j) => j.name)).toContain("Carthage")
+    expect(at(-140).map((j) => j.name)).not.toContain("Carthage")
+  })
+
+  it("hands the east from Parthia to the Sasanians", () => {
+    expect(at(150).map((j) => j.name)).toContain("Parthian Empire")
+    expect(at(400).map((j) => j.name)).toContain("Sasanian Empire")
+    expect(at(400).map((j) => j.name)).not.toContain("Parthian Empire")
+  })
+
+  it("leaves the high empire uncluttered, as the data says", () => {
+    // AD 117 really is quiet: Parthia, and Rome's clients largely absorbed.
+    expect(at(117).length).toBeLessThanOrEqual(3)
+  })
+
+  it("distinguishes clients from adversaries", () => {
+    const roles = new Map(
+      c.features.map((f) => [f.properties.slug, f.properties.role]),
+    )
+    expect(roles.get("kingdom-of-armenia")).toBe("client")
+    expect(roles.get("nabataeans")).toBe("client")
+    expect(roles.get("carthage")).toBe("adversary")
+    expect(roles.get("sasanian-empire")).toBe("adversary")
+  })
+
+  // The whole reason these share one treatment: eight concurrent hues will
+  // not pass colour-blind separation, so the five validated slots stay with
+  // the Roman line and outsiders are deliberately absent from the palette.
+  it("keeps outsiders out of the identity palette", () => {
+    for (const f of c.features) {
+      if ((f.properties.role ?? "roman") === "roman") continue
+      expect(REALM_COLOUR_SLOT[f.properties.slug]).toBeUndefined()
+    }
+  })
+
+  it("never draws more concurrent Roman realms than the palette has slots", () => {
+    let worst = 0
+    for (let year = SLIDER_START; year <= SLIDER_END; year++) {
+      const roman = resolveAtYear(c, year, "realm").jurisdictions.filter(
+        (j) => j.role === "roman",
+      )
+      worst = Math.max(worst, roman.length)
+    }
+    expect(worst).toBeLessThanOrEqual(5)
+  })
+
+  it("omits polities whose whole span predates the slider", () => {
+    // Both end before 275 BC, so they clamp away to nothing.
+    const slugs = new Set(c.features.map((f) => f.properties.slug))
+    expect(slugs).not.toContain("achaemenid-empire")
+    expect(slugs).not.toContain("macedonian-empire")
   })
 })

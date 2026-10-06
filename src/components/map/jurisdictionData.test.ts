@@ -20,8 +20,8 @@ const sources = JSON.parse(
 // Imported rather than restated: duplicating them meant this file silently
 // disagreed with the pipeline when the window moved.
 
-/** Every Jurisdiction the Realm Tier is allowed to contain. */
-const EXPECTED_SLUGS = [
+/** The Roman line. Everything else on the Realm Tier is an outsider. */
+const EXPECTED_ROMAN_SLUGS = [
   "despotate-of-epirus",
   "eastern-roman-empire",
   "empire-of-trebizond",
@@ -32,6 +32,20 @@ const EXPECTED_SLUGS = [
   "roman-empire",
   "roman-republic",
   "western-roman-empire",
+]
+
+/** Clients and adversaries, which share the Tier but not the palette. */
+const EXPECTED_OUTSIDER_SLUGS = [
+  "antigonid-macedonia",
+  "carthage",
+  "kingdom-of-armenia",
+  "kingdom-of-numidia",
+  "kingdom-of-pontus",
+  "nabataeans",
+  "parthian-empire",
+  "ptolemaic-kingdom",
+  "sasanian-empire",
+  "seleucid-empire",
 ]
 
 const props = realms.features.map((f) => f.properties as Record<string, never>)
@@ -67,10 +81,23 @@ describe("realms.geojson", () => {
     expect(empty).toHaveLength(0)
   })
 
-  it("holds only the expected Jurisdictions", () => {
-    expect([...new Set(props.map((p) => p.slug))].sort()).toEqual(
-      EXPECTED_SLUGS,
+  it("holds only the expected Roman Jurisdictions", () => {
+    const roman = props.filter((p) => (p.role ?? "roman") === "roman")
+    expect([...new Set(roman.map((p) => p.slug))].sort()).toEqual(
+      EXPECTED_ROMAN_SLUGS,
     )
+  })
+
+  it("holds only the expected clients and adversaries", () => {
+    const outsiders = props.filter((p) => (p.role ?? "roman") !== "roman")
+    expect([...new Set(outsiders.map((p) => p.slug))].sort()).toEqual(
+      EXPECTED_OUTSIDER_SLUGS,
+    )
+  })
+
+  it("gives every feature a Role it recognises", () => {
+    const roles = new Set(props.map((p) => p.role ?? "roman"))
+    expect([...roles].sort()).toEqual(["adversary", "client", "roman"])
   })
 
   it("clamps every segment to the slider window", () => {

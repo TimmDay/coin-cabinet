@@ -7,6 +7,12 @@
 
 export type Tier = "realm" | "province" | "city"
 
+/** A Jurisdiction's relationship to Rome. See CONTEXT.md. */
+export type Role = "roman" | "client" | "adversary"
+
+/** The Roles that are not Rome, in the order the toggle lists them. */
+export const OUTSIDER_ROLES: Role[] = ["client", "adversary"]
+
 export const TIERS: Tier[] = ["realm", "province", "city"]
 
 /**
@@ -29,6 +35,8 @@ export type JurisdictionProperties = {
   altNames?: string[]
   tier: Tier
   kind: string
+  /** Defaults to Roman for anything built before Role existed. */
+  role?: Role
   /** Where the geometry came from. */
   source: string
   /** Where the Span came from, when that differs from the geometry's source. */
@@ -68,6 +76,7 @@ export type ResolvedJurisdiction = {
   slug: string
   name: string
   tier: Tier
+  role: Role
   basisYear: number
   /** False when any Source it relies on does not cover the Selected year. */
   attested: boolean
@@ -197,6 +206,7 @@ export function resolveAtYear(
         slug: p.slug,
         name: p.name,
         tier: p.tier,
+        role: p.role ?? "roman",
         basisYear: p.basisYear,
         attested: sourceKeysFor(p).every((key) =>
           covers(corpus.sources[key], year),
