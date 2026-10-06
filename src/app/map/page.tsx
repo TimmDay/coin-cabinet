@@ -94,8 +94,10 @@ export default function MapPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Full-size Map Container */}
-      <div className="h-[calc(100vh-240px)] flex-shrink-0">
+      {/* Takes whatever the controls below it leave, so hiding the
+          administrative areas panel gives the map the space rather than
+          leaving a gap. min-h-0 stops a flex child refusing to shrink. */}
+      <div className="min-h-0 flex-1">
         <div className="h-full p-4 sm:p-6 lg:p-8">
           <div className="bg-paper h-full w-full overflow-hidden rounded-lg shadow-lg">
             <Map
@@ -145,16 +147,18 @@ export default function MapPage() {
         </div>
       </div>
 
-      {/* Map Controls */}
-      <div className="flex-shrink-0 px-4 py-4 sm:px-6 lg:px-8">
-        <MapControls
-          selectedProvinces={selectedProvinces}
-          onProvincesChange={setSelectedProvinces}
-          provinceNames={provinceNames}
-          showProvinceLabels={showProvinceLabels}
-          onProvinceLabelsChange={setShowProvinceLabels}
-        />
-      </div>
+      {/* Only while the Tier it controls is the one on screen. */}
+      {tier === "province" && (
+        <div className="flex-shrink-0 px-4 py-4 sm:px-6 lg:px-8">
+          <MapControls
+            selectedProvinces={selectedProvinces}
+            onProvincesChange={setSelectedProvinces}
+            provinceNames={provinceNames}
+            showProvinceLabels={showProvinceLabels}
+            onProvinceLabelsChange={setShowProvinceLabels}
+          />
+        </div>
+      )}
     </div>
   )
 }
