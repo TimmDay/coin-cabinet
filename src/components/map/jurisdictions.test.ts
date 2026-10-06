@@ -342,9 +342,11 @@ describe("against the committed Realm Tier corpus", () => {
     ) as Record<string, never>,
   }
 
+  /** The Roman line only; clients and adversaries share this Tier now. */
   const slugsAt = (year: number) =>
     resolveAtYear(realCorpus, year)
-      .jurisdictions.map((j) => j.slug)
+      .jurisdictions.filter((j) => j.role === "roman")
+      .map((j) => j.slug)
       .sort()
 
   it("shows the Republic at the slider's start", () => {
@@ -442,7 +444,7 @@ describe("assumed dates", () => {
 })
 
 describe("realm identity colours", () => {
-  it("assigns every Realm in the committed corpus a slot", () => {
+  it("assigns every Roman Realm in the committed corpus a slot", () => {
     const dataDir = join(process.cwd(), "public", "data", "jurisdictions")
     const features = (
       JSON.parse(
@@ -450,7 +452,10 @@ describe("realm identity colours", () => {
       ) as GeoJSON.FeatureCollection
     ).features as JurisdictionFeature[]
 
-    for (const slug of new Set(features.map((f) => f.properties.slug))) {
+    const roman = features.filter(
+      (f) => (f.properties.role ?? "roman") === "roman",
+    )
+    for (const slug of new Set(roman.map((f) => f.properties.slug))) {
       expect(REALM_COLOUR_SLOT[slug]).toBeDefined()
     }
   })
@@ -473,7 +478,11 @@ describe("realm identity colours", () => {
 
     const clashes: string[] = []
     for (let year = SLIDER_START; year <= SLIDER_END; year++) {
-      const drawn = resolveAtYear(realCorpus, year, "realm").jurisdictions
+      const drawn = resolveAtYear(
+        realCorpus,
+        year,
+        "realm",
+      ).jurisdictions.filter((j) => j.role === "roman")
       const bySlot = new Map<number, string>()
       for (const j of drawn) {
         const slot = colourSlotOf(j.slug)
@@ -579,18 +588,28 @@ describe("against the committed Province Tier corpus", () => {
     ) as Record<string, never>,
   }
 
-  // The slider opens before the First Punic War, when Rome held no provinces
-  // at all. Anything drawn then beyond Italy is there because its dates are
-  // assumed rather than sourced, and it says so: this is the cost of giving
-  // the placeholders a wide Span, and it is paid in the open.
-  it("marks everything it cannot date at the slider's first year", () => {
-    const drawn = resolveAtYear(full, SLIDER_START, "province").jurisdictions
+  // The slider now opens in 400 BC, when Rome was one city among many and
+  // held nothing worth calling a province.
+  it("draws no provinces at the slider's first year", () => {
+    expect(
+      resolveAtYear(full, SLIDER_START, "province").jurisdictions,
+    ).toHaveLength(0)
+  })
+
+  // Undated provinces are floored at 241 BC, Rome's first province, rather
+  // than at the slider's edge. At that floor the map shows Italia and
+  // Sicilia, and nothing is drawn whose dates are neither sourced nor
+  // openly flagged as assumed.
+  it("either sources or flags every province at the placeholder floor", () => {
+    const drawn = resolveAtYear(full, -240, "province").jurisdictions
     const names = drawn.map((j) => j.name)
     expect(names).toContain("Italia")
+    expect(names).toContain("Sicilia")
 
     for (const jurisdiction of drawn) {
-      if (jurisdiction.name === "Italia") continue
-      expect(jurisdiction.datesAssumed).toBe(true)
+      const sourced =
+        jurisdiction.feature.properties.spanSource !== "placeholder"
+      expect(sourced || jurisdiction.datesAssumed).toBe(true)
     }
   })
 
@@ -666,9 +685,10 @@ describe("against the committed Province Tier corpus", () => {
     expect(availableTiers).not.toContain("province")
   })
 
-  it("keeps Roma on the City Tier", () => {
-    const city = resolveAtYear(full, 117, "city").jurisdictions
-    expect(city.map((j) => j.name)).toEqual(["Roma"])
+  // A City Tier briefly existed for Roma alone, a 5km polygon that is
+  // sub-pixel at the zooms this map is read at. Cities are pins now.
+  it("keeps Roma out of the Jurisdiction layer entirely", () => {
+    expect(full.features.map((f) => f.properties.name)).not.toContain("Roma")
   })
 
   it("marks the regiones as belonging to no Tier of their own", () => {
@@ -711,8 +731,12 @@ describe("the Tier a coin's map opens at", () => {
   }
 
   // Every drawn Jurisdiction carries a label, so the count is the crowding.
+  // Roman only: a coin page shows no clients or adversaries unless asked, so
+  // counting them here would measure something the page never draws.
   const drawnAt = (year: number, tier: Tier) =>
-    resolveAtYear(full, year, tier).jurisdictions.length
+    resolveAtYear(full, year, tier).jurisdictions.filter(
+      (j) => j.role === "roman",
+    ).length
 
   it.each([
     ["a Severan denarius", 200],
@@ -735,5 +759,118 @@ describe("the Tier a coin's map opens at", () => {
     for (const year of [SLIDER_START, -50, 117, 400, 800, 1200, 1453]) {
       expect(drawnAt(year, COIN_PAGE_TIER)).toBeGreaterThan(0)
     }
+  })
+})
+
+describe("clients and adversaries", () => {
+  const dataDir = join(process.cwd(), "public", "data", "jurisdictions")
+  const corpusOf = (): Corpus => ({
+    features: (
+      JSON.parse(
+        readFileSync(join(dataDir, "realms.geojson"), "utf8"),
+      ) as GeoJSON.FeatureCollection
+    ).features as JurisdictionFeature[],
+    sources: JSON.parse(
+      readFileSync(join(dataDir, "sources.json"), "utf8"),
+    ) as Record<string, never>,
+  })
+  const c = corpusOf()
+
+  const at = (year: number) =>
+    resolveAtYear(c, year, "realm").jurisdictions.filter(
+      (j) => j.role !== "roman",
+    )
+
+  it("puts the Republic among rivals rather than in empty space", () => {
+    // The point of the feature: 200 BC was not Rome alone.
+    const names = at(-200).map((j) => j.name)
+    expect(names).toContain("Carthage")
+    expect(names).toContain("Seleucid Empire")
+    expect(names).toContain("Ptolemaic Kingdom")
+    expect(names.length).toBeGreaterThanOrEqual(5)
+  })
+
+  it("retires Carthage after its destruction", () => {
+    expect(at(-150).map((j) => j.name)).toContain("Carthage")
+    expect(at(-140).map((j) => j.name)).not.toContain("Carthage")
+  })
+
+  it("hands the east from Parthia to the Sasanians", () => {
+    expect(at(150).map((j) => j.name)).toContain("Parthian Empire")
+    expect(at(400).map((j) => j.name)).toContain("Sasanian Empire")
+    expect(at(400).map((j) => j.name)).not.toContain("Parthian Empire")
+  })
+
+  it("leaves the high empire uncluttered, as the data says", () => {
+    // AD 117 really is quiet: Parthia, and Rome's clients largely absorbed.
+    expect(at(117).length).toBeLessThanOrEqual(3)
+  })
+
+  it("distinguishes clients from adversaries", () => {
+    const roles = new Map(
+      c.features.map((f) => [f.properties.slug, f.properties.role]),
+    )
+    expect(roles.get("kingdom-of-armenia")).toBe("client")
+    expect(roles.get("nabataeans")).toBe("client")
+    expect(roles.get("carthage")).toBe("adversary")
+    expect(roles.get("sasanian-empire")).toBe("adversary")
+  })
+
+  // The whole reason these share one treatment: eight concurrent hues will
+  // not pass colour-blind separation, so the five validated slots stay with
+  // the Roman line and outsiders are deliberately absent from the palette.
+  it("keeps outsiders out of the identity palette", () => {
+    for (const f of c.features) {
+      if ((f.properties.role ?? "roman") === "roman") continue
+      expect(REALM_COLOUR_SLOT[f.properties.slug]).toBeUndefined()
+    }
+  })
+
+  it("never draws more concurrent Roman realms than the palette has slots", () => {
+    let worst = 0
+    for (let year = SLIDER_START; year <= SLIDER_END; year++) {
+      const roman = resolveAtYear(c, year, "realm").jurisdictions.filter(
+        (j) => j.role === "roman",
+      )
+      worst = Math.max(worst, roman.length)
+    }
+    expect(worst).toBeLessThanOrEqual(5)
+  })
+
+  // The slider opens at 400 BC specifically so these two are not clipped out
+  // of existence: the Achaemenid empire ends in 327 and the Macedonian in 292.
+  // Before this chain existed the map emptied east of Constantinople after
+  // 643 and Byzantium appeared to face nobody for eight centuries.
+  it("never leaves the east empty once the Sasanians fall", () => {
+    for (const year of [650, 700, 800, 900, 1000, 1100, 1200, 1300, 1400]) {
+      expect(at(year).length).toBeGreaterThan(0)
+    }
+  })
+
+  it("hands Persia from the Sasanians to the caliphates", () => {
+    expect(at(600).map((j) => j.name)).toContain("Sasanian Empire")
+    expect(at(700).map((j) => j.name)).toContain("Umayyad Caliphate")
+    expect(at(700).map((j) => j.name)).not.toContain("Sasanian Empire")
+  })
+
+  it("has the Great Seljuks on the map at Manzikert", () => {
+    expect(at(1071).map((j) => j.name)).toContain("Great Seljuk Empire")
+  })
+
+  it("puts the Ottomans there for the fall of Constantinople", () => {
+    expect(at(SLIDER_END).map((j) => j.name)).toContain("Ottoman Empire")
+  })
+
+  it("reaches back far enough to show the Achaemenids and Alexander's empire", () => {
+    const names = at(-350).map((j) => j.name)
+    expect(names).toContain("Achaemenid Empire")
+    expect(names).toContain("Macedonian Empire")
+  })
+
+  it("ends both of them on time", () => {
+    expect(at(-330).map((j) => j.name)).toContain("Achaemenid Empire")
+    expect(at(-320).map((j) => j.name)).not.toContain("Achaemenid Empire")
+    expect(at(-300).map((j) => j.name)).toContain("Macedonian Empire")
+    expect(at(-280).map((j) => j.name)).not.toContain("Macedonian Empire")
   })
 })

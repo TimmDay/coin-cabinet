@@ -5,9 +5,21 @@
 // Everything here is pure. Loading lives in the map's layer hook, rendering in
 // Map.tsx, so the whole behaviour of the year slider is testable without a map.
 
-export type Tier = "realm" | "province" | "city"
+/**
+ * A City Tier existed briefly and was removed: the only territory that
+ * qualified was Roma, about 5km across, which is sub-pixel at the zooms this
+ * map is read at. Cities are shown as pins instead, which is what the data
+ * actually supports.
+ */
+export type Tier = "realm" | "province"
 
-export const TIERS: Tier[] = ["realm", "province", "city"]
+/** A Jurisdiction's relationship to Rome. See CONTEXT.md. */
+export type Role = "roman" | "client" | "adversary"
+
+/** The Roles that are not Rome, in the order the toggle lists them. */
+export const OUTSIDER_ROLES: Role[] = ["client", "adversary"]
+
+export const TIERS: Tier[] = ["realm", "province"]
 
 /**
  * The Tier a coin's own map opens at.
@@ -20,7 +32,7 @@ export const TIERS: Tier[] = ["realm", "province", "city"]
 export const COIN_PAGE_TIER: Tier = "realm"
 
 /** The slider's window. Nothing outside it is reachable. */
-export const SLIDER_START = -275
+export const SLIDER_START = -400
 export const SLIDER_END = 1453
 
 export type JurisdictionProperties = {
@@ -29,6 +41,8 @@ export type JurisdictionProperties = {
   altNames?: string[]
   tier: Tier
   kind: string
+  /** Defaults to Roman for anything built before Role existed. */
+  role?: Role
   /** Where the geometry came from. */
   source: string
   /** Where the Span came from, when that differs from the geometry's source. */
@@ -68,6 +82,7 @@ export type ResolvedJurisdiction = {
   slug: string
   name: string
   tier: Tier
+  role: Role
   basisYear: number
   /** False when any Source it relies on does not cover the Selected year. */
   attested: boolean
@@ -197,6 +212,7 @@ export function resolveAtYear(
         slug: p.slug,
         name: p.name,
         tier: p.tier,
+        role: p.role ?? "roman",
         basisYear: p.basisYear,
         attested: sourceKeysFor(p).every((key) =>
           covers(corpus.sources[key], year),
@@ -301,7 +317,10 @@ export const REALM_COLOUR_SLOT: Record<string, 1 | 2 | 3 | 4 | 5> = {
   "eastern-roman-empire": 1,
   // The third-century breakaways, concurrent with the Empire and each other.
   "gallic-empire": 3,
-  "palmyrene-empire": 4,
+  // Slot 1 rather than 4: Palmyrene never shares a year with the eastern
+  // empire, and freeing slot 4 keeps the pink away from the client colour,
+  // which a client and the Palmyrenes would otherwise collide with.
+  "palmyrene-empire": 1,
   // The post-1204 successors, concurrent with the east and each other.
   "latin-empire": 2,
   "nicaean-empire": 3,

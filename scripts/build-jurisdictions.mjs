@@ -20,7 +20,7 @@ import {
   PLACEHOLDER_SPAN,
   PROVINCE_SPANS,
   SUCCESSORS,
-  TIER_OVERRIDES,
+  EXCLUDED_FEATURES,
 } from "./province-spans.mjs"
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { basename, dirname, join } from "node:path"
@@ -32,7 +32,7 @@ const cacheDir = join(root, ".cache", "jurisdictions")
 const outDir = join(root, "public", "data", "jurisdictions")
 
 /** The slider's window. Nothing outside it is reachable, so everything clamps. */
-const SLIDER_START = -275
+const SLIDER_START = -400
 const SLIDER_END = 1453
 
 const PAZOUT = {
@@ -105,7 +105,9 @@ const CLIOPATRIA = {
   // Coverage is what the Source actually speaks to. Outside it, a claim is
   // Inferred rather than Attested -- the resolver derives that, so this range
   // is the single place to correct if the assessment changes.
-  coverage: { from: -275, to: 1453 },
+  // Tracks the slider window rather than repeating it, so widening the window
+  // cannot leave this claiming less than the data actually covers.
+  coverage: { from: SLIDER_START, to: SLIDER_END },
   modified:
     "Filtered to Roman-world polities, clamped to 275 BC - AD 1453, the " +
     "eastern/Byzantine label switch merged into one Jurisdiction, and " +
@@ -117,6 +119,129 @@ const CLIOPATRIA = {
     "Byzantine Empire has no segments for 1227-1278 or 1402-1406; the successor states cover those years.",
     "Its Wikidata links are unreliable (Roman Empire -> Q12544, which is Byzantine Empire; Byzantine Empire -> Q112039853, which is Foreign relations of the Byzantine Empire), so they are not imported.",
   ],
+}
+
+// The non-Roman world: client kingdoms and rival powers, from the same
+// Cliopatria download as the Roman chain, so no new source and no new licence.
+//
+// Role is a cataloguing judgement and several of these changed over time.
+// Numidia was a client before Jugurtha and an enemy after; Armenia spent
+// centuries as a buffer claimed by both Rome and Parthia; Pontus was an ally
+// long before Mithridates. One Role per polity is a simplification, recorded
+// here in one place so it is cheap for the cataloguer to revise.
+//
+// Two of these never render: the Achaemenid and Macedonian empires both end
+// before the slider's 200 BC start, so they clamp away to nothing. They are
+// listed anyway, so they appear on their own if the window is ever widened.
+const OUTSIDERS = {
+  Carthage: { slug: "carthage", name: "Carthage", role: "adversary" },
+  "Achaemenid Empire": {
+    slug: "achaemenid-empire",
+    name: "Achaemenid Empire",
+    role: "adversary",
+  },
+  "Macedonian Empire": {
+    slug: "macedonian-empire",
+    name: "Macedonian Empire",
+    role: "adversary",
+  },
+  "Seleucid Empire": {
+    slug: "seleucid-empire",
+    name: "Seleucid Empire",
+    role: "adversary",
+  },
+  "Ptolemaic Kingdom": {
+    slug: "ptolemaic-kingdom",
+    name: "Ptolemaic Kingdom",
+    role: "adversary",
+  },
+  "Antigonid Macedonia": {
+    slug: "antigonid-macedonia",
+    name: "Antigonid Macedonia",
+    role: "adversary",
+  },
+  "Parthian Empire": {
+    slug: "parthian-empire",
+    name: "Parthian Empire",
+    role: "adversary",
+  },
+  "Sasanian Empire": {
+    slug: "sasanian-empire",
+    name: "Sasanian Empire",
+    role: "adversary",
+  },
+  "Kingdom of Pontus": {
+    slug: "kingdom-of-pontus",
+    name: "Kingdom of Pontus",
+    role: "adversary",
+  },
+  // Client kingdoms: inside Rome's orbit rather than opposing it.
+  "Kingdom of Armenia": {
+    slug: "kingdom-of-armenia",
+    name: "Kingdom of Armenia",
+    role: "client",
+  },
+  "Kingdom of Numidia": {
+    slug: "kingdom-of-numidia",
+    name: "Kingdom of Numidia",
+    role: "client",
+  },
+  Nabataeans: { slug: "nabataeans", name: "Nabataeans", role: "client" },
+
+  // What succeeded the Sasanians, and then faced the eastern empire for the
+  // rest of its life. Without these the map empties east of Constantinople
+  // after 643 and Byzantium appears to stand against nobody for 800 years,
+  // which is the same emptiness the Republican end of the slider had.
+  "Rashidun Caliphate": {
+    slug: "rashidun-caliphate",
+    name: "Rashidun Caliphate",
+    role: "adversary",
+  },
+  "Umayyad Caliphate": {
+    slug: "umayyad-caliphate",
+    name: "Umayyad Caliphate",
+    role: "adversary",
+  },
+  "Abbasid Caliphate": {
+    slug: "abbasid-caliphate",
+    name: "Abbasid Caliphate",
+    role: "adversary",
+  },
+  "Fatimid Caliphate": {
+    slug: "fatimid-caliphate",
+    name: "Fatimid Caliphate",
+    role: "adversary",
+  },
+  // Manzikert, 1071, falls inside this one.
+  "Great Seljuk Empire": {
+    slug: "great-seljuk-empire",
+    name: "Great Seljuk Empire",
+    role: "adversary",
+  },
+  "Ayyubid Sultanate": {
+    slug: "ayyubid-sultanate",
+    name: "Ayyubid Sultanate",
+    role: "adversary",
+  },
+  "Mamluk Sultanate": {
+    slug: "mamluk-sultanate",
+    name: "Mamluk Sultanate",
+    role: "adversary",
+  },
+  Ilkhanate: { slug: "ilkhanate", name: "Ilkhanate", role: "adversary" },
+  // Timur beat the Ottomans at Ankara in 1402, which is why Cliopatria has no
+  // Byzantine segment for 1402-1406. Including him explains that gap.
+  "Timurid Empire": {
+    slug: "timurid-empire",
+    name: "Timurid Empire",
+    role: "adversary",
+  },
+  // The power that ends the eastern empire at the slider's last year.
+  "Ottoman Empire": {
+    slug: "ottoman-empire",
+    name: "Ottoman Empire",
+    role: "adversary",
+  },
 }
 
 // Upstream polity name -> local slug. Two names deliberately share a slug:
@@ -202,7 +327,7 @@ function buildRealms(member) {
     // alliances and allegiances ("(Allegiance of Ostrogothic Kingdom to
     // Eastern Roman Empire)") -- those are relationships, not Jurisdictions.
     if (p.Type !== "POLITY") continue
-    const realm = REALMS[p.Name]
+    const realm = REALMS[p.Name] ?? OUTSIDERS[p.Name]
     if (!realm) continue
 
     const window = clamp(p.FromYear, p.ToYear)
@@ -216,6 +341,8 @@ function buildRealms(member) {
         ...(realm.altNames ? { altNames: realm.altNames } : {}),
         tier: "realm",
         kind: "realm",
+        // Roman unless the polity came from the outsiders table.
+        role: realm.role ?? "roman",
         source: CLIOPATRIA.key,
         // Each Cliopatria segment carries its own geometry for its own years,
         // so the Basis year is the segment's own start -- unlike the province
@@ -319,7 +446,7 @@ function buildProvinces() {
 
   for (const f of raw.features) {
     const name = String(f.properties?.province ?? "").trim()
-    if (!name) continue
+    if (!name || EXCLUDED_FEATURES.has(name)) continue
     byName.set(name, f.geometry)
 
     const span = PROVINCE_SPANS[name]
@@ -329,7 +456,7 @@ function buildProvinces() {
     )
     if (!window) continue
 
-    const tier = TIER_OVERRIDES[name] ?? "province"
+    const tier = "province"
 
     features.push({
       type: "Feature",
@@ -337,7 +464,7 @@ function buildProvinces() {
         slug: slugify(name),
         name,
         tier,
-        kind: tier === "city" ? "city" : isRegio(name) ? "regio" : "province",
+        kind: isRegio(name) ? "regio" : "province",
         source: PAZOUT.key,
         spanSource: span?.source ?? PLACEHOLDER.key,
         basisYear: PAZOUT.basisYear,
@@ -474,8 +601,21 @@ writeFileSync(
 
 const bytes = readFileSync(realmsPath).length
 console.log(`\nJurisdictions: ${features.length} segments`)
+const roleOf = new Map(
+  features.map((f) => [f.properties.slug, f.properties.role]),
+)
 for (const [slug, span] of [...spans].sort((a, b) => a[1].start - b[1].start)) {
-  console.log(`  ${slug.padEnd(22)} ${span.start} .. ${span.end}`)
+  console.log(
+    `  ${slug.padEnd(22)} ${String(span.start).padStart(5)} .. ${String(span.end).padEnd(5)}  ${roleOf.get(slug)}`,
+  )
+}
+const missing = Object.entries(OUTSIDERS)
+  .filter(([, o]) => !spans.has(o.slug))
+  .map(([name]) => name)
+if (missing.length > 0) {
+  console.log(
+    `  (outside the slider window, nothing drawn: ${missing.join(", ")})`,
+  )
 }
 console.log(`realms.geojson: ${(bytes / 1024).toFixed(0)} KB`)
 

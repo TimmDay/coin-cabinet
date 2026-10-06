@@ -1,13 +1,14 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useDevices } from "~/api/devices"
 import { DEEP_DIVE_MAP_VIEW } from "~/components/map/mapConfig"
 import { useFoldFill } from "~/hooks/useFoldFill"
 import { MAP_HEIGHT_DESKTOP } from "~/lib/constants"
 import { cn } from "~/lib/utils"
 import { COIN_PAGE_TIER, type Tier } from "~/components/map/jurisdictions"
+import { useInViewport } from "~/hooks/useInViewport"
 import type { CoinEnhanced } from "~/types/api"
 import { clockNoteRoom } from "./CoinClockTips"
 import { CoinRow } from "./CoinRow"
@@ -57,6 +58,14 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   )
 
   const coinMap = useCoinMap(coin)
+
+  // The map sits below the fold, and mounting it pulls maplibre (about 280KB
+  // gzipped), its worker (another 143KB) and the Jurisdiction corpus. None of
+  // that should be on the critical path for a page whose point is the coin.
+  // rootMargin starts the fetch slightly before it scrolls into view, so it is
+  // usually ready by the time it is looked at.
+  const mapSectionRef = useRef<HTMLDivElement>(null)
+  const mapInView = useInViewport(mapSectionRef, { rootMargin: "400px" })
   const [tier, setTier] = useState<Tier>(COIN_PAGE_TIER)
 
   const clockNotes = coin.clock_notes ?? []
@@ -120,6 +129,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       {/* Map Section */}
       {coinMap && (
         <div
+          ref={mapSectionRef}
           className={cn(
             "mx-auto w-full px-4 pt-6 md:pt-10",
             // With both faces, line up with the coins and legends above: two
@@ -129,7 +139,13 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
               : "max-w-6xl",
           )}
         >
-          {coinMap.kind === "timeline" ? (
+          {!mapInView ? (
+            // Holds the space so nothing below jumps when the map arrives.
+            <div
+              className="bg-surface-raised h-[400px] w-full animate-pulse rounded-lg"
+              aria-hidden="true"
+            />
+          ) : coinMap.kind === "timeline" ? (
             <TimelineWithMap
               timeline={coinMap.timeline}
               showHeaders={false}
