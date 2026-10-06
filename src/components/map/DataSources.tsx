@@ -98,9 +98,11 @@ export function DataSources({
         <div
           ref={panelRef}
           role="dialog"
+          /* Anchored right: the trigger sits near the page's right edge, so a
+             left-anchored panel ran off screen. */
           aria-labelledby={headingId}
           tabIndex={-1}
-          className="border-paper-edge bg-paper text-paper-ink absolute bottom-full left-0 z-20 mb-2 max-h-[60vh] w-[min(34rem,calc(100vw-2rem))] overflow-y-auto rounded-lg border p-4 shadow-xl focus-visible:outline-none"
+          className="border-paper-edge bg-paper text-paper-ink absolute right-0 bottom-full z-20 mb-2 max-h-[60vh] w-[min(34rem,calc(100vw-2rem))] overflow-y-auto rounded-lg border p-4 shadow-xl focus-visible:outline-none"
         >
           <div className="mb-3 flex items-baseline justify-between gap-3">
             <h2 id={headingId} className="text-sm font-semibold">
