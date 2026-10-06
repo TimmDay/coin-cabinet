@@ -77,90 +77,64 @@ export function MapControls({
 
   return (
     <div className="border-paper-edge bg-paper space-y-4 rounded-lg border p-4 shadow-sm">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {/* Additional Controls */}
-        <div className="space-y-2">
-          <h3 className="text-paper-ink text-sm font-medium">
-            Display Options
-          </h3>
-          <div className="space-y-1">
-            <label className="flex cursor-pointer items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={showProvinceLabels}
-                onChange={(e) => onProvinceLabelsChange(e.target.checked)}
-                className="border-paper-edge text-map-label focus:ring-map-label h-4 w-4 rounded"
-              />
-              <span className="text-paper-ink text-sm">
-                Show administrative area labels
-              </span>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      {/* Roman Provinces - Full width section */}
-      <div className="border-paper-edge border-t pt-4">
-        <div className="space-y-2">
+      <div className="space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h3 className="text-paper-ink text-sm font-medium">
             Administrative areas
           </h3>
-          <div className="flex flex-col items-start gap-2 sm:flex-row">
-            <div className="w-full min-w-0 flex-1 sm:w-auto">
-              <SimpleMultiSelect
-                options={[{ value: ALL, label: "ALL" }, ...provinceOptions]}
-                selectedValues={selectedProvinces ?? [ALL]}
-                onSelectionChange={(values) => {
-                  const picked = values.filter((value) => value !== ALL)
-                  // Choosing ALL when it was not already chosen means all of
-                  // them; choosing anything else drops out of ALL.
-                  const wantsAll =
-                    values.includes(ALL) && selectedProvinces !== null
-                  onProvincesChange(wantsAll ? null : picked)
-                }}
-                placeholder={
-                  provincesLoading
-                    ? "Loading administrative areas..."
-                    : "Select administrative areas to highlight..."
-                }
-                maxHeight="max-h-48"
-              />
-            </div>
-            <div className="flex flex-shrink-0 gap-1">
-              <button
-                onClick={() => onProvincesChange(null)}
-                disabled={
-                  provincesLoading ||
-                  provinceOptions.length === 0 ||
-                  selectedProvinces === null
-                }
-                className="border-paper-edge bg-paper-raised text-paper-ink hover:bg-paper rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                title="Select all administrative areas"
-              >
-                Select All
-              </button>
-              <button
-                onClick={() => onProvincesChange([])}
-                disabled={
-                  provincesLoading ||
-                  provinceOptions.length === 0 ||
-                  selectedProvinces?.length === 0
-                }
-                className="border-paper-edge bg-paper-raised text-paper-ink hover:bg-paper rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                title="Clear all selected provinces"
-              >
-                Clear All
-              </button>
-            </div>
-          </div>
-          <p className="text-paper-ink-muted text-xs">
-            {selectedProvinces === null
-              ? `Showing all ${provinceOptions.length} administrative areas`
-              : selectedProvinces.length === 0
-                ? "No administrative areas shown"
-                : `Showing ${selectedProvinces.length} of ${provinceOptions.length} administrative areas`}
-          </p>
+          <label className="flex cursor-pointer items-center gap-2">
+            <input
+              type="checkbox"
+              checked={showProvinceLabels}
+              onChange={(e) => onProvinceLabelsChange(e.target.checked)}
+              className="border-paper-edge text-map-label focus:ring-map-label h-4 w-4 rounded"
+            />
+            <span className="text-paper-ink text-sm">Show labels</span>
+          </label>
         </div>
+        <div className="flex flex-col items-start gap-2 sm:flex-row">
+          <div className="w-full min-w-0 flex-1 sm:w-auto">
+            <SimpleMultiSelect
+              options={[{ value: ALL, label: "ALL" }, ...provinceOptions]}
+              selectedValues={selectedProvinces ?? [ALL]}
+              onSelectionChange={(values) => {
+                const picked = values.filter((value) => value !== ALL)
+                // Choosing ALL when it was not already chosen means all of
+                // them; choosing anything else drops out of ALL.
+                const wantsAll =
+                  values.includes(ALL) && selectedProvinces !== null
+                onProvincesChange(wantsAll ? null : picked)
+              }}
+              placeholder={
+                provincesLoading
+                  ? "Loading administrative areas..."
+                  : "Select administrative areas to highlight..."
+              }
+              maxHeight="max-h-48"
+            />
+          </div>
+          <div className="flex flex-shrink-0 gap-1">
+            <button
+              onClick={() => onProvincesChange([])}
+              disabled={
+                provincesLoading ||
+                provinceOptions.length === 0 ||
+                selectedProvinces?.length === 0
+              }
+              className="border-paper-edge bg-paper-raised text-paper-ink hover:bg-paper rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+              title="Clear all selected administrative areas"
+            >
+              Clear All
+            </button>
+          </div>
+        </div>
+        <p className="text-paper-ink-muted text-xs">
+          {selectedProvinces === null
+            ? `Showing all ${provinceOptions.length} administrative areas`
+            : selectedProvinces.length === 0
+              ? "No administrative areas shown"
+              : `Showing ${selectedProvinces.length} of ${provinceOptions.length} administrative areas`}
+        </p>
       </div>
     </div>
   )
