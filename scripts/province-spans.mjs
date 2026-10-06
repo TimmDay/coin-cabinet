@@ -76,7 +76,6 @@ export const PROVINCE_SPANS = {
   // The city existed for the whole of the slider's range. Its outline is still
   // the AD 117 snapshot, so it reports as Inferred on geometry; the placeholder
   // marker here says only that no source was cited for the dates.
-  Roma: { start: -275, end: 1453, source: "placeholder" },
 }
 
 /**
@@ -120,10 +119,14 @@ export const SUCCESSORS = [
   },
 ]
 
-/** Pazout features that are not provinces. */
-export const TIER_OVERRIDES = {
-  Roma: "city",
-}
+/**
+ * Pazout features to leave out of the Jurisdiction layer entirely.
+ *
+ * Roma is a 5km polygon, sub-pixel at the zooms this map is read at, and it
+ * briefly justified a City Tier of exactly one member. The city pin layer
+ * already shows Rome at the right coordinates, so the polygon adds nothing.
+ */
+export const EXCLUDED_FEATURES = new Set(["Roma"])
 
 /** The eleven regiones belong to no Tier; they are an optional overlay. */
 export const isRegio = (name) => / \(Regio [IVX]+\)$/.test(name)

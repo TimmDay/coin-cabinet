@@ -685,9 +685,10 @@ describe("against the committed Province Tier corpus", () => {
     expect(availableTiers).not.toContain("province")
   })
 
-  it("keeps Roma on the City Tier", () => {
-    const city = resolveAtYear(full, 117, "city").jurisdictions
-    expect(city.map((j) => j.name)).toEqual(["Roma"])
+  // A City Tier briefly existed for Roma alone, a 5km polygon that is
+  // sub-pixel at the zooms this map is read at. Cities are pins now.
+  it("keeps Roma out of the Jurisdiction layer entirely", () => {
+    expect(full.features.map((f) => f.properties.name)).not.toContain("Roma")
   })
 
   it("marks the regiones as belonging to no Tier of their own", () => {

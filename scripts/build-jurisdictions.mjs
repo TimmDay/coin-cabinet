@@ -20,7 +20,7 @@ import {
   PLACEHOLDER_SPAN,
   PROVINCE_SPANS,
   SUCCESSORS,
-  TIER_OVERRIDES,
+  EXCLUDED_FEATURES,
 } from "./province-spans.mjs"
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { basename, dirname, join } from "node:path"
@@ -446,7 +446,7 @@ function buildProvinces() {
 
   for (const f of raw.features) {
     const name = String(f.properties?.province ?? "").trim()
-    if (!name) continue
+    if (!name || EXCLUDED_FEATURES.has(name)) continue
     byName.set(name, f.geometry)
 
     const span = PROVINCE_SPANS[name]
@@ -456,7 +456,7 @@ function buildProvinces() {
     )
     if (!window) continue
 
-    const tier = TIER_OVERRIDES[name] ?? "province"
+    const tier = "province"
 
     features.push({
       type: "Feature",
@@ -464,7 +464,7 @@ function buildProvinces() {
         slug: slugify(name),
         name,
         tier,
-        kind: tier === "city" ? "city" : isRegio(name) ? "regio" : "province",
+        kind: isRegio(name) ? "regio" : "province",
         source: PAZOUT.key,
         spanSource: span?.source ?? PLACEHOLDER.key,
         basisYear: PAZOUT.basisYear,

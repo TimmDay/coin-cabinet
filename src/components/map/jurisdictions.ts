@@ -5,7 +5,13 @@
 // Everything here is pure. Loading lives in the map's layer hook, rendering in
 // Map.tsx, so the whole behaviour of the year slider is testable without a map.
 
-export type Tier = "realm" | "province" | "city"
+/**
+ * A City Tier existed briefly and was removed: the only territory that
+ * qualified was Roma, about 5km across, which is sub-pixel at the zooms this
+ * map is read at. Cities are shown as pins instead, which is what the data
+ * actually supports.
+ */
+export type Tier = "realm" | "province"
 
 /** A Jurisdiction's relationship to Rome. See CONTEXT.md. */
 export type Role = "roman" | "client" | "adversary"
@@ -13,7 +19,7 @@ export type Role = "roman" | "client" | "adversary"
 /** The Roles that are not Rome, in the order the toggle lists them. */
 export const OUTSIDER_ROLES: Role[] = ["client", "adversary"]
 
-export const TIERS: Tier[] = ["realm", "province", "city"]
+export const TIERS: Tier[] = ["realm", "province"]
 
 /**
  * The Tier a coin's own map opens at.

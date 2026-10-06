@@ -11,7 +11,6 @@ import { TIERS, type Tier } from "./jurisdictions"
 const LABELS: Record<Tier, string> = {
   realm: "Realms",
   province: "Admin areas",
-  city: "Cities",
 }
 
 type TierControlProps = {

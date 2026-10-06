@@ -25,8 +25,9 @@ Tier are siblings rather than containers of one another. Which Tiers exist
 varies by era. The middle Tier is shown to readers as "administrative areas",
 not "provinces": it holds everything the empire administered at the level where
 units share a border with their neighbours. Provinces are most of it, but
-Italia, the city of Rome and the Augustan regiones of Italy belong there too,
-and none of those was a province.
+Italia and the Augustan regiones of Italy belong there too, and neither was a
+province. Cities do not: they are drawn as pins, because a city is a point at
+the zooms this map is read at, not a territory.
 _Avoid_: Level, layer, scale, granularity
 
 **Role**:

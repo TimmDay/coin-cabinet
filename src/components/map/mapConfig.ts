@@ -188,8 +188,6 @@ export const jurisdictionColourExpression = (): ExpressionSpecification =>
     glColor("map-adversary"),
     ["==", ["get", "tier"], "realm"],
     realmColourExpression(),
-    ["==", ["get", "tier"], "city"],
-    glColor("map-province-line"),
     glColor("map-province-fill"),
   ] as unknown as ExpressionSpecification
 
