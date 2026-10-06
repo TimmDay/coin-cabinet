@@ -14,8 +14,6 @@ import { ToggleGroup } from "~/components/ui/SegmentedControl"
 import { DataSources } from "~/components/map/DataSources"
 import { TierControl } from "~/components/map/TierControl"
 import { YearSlider } from "~/components/map/YearSlider"
-import { NotFound404 } from "~/components/ui/NotFound404"
-import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 
 // Dynamically import Map component to prevent SSR issues with Leaflet
 const Map = dynamic(
@@ -106,8 +104,6 @@ const MOMENTS = [
 const INITIAL_YEAR = 117
 
 export default function MapPage() {
-  const isDevMode = useTypedFeatureFlag("dev")
-
   // Map state
   const [selectedYear, setSelectedYear] = useState(INITIAL_YEAR)
   const [tier, setTier] = useState<Tier>("realm")
@@ -152,11 +148,6 @@ export default function MapPage() {
   const receiveFit = useCallback((fit: () => void) => {
     fitRef.current = fit
   }, [])
-
-  // Show 404-like message if feature flag is not enabled
-  if (!isDevMode) {
-    return <NotFound404 />
-  }
 
   return (
     <div className="flex min-h-screen flex-col">

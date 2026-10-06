@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 import { SimpleMultiSelect } from "../ui/SimpleMultiSelect"
 
 /**
@@ -17,11 +17,10 @@ type MapControlsProps = {
   /** Callback when province labels toggle changes */
   onProvinceLabelsChange: (show: boolean) => void
   /**
-   * Province names to offer. Supplied by callers that already hold the
-   * Jurisdiction corpus, so the list matches what the map can actually draw
-   * rather than a separately fetched file.
+   * The administrative areas to offer, from the caller's Jurisdiction corpus,
+   * so the list always matches what the map can actually draw.
    */
-  provinceNames?: string[]
+  provinceNames: string[]
 }
 
 export function MapControls({
@@ -31,49 +30,13 @@ export function MapControls({
   onProvinceLabelsChange,
   provinceNames,
 }: MapControlsProps) {
-  // Provinces data loading
-  const [provincesData, setProvincesData] =
-    useState<GeoJSON.FeatureCollection | null>(null)
-  const [provincesLoading, setProvincesLoading] = useState(false)
-
-  // Load provinces data, unless the caller already has the names.
-  useEffect(() => {
-    if (provinceNames) return
-    setProvincesLoading(true)
-    fetch("/data/provinces.geojson")
-      .then((response) => response.json())
-      .then((data: GeoJSON.FeatureCollection) => {
-        setProvincesData(data)
-      })
-      .catch((error) => {
-        console.error("Error loading provinces data:", error)
-      })
-      .finally(() => {
-        setProvincesLoading(false)
-      })
-  }, [provinceNames])
-
-  // Generate province options from loaded data
-  const provinceOptions = useMemo(() => {
-    if (provinceNames) {
-      return provinceNames
+  const provinceOptions = useMemo(
+    () =>
+      provinceNames
         .map((name) => ({ value: name, label: name }))
-        .sort((a, b) => a.label.localeCompare(b.label))
-    }
-    if (!provincesData?.features) return []
-
-    return provincesData.features
-      .map((feature: GeoJSON.Feature) => ({
-        value: (feature.properties?.name ??
-          feature.properties?.Name ??
-          "") as string,
-        label: (feature.properties?.name ??
-          feature.properties?.Name ??
-          "") as string,
-      }))
-      .filter((option) => option.value)
-      .sort((a, b) => a.label.localeCompare(b.label))
-  }, [provincesData, provinceNames])
+        .sort((a, b) => a.label.localeCompare(b.label)),
+    [provinceNames],
+  )
 
   return (
     <div className="border-line bg-surface-raised space-y-4 rounded-lg border p-4 shadow-sm">
@@ -103,11 +66,7 @@ export function MapControls({
                   values.includes(ALL) && selectedProvinces !== null
                 onProvincesChange(wantsAll ? null : picked)
               }}
-              placeholder={
-                provincesLoading
-                  ? "Loading administrative areas..."
-                  : "Select administrative areas to highlight..."
-              }
+              placeholder="Select administrative areas to highlight..."
               maxHeight="max-h-48"
             />
           </div>
@@ -115,9 +74,7 @@ export function MapControls({
             <button
               onClick={() => onProvincesChange([])}
               disabled={
-                provincesLoading ||
-                provinceOptions.length === 0 ||
-                selectedProvinces?.length === 0
+                provinceOptions.length === 0 || selectedProvinces?.length === 0
               }
               className="border-ink-muted text-ink hover:bg-surface-muted focus-visible:outline-ink rounded-md border px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               title="Clear all selected administrative areas"

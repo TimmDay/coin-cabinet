@@ -79,7 +79,7 @@ export function MobileNavigation() {
 
   // Filter navigation items based on feature flags
   const visibleNavItems = navigationItems.filter((item) => {
-    if (item.name === "Map" || item.name === "Feature Flags") return isDevMode
+    if (item.name === "Feature Flags") return isDevMode
     if (item.name === "Articles") return isArticlesMode
     return true
   })
