@@ -130,7 +130,12 @@
   --color-map-client: #4a5d3a;
 
   --color-map-realm-1: #0072b2;
-  --color-map-realm-2: #d55e00;
+  /* The Roman mainline. A warm brick red, for the red of Roman military dress
+     and of Pompeian wall paint. It is held deliberately short of a true red:
+     red against the client green is the protanope confusion axis, and a
+     brick #b5342b dropped that pair to dE 2.8, well below the floor labels
+     can rescue. This is the reddest point that still clears dE 8. */
+  --color-map-realm-2: #cf5410;
   --color-map-realm-3: #009e73;
   --color-map-realm-4: #cc79a7;
   --color-map-realm-5: #e69f00;

@@ -1,11 +1,7 @@
 "use client"
 
 import "maplibre-gl/dist/maplibre-gl.css"
-import type {
-  MapGeoJSONFeature,
-  Map as MapLibreMap,
-  MapLayerMouseEvent,
-} from "maplibre-gl"
+import type { Map as MapLibreMap } from "maplibre-gl"
 import { setWorkerUrl } from "maplibre-gl"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Layer, Map as MapGL, Marker, Source } from "react-map-gl/maplibre"
@@ -17,7 +13,6 @@ import { parseLatLng, parseZoom, ROME } from "./coordinates"
 import { useJurisdictionCorpus, useMapConfiguration } from "./hooks"
 import {
   boundsOf,
-  formatYear,
   labelPointOf,
   resolveAtYear,
   type Role,
@@ -370,39 +365,11 @@ export const Map: React.FC<MapProps> = ({
     onFitExtent?.(fitExtent)
   }, [onFitExtent, fitExtent])
 
-  // Must match whichever fill layers are actually mounted below, or MapLibre
-  // has nothing to hit-test against.
-  const interactiveLayerIds = useMemo(
-    () => (jurisdictionsGeoJSON ? ["jurisdictions-fill"] : []),
-    [jurisdictionsGeoJSON],
-  )
-
-  const handleMapClick = useCallback(
-    (e: MapLayerMouseEvent) => {
-      const feature: MapGeoJSONFeature | undefined = e.features?.[0]
-      if (!feature?.layer) return
-
-      const layerId = feature.layer.id
-
-      if (layerId !== "jurisdictions-fill") return
-
-      const name = feature.properties?.name as string | undefined
-      if (!name) return
-
-      const basisYear = feature.properties?.basisYear as number | undefined
-      const attested = feature.properties?.attested as boolean | undefined
-
-      openPopup(e.originalEvent.clientX, e.originalEvent.clientY, {
-        title: name,
-        description:
-          attested === false && typeof basisYear === "number"
-            ? `Outline as at ${formatYear(basisYear)}, reconstructed for this year`
-            : "Roman territory",
-        className: "text-map-label",
-      })
-    },
-    [openPopup],
-  )
+  // Nothing on the map canvas is clickable. Jurisdiction fills used to be,
+  // but they cover the whole map, so a click meant for a mint or city pin
+  // near a border opened a Jurisdiction popup instead. Pins are HTML markers
+  // and handle their own clicks.
+  const interactiveLayerIds = useMemo<string[]>(() => [], [])
 
   // Register the imperative navigate function with the parent once the map
   // has finished loading. Mirrors the size checks a hidden/collapsed map
@@ -585,7 +552,6 @@ export const Map: React.FC<MapProps> = ({
               onMoveStart={() => {
                 setCustomPopup((prev) => ({ ...prev, isVisible: false }))
               }}
-              onClick={handleMapClick}
             >
               {/* Jurisdictions at the Selected year */}
               {jurisdictionsGeoJSON && (
