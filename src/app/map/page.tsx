@@ -46,6 +46,13 @@ const MARKER_OPTIONS = [
  */
 const MOMENTS = [
   {
+    label: "Augustus",
+    year: 7,
+    tier: "province" as Tier,
+    title:
+      "AD 7. Augustus divides Italy into eleven numbered districts: the administrative areas jump from 32 to 42 in a single year.",
+  },
+  {
     label: "Four Emperors",
     year: 69,
     tier: "province" as Tier,
