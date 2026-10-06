@@ -8,6 +8,7 @@ import {
   resolveAtYear,
   type Tier,
 } from "~/components/map/jurisdictions"
+import { TRAJAN_BOUNDS } from "~/components/map/mapConfig"
 import { MapControls } from "~/components/map/MapControls"
 import { ToggleGroup } from "~/components/ui/SegmentedControl"
 import { DataSources } from "~/components/map/DataSources"
@@ -110,6 +111,7 @@ export default function MapPage() {
             <Map
               layout="fullscreen"
               height="100%"
+              initialBounds={TRAJAN_BOUNDS}
               selectedYear={selectedYear}
               tier={tier}
               onFitExtent={receiveFit}

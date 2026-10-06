@@ -23,6 +23,20 @@ export const provinceStyle = (): OverlayStyle => ({
   lineDasharray: [5, 5],
 })
 
+/**
+ * The Roman world at its greatest extent, under Trajan in AD 117, as
+ * [west, south, east, north]. Measured from the committed Realm Tier geometry
+ * rather than chosen by eye; re-measure if that data is rebuilt.
+ *
+ * Opening here means playing the slider from end to end needs no panning. One
+ * segment escapes it: the Roman Empire of 25 to 20 BC reaches to 15N on
+ * Augustus's Arabian and Nubian expeditions. Framing for those six years would
+ * shrink the Mediterranean for the other 1,647.
+ */
+export const TRAJAN_BOUNDS: [number, number, number, number] = [
+  -9.39, 23.36, 48.93, 55.36,
+]
+
 export const MAP_STYLES = {
   // Mint marker style (plain dot, not the highlighted teardrop pin)
   mintMarker: {

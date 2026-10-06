@@ -5,14 +5,14 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { formatYear, SLIDER_END, SLIDER_START } from "./jurisdictions"
 
 /**
- * One year every twelfth of a second, so a full run from 200 BC takes a little
- * over two minutes rather than seven.
+ * One year every twenty-fourth of a second, so a full run from 200 BC takes
+ * about seventy seconds.
  *
- * Still a year per tick rather than three years per tick at the slower rate:
+ * Still a year per tick rather than several years per tick at a slower rate:
  * some Jurisdictions hold for only a year or two, and stepping over them would
  * mean they never appeared at all.
  */
-const PLAY_INTERVAL_MS = 83
+const PLAY_INTERVAL_MS = 42
 
 type YearSliderProps = {
   /** The year the map is currently showing. */

@@ -119,6 +119,12 @@ export type MapProps = {
    * Tier fixed by the `tier` prop.
    */
   onTierChange?: (tier: Tier) => void
+  /**
+   * Open framed on these bounds, [west, south, east, north], instead of a
+   * centre and zoom. Fits whatever the viewport is, so the same ground is on
+   * screen on a phone and a desktop.
+   */
+  initialBounds?: [number, number, number, number]
   /** Receives a function that fits the view to what is currently drawn. */
   onFitExtent?: (fit: () => void) => void
   /**
@@ -156,6 +162,7 @@ export const Map: React.FC<MapProps> = ({
   selectedYear,
   tier,
   onTierChange,
+  initialBounds,
   onFitExtent,
   selectedProvinces,
   showProvinceLabels = true,
@@ -521,11 +528,18 @@ export const Map: React.FC<MapProps> = ({
           >
             <MapGL
               ref={mapRef}
-              initialViewState={{
-                longitude: safeCenter[1],
-                latitude: safeCenter[0],
-                zoom: safeZoom,
-              }}
+              initialViewState={
+                initialBounds
+                  ? {
+                      bounds: initialBounds,
+                      fitBoundsOptions: { padding: 24 },
+                    }
+                  : {
+                      longitude: safeCenter[1],
+                      latitude: safeCenter[0],
+                      zoom: safeZoom,
+                    }
+              }
               mapStyle={MAP_STYLE_URL}
               style={{ width: "100%", height: "100%" }}
               maxBounds={MAP_PAN_BOUNDS_LNGLAT}
