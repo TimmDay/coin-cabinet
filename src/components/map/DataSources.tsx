@@ -120,8 +120,15 @@ export function DataSources({
             </button>
           </div>
 
-          <p className="text-paper-ink mb-4 text-sm leading-relaxed">
+          <p className="text-paper-ink mb-3 text-sm leading-relaxed">
             {provenance.sentence}
+          </p>
+
+          <p className="text-paper-ink-muted mb-4 text-xs leading-relaxed">
+            A name ending in an asterisk has dates nobody has sourced yet. It
+            existed, and its outline is as good as any other here, but when it
+            began and ended is this catalogue's assumption rather than a
+            citation.
           </p>
 
           <ul className="space-y-4">

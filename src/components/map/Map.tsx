@@ -295,7 +295,15 @@ export const Map: React.FC<MapProps> = ({
       .map((j) => {
         const point = labelPointOf(j.feature)
         return point
-          ? { name: j.name, tier: j.tier, lng: point[0], lat: point[1] }
+          ? {
+              // An asterisk marks a Jurisdiction whose dates are assumed
+              // rather than sourced, so a reader can tell at a glance which
+              // of these the map is guessing about.
+              name: j.datesAssumed ? `${j.name}*` : j.name,
+              tier: j.tier,
+              lng: point[0],
+              lat: point[1],
+            }
           : null
       })
       .filter(

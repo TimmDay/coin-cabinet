@@ -55,6 +55,8 @@ export type Source = {
   coverage: { from: number; to: number }
   modified?: string
   defects?: string[]
+  /** Not a bibliographic Source: a marker that these dates are assumed. */
+  placeholder?: boolean
 }
 
 export type Corpus = {
@@ -69,6 +71,12 @@ export type ResolvedJurisdiction = {
   basisYear: number
   /** False when any Source it relies on does not cover the Selected year. */
   attested: boolean
+  /**
+   * True when its Span rests on a placeholder rather than on a Source, so its
+   * dates are the cataloguer's assumption. Separate from `attested`, which is
+   * about whether the geometry is being drawn for a year its Source speaks to.
+   */
+  datesAssumed: boolean
   feature: JurisdictionFeature
 }
 
@@ -193,6 +201,8 @@ export function resolveAtYear(
         attested: sourceKeysFor(p).every((key) =>
           covers(corpus.sources[key], year),
         ),
+        datesAssumed:
+          corpus.sources[p.spanSource ?? p.source]?.placeholder === true,
         feature,
       }
     })

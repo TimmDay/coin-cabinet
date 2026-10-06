@@ -88,15 +88,11 @@ const MOMENTS = [
     title: "AD 265. The Gallic and Palmyrene breakaways, either side of Rome.",
   },
   {
-    // 284, his accession, not 293, the reorganisation. The corpus has no
-    // geometry for the provinces he made, so 293 shows the empire emptying
-    // out when in fact he roughly doubled the province count. 284 is the last
-    // year the old arrangement is drawn whole.
     label: "Diocletian",
-    year: 284,
+    year: 293,
     tier: "province" as Tier,
     title:
-      "AD 284. The empire as Diocletian found it. He went on to roughly double the number of provinces; this map has no geometry for the ones he made, so it stops here rather than showing them.",
+      "AD 293. The reorganisation. The eleven Italian districts end here; the provinces he created are not in this map, so the count falls where it should rise.",
   },
   {
     label: "East and West",
