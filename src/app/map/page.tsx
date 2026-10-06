@@ -145,9 +145,13 @@ export default function MapPage() {
           The subtraction is the chrome below and above: roughly 80px of nav,
           180px of slider card, 45px of control pills and 120px of the
           administrative areas panel, whose space is held whether or not it is
-          showing. Adjust this one number if the slider sits below the fold. */}
-      <div className="h-[calc(100dvh-430px)] min-h-[320px] flex-shrink-0">
-        <div className="h-full p-2 sm:p-3">
+          showing. Adjust this one number if the slider sits below the fold.
+
+          Deliberately short of the measured slack by about 20px: the chrome
+          figures are estimates, and overshooting puts the slider back under
+          the fold, which is the thing this is for. */}
+      <div className="h-[calc(100dvh-330px)] min-h-[360px] flex-shrink-0">
+        <div className="h-full px-2 pt-4 pb-2 sm:px-3 sm:pt-5 sm:pb-3">
           <div className="bg-paper h-full w-full overflow-hidden rounded-lg shadow-lg">
             <Map
               layout="fullscreen"
