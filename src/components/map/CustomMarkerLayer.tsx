@@ -38,6 +38,15 @@ export function clickPoint(event: MouseEvent): ClickPoint {
 }
 
 /**
+ * The smallest target a marker may present, in CSS pixels, whatever the map's
+ * zoom. WCAG 2.2 SC 2.5.8 asks for 24. Deep dive pins are drawn at 0.67 scale,
+ * which puts the mark itself at 20, so the target is grown around it rather
+ * than the mark being made bigger: a pin should stay the size it was designed
+ * to look at.
+ */
+const MIN_TARGET_PX = 24
+
+/**
  * A marker's HTML as a keyboard-operable button. It is a div with a button
  * role because the pin HTML is made of divs. Enter and Space click it, which
  * reaches the map's marker click the way a mouse click does.
@@ -48,7 +57,8 @@ function MarkerButton({ label, html }: { label: string; html: string }) {
       role="button"
       tabIndex={0}
       aria-label={label}
-      className="focus-visible:ring-pin-cream block cursor-pointer rounded-full focus-visible:ring-2 focus-visible:outline-none"
+      style={{ minWidth: MIN_TARGET_PX, minHeight: MIN_TARGET_PX }}
+      className="focus-visible:ring-pin-cream flex cursor-pointer items-center justify-center rounded-full focus-visible:ring-2 focus-visible:outline-none"
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault()
