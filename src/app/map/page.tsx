@@ -9,7 +9,7 @@ import {
   type Tier,
 } from "~/components/map/jurisdictions"
 import { MapControls } from "~/components/map/MapControls"
-import { SegmentedControl } from "~/components/ui/SegmentedControl"
+import { ToggleGroup } from "~/components/ui/SegmentedControl"
 import { DataSources } from "~/components/map/DataSources"
 import { TierControl } from "~/components/map/TierControl"
 import { YearSlider } from "~/components/map/YearSlider"
@@ -27,10 +27,9 @@ const Map = dynamic(
   },
 )
 
-type MarkerMode = "none" | "mints" | "cities" | "poi"
+type MarkerLayer = "mints" | "cities" | "poi"
 
 const MARKER_OPTIONS = [
-  { value: "none", label: "No pins" },
   { value: "mints", label: "Mints" },
   { value: "cities", label: "Cities" },
   { value: "poi", label: "POI" },
@@ -44,15 +43,15 @@ export default function MapPage() {
 
   // Map state
   const [selectedYear, setSelectedYear] = useState(INITIAL_YEAR)
-  const [tier, setTier] = useState<Tier>("province")
+  const [tier, setTier] = useState<Tier>("realm")
   const [selectedProvinces, setSelectedProvinces] = useState<string[] | null>(
     null,
   )
   const [showProvinceLabels, setShowProvinceLabels] = useState(true)
   // Pins stay off until asked for: the map is about territory first, and a
-  // hundred mint dots over it is not a default anyone chose. One choice at a
-  // time, since POI already contains every city.
-  const [markers, setMarkers] = useState<MarkerMode>("none")
+  // hundred mint dots over it is not a default anyone chose. They combine
+  // freely; POI contains every city, and the map draws each place once.
+  const [markers, setMarkers] = useState<MarkerLayer[]>([])
 
   // Shared with the map through a module-level cache, so asking for it here
   // costs no second fetch.
@@ -116,9 +115,9 @@ export default function MapPage() {
               onFitExtent={receiveFit}
               selectedProvinces={effectiveProvinces}
               showProvinceLabels={showProvinceLabels}
-              showMintMarkers={markers === "mints"}
-              showCityMarkers={markers === "cities"}
-              showPlaceMarkers={markers === "poi"}
+              showMintMarkers={markers.includes("mints")}
+              showCityMarkers={markers.includes("cities")}
+              showPlaceMarkers={markers.includes("poi")}
             />
           </div>
         </div>
@@ -138,9 +137,8 @@ export default function MapPage() {
               onChange={setTier}
               available={resolution?.availableTiers ?? []}
             />
-            <SegmentedControl
+            <ToggleGroup
               legend="Which pins to show"
-              name="map-markers"
               size="sm"
               options={MARKER_OPTIONS}
               value={markers}

@@ -16,6 +16,7 @@
 import { execFileSync } from "node:child_process"
 import {
   isRegio,
+  ITALIA,
   PLACEHOLDER_SPAN,
   PROVINCE_SPANS,
   SUCCESSORS,
@@ -347,6 +348,44 @@ function buildProvinces() {
       },
       geometry: f.geometry,
     })
+  }
+
+  // Italy before the regiones: the eleven districts merged back into the one
+  // undivided Italia they were carved out of.
+  const regioGeometries = raw.features
+    .filter((f) => isRegio(String(f.properties?.province ?? "").trim()))
+    .map((f) => f.geometry)
+    .filter((g) => g && "coordinates" in g)
+
+  if (regioGeometries.length > 0) {
+    const window = clamp(ITALIA.start, ITALIA.end)
+    if (window) {
+      features.push({
+        type: "Feature",
+        properties: {
+          slug: ITALIA.slug,
+          name: ITALIA.name,
+          tier: "province",
+          kind: "territory",
+          source: PAZOUT.key,
+          spanSource: ITALIA.source,
+          basisYear: PAZOUT.basisYear,
+          segmentStart: window.start,
+          segmentEnd: window.end,
+          spanStart: window.start,
+          spanEnd: window.end,
+        },
+        geometry: {
+          type: "MultiPolygon",
+          // Collecting the districts' rings is enough: they tile Italy, so the
+          // union reads as one shape once drawn, without needing a real
+          // polygon union and the topology repair that would come with it.
+          coordinates: regioGeometries.flatMap((g) =>
+            g.type === "Polygon" ? [g.coordinates] : g.coordinates,
+          ),
+        },
+      })
+    }
   }
 
   // A rename ends one Jurisdiction and begins its successor over the same

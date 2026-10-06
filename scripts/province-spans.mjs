@@ -59,6 +59,32 @@ export const PROVINCE_SPANS = {
   "Transpadana (Regio XI)": { start: 7, end: 292, source: "ohm" },
   "Umbria (Regio VI)": { start: 7, end: 292, source: "ohm" },
   "Venetia et Histria (Regio X)": { start: 7, end: 292, source: "ohm" },
+
+  // The city existed for the whole of the slider's range. Its outline is still
+  // the AD 117 snapshot, so it reports as Inferred on geometry; the placeholder
+  // marker here says only that no source was cited for the dates.
+  Roma: { start: -200, end: 1453, source: "placeholder" },
+}
+
+/**
+ * Italy before Augustus divided it.
+ *
+ * Italia was not a province: it was Roman soil, governed directly rather than
+ * through a governor, which is what provincial status meant. It belongs on the
+ * administrative-area Tier all the same, because it shares its boundaries with
+ * the provinces around it.
+ *
+ * Its Span stops where the regiones begin, so the two never overlap and the
+ * map tells the real sequence: undivided Roman Italy, then eleven numbered
+ * districts from AD 7, then nothing once Diocletian turned Italy into
+ * provinces in 292, which is geometry this corpus does not have.
+ */
+export const ITALIA = {
+  name: "Italia",
+  slug: "italia",
+  start: -200,
+  end: 6,
+  source: "placeholder",
 }
 
 /**

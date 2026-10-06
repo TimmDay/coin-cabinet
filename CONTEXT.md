@@ -23,9 +23,10 @@ _Avoid_: Type, category, class
 A level in the administrative hierarchy, such that Jurisdictions at the same
 Tier are siblings rather than containers of one another. Which Tiers exist
 varies by era. The middle Tier is shown to readers as "administrative areas",
-not "provinces": it holds the Augustan regiones of Italy alongside the
-provinces proper, so the narrower word would be wrong for most of what is in
-it.
+not "provinces": it holds everything the empire administered at the level where
+units share a border with their neighbours. Provinces are most of it, but
+Italia, the city of Rome and the Augustan regiones of Italy belong there too,
+and none of those was a province.
 _Avoid_: Level, layer, scale, granularity
 
 **Succession**:
