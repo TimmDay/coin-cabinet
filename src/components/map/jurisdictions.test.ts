@@ -3,6 +3,7 @@ import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 import {
   changeYears,
+  COIN_PAGE_TIER,
   colourSlotOf,
   labelPointOf,
   REALM_COLOUR_SLOT,
@@ -622,6 +623,50 @@ describe("against the committed Province Tier corpus", () => {
         feature.properties.tier,
       ).jurisdictions.find((j) => j.slug === feature.properties.slug)
       expect(drawn?.attested).toBe(false)
+    }
+  })
+})
+
+describe("the Tier a coin's map opens at", () => {
+  const dataDir = join(process.cwd(), "public", "data", "jurisdictions")
+  const read = (file: string) =>
+    (
+      JSON.parse(
+        readFileSync(join(dataDir, file), "utf8"),
+      ) as GeoJSON.FeatureCollection
+    ).features as JurisdictionFeature[]
+
+  const full: Corpus = {
+    features: [...read("realms.geojson"), ...read("provinces.geojson")],
+    sources: JSON.parse(
+      readFileSync(join(dataDir, "sources.json"), "utf8"),
+    ) as Record<string, never>,
+  }
+
+  // Every drawn Jurisdiction carries a label, so the count is the crowding.
+  const drawnAt = (year: number, tier: Tier) =>
+    resolveAtYear(full, year, tier).jurisdictions.length
+
+  it.each([
+    ["a Severan denarius", 200],
+    ["a Trajanic sestertius", 117],
+    ["a Julio-Claudian as", 50],
+  ])("stays uncluttered beside %s", (_label, year) => {
+    expect(drawnAt(year, COIN_PAGE_TIER)).toBeLessThanOrEqual(3)
+  })
+
+  // The reason for the default, stated as a fact about the data rather than
+  // as an opinion: the Province Tier is an order of magnitude busier, and a
+  // coin's own pins have to stay findable among those outlines.
+  it("is far less crowded than the Province Tier at the same year", () => {
+    expect(drawnAt(117, "province")).toBeGreaterThan(
+      drawnAt(117, COIN_PAGE_TIER) * 10,
+    )
+  })
+
+  it("still has something to show across the whole slider", () => {
+    for (const year of [-200, -50, 117, 400, 800, 1200, 1453]) {
+      expect(drawnAt(year, COIN_PAGE_TIER)).toBeGreaterThan(0)
     }
   })
 })

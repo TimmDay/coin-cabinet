@@ -6,6 +6,7 @@ import { DEEP_DIVE_MAP_VIEW } from "~/components/map/mapConfig"
 import { useFoldFill } from "~/hooks/useFoldFill"
 import { MAP_HEIGHT_DESKTOP } from "~/lib/constants"
 import { cn } from "~/lib/utils"
+import { COIN_PAGE_TIER } from "~/components/map/jurisdictions"
 import type { CoinEnhanced } from "~/types/api"
 import { clockNoteRoom } from "./CoinClockTips"
 import { CoinRow } from "./CoinRow"
@@ -153,7 +154,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                 {...(coinMap.selectedYear !== null
                   ? {
                       selectedYear: coinMap.selectedYear,
-                      tier: "province" as const,
+                      tier: COIN_PAGE_TIER,
                     }
                   : {})}
               />

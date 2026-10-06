@@ -9,6 +9,16 @@ export type Tier = "realm" | "province" | "city"
 
 export const TIERS: Tier[] = ["realm", "province", "city"]
 
+/**
+ * The Tier a coin's own map opens at.
+ *
+ * Realms rather than provinces: at a typical coin's year the Province Tier is
+ * forty-odd outlines, each carrying a label, which buries the coin's own pins
+ * under other people's borders. A Realm is one or two shapes and answers what
+ * the page is actually asking, which is whose empire this was struck in.
+ */
+export const COIN_PAGE_TIER: Tier = "realm"
+
 /** The slider's window. Nothing outside it is reachable. */
 export const SLIDER_START = -200
 export const SLIDER_END = 1453
