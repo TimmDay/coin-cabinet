@@ -13,11 +13,14 @@ export function PageWrapper({ children }: PageWrapperProps) {
   const isHomePage = pathname === "/"
   const isCoinDeepDivePage =
     pathname.startsWith("/cabinet/") && pathname !== "/cabinet"
+  // The map wants its height: the breadcrumb and its margins cost about 100px
+  // above a view whose whole job is to be looked at.
+  const isMapPage = pathname === "/map"
 
   return (
     <div className="flex min-h-screen flex-col">
       {/* Breadcrumb - positioned under header, above page content */}
-      {!isHomePage && !isCoinDeepDivePage && (
+      {!isHomePage && !isCoinDeepDivePage && !isMapPage && (
         <div className="flex w-full justify-center pt-8 pb-6 md:pb-12">
           <Breadcrumb />
         </div>

@@ -139,17 +139,15 @@ export default function MapPage() {
     <div className="flex min-h-screen flex-col">
       {/* An explicit height, not flex-1: the page is min-h-screen, so its
           height comes from content, and a flex child of it has no definite
-          height for these h-full children to resolve against. The map
-          collapsed to nothing. Two values instead, so hiding the
-          administrative areas panel still gives the map the space. */}
-      <div
-        className={
-          tier === "province"
-            ? "h-[calc(100vh-240px)] flex-shrink-0"
-            : "h-[calc(100vh-130px)] flex-shrink-0"
-        }
-      >
-        <div className="h-full p-4 sm:p-6 lg:p-8">
+          height for these h-full children to resolve against, which collapsed
+          the map to nothing.
+          
+          The subtraction is the chrome below and above: roughly 80px of nav,
+          180px of slider card, 45px of control pills and 120px of the
+          administrative areas panel, whose space is held whether or not it is
+          showing. Adjust this one number if the slider sits below the fold. */}
+      <div className="h-[calc(100dvh-430px)] min-h-[320px] flex-shrink-0">
+        <div className="h-full p-2 sm:p-3">
           <div className="bg-paper h-full w-full overflow-hidden rounded-lg shadow-lg">
             <Map
               layout="fullscreen"
@@ -203,18 +201,23 @@ export default function MapPage() {
         </div>
       </div>
 
-      {/* Only while the Tier it controls is the one on screen. */}
-      {tier === "province" && (
-        <div className="flex-shrink-0 px-4 py-4 sm:px-6 lg:px-8">
-          <MapControls
-            selectedProvinces={selectedProvinces}
-            onProvincesChange={setSelectedProvinces}
-            provinceNames={provinceNames}
-            showProvinceLabels={showProvinceLabels}
-            onProvinceLabelsChange={setShowProvinceLabels}
-          />
-        </div>
-      )}
+      {/* Always laid out, so the page does not jump when the Tier changes;
+          hidden rather than unmounted when it controls nothing on screen.
+          visibility:hidden also takes it out of the tab order. */}
+      <div
+        className={`flex-shrink-0 px-4 py-3 sm:px-6 lg:px-8 ${
+          tier === "province" ? "" : "invisible"
+        }`}
+        aria-hidden={tier === "province" ? undefined : true}
+      >
+        <MapControls
+          selectedProvinces={selectedProvinces}
+          onProvincesChange={setSelectedProvinces}
+          provinceNames={provinceNames}
+          showProvinceLabels={showProvinceLabels}
+          onProvinceLabelsChange={setShowProvinceLabels}
+        />
+      </div>
     </div>
   )
 }

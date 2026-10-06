@@ -93,19 +93,19 @@ export function YearSlider<M extends Moment>({
 
   return (
     <div
-      className={`border-paper-edge bg-paper rounded-lg border p-4 shadow-sm ${className}`}
+      className={`border-line bg-surface-raised rounded-lg border p-4 shadow-sm ${className}`}
     >
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
         <div className="flex items-baseline gap-3">
           <label
             htmlFor="year-slider"
-            className="text-paper-ink-muted text-xs tracking-wide uppercase"
+            className="text-ink-muted text-xs tracking-wide uppercase"
           >
             Year
           </label>
           <output
             htmlFor="year-slider"
-            className="text-paper-ink font-display text-xl tabular-nums"
+            className="text-ink font-display text-xl tabular-nums"
           >
             {formatYear(value)}
           </output>
@@ -115,7 +115,7 @@ export function YearSlider<M extends Moment>({
           <button
             type="button"
             onClick={onFitExtent}
-            className="border-paper-edge text-paper-ink-muted hover:text-paper-ink rounded border px-2 py-1 text-xs"
+            className="border-ink-muted text-ink-muted hover:text-ink focus-visible:outline-ink rounded border px-2 py-1 text-xs focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             Fit to extent
           </button>
@@ -134,7 +134,7 @@ export function YearSlider<M extends Moment>({
               {tickPositions.map((percent) => (
                 <span
                   key={percent}
-                  className="bg-paper-edge absolute top-0 h-2 w-px"
+                  className="bg-ink-muted/60 absolute top-0 h-2 w-px"
                   style={{ left: `calc(${percent}% * 0.98 + 1%)` }}
                 />
               ))}
@@ -157,16 +157,16 @@ export function YearSlider<M extends Moment>({
             />
           </div>
 
-          <div className="text-paper-ink-muted mt-1 flex justify-between text-[10px] tabular-nums">
+          <div className="text-ink-muted mt-1 flex justify-between text-[10px] tabular-nums">
             {DECADE_MARKS.map((year) => (
               <span key={year}>{formatYear(year)}</span>
             ))}
           </div>
         </div>
 
-        {/* Filled rather than outlined: a paper-edge border measures 1.84:1
-            against the card, short of the 3:1 a control's boundary needs,
-            while the filled disc reads at 11.37:1. */}
+        {/* Filled rather than outlined: the card's own border token reads
+            1.40:1 against it, short of the 3:1 a control's boundary needs,
+            while the filled disc reads at 10.69:1. */}
         <button
           type="button"
           onClick={() => {
@@ -178,7 +178,7 @@ export function YearSlider<M extends Moment>({
             })
           }}
           aria-label={playing ? "Pause" : "Play the years forward"}
-          className="bg-paper-ink text-paper hover:bg-paper-ink/90 focus-visible:outline-paper-ink mb-4 flex h-9 w-9 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="bg-ink text-surface hover:bg-ink/90 focus-visible:outline-ink mb-4 flex h-9 w-9 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           {playing ? (
             <Pause aria-hidden="true" className="h-4 w-4" fill="currentColor" />
@@ -193,8 +193,8 @@ export function YearSlider<M extends Moment>({
       </div>
 
       {moments && moments.length > 0 && (
-        <div className="border-paper-edge mt-3 flex flex-wrap items-center gap-2 border-t pt-3">
-          <span className="text-paper-ink-muted text-[10px] tracking-wide uppercase">
+        <div className="border-line mt-3 flex flex-wrap items-center gap-2 border-t pt-3">
+          <span className="text-ink-muted text-[10px] tracking-wide uppercase">
             Jump to
           </span>
           {moments.map((moment) => (
@@ -210,10 +210,17 @@ export function YearSlider<M extends Moment>({
               aria-current={value === moment.year ? "true" : undefined}
               /* paper-ink-muted for the border, not paper-edge: that measures
                  1.84:1 against the card, under the 3:1 a control needs. */
-              className={`text-paper-ink focus-visible:outline-paper-ink rounded-full border px-2.5 py-1 text-[11px] focus-visible:outline-2 focus-visible:outline-offset-2 ${
+              /* ink-muted for the border, not line: that measures 1.40:1
+                 against the card, under the 3:1 a control needs.
+
+                 Text colour lives only in the branches. Having it in the base
+                 too meant two competing text- classes on the selected button,
+                 and Tailwind settles that by stylesheet order rather than
+                 string order, so one silently won and the label vanished. */
+              className={`focus-visible:outline-ink rounded-full border px-2.5 py-1 text-[11px] focus-visible:outline-2 focus-visible:outline-offset-2 ${
                 value === moment.year
-                  ? "border-paper-ink bg-paper-ink text-paper"
-                  : "border-paper-ink-muted hover:bg-paper-raised"
+                  ? "border-ink bg-ink text-surface font-medium"
+                  : "border-ink-muted text-ink hover:bg-surface-muted"
               }`}
             >
               {moment.label}

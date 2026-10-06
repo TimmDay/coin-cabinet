@@ -76,20 +76,18 @@ export function MapControls({
   }, [provincesData, provinceNames])
 
   return (
-    <div className="border-paper-edge bg-paper space-y-4 rounded-lg border p-4 shadow-sm">
+    <div className="border-line bg-surface-raised space-y-4 rounded-lg border p-4 shadow-sm">
       <div className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-paper-ink text-sm font-medium">
-            Administrative areas
-          </h3>
+          <h3 className="text-ink text-sm font-medium">Administrative areas</h3>
           <label className="flex cursor-pointer items-center gap-2">
             <input
               type="checkbox"
               checked={showProvinceLabels}
               onChange={(e) => onProvinceLabelsChange(e.target.checked)}
-              className="border-paper-edge text-map-label focus:ring-map-label h-4 w-4 rounded"
+              className="border-ink-muted text-map-label focus:ring-map-label h-4 w-4 rounded"
             />
-            <span className="text-paper-ink text-sm">Show labels</span>
+            <span className="text-ink text-sm">Show labels</span>
           </label>
         </div>
         <div className="flex flex-col items-start gap-2 sm:flex-row">
@@ -121,14 +119,14 @@ export function MapControls({
                 provinceOptions.length === 0 ||
                 selectedProvinces?.length === 0
               }
-              className="border-paper-edge bg-paper-raised text-paper-ink hover:bg-paper rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-ink-muted text-ink hover:bg-surface-muted focus-visible:outline-ink rounded-md border px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               title="Clear all selected administrative areas"
             >
               Clear All
             </button>
           </div>
         </div>
-        <p className="text-paper-ink-muted text-xs">
+        <p className="text-ink-muted text-xs">
           {selectedProvinces === null
             ? `Showing all ${provinceOptions.length} administrative areas`
             : selectedProvinces.length === 0
