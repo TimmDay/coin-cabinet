@@ -4,8 +4,15 @@ import { Pause, Play } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { formatYear, SLIDER_END, SLIDER_START } from "./jurisdictions"
 
-/** One year per quarter second, so borders move at a watchable pace. */
-const PLAY_INTERVAL_MS = 250
+/**
+ * One year every twelfth of a second, so a full run from 200 BC takes a little
+ * over two minutes rather than seven.
+ *
+ * Still a year per tick rather than three years per tick at the slower rate:
+ * some Jurisdictions hold for only a year or two, and stepping over them would
+ * mean they never appeared at all.
+ */
+const PLAY_INTERVAL_MS = 83
 
 type YearSliderProps = {
   /** The year the map is currently showing. */
