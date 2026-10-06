@@ -317,7 +317,10 @@ export const REALM_COLOUR_SLOT: Record<string, 1 | 2 | 3 | 4 | 5> = {
   "eastern-roman-empire": 1,
   // The third-century breakaways, concurrent with the Empire and each other.
   "gallic-empire": 3,
-  "palmyrene-empire": 4,
+  // Slot 1 rather than 4: Palmyrene never shares a year with the eastern
+  // empire, and freeing slot 4 keeps the pink away from the client colour,
+  // which a client and the Palmyrenes would otherwise collide with.
+  "palmyrene-empire": 1,
   // The post-1204 successors, concurrent with the east and each other.
   "latin-empire": 2,
   "nicaean-empire": 3,

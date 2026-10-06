@@ -114,28 +114,21 @@
      only legal alongside secondary encoding, and contrast over the land is
      below 3:1 -- both are why realms carry direct labels. Five tokens serve
      ten realms: no two realms sharing one are ever on screen together. */
-  /* The non-Roman world. Two muted annotation colours, not identity hues:
-     eight concurrent realms will not pass all-pairs colour-blind separation,
-     so these stay subordinate to the five validated Roman slots and carry
-     only the client/adversary distinction.
-
-     Both were picked with the palette validator, not by eye. They separate
-     from each other at dE 16.1, and the green separates from the Roman
-     slot-3 green at dE 18.8, which matters because the Gallic Empire and
-     Armenia are on screen together in the 260s. Two other greens were
-     rejected for failing exactly that check. Contrast over the land is
-     1.9:1 for the green, discharged by the name every Jurisdiction carries,
-     the same relief the Roman palette relies on. */
-  --color-map-adversary: #332f3d;
-  --color-map-client: #4a5d3a;
+  /* The non-Roman world. Separated from each other by lightness, which is the
+     one channel colour blindness leaves alone, because hue space is genuinely
+     exhausted once Rome holds a true red: red, blue, green, pink and orange
+     are all spoken for, and the violet that remains collides with pink under
+     protanopia. Validated at dE 15.7 normal and 8.2 CVD against everything
+     either can share a map with. */
+  --color-map-adversary: #2b2b33;
+  --color-map-client: #9287b0;
 
   --color-map-realm-1: #0072b2;
-  /* The Roman mainline. A warm brick red, for the red of Roman military dress
-     and of Pompeian wall paint. It is held deliberately short of a true red:
-     red against the client green is the protanope confusion axis, and a
-     brick #b5342b dropped that pair to dE 2.8, well below the floor labels
-     can rescue. This is the reddest point that still clears dE 8. */
-  --color-map-realm-2: #cf5410;
+  /* The Roman mainline. A true brick red, for the red of Roman military dress
+     and of Pompeian wall paint. Taking it this far required moving the client
+     colour off green, since red against green is the protanope confusion axis
+     and the two cannot both be had. */
+  --color-map-realm-2: #b5342b;
   --color-map-realm-3: #009e73;
   --color-map-realm-4: #cc79a7;
   --color-map-realm-5: #e69f00;
