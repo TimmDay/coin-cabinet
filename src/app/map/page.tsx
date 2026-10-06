@@ -94,10 +94,18 @@ export default function MapPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Takes whatever the controls below it leave, so hiding the
-          administrative areas panel gives the map the space rather than
-          leaving a gap. min-h-0 stops a flex child refusing to shrink. */}
-      <div className="min-h-0 flex-1">
+      {/* An explicit height, not flex-1: the page is min-h-screen, so its
+          height comes from content, and a flex child of it has no definite
+          height for these h-full children to resolve against. The map
+          collapsed to nothing. Two values instead, so hiding the
+          administrative areas panel still gives the map the space. */}
+      <div
+        className={
+          tier === "province"
+            ? "h-[calc(100vh-240px)] flex-shrink-0"
+            : "h-[calc(100vh-130px)] flex-shrink-0"
+        }
+      >
         <div className="h-full p-4 sm:p-6 lg:p-8">
           <div className="bg-paper h-full w-full overflow-hidden rounded-lg shadow-lg">
             <Map
