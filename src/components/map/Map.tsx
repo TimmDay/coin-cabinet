@@ -721,7 +721,7 @@ export const Map: React.FC<MapProps> = ({
                 <span
                   tabIndex={0}
                   aria-describedby="map-year-tooltip"
-                  className="border-line bg-field text-ink font-display focus-visible:ring-moonlight/70 block rounded-full border px-3 py-1 text-[11px] tracking-wide uppercase shadow-lg focus-visible:ring-2 focus-visible:outline-none"
+                  className="border-line bg-field text-ink font-display focus-visible:ring-moonlight/70 flex h-7 items-center rounded-full border px-3 text-[11px] leading-none tracking-wide uppercase shadow-lg focus-visible:ring-2 focus-visible:outline-none"
                 >
                   Map of {formatYear(selectedYear)}
                 </span>
