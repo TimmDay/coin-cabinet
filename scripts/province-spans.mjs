@@ -8,10 +8,18 @@
 // OpenHistoricalMap, retrieved 2026-10-05, normalised onto Pazout's names and
 // merged where OHM splits a province that Pazout keeps whole.
 //
-// `placeholder` spans are NOT scholarship. They are the Principate, 27 BC to
-// AD 284, standing in until the cataloguer supplies real dates. The resolver
-// reports everything resting on them as Inferred.
-export const PLACEHOLDER_SPAN = { start: -27, end: 284 }
+// `placeholder` spans are NOT scholarship. They run the length of the Roman
+// era in this corpus, 275 BC to AD 476, and the labels carry an asterisk.
+//
+// Deliberately wide. A narrow placeholder is worse than a wide one, because
+// every Jurisdiction sharing it begins and ends on the same day, and a reader
+// scrubbing the slider sees sixteen provinces appear at once and reads it as
+// an event. The earlier value of 27 BC to AD 284 did exactly that twice: it
+// looked like Augustus's provincial settlement at one end and like the empire
+// collapsing under Diocletian at the other. Spanning the era instead means
+// these never pop in or out mid-slider, and the one edge that remains, 476,
+// is a real one.
+export const PLACEHOLDER_SPAN = { start: -275, end: 476 }
 
 export const PROVINCE_SPANS = {
   // Attested by OpenHistoricalMap.
@@ -59,6 +67,32 @@ export const PROVINCE_SPANS = {
   "Transpadana (Regio XI)": { start: 7, end: 292, source: "ohm" },
   "Umbria (Regio VI)": { start: 7, end: 292, source: "ohm" },
   "Venetia et Histria (Regio X)": { start: 7, end: 292, source: "ohm" },
+
+  // The city existed for the whole of the slider's range. Its outline is still
+  // the AD 117 snapshot, so it reports as Inferred on geometry; the placeholder
+  // marker here says only that no source was cited for the dates.
+  Roma: { start: -275, end: 1453, source: "placeholder" },
+}
+
+/**
+ * Italy before Augustus divided it.
+ *
+ * Italia was not a province: it was Roman soil, governed directly rather than
+ * through a governor, which is what provincial status meant. It belongs on the
+ * administrative-area Tier all the same, because it shares its boundaries with
+ * the provinces around it.
+ *
+ * Its Span stops where the regiones begin, so the two never overlap and the
+ * map tells the real sequence: undivided Roman Italy, then eleven numbered
+ * districts from AD 7, then nothing once Diocletian turned Italy into
+ * provinces in 292, which is geometry this corpus does not have.
+ */
+export const ITALIA = {
+  name: "Italia",
+  slug: "italia",
+  start: -275,
+  end: 6,
+  source: "placeholder",
 }
 
 /**

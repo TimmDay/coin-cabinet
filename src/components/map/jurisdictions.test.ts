@@ -3,6 +3,7 @@ import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 import {
   changeYears,
+  COIN_PAGE_TIER,
   colourSlotOf,
   labelPointOf,
   REALM_COLOUR_SLOT,
@@ -275,7 +276,11 @@ describe("changeYears", () => {
 
   it("does not mark the window's own edges", () => {
     const c = corpus([
-      feature({ slug: "all", segmentStart: -200, segmentEnd: SLIDER_END }),
+      feature({
+        slug: "all",
+        segmentStart: SLIDER_START,
+        segmentEnd: SLIDER_END,
+      }),
     ])
     expect(changeYears(c)).toEqual([])
   })
@@ -381,6 +386,58 @@ describe("against the committed Realm Tier corpus", () => {
 
   it("treats everything as Attested, since Coverage spans the slider", () => {
     expect(resolveAtYear(realCorpus, 800).provenance.anyInferred).toBe(false)
+  })
+})
+
+describe("assumed dates", () => {
+  const dataDir = join(process.cwd(), "public", "data", "jurisdictions")
+  const read = (file: string) =>
+    (
+      JSON.parse(
+        readFileSync(join(dataDir, file), "utf8"),
+      ) as GeoJSON.FeatureCollection
+    ).features as JurisdictionFeature[]
+
+  const full: Corpus = {
+    features: [...read("realms.geojson"), ...read("provinces.geojson")],
+    sources: JSON.parse(
+      readFileSync(join(dataDir, "sources.json"), "utf8"),
+    ) as Record<string, never>,
+  }
+
+  const countAt = (year: number) =>
+    resolveAtYear(full, year, "province").jurisdictions.length
+
+  it("flags a Jurisdiction whose Span rests on a placeholder", () => {
+    const drawn = resolveAtYear(full, 200, "province").jurisdictions
+    const assumed = drawn.filter((j) => j.datesAssumed)
+    expect(assumed.length).toBeGreaterThan(0)
+    // Attested ones must not be swept up in it.
+    expect(drawn.find((j) => j.name === "Dacia")?.datesAssumed).toBe(false)
+  })
+
+  it("does not confuse assumed dates with unattested geometry", () => {
+    // Every province outline is an AD 117 snapshot, so at 200 nothing is
+    // Attested, yet only some have assumed dates.
+    const drawn = resolveAtYear(full, 200, "province").jurisdictions
+    expect(drawn.every((j) => !j.attested)).toBe(true)
+    expect(drawn.some((j) => !j.datesAssumed)).toBe(true)
+  })
+
+  // The placeholder used to be the Principate, so sixteen Jurisdictions began
+  // and ended on the same day and a reader scrubbing the slider saw it as an
+  // event: Augustus's settlement at one end, collapse under Diocletian at the
+  // other. Neither happened.
+  it.each([
+    ["Augustus's supposed settlement", -28, -27],
+    ["the supposed collapse under Diocletian", 284, 285],
+  ])("has no cliff at %s", (_label, before, after) => {
+    expect(Math.abs(countAt(after) - countAt(before))).toBeLessThan(5)
+  })
+
+  // The regiones really did end with Diocletian's reorganisation.
+  it("still shows the real change at 293", () => {
+    expect(countAt(292) - countAt(293)).toBe(11)
   })
 })
 
@@ -522,18 +579,29 @@ describe("against the committed Province Tier corpus", () => {
     ) as Record<string, never>,
   }
 
-  // Sicilia's real Span opens in 241 BC, before the slider does, so the
-  // pipeline clamps it to the window's start rather than leaving it
-  // unreachable.
-  it("has Sicilia from the slider's first year, and little else", () => {
-    const names = resolveAtYear(
-      full,
-      SLIDER_START,
-      "province",
-    ).jurisdictions.map((j) => j.name)
-    expect(names).toContain("Sicilia")
-    expect(names).not.toContain("Dacia")
-    expect(names).not.toContain("Hispania Citerior")
+  // The slider opens before the First Punic War, when Rome held no provinces
+  // at all. Anything drawn then beyond Italy is there because its dates are
+  // assumed rather than sourced, and it says so: this is the cost of giving
+  // the placeholders a wide Span, and it is paid in the open.
+  it("marks everything it cannot date at the slider's first year", () => {
+    const drawn = resolveAtYear(full, SLIDER_START, "province").jurisdictions
+    const names = drawn.map((j) => j.name)
+    expect(names).toContain("Italia")
+
+    for (const jurisdiction of drawn) {
+      if (jurisdiction.name === "Italia") continue
+      expect(jurisdiction.datesAssumed).toBe(true)
+    }
+  })
+
+  // Sicilia, taken from Carthage in 241 BC, was the first province Rome had.
+  it("gains Sicilia in 241 BC and not before", () => {
+    const has = (year: number) =>
+      resolveAtYear(full, year, "province").jurisdictions.some(
+        (j) => j.name === "Sicilia",
+      )
+    expect(has(-242)).toBe(false)
+    expect(has(-241)).toBe(true)
   })
 
   it("adds Hispania Citerior once its Span opens in 197 BC", () => {
@@ -622,6 +690,50 @@ describe("against the committed Province Tier corpus", () => {
         feature.properties.tier,
       ).jurisdictions.find((j) => j.slug === feature.properties.slug)
       expect(drawn?.attested).toBe(false)
+    }
+  })
+})
+
+describe("the Tier a coin's map opens at", () => {
+  const dataDir = join(process.cwd(), "public", "data", "jurisdictions")
+  const read = (file: string) =>
+    (
+      JSON.parse(
+        readFileSync(join(dataDir, file), "utf8"),
+      ) as GeoJSON.FeatureCollection
+    ).features as JurisdictionFeature[]
+
+  const full: Corpus = {
+    features: [...read("realms.geojson"), ...read("provinces.geojson")],
+    sources: JSON.parse(
+      readFileSync(join(dataDir, "sources.json"), "utf8"),
+    ) as Record<string, never>,
+  }
+
+  // Every drawn Jurisdiction carries a label, so the count is the crowding.
+  const drawnAt = (year: number, tier: Tier) =>
+    resolveAtYear(full, year, tier).jurisdictions.length
+
+  it.each([
+    ["a Severan denarius", 200],
+    ["a Trajanic sestertius", 117],
+    ["a Julio-Claudian as", 50],
+  ])("stays uncluttered beside %s", (_label, year) => {
+    expect(drawnAt(year, COIN_PAGE_TIER)).toBeLessThanOrEqual(3)
+  })
+
+  // The reason for the default, stated as a fact about the data rather than
+  // as an opinion: the Province Tier is an order of magnitude busier, and a
+  // coin's own pins have to stay findable among those outlines.
+  it("is far less crowded than the Province Tier at the same year", () => {
+    expect(drawnAt(117, "province")).toBeGreaterThan(
+      drawnAt(117, COIN_PAGE_TIER) * 10,
+    )
+  })
+
+  it("still has something to show across the whole slider", () => {
+    for (const year of [SLIDER_START, -50, 117, 400, 800, 1200, 1453]) {
+      expect(drawnAt(year, COIN_PAGE_TIER)).toBeGreaterThan(0)
     }
   })
 })

@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
+import { SLIDER_END, SLIDER_START } from "./jurisdictions"
 
 // Guards the committed output of `pnpm data:jurisdictions` rather than the
 // script itself: the script is run by hand and its product is what ships, so
@@ -16,8 +17,8 @@ const sources = JSON.parse(
   readFileSync(join(dataDir, "sources.json"), "utf8"),
 ) as Record<string, Record<string, unknown>>
 
-const SLIDER_START = -200
-const SLIDER_END = 1453
+// Imported rather than restated: duplicating them meant this file silently
+// disagreed with the pipeline when the window moved.
 
 /** Every Jurisdiction the Realm Tier is allowed to contain. */
 const EXPECTED_SLUGS = [

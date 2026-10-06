@@ -23,6 +23,20 @@ export const provinceStyle = (): OverlayStyle => ({
   lineDasharray: [5, 5],
 })
 
+/**
+ * The Roman world at its greatest extent, under Trajan in AD 117, as
+ * [west, south, east, north]. Measured from the committed Realm Tier geometry
+ * rather than chosen by eye; re-measure if that data is rebuilt.
+ *
+ * Opening here means playing the slider from end to end needs no panning. One
+ * segment escapes it: the Roman Empire of 25 to 20 BC reaches to 15N on
+ * Augustus's Arabian and Nubian expeditions. Framing for those six years would
+ * shrink the Mediterranean for the other 1,647.
+ */
+export const TRAJAN_BOUNDS: [number, number, number, number] = [
+  -9.39, 23.36, 48.93, 55.36,
+]
+
 export const MAP_STYLES = {
   // Mint marker style (plain dot, not the highlighted teardrop pin)
   mintMarker: {
@@ -33,6 +47,28 @@ export const MAP_STYLES = {
       border: `2px solid ${cssColor("pin-cream-warm")}`,
       borderRadius: "9999px",
       boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+    },
+  },
+  // Cities and other places, deliberately smaller and cooler than a mint, so
+  // a mint still reads first when several kinds are shown at once.
+  cityMarker: {
+    style: {
+      width: "9px",
+      height: "9px",
+      backgroundColor: cssColor("pin-gold"),
+      border: `2px solid ${cssColor("pin-umber-dark")}`,
+      borderRadius: "9999px",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.35)",
+    },
+  },
+  placeMarker: {
+    style: {
+      width: "7px",
+      height: "7px",
+      backgroundColor: cssColor("pin-sage"),
+      border: `2px solid ${cssColor("pin-sage-dark")}`,
+      borderRadius: "9999px",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.35)",
     },
   },
 } as const

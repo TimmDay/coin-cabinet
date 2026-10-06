@@ -230,8 +230,9 @@ export function DesktopNav({
 
   // Filter navigation items based on feature flags
   const visibleNavItems = navigationItems.filter((item) => {
-    // Only show "Map" and "Feature Flags" when dev feature flag is enabled
-    if (item.name === "Map" || item.name === "Feature Flags") {
+    // "Feature Flags" is for whoever is turning flags on, so it stays behind
+    // one. The map is public.
+    if (item.name === "Feature Flags") {
       return isDevMode
     }
     // "Articles" (and everything under it) is gated by its own flag

@@ -9,8 +9,18 @@ export type Tier = "realm" | "province" | "city"
 
 export const TIERS: Tier[] = ["realm", "province", "city"]
 
+/**
+ * The Tier a coin's own map opens at.
+ *
+ * Realms rather than provinces: at a typical coin's year the Province Tier is
+ * forty-odd outlines, each carrying a label, which buries the coin's own pins
+ * under other people's borders. A Realm is one or two shapes and answers what
+ * the page is actually asking, which is whose empire this was struck in.
+ */
+export const COIN_PAGE_TIER: Tier = "realm"
+
 /** The slider's window. Nothing outside it is reachable. */
-export const SLIDER_START = -200
+export const SLIDER_START = -275
 export const SLIDER_END = 1453
 
 export type JurisdictionProperties = {
@@ -45,6 +55,8 @@ export type Source = {
   coverage: { from: number; to: number }
   modified?: string
   defects?: string[]
+  /** Not a bibliographic Source: a marker that these dates are assumed. */
+  placeholder?: boolean
 }
 
 export type Corpus = {
@@ -59,6 +71,12 @@ export type ResolvedJurisdiction = {
   basisYear: number
   /** False when any Source it relies on does not cover the Selected year. */
   attested: boolean
+  /**
+   * True when its Span rests on a placeholder rather than on a Source, so its
+   * dates are the cataloguer's assumption. Separate from `attested`, which is
+   * about whether the geometry is being drawn for a year its Source speaks to.
+   */
+  datesAssumed: boolean
   feature: JurisdictionFeature
 }
 
@@ -183,6 +201,8 @@ export function resolveAtYear(
         attested: sourceKeysFor(p).every((key) =>
           covers(corpus.sources[key], year),
         ),
+        datesAssumed:
+          corpus.sources[p.spanSource ?? p.source]?.placeholder === true,
         feature,
       }
     })

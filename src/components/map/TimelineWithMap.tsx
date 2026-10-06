@@ -12,6 +12,7 @@ import { Timeline } from "../ui/Timeline"
 import { TimelineInfoBox } from "../ui/TimelineInfoBox"
 import { Map, type CustomMapMarker } from "./Map"
 import { type LatLng, parseLatLng, ROME } from "./coordinates"
+import { COIN_PAGE_TIER, type Tier } from "./jurisdictions"
 import { pinStyle } from "./pinStyle"
 
 const NO_MARKERS: CustomMapMarker[] = []
@@ -331,6 +332,8 @@ export function TimelineWithMap({
 
   // What the three maps (preview, desktop, full screen) have in common; each
   // adds its own centre and height
+  const [tier, setTier] = useState<Tier>(COIN_PAGE_TIER)
+
   const sharedMapProps = {
     ...mapProps,
     zoom: initialZoom,
@@ -338,10 +341,10 @@ export function TimelineWithMap({
     showProvinceLabels,
     showMintMarkers: showDefaultMintMarkers,
     customMarkers: combinedCustomMarkers,
-    // A coin's map shows the provinces of the coin's own year. Null leaves the
+    // A coin's map shows the geography of the coin's own year. Null leaves the
     // Jurisdiction layer off rather than drawing some other year's geography.
     ...(selectedYear !== null && selectedYear !== undefined
-      ? { selectedYear, tier: "province" as const }
+      ? { selectedYear, tier, onTierChange: setTier }
       : {}),
   }
 

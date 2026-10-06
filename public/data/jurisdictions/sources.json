@@ -4,7 +4,7 @@
     "url": "https://github.com/MatteoMazzamurro/roman-road-networks",
     "licence": "CC BY-SA 4.0",
     "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "retrieved": "2026-10-05",
+    "retrieved": "2026-10-06",
     "coverage": {
       "from": 117,
       "to": 136
@@ -22,7 +22,7 @@
     "url": "https://www.openhistoricalmap.org/",
     "licence": "CC0 1.0",
     "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-    "retrieved": "2026-10-05",
+    "retrieved": "2026-10-06",
     "coverage": {
       "from": -250,
       "to": 700
@@ -36,7 +36,7 @@
   "placeholder": {
     "title": "Spans not yet curated",
     "placeholder": true,
-    "retrieved": "2026-10-05",
+    "retrieved": "2026-10-06",
     "coverage": {
       "from": 1,
       "to": 0
@@ -52,12 +52,12 @@
     "licence": "CC BY 4.0",
     "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
     "upstreamCommit": "5f43337713",
-    "retrieved": "2026-10-05",
+    "retrieved": "2026-10-06",
     "coverage": {
-      "from": -200,
+      "from": -275,
       "to": 1453
     },
-    "modified": "Filtered to Roman-world polities, clamped to 200 BC - AD 1453, the eastern/Byzantine label switch merged into one Jurisdiction, and geometry simplified.",
+    "modified": "Filtered to Roman-world polities, clamped to 275 BC - AD 1453, the eastern/Byzantine label switch merged into one Jurisdiction, and geometry simplified.",
     "defects": [
       "Dates the Gallic Empire 261-282; the standard dating is 260-274.",
       "Dates the Palmyrene Empire 261-269, which matches neither the 260-273 kingdom nor the 270-273 empire.",
