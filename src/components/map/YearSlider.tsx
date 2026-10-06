@@ -14,7 +14,15 @@ import { formatYear, SLIDER_END, SLIDER_START } from "./jurisdictions"
  */
 const PLAY_INTERVAL_MS = 42
 
-type YearSliderProps = {
+/** A moment worth jumping to. Anything else on it is the caller's business. */
+export type Moment = {
+  label: string
+  year: number
+  /** Why this year, as a tooltip. */
+  title?: string
+}
+
+type YearSliderProps<M extends Moment = Moment> = {
   /** The year the map is currently showing. */
   value: number
   onChange: (year: number) => void
@@ -26,6 +34,9 @@ type YearSliderProps = {
   changeYears?: number[]
   /** Fits the map to what is currently drawn. Hidden when not supplied. */
   onFitExtent?: () => void
+  /** Years worth jumping straight to, shown as buttons under the track. */
+  moments?: readonly M[]
+  onPickMoment?: (moment: M) => void
   className?: string
 }
 
@@ -36,13 +47,15 @@ function positionOf(year: number): number {
 
 const DECADE_MARKS = [-200, 1, 300, 600, 900, 1200, 1453]
 
-export function YearSlider({
+export function YearSlider<M extends Moment>({
   value,
   onChange,
   changeYears = [],
   onFitExtent,
+  moments,
+  onPickMoment,
   className = "",
-}: YearSliderProps) {
+}: YearSliderProps<M>) {
   // Ticks crowd where history was busy, which is the point, but duplicates at
   // the same pixel are wasted DOM. Round to a tenth of a percent.
   const [playing, setPlaying] = useState(false)
@@ -178,6 +191,36 @@ export function YearSlider({
           )}
         </button>
       </div>
+
+      {moments && moments.length > 0 && (
+        <div className="border-paper-edge mt-3 flex flex-wrap items-center gap-2 border-t pt-3">
+          <span className="text-paper-ink-muted text-[10px] tracking-wide uppercase">
+            Jump to
+          </span>
+          {moments.map((moment) => (
+            <button
+              key={moment.label}
+              type="button"
+              title={moment.title}
+              onClick={() => {
+                // Jumping is a deliberate move, so stop any playback first.
+                setPlaying(false)
+                onPickMoment?.(moment)
+              }}
+              aria-current={value === moment.year ? "true" : undefined}
+              /* paper-ink-muted for the border, not paper-edge: that measures
+                 1.84:1 against the card, under the 3:1 a control needs. */
+              className={`text-paper-ink focus-visible:outline-paper-ink rounded-full border px-2.5 py-1 text-[11px] focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                value === moment.year
+                  ? "border-paper-ink bg-paper-ink text-paper"
+                  : "border-paper-ink-muted hover:bg-paper-raised"
+              }`}
+            >
+              {moment.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

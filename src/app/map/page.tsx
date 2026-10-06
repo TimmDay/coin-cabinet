@@ -36,6 +36,49 @@ const MARKER_OPTIONS = [
   { value: "poi", label: "POI" },
 ] as const
 
+/**
+ * Moments worth jumping to, each with the Tier that actually shows it. Setting
+ * the year alone would not be enough: Diocletian's reorganisation is invisible
+ * at Realm level, where AD 293 looks like any other year, and the Gallic and
+ * Palmyrene breakaways are invisible among the administrative areas.
+ *
+ * Years checked against the committed corpus, not from memory.
+ */
+const MOMENTS = [
+  {
+    label: "Four Emperors",
+    year: 69,
+    tier: "province" as Tier,
+    title:
+      "AD 69. Galba, Otho, Vitellius, Vespasian. A succession crisis rather than a territorial one, so the borders barely move.",
+  },
+  {
+    label: "Trajan's peak",
+    year: 117,
+    tier: "realm" as Tier,
+    title: "AD 117. The empire at its greatest extent.",
+  },
+  {
+    label: "Three empires",
+    year: 265,
+    tier: "realm" as Tier,
+    title: "AD 265. The Gallic and Palmyrene breakaways, either side of Rome.",
+  },
+  {
+    label: "Diocletian",
+    year: 293,
+    tier: "province" as Tier,
+    title:
+      "AD 293. The reorganisation: the Italian regiones end and the provinces are remade.",
+  },
+  {
+    label: "East and West",
+    year: 395,
+    tier: "realm" as Tier,
+    title: "AD 395. The empire divided for the last time.",
+  },
+] as const
+
 /** Opens on Trajan's empire: the most recognisable shape on the slider. */
 const INITIAL_YEAR = 117
 
@@ -131,6 +174,11 @@ export default function MapPage() {
           onChange={setSelectedYear}
           changeYears={ticks}
           onFitExtent={() => fitRef.current?.()}
+          moments={MOMENTS}
+          onPickMoment={(moment) => {
+            setSelectedYear(moment.year)
+            setTier(moment.tier)
+          }}
         />
         <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
