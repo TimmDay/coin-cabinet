@@ -51,6 +51,10 @@ export function useMarkerClusters(
   // that hands over a new array of the same markers.
   const index = useMemo(
     () => createCustomMarkerClusterIndex(clusterable),
+    // Deliberately keyed on position rather than on `clusterable`: rebuilding
+    // the index whenever the parent hands over a new array of the same
+    // markers would discard the open fan on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [key],
   )
 

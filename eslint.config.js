@@ -1,4 +1,5 @@
 import nextPlugin from "@next/eslint-plugin-next"
+import reactHooks from "eslint-plugin-react-hooks"
 import tseslint from "typescript-eslint"
 
 const config = [
@@ -21,6 +22,24 @@ const config = [
     ],
   },
   ...tseslint.configs.recommended,
+  reactHooks.configs.flat.recommended,
+  {
+    rules: {
+      // The classic hook rules earn their keep immediately: rules-of-hooks
+      // caught a useState called after an early return in TimelineWithMap,
+      // which would have thrown the moment a timeline finished loading.
+      //
+      // v7 also bundles the React Compiler rules. These three flag 13 sites
+      // across components that predate the plugin, and several are the
+      // legitimate "read client-only state after hydration" pattern that must
+      // not be naively removed. Resolving them is a behaviour-affecting
+      // refactor rather than a lint config change, so they are tracked in
+      // #57 and turned off until then rather than left as standing noise.
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/purity": "off",
+      "react-hooks/refs": "off",
+    },
+  },
   {
     files: ["**/*.{js,jsx,ts,tsx,mjs,mts,cjs,cts}"],
     plugins: {

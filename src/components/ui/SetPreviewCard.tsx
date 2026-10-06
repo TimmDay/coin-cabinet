@@ -46,7 +46,9 @@ export function SetPreviewCard({
       setShown(candidates[Math.floor(Math.random() * candidates.length)])
       setReady(true)
     }
-    // candidates comes from a constant list, so its length is the only input
+    // candidates comes from a constant list, so its length is the only input;
+    // depending on the array itself would reshuffle the picture every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [candidates.length])
 
   return (

@@ -60,8 +60,9 @@ export const useJurisdictionCorpus = (enabled = true): Corpus | null => {
   // One corpus across every Tier: the resolver narrows by Tier itself, and a
   // Tier control has to know which Tiers hold anything at the Selected year,
   // which it cannot do from a partially loaded corpus.
+  const { realms, provinces } = layers
+
   return useMemo(() => {
-    const { realms, provinces } = layers
     if (!realms || !provinces || !sources) return null
     return {
       features: [
@@ -70,5 +71,5 @@ export const useJurisdictionCorpus = (enabled = true): Corpus | null => {
       ],
       sources,
     }
-  }, [layers.realms, layers.provinces, sources])
+  }, [realms, provinces, sources])
 }
