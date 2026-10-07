@@ -464,8 +464,11 @@ describe("Button", () => {
   sorting plugin.
 - **Vitest**: `pnpm test:run`.
 
-There are no pre-commit hooks and no lint job in CI, so nothing stops a commit
-that skips these.
+- **Pre-commit** (`.husky/pre-commit`): lint-staged runs eslint and prettier on
+  staged files, then `pnpm typecheck`. `pnpm install` wires it up.
+- **CI** (`.github/workflows/ci.yml`): `pnpm check` and `pnpm test:run` on every
+  PR and push to `main`. Prettier is not in CI yet; `pnpm format:check` fails on
+  a few existing files.
 
 ## Resources
 
