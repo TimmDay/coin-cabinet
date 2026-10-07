@@ -178,7 +178,7 @@ CoinDetailPage
 CoinGrid
 
 - [ ] pre-fetch the coin card detail when the grid item is hovered for X ms (so it opens instantly when clicked)
-- [ ] Explore UI component libraries. Pick one as a reference and put it in copilot-instructions. (shadcn or daisy)
+- [ ] Explore UI component libraries. Pick one as a reference and put it in AGENTS.md. (shadcn or daisy)
 
 - [ ] CoinGrid - work out what filters I want, and how to display them (dropdown)
 - [ ] do the filters for mobile as well
