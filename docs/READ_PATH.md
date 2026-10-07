@@ -5,7 +5,9 @@ never writes, and it never holds a service key. All writes happen in the
 data-maintenance app (`somnus-data-ingestion`).
 
 The schema itself (`schema.sql`, `rls.sql`, `views.sql`, `SCHEMAS.md`) is kept
-with that app. This document covers only what the site does with it.
+with that app. On this machine that is `~/Documents/docs`; `views.sql` defines
+`public_items` and `rls.sql` holds the anon policies each table here relies on.
+This document covers only what the site does with it.
 
 ## The path
 
