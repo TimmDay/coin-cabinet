@@ -21,7 +21,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "typecheck": "next typegen && tsc --noEmit",
+    "typecheck": "SKIP_ENV_VALIDATION=1 next typegen && tsc --noEmit",
     "data:jurisdictions": "node --max-old-space-size=4096 scripts/build-jurisdictions.mjs",
     "prepare": "husky"
   },
