@@ -159,7 +159,7 @@ export function CoinRow({
               <DescriptionWithDeviceHighlights
                 text={description}
                 devices={devices}
-                className="leading-relaxed break-words italic"
+                className="leading-relaxed break-words"
               />
             </TipIcon>
           )}
