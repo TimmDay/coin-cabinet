@@ -39,17 +39,35 @@ function clockOffset(position: number) {
   }
 }
 
-/**
- * Where the popover opens. Buttons on the right half open leftward and
- * buttons on the left half open rightward, so a popover never runs off the
- * edge of the page. 12 and 6 are centred, and 6 opens upward so the popover
- * doesn't cover the legend below the coin.
- */
+// Each placement is relative to the button, and every one opens over the coin.
+const UNDER = "" // below, centred (TipIcon's default)
+const UNDER_LEFT = "left-auto right-0 translate-x-0"
+const UNDER_RIGHT = "left-0 translate-x-0"
+const ABOVE = "top-auto bottom-full mt-0 mb-2"
+const ABOVE_LEFT = cn(ABOVE, UNDER_LEFT)
+const ABOVE_RIGHT = cn(ABOVE, UNDER_RIGHT)
+const BESIDE = "top-1/2 mt-0 -translate-y-1/2"
+const LEFT_OF = cn(BESIDE, "right-full left-auto mr-2 translate-x-0")
+const RIGHT_OF = cn(BESIDE, "left-full ml-2 translate-x-0")
+
+/** Where the popover opens, by clock position. */
+const PLACEMENT: Record<number, string> = {
+  12: UNDER,
+  1: UNDER_LEFT,
+  2: UNDER_LEFT,
+  3: LEFT_OF,
+  4: ABOVE_LEFT,
+  5: ABOVE_LEFT,
+  6: ABOVE,
+  7: ABOVE_RIGHT,
+  8: ABOVE_RIGHT,
+  9: RIGHT_OF,
+  10: UNDER_RIGHT,
+  11: UNDER_RIGHT,
+}
+
 function popoverPlacement(position: number) {
-  const hour = position % 12
-  if (hour === 6) return "top-auto bottom-full mt-0 mb-2"
-  if (hour === 0) return ""
-  return cn("left-auto translate-x-0", hour < 6 ? "right-0" : "left-0")
+  return PLACEMENT[position === 0 ? 12 : position % 12] ?? UNDER
 }
 
 /**
