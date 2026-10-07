@@ -55,8 +55,12 @@ const config = [
         "error",
         { checksVoidReturn: { attributes: false } },
       ],
-      // Enforce nullish coalescing over logical OR when appropriate
-      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      // Prefer ?? over || so 0 and false survive. Strings are exempt: database text
+      // columns hold "" for "empty", and falling through on "" is intended.
+      "@typescript-eslint/prefer-nullish-coalescing": [
+        "error",
+        { ignorePrimitives: { string: true } },
+      ],
       "@typescript-eslint/prefer-optional-chain": "error",
       // Prevent any types (relaxed for external data handling)
       "@typescript-eslint/no-explicit-any": "warn",

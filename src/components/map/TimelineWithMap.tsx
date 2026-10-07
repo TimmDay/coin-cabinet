@@ -128,7 +128,7 @@ export function TimelineWithMap({
     }
   }, [])
 
-  const currentEvent = allEvents[selectedEventIndex] || null
+  const currentEvent = allEvents[selectedEventIndex] ?? null
 
   const mobilePreviewCenter: LatLng = (() => {
     const birthEvent = allEvents.find(

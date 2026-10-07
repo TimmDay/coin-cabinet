@@ -177,7 +177,7 @@ export function DeepDiveCardsSection({
   // Helper function to get mint by ID
   const getMintById = (mintId: number | null | undefined) => {
     if (!mints || !mintId) return null
-    return mints.find((m) => m.id === mintId) || null
+    return mints.find((m) => m.id === mintId) ?? null
   }
 
   // Transform data to cards format

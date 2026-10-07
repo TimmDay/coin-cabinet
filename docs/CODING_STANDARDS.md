@@ -4,73 +4,9 @@ This document outlines the coding standards and best practices for the Coin Cabi
 
 ## TypeScript & ESLint Rules
 
-### 1. Nullish Coalescing (`??`) vs Logical OR (`||`)
+Lint enforces these, so they are not repeated here: `??` over `||` (strings are exempt, so `""` falls through on purpose), optional chains, `type` over `interface`, no `any`, no inferrable annotations, and no semicolons. Run `pnpm check`.
 
-**Rule:** Use `??` when you specifically want to handle `null` or `undefined`, use `||` when you want to handle all falsy values.
-
-```typescript
-// ✅ Good - Use ?? for null/undefined checks
-const userName = user.name ?? "Anonymous"
-const config = userConfig ?? defaultConfig
-
-// ✅ Good - Use || for falsy checks (empty strings, 0, false, null, undefined)
-const isValid = !imageLink || imageLink.trim() === ""
-const hasContent = title || description || image
-
-// ❌ Bad - Using || when only null/undefined should be handled
-const userName = user.name || "Anonymous"; // This treats empty string as falsy too
-```
-
-### 2. Optional Chains (`?.`)
-
-**Rule:** Use optional chaining instead of manual null checks.
-
-```typescript
-// ✅ Good
-if (user?.profile?.preferences?.theme) {
-  // handle theme
-}
-
-const email = user?.contact?.email
-
-// ❌ Bad
-if (
-  user &&
-  user.profile &&
-  user.profile.preferences &&
-  user.profile.preferences.theme
-) {
-  // handle theme
-}
-```
-
-### 3. Type Definitions
-
-**Rule:** Prefer `type` over `interface` for type definitions.
-
-```typescript
-// ✅ Good - Use type for type definitions
-type CoinData = {
-  id: number
-  nickname: string
-  denomination: string
-  image_link_o: string | null
-  image_link_r: string | null
-}
-
-// ❌ Bad - Using interface when type is more appropriate
-interface CoinData {
-  id: number
-  nickname: string
-  denomination: string
-  image_link_o: string | null
-  image_link_r: string | null
-}
-```
-
-**Note:** Use `interface` only when you need declaration merging or extending classes.
-
-### 4. Function Declarations
+### 1. Function Declarations
 
 **Rule:** Prefer `function` keyword over arrow functions for top-level function definitions.
 
@@ -96,23 +32,7 @@ const processCoin = (coin: CoinData): string => {
 }
 ```
 
-### 5. Type Safety
-
-**Rule:** Avoid `any` types. Define proper types.
-
-```typescript
-// ✅ Good
-function processCoin(coin: CoinData): string {
-  return coin.nickname
-}
-
-// ❌ Bad
-function processCoin(coin: any): string {
-  return coin.nickname; // No type safety
-}
-```
-
-### 6. ARIA Attributes
+### 2. ARIA Attributes
 
 **Rule:** ARIA attributes must use string values, not boolean expressions.
 
@@ -127,52 +47,6 @@ function processCoin(coin: any): string {
   Toggle Menu
 </button>
 ```
-
-### 7. Boolean Type Inference
-
-**Rule:** Don't explicitly type obvious boolean values.
-
-```typescript
-// ✅ Good
-const isValid = true
-const checkStatus = (enabled = false) => { ... }
-
-// ❌ Bad
-const isValid: boolean = true
-const checkStatus = (enabled: boolean = false) => { ... }
-```
-
-### 8. Semicolons
-
-**Rule:** Do not use semicolons at the end of statements in TypeScript.
-
-```typescript
-// ✅ Good - No semicolons
-const userName = user.name ?? "Anonymous"
-const result = processData(input)
-
-function calculateTotal(items: Item[]): number {
-  return items.reduce((sum, item) => sum + item.price, 0)
-}
-
-if (isValid) {
-  handleSuccess()
-}
-
-// ❌ Bad - Using semicolons
-const userName = user.name ?? "Anonymous";
-const result = processData(input);
-
-function calculateTotal(items: Item[]): number {
-  return items.reduce((sum, item) => sum + item.price, 0);
-}
-
-if (isValid) {
-  handleSuccess();
-}
-```
-
-**Note:** This rule applies to TypeScript/JavaScript files. Semicolons may still be required in specific contexts (e.g., immediately invoked function expressions, or when a line starts with `[` or `(`).
 
 ## Component Patterns
 
