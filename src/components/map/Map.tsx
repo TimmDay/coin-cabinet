@@ -9,6 +9,7 @@ import type { MapRef } from "react-map-gl/maplibre"
 import { useMints } from "~/api/mints"
 import { usePlaces } from "~/api/places"
 import { MAP_HEIGHT } from "~/lib/constants"
+import { formatYear } from "~/lib/utils/date-formatting"
 import { parseLatLng, parseZoom, ROME } from "./coordinates"
 import { useJurisdictionCorpus, useMapConfiguration } from "./hooks"
 import {
@@ -122,6 +123,12 @@ export type MapProps = {
    */
   onTierChange?: (tier: Tier) => void
   /**
+   * Name the Selected year in a "Map of [year]" label, top left, with a
+   * tooltip saying it is the year the coin was minted. For a coin's own map,
+   * where the year is not otherwise on screen.
+   */
+  showYearLabel?: boolean
+  /**
    * Open framed on these bounds, [west, south, east, north], instead of a
    * centre and zoom. Fits whatever the viewport is, so the same ground is on
    * screen on a phone and a desktop.
@@ -168,6 +175,7 @@ export const Map: React.FC<MapProps> = ({
   tier,
   outsiderRoles = NO_OUTSIDERS,
   onTierChange,
+  showYearLabel = false,
   initialBounds,
   onFitExtent,
   selectedProvinces,
@@ -707,6 +715,25 @@ export const Map: React.FC<MapProps> = ({
                 onMarkerClick={handleCustomMarkerClick}
               />
             </MapGL>
+
+            {showYearLabel && selectedYear !== undefined && (
+              <div className="group absolute top-3 left-3 z-10">
+                <span
+                  tabIndex={0}
+                  aria-describedby="map-year-tooltip"
+                  className="border-line bg-field text-ink font-display focus-visible:ring-moonlight/70 flex h-7 items-center rounded-full border px-3 text-[11px] leading-none tracking-wide uppercase shadow-lg focus-visible:ring-2 focus-visible:outline-none"
+                >
+                  Map of {formatYear(selectedYear)}
+                </span>
+                <span
+                  id="map-year-tooltip"
+                  role="tooltip"
+                  className="border-line bg-field text-ink pointer-events-none absolute top-full left-0 mt-1.5 rounded-md border px-2.5 py-1 text-xs whitespace-nowrap opacity-0 shadow-lg transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
+                >
+                  The year this coin was minted
+                </span>
+              </div>
+            )}
 
             {/* Sits over the map, bottom left, for pages with no panel. */}
             {onTierChange && tier && (
