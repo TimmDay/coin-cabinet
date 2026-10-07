@@ -46,7 +46,7 @@ export function CoinFlipInfo({ coin, className = "" }: CoinFlipInfoProps) {
           href={coin.reference_link!}
           target="_blank"
           rel="noopener noreferrer"
-          className="underline decoration-stone-900/40 underline-offset-4 hover:decoration-stone-900"
+          className="decoration-paper-ink/40 hover:decoration-paper-ink underline underline-offset-4"
         >
           {coin.reference}
         </a>

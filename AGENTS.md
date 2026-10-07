@@ -18,3 +18,8 @@ See `docs/agents/triage-labels.md`.
 
 Single-context: `CONTEXT.md` and `docs/adr/` at the repo root.
 See `docs/agents/domain.md`.
+
+### Seeing the app
+
+How to run it, which routes to open, and how to capture hover and click states.
+See `docs/agents/seeing-the-app.md`.

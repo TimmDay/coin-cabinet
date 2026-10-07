@@ -6,7 +6,7 @@
   "scripts": {
     "prebuild": "node scripts/copy-maplibre-assets.mjs",
     "build": "next build",
-    "check": "eslint . --max-warnings 0 && tsc --noEmit",
+    "check": "eslint . --max-warnings 0 && pnpm typecheck",
     "postinstall": "node scripts/copy-maplibre-assets.mjs",
     "db:types": "dotenv -e .env -- bash -c 'supabase gen types typescript --project-id \"$SUPABASE_PROJECT_REF\" --schema public > src/database/database.types.ts.tmp && mv src/database/database.types.ts.tmp src/database/database.types.ts'",
     "predev": "node scripts/copy-maplibre-assets.mjs",
@@ -21,7 +21,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "SKIP_ENV_VALIDATION=1 next typegen && tsc --noEmit",
     "data:jurisdictions": "node --max-old-space-size=4096 scripts/build-jurisdictions.mjs",
     "prepare": "husky"
   },
