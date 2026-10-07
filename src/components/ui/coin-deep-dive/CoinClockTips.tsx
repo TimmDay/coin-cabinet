@@ -71,7 +71,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           className="absolute z-10 -translate-x-1/2 -translate-y-1/2 [--clock-gap:24px] sm:[--clock-gap:33px]"
           style={clockOffset(note.position)}
           popoverClassName={cn(
-            "text-moonlight w-72 px-7 text-left text-base sm:w-84",
+            "w-72 px-7 text-left text-base sm:w-84",
             popoverPlacement(note.position),
           )}
         >
@@ -101,7 +101,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
               href={note.linkUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-moonlight hover:text-moonlight-bright mt-2 block underline underline-offset-2"
+              className="text-moonlight-bright hover:text-ink mt-2 block underline underline-offset-2"
             >
               {note.linkLabel ?? "Learn more"}
             </a>
