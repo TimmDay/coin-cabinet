@@ -62,7 +62,6 @@ const config = [
         { ignorePrimitives: { string: true } },
       ],
       "@typescript-eslint/prefer-optional-chain": "error",
-      "@typescript-eslint/no-inferrable-types": "error",
       // Prevent any types (relaxed for external data handling)
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unsafe-assignment": "warn",
