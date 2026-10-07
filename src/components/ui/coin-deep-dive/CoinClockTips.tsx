@@ -76,7 +76,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           )}
         >
           {note.title && (
-            <span className="font-display mb-2 block text-center text-lg tracking-widest uppercase">
+            <span className="font-display text-bronze-light mb-2 block text-center text-lg tracking-widest uppercase">
               {note.title}
             </span>
           )}
