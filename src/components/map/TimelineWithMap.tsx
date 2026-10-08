@@ -32,6 +32,8 @@ export type TimelineWithMapProps = {
    */
   previewCenter?: [number, number]
   initialZoom?: number
+  /** The tier the Jurisdiction layer opens on. Defaults to Realms. */
+  initialTier?: Tier
   /**
    * Zoom level to use when focusing on a timeline event location.
    * Higher numbers = more zoomed in (8 = city level, 10 = street level)
@@ -78,6 +80,7 @@ export function TimelineWithMap({
   initialCenter = ROME,
   previewCenter,
   initialZoom = 5,
+  initialTier = COIN_PAGE_TIER,
   eventZoomLevel = 5,
   showProvinceLabels = true,
   showHeaders = true,
@@ -326,7 +329,7 @@ export function TimelineWithMap({
 
   // Above the early return: a hook after it is only called on some renders,
   // which changes hook order the moment the timeline loads and throws.
-  const [tier, setTier] = useState<Tier>(COIN_PAGE_TIER)
+  const [tier, setTier] = useState<Tier>(initialTier)
 
   // Don't render until we have data
   if (allEvents.length === 0) {
@@ -351,7 +354,14 @@ export function TimelineWithMap({
     // A coin's map shows the geography of the coin's own year. Null leaves the
     // Jurisdiction layer off rather than drawing some other year's geography.
     ...(selectedYear !== null && selectedYear !== undefined
-      ? { selectedYear, tier, onTierChange: setTier, showYearLabel: true }
+      ? {
+          selectedYear,
+          tier,
+          onTierChange: setTier,
+          // Opened on a tier that may not exist yet in the coin's year
+          fallbackToTierWithData: true,
+          showYearLabel: true,
+        }
       : {}),
   }
 

@@ -22,6 +22,19 @@ export const OUTSIDER_ROLES: Role[] = ["client", "adversary"]
 export const TIERS: Tier[] = ["realm", "province"]
 
 /**
+ * The tier to actually draw: `wanted` if the Selected year has anything in it,
+ * otherwise the first tier that does (Realms before Admin areas). Nothing
+ * mapped at all leaves `wanted` alone. For a coin whose map is asked to open
+ * on a tier that did not exist yet in its year, such as the Admin areas for a
+ * coin struck before Rome had provinces, so it opens on something rather than
+ * an empty map.
+ */
+export function tierWithData(wanted: Tier, available: Tier[]): Tier {
+  if (available.length === 0 || available.includes(wanted)) return wanted
+  return TIERS.find((tier) => available.includes(tier)) ?? wanted
+}
+
+/**
  * The Tier a coin's own map opens at.
  *
  * Realms rather than provinces: at a typical coin's year the Province Tier is
