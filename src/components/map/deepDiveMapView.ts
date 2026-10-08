@@ -14,7 +14,8 @@ const CARTHAGE: [number, number] = [36.8528, 10.3233]
 const CONSTANTINOPLE: [number, number] = [41.0082, 28.9784]
 const CTESIPHON: [number, number] = [33.0937, 44.581]
 const ATHENS: [number, number] = [37.9838, 23.7275]
-const LONDON: [number, number] = [51.5074, -0.1278]
+// Colonia Agrippina (Cologne), the Gallic Empire's capital under Postumus
+const COLONIA_AGRIPPINA: [number, number] = [50.9375, 6.9603]
 const PALMYRA: [number, number] = [34.5505, 38.2692]
 
 /**
@@ -35,11 +36,13 @@ export const FIRST_ADMIN_AREAS_YEAR = -275
 // MapLibre zoom: each step doubles the scale, and 3 is as far out as the map goes.
 
 /**
- * A little closer than the default, with the whole Gallic Empire (about 13
- * degrees from south to north, London being at its northern edge) still in a
- * 400px-tall map, which is the smallest the coin page draws.
+ * A little closer than the default, with the whole Gallic Empire (Britain to
+ * the Pyrenees, about 13 degrees from south to north and 13 across) still in
+ * view on the smallest map the coin page draws, a phone's 350px by 400px. From
+ * Colonia Agrippina the empire's western edge is the limit there, at about
+ * zoom 3.16. A desktop map would fit it up to about 3.7.
  */
-const GALLIC_EMPIRE_ZOOM = 3.2
+const GALLIC_EMPIRE_ZOOM = 3.15
 /** A little closer than the default, without losing the Roman and Persian worlds around Palmyra. */
 const PALMYRENE_EMPIRE_ZOOM = 3.5
 
@@ -66,7 +69,7 @@ const centredOn = (
  *   Byzantine                              Constantinople, default zoom and tier
  *   Persian, Parthia, Sassanian, Sassanid  Ctesiphon, default zoom, Realms
  *   Ancient Greece                         Athens, default zoom and tier
- *   Gallic Empire                          London, a little closer, Realms
+ *   Gallic Empire                          Colonia Agrippina, a little closer, Realms
  *   Palmyrene Empire                       Palmyra, a little closer, Realms
  *
  * Anything else, or nothing, gets the default. Matching ignores case.
@@ -97,7 +100,7 @@ export function deepDiveMapViewFor(
     return centredOn(ATHENS)
   }
   if (name.includes("gallic")) {
-    return centredOn(LONDON, { zoom: GALLIC_EMPIRE_ZOOM })
+    return centredOn(COLONIA_AGRIPPINA, { zoom: GALLIC_EMPIRE_ZOOM })
   }
   if (name.includes("palmyr")) {
     return centredOn(PALMYRA, { zoom: PALMYRENE_EMPIRE_ZOOM })

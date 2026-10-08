@@ -106,12 +106,12 @@ describe("deepDiveMapViewFor", () => {
     })
   })
 
-  it("centres the Gallic Empire on London, a bit closer than the default, on Realms", () => {
+  it("centres the Gallic Empire on Colonia Agrippina, a bit closer than the default, on Realms", () => {
     const view = deepDiveMapViewFor("Gallic Empire")
-    expect(near(view.center, { lat: [51.4, 51.6], lng: [-0.3, 0] })).toBe(true)
+    expect(near(view.center, { lat: [50.8, 51.1], lng: [6.8, 7.1] })).toBe(true)
     expect(view.zoom).toBeGreaterThan(DEFAULT.zoom)
-    // The empire is about 13 degrees tall, which stops fitting a 400px map near zoom 3.2
-    expect(view.zoom).toBeLessThanOrEqual(3.3)
+    // From Cologne the empire stops fitting a 350px-wide phone map near zoom 3.16
+    expect(view.zoom).toBeLessThanOrEqual(3.16)
     expect(view.tier).toBe("realm")
   })
 
