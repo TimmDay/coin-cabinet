@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Event, EventKind } from "~/data/timelines/types"
+import { withUniversalEvents } from "~/data/timelines/universal"
 import type { Database } from "~/database/database.types"
 import { fetchCitations } from "~/database/queries/citations"
 import type { QueryResult } from "~/database/queries/types"
@@ -76,20 +77,33 @@ export async function fetchTimelines(
     eventsByTimelineId.set(event.timeline_id, list)
   }
 
-  const result: Timeline[] = timelines.map((row) => ({
-    id: row.id,
-    name: row.name,
-    timeline: (eventsByTimelineId.get(row.id) ?? []).map((event) =>
-      toEvent(
-        event,
-        event.place_id ? placeById.get(event.place_id) : undefined,
-        citations.data.get(event.id) ?? [],
+  // Events of universal timelines also belong on every other timeline whose
+  // first-to-last years contain them. A universal timeline keeps only its own.
+  const universalIds = new Set(
+    timelines.filter((t) => t.is_universal).map((t) => t.id),
+  )
+  const universalEvents = events.filter((e) => universalIds.has(e.timeline_id))
+
+  const result: Timeline[] = timelines.map((row) => {
+    const own = eventsByTimelineId.get(row.id) ?? []
+    const shown = row.is_universal
+      ? own
+      : withUniversalEvents(own, universalEvents)
+    return {
+      id: row.id,
+      name: row.name,
+      timeline: shown.map((event) =>
+        toEvent(
+          event,
+          event.place_id ? placeById.get(event.place_id) : undefined,
+          citations.data.get(event.id) ?? [],
+        ),
       ),
-    ),
-    created_at: row.created_at,
-    updated_at: row.updated_at,
-    user_id: "",
-  }))
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      user_id: "",
+    }
+  })
 
   return { data: result, error: null }
 }
