@@ -3,11 +3,11 @@
 import dynamic from "next/dynamic"
 import { useRef, useState } from "react"
 import { useDevices } from "~/api/devices"
-import { DEEP_DIVE_MAP_VIEW } from "~/components/map/mapConfig"
 import { useFoldFill } from "~/hooks/useFoldFill"
 import { MAP_HEIGHT_DESKTOP } from "~/lib/constants"
 import { cn } from "~/lib/utils"
-import { COIN_PAGE_TIER, type Tier } from "~/components/map/jurisdictions"
+import { deepDiveMapViewFor } from "~/components/map/deepDiveMapView"
+import { type Tier } from "~/components/map/jurisdictions"
 import { useInViewport } from "~/hooks/useInViewport"
 import type { CoinEnhanced } from "~/types/api"
 import { clockNoteRoom } from "./CoinClockTips"
@@ -66,7 +66,9 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   // usually ready by the time it is looked at.
   const mapSectionRef = useRef<HTMLDivElement>(null)
   const mapInView = useInViewport(mapSectionRef, { rootMargin: "400px" })
-  const [tier, setTier] = useState<Tier>(COIN_PAGE_TIER)
+  // Where the map opens, which depends on the coin's culture or period
+  const mapView = deepDiveMapViewFor(coin.civ, coinMap?.selectedYear)
+  const [tier, setTier] = useState<Tier>(mapView.tier)
 
   const clockNotes = coin.clock_notes ?? []
   const clockNotesFor = (side: "obverse" | "reverse") =>
@@ -149,9 +151,10 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             <TimelineWithMap
               timeline={coinMap.timeline}
               showHeaders={false}
-              initialCenter={DEEP_DIVE_MAP_VIEW.center}
-              initialZoom={DEEP_DIVE_MAP_VIEW.zoom}
-              previewCenter={DEEP_DIVE_MAP_VIEW.center}
+              initialCenter={mapView.center}
+              initialZoom={mapView.zoom}
+              initialTier={mapView.tier}
+              previewCenter={mapView.center}
               eventZoomLevel={6}
               additionalMarkers={coinMap.markers}
               showDefaultMintMarkers={false}
@@ -163,8 +166,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
           ) : (
             <div className="space-y-4">
               <Map
-                center={DEEP_DIVE_MAP_VIEW.center}
-                zoom={DEEP_DIVE_MAP_VIEW.zoom}
+                center={mapView.center}
+                zoom={mapView.zoom}
                 showMintMarkers={false}
                 customMarkers={coinMap.markers}
                 height="400px"
@@ -174,6 +177,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                       selectedYear: coinMap.selectedYear,
                       tier,
                       onTierChange: setTier,
+                      fallbackToTierWithData: true,
                     }
                   : {})}
               />

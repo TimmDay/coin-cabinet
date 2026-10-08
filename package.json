@@ -77,7 +77,7 @@
   "packageManager": "pnpm@10.15.0",
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs}": [
-      "eslint --max-warnings 0",
+      "eslint --max-warnings 0 --no-warn-ignored",
       "prettier --write"
     ]
   }

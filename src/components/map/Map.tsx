@@ -16,6 +16,7 @@ import {
   boundsOf,
   labelPointOf,
   resolveAtYear,
+  tierWithData,
   type Role,
   type Tier,
 } from "./jurisdictions"
@@ -123,6 +124,13 @@ export type MapProps = {
    */
   onTierChange?: (tier: Tier) => void
   /**
+   * When the `tier` asked for has nothing mapped at the Selected year, switch
+   * to one that does instead of leaving the map empty. For a coin's own map,
+   * which opens on a tier chosen without knowing its year. Off elsewhere: on
+   * the year slider an empty tier is meant to read as a fact about that year.
+   */
+  fallbackToTierWithData?: boolean
+  /**
    * Name the Selected year in a "Map of [year]" label, top left, with a
    * tooltip saying it is the year the coin was minted. For a coin's own map,
    * where the year is not otherwise on screen.
@@ -175,6 +183,7 @@ export const Map: React.FC<MapProps> = ({
   tier,
   outsiderRoles = NO_OUTSIDERS,
   onTierChange,
+  fallbackToTierWithData = false,
   showYearLabel = false,
   initialBounds,
   onFitExtent,
@@ -291,6 +300,14 @@ export const Map: React.FC<MapProps> = ({
         : null,
     [corpus, selectedYear, tier],
   )
+
+  const availableTiers = resolution?.availableTiers
+  useEffect(() => {
+    if (!fallbackToTierWithData || !tier || !onTierChange || !availableTiers)
+      return
+    const shown = tierWithData(tier, availableTiers)
+    if (shown !== tier) onTierChange(shown)
+  }, [fallbackToTierWithData, tier, onTierChange, availableTiers])
 
   // Built after mount: glColor reads the page's computed styles.
   const jurisdictionColour = useMemo(

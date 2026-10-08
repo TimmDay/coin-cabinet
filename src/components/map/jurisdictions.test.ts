@@ -16,6 +16,7 @@ import {
   type JurisdictionFeature,
   type JurisdictionProperties,
   type Tier,
+  tierWithData,
 } from "./jurisdictions"
 
 /** A square somewhere harmless; the resolver never inspects coordinates. */
@@ -872,5 +873,21 @@ describe("clients and adversaries", () => {
     expect(at(-320).map((j) => j.name)).not.toContain("Achaemenid Empire")
     expect(at(-300).map((j) => j.name)).toContain("Macedonian Empire")
     expect(at(-280).map((j) => j.name)).not.toContain("Macedonian Empire")
+  })
+})
+
+describe("tierWithData", () => {
+  it("keeps the tier asked for when the year has something in it", () => {
+    expect(tierWithData("province", ["realm", "province"])).toBe("province")
+    expect(tierWithData("realm", ["realm"])).toBe("realm")
+  })
+
+  it("falls back to a tier that has something, Realms first", () => {
+    expect(tierWithData("province", ["realm"])).toBe("realm")
+    expect(tierWithData("realm", ["province"])).toBe("province")
+  })
+
+  it("leaves the tier alone when nothing is mapped at all", () => {
+    expect(tierWithData("province", [])).toBe("province")
   })
 })
