@@ -42,7 +42,10 @@ export async function fetchTimelines(
     .from("timeline_events")
     .select("*")
     .in("timeline_id", timelineIds)
-    .order("sequence", { ascending: true })
+    // Year, then the 1 to 12 number within the year; id keeps ties steady
+    .order("event_year", { ascending: true })
+    .order("year_sequence", { ascending: true })
+    .order("id", { ascending: true })
 
   if (eventsError) return { data: null, error: eventsError }
 
