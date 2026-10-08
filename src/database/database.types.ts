@@ -1638,7 +1638,7 @@ export type Database = {
           location_note: string | null
           name: string
           place_id: number | null
-          sequence: number
+          year_sequence: number
           timeline_id: number
           updated_at: string
         }
@@ -1653,7 +1653,7 @@ export type Database = {
           location_note?: string | null
           name: string
           place_id?: number | null
-          sequence: number
+          year_sequence?: number
           timeline_id: number
           updated_at?: string
         }
@@ -1668,7 +1668,7 @@ export type Database = {
           location_note?: string | null
           name?: string
           place_id?: number | null
-          sequence?: number
+          year_sequence?: number
           timeline_id?: number
           updated_at?: string
         }
@@ -1695,6 +1695,7 @@ export type Database = {
           description: string | null
           id: number
           is_hidden: boolean
+          is_universal: boolean
           name: string
           page_route: string | null
           person_id: number | null
@@ -1705,6 +1706,7 @@ export type Database = {
           description?: string | null
           id?: never
           is_hidden?: boolean
+          is_universal?: boolean
           name: string
           page_route?: string | null
           person_id?: number | null
@@ -1715,6 +1717,7 @@ export type Database = {
           description?: string | null
           id?: never
           is_hidden?: boolean
+          is_universal?: boolean
           name?: string
           page_route?: string | null
           person_id?: number | null
