@@ -502,13 +502,14 @@ export async function fetchCollectionDetail(
   if (deityDeviceNames.error) {
     return { data: null, error: deityDeviceNames.error }
   }
+  // Like clock notes, a failure here costs only the figures' sources, not the page
   const personCitations = await fetchCitations(
     supabase,
     "person_id",
     (personsResult.data ?? []).map((p) => p.id),
   )
   if (personCitations.error) {
-    return { data: null, error: personCitations.error }
+    console.error("person citations query failed:", personCitations.error)
   }
 
   const enhanced: CoinEnhanced = {
@@ -546,7 +547,7 @@ export async function fetchCollectionDetail(
       altNames: p.alt_names,
       flavour_text: p.flavour_text,
       artifact_ids: [],
-      citations: personCitations.data.get(p.id) ?? [],
+      citations: personCitations.data?.get(p.id) ?? [],
     })),
   }
 
