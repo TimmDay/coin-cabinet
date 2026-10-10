@@ -20,7 +20,7 @@ export type Event = {
   description?: string
   /** A free-text source, for the hand-written timelines. */
   source?: string
-  /** Citations from the database (`sources` through `entity_sources`). */
+  /** Citations from the database (`citations`, each pointing at a Work). */
   citations?: Citation[]
   place?: string
   place_id?: string // Reference to place ID from places table

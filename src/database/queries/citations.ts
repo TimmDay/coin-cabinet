@@ -3,7 +3,7 @@ import type { Database } from "~/database/database.types"
 import type { QueryResult } from "~/database/queries/types"
 import type { Citation } from "~/database/schema-citations"
 
-/** The `entity_sources` column that points at each kind of thing. */
+/** The `citations` column that points at each kind of thing. */
 export type CitationLink =
   | "place_id"
   | "mint_id"
@@ -13,37 +13,49 @@ export type CitationLink =
   | "artifact_id"
   | "timeline_event_id"
 
-type LinkRow = {
+type EditionRow = { id: number; is_preferred: boolean; url: string | null }
+
+type CitationRow = {
   id: number
+  locator: string | null
   applies_to: string | null
-  sources: {
-    id: number
-    author: string | null
-    work_title: string | null
-    citation: string
-    url: string | null
+  edition_id: number | null
+  works: {
+    author: string
+    title: string
+    work_editions: EditionRow[] | null
   } | null
 } & Partial<Record<CitationLink, number | null>>
 
+/** The Edition a citation links to: the one it names, else the Work's preferred one. */
+function editionUrl(row: CitationRow): string | null {
+  const editions = row.works?.work_editions ?? []
+  const edition =
+    editions.find((e) => e.id === row.edition_id) ??
+    editions.find((e) => e.is_preferred)
+  return edition?.url ?? null
+}
+
 /**
- * Groups link rows by the thing they cite for, in link order. A link whose source
- * is missing, or that has no id for this column, is skipped.
+ * Groups citation rows by the thing they cite for, in the order they were
+ * added. A row whose Work is missing, or that has no id for this column, is
+ * skipped.
  */
 export function groupCitations(
-  rows: LinkRow[],
+  rows: CitationRow[],
   column: CitationLink,
 ): Map<number, Citation[]> {
   const byId = new Map<number, Citation[]>()
   for (const row of [...rows].sort((a, b) => a.id - b.id)) {
     const ownerId = row[column]
-    if (ownerId === null || ownerId === undefined || !row.sources) continue
+    if (ownerId === null || ownerId === undefined || !row.works) continue
     const list = byId.get(ownerId) ?? []
     list.push({
-      id: row.sources.id,
-      author: row.sources.author,
-      work_title: row.sources.work_title,
-      citation: row.sources.citation,
-      url: row.sources.url,
+      id: row.id,
+      author: row.works.author,
+      title: row.works.title,
+      locator: row.locator,
+      url: editionUrl(row),
       note: row.applies_to,
     })
     byId.set(ownerId, list)
@@ -63,13 +75,13 @@ export async function fetchCitations(
   if (ids.length === 0) return { data: new Map(), error: null }
 
   const { data, error } = await supabase
-    .from("entity_sources")
+    .from("citations")
     .select(
-      `id, applies_to, ${column}, sources(id, author, work_title, citation, url)`,
+      `id, locator, applies_to, edition_id, ${column}, works(author, title, work_editions(id, is_preferred, url))`,
     )
     .in(column, ids)
     .order("id", { ascending: true })
-    .returns<LinkRow[]>()
+    .returns<CitationRow[]>()
 
   if (error) return { data: null, error }
   return { data: groupCitations(data, column), error: null }
