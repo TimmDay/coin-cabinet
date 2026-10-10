@@ -2,16 +2,12 @@
  * Shared API types for consistent data structures across the application
  */
 
+import type { Citation } from "~/database/schema-citations"
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
 
 /** A note pinned to a clock position on one face of a coin, ready to show. */
 export type ClockNoteLinkKind =
-  | "device"
-  | "deity"
-  | "place"
-  | "person"
-  | "mint"
-  | "artifact"
+  "device" | "deity" | "place" | "person" | "mint" | "artifact"
 
 export type ClockNote = {
   side: "obverse" | "reverse"
@@ -62,6 +58,7 @@ export type CoinEnhanced = SomnusCollection & {
     altNames?: string[] | null
     flavour_text?: string | null
     artifact_ids?: string[] | null
+    citations?: Citation[]
   }>
   /**
    * Where/when the coin was found, sourced from its `provenance_events` row
