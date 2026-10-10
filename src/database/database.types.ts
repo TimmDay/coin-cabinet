@@ -109,6 +109,133 @@ export type Database = {
         }
         Relationships: []
       }
+      citations: {
+        Row: {
+          applies_to: string | null
+          artifact_id: number | null
+          calendar_id: number | null
+          created_at: string
+          deity_id: number | null
+          device_id: number | null
+          edition_id: number | null
+          id: number
+          legacy_source_id: number | null
+          locator: string | null
+          mint_id: number | null
+          person_id: number | null
+          place_id: number | null
+          timeline_event_id: number | null
+          timeline_id: number | null
+          updated_at: string
+          work_id: number
+        }
+        Insert: {
+          applies_to?: string | null
+          artifact_id?: number | null
+          calendar_id?: number | null
+          created_at?: string
+          deity_id?: number | null
+          device_id?: number | null
+          edition_id?: number | null
+          id?: never
+          legacy_source_id?: number | null
+          locator?: string | null
+          mint_id?: number | null
+          person_id?: number | null
+          place_id?: number | null
+          timeline_event_id?: number | null
+          timeline_id?: number | null
+          updated_at?: string
+          work_id: number
+        }
+        Update: {
+          applies_to?: string | null
+          artifact_id?: number | null
+          calendar_id?: number | null
+          created_at?: string
+          deity_id?: number | null
+          device_id?: number | null
+          edition_id?: number | null
+          id?: never
+          legacy_source_id?: number | null
+          locator?: string | null
+          mint_id?: number | null
+          person_id?: number | null
+          place_id?: number | null
+          timeline_event_id?: number | null
+          timeline_id?: number | null
+          updated_at?: string
+          work_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "citations_artifact_id_fkey"
+            columns: ["artifact_id"]
+            referencedRelation: "artifacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citations_calendar_id_fkey"
+            columns: ["calendar_id"]
+            referencedRelation: "calendar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citations_deity_id_fkey"
+            columns: ["deity_id"]
+            referencedRelation: "deities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citations_device_id_fkey"
+            columns: ["device_id"]
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citations_edition_of_work"
+            columns: ["edition_id", "work_id"]
+            referencedRelation: "work_editions"
+            referencedColumns: ["id", "work_id"]
+          },
+          {
+            foreignKeyName: "citations_mint_id_fkey"
+            columns: ["mint_id"]
+            referencedRelation: "mints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citations_person_id_fkey"
+            columns: ["person_id"]
+            referencedRelation: "persons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citations_place_id_fkey"
+            columns: ["place_id"]
+            referencedRelation: "places"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citations_timeline_event_id_fkey"
+            columns: ["timeline_event_id"]
+            referencedRelation: "timeline_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citations_timeline_id_fkey"
+            columns: ["timeline_id"]
+            referencedRelation: "timelines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citations_work_id_fkey"
+            columns: ["work_id"]
+            referencedRelation: "works"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coin_catalogue_references: {
         Row: {
           coin_id: number
@@ -624,7 +751,7 @@ export type Database = {
         }
         Relationships: []
       }
-      entity_sources: {
+      entity_sources_legacy: {
         Row: {
           applies_to: string | null
           artifact_id: number | null
@@ -724,7 +851,7 @@ export type Database = {
             foreignKeyName: "entity_sources_source_id_fkey"
             columns: ["source_id"]
             isOneToOne: false
-            referencedRelation: "sources"
+            referencedRelation: "sources_legacy"
             referencedColumns: ["id"]
           },
           {
@@ -1557,7 +1684,7 @@ export type Database = {
         }
         Relationships: []
       }
-      sources: {
+      sources_legacy: {
         Row: {
           author: string | null
           citation: string
@@ -1733,6 +1860,130 @@ export type Database = {
           },
         ]
       }
+      work_editions: {
+        Row: {
+          created_at: string
+          doi: string | null
+          editor: string | null
+          id: number
+          is_preferred: boolean
+          isbn: string | null
+          issue: string | null
+          journal: string | null
+          language: string | null
+          note: string | null
+          pages: string | null
+          publication_year: number | null
+          publisher: string | null
+          series: string | null
+          translator: string | null
+          updated_at: string
+          url: string | null
+          volume: string | null
+          work_id: number
+        }
+        Insert: {
+          created_at?: string
+          doi?: string | null
+          editor?: string | null
+          id?: never
+          is_preferred?: boolean
+          isbn?: string | null
+          issue?: string | null
+          journal?: string | null
+          language?: string | null
+          note?: string | null
+          pages?: string | null
+          publication_year?: number | null
+          publisher?: string | null
+          series?: string | null
+          translator?: string | null
+          updated_at?: string
+          url?: string | null
+          volume?: string | null
+          work_id: number
+        }
+        Update: {
+          created_at?: string
+          doi?: string | null
+          editor?: string | null
+          id?: never
+          is_preferred?: boolean
+          isbn?: string | null
+          issue?: string | null
+          journal?: string | null
+          language?: string | null
+          note?: string | null
+          pages?: string | null
+          publication_year?: number | null
+          publisher?: string | null
+          series?: string | null
+          translator?: string | null
+          updated_at?: string
+          url?: string | null
+          volume?: string | null
+          work_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_editions_work_id_fkey"
+            columns: ["work_id"]
+            referencedRelation: "works"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      works: {
+        Row: {
+          author: string
+          created_at: string
+          id: number
+          locator_format: string | null
+          note: string | null
+          original_language: string | null
+          other_titles: string[]
+          reliability_note: string | null
+          reliability_score: number | null
+          source_type: string | null
+          title: string
+          updated_at: string
+          written_year_earliest: number | null
+          written_year_latest: number | null
+        }
+        Insert: {
+          author?: string
+          created_at?: string
+          id?: never
+          locator_format?: string | null
+          note?: string | null
+          original_language?: string | null
+          other_titles?: string[]
+          reliability_note?: string | null
+          reliability_score?: number | null
+          source_type?: string | null
+          title: string
+          updated_at?: string
+          written_year_earliest?: number | null
+          written_year_latest?: number | null
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          id?: never
+          locator_format?: string | null
+          note?: string | null
+          original_language?: string | null
+          other_titles?: string[]
+          reliability_note?: string | null
+          reliability_score?: number | null
+          source_type?: string | null
+          title?: string
+          updated_at?: string
+          written_year_earliest?: number | null
+          written_year_latest?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       public_find_events: {
@@ -1868,8 +2119,7 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -1893,8 +2143,7 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -1918,8 +2167,7 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
   EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
