@@ -171,66 +171,77 @@ export type Database = {
           {
             foreignKeyName: "citations_artifact_id_fkey"
             columns: ["artifact_id"]
+            isOneToOne: false
             referencedRelation: "artifacts"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "citations_calendar_id_fkey"
             columns: ["calendar_id"]
+            isOneToOne: false
             referencedRelation: "calendar"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "citations_deity_id_fkey"
             columns: ["deity_id"]
+            isOneToOne: false
             referencedRelation: "deities"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "citations_device_id_fkey"
             columns: ["device_id"]
+            isOneToOne: false
             referencedRelation: "devices"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "citations_edition_of_work"
             columns: ["edition_id", "work_id"]
+            isOneToOne: false
             referencedRelation: "work_editions"
             referencedColumns: ["id", "work_id"]
           },
           {
             foreignKeyName: "citations_mint_id_fkey"
             columns: ["mint_id"]
+            isOneToOne: false
             referencedRelation: "mints"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "citations_person_id_fkey"
             columns: ["person_id"]
+            isOneToOne: false
             referencedRelation: "persons"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "citations_place_id_fkey"
             columns: ["place_id"]
+            isOneToOne: false
             referencedRelation: "places"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "citations_timeline_event_id_fkey"
             columns: ["timeline_event_id"]
+            isOneToOne: false
             referencedRelation: "timeline_events"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "citations_timeline_id_fkey"
             columns: ["timeline_id"]
+            isOneToOne: false
             referencedRelation: "timelines"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "citations_work_id_fkey"
             columns: ["work_id"]
+            isOneToOne: false
             referencedRelation: "works"
             referencedColumns: ["id"]
           },
@@ -1765,9 +1776,9 @@ export type Database = {
           location_note: string | null
           name: string
           place_id: number | null
-          year_sequence: number
           timeline_id: number
           updated_at: string
+          year_sequence: number
         }
         Insert: {
           created_at?: string
@@ -1780,9 +1791,9 @@ export type Database = {
           location_note?: string | null
           name: string
           place_id?: number | null
-          year_sequence?: number
           timeline_id: number
           updated_at?: string
+          year_sequence?: number
         }
         Update: {
           created_at?: string
@@ -1795,9 +1806,9 @@ export type Database = {
           location_note?: string | null
           name?: string
           place_id?: number | null
-          year_sequence?: number
           timeline_id?: number
           updated_at?: string
+          year_sequence?: number
         }
         Relationships: [
           {
@@ -1928,6 +1939,7 @@ export type Database = {
           {
             foreignKeyName: "work_editions_work_id_fkey"
             columns: ["work_id"]
+            isOneToOne: false
             referencedRelation: "works"
             referencedColumns: ["id"]
           },
@@ -2060,6 +2072,7 @@ export type Database = {
     }
     Functions: {
       coin_is_public: { Args: { p_coin_id: number }; Returns: boolean }
+      is_aal2: { Args: never; Returns: boolean }
       is_site_owner: { Args: never; Returns: boolean }
       item_is_public: { Args: { p_item_id: number }; Returns: boolean }
       owns_coin: { Args: { p_coin_id: number }; Returns: boolean }
@@ -2119,7 +2132,8 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -2143,7 +2157,8 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -2167,7 +2182,8 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
