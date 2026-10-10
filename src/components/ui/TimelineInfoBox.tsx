@@ -75,8 +75,9 @@ export function TimelineInfoBox({
         </button>
       </div>
 
-      {/* Event Details - Scrollable */}
-      <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+      {/* Event Details - Scrollable. A column, so the sources can sit at the
+          foot of the panel when the details are short. */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pr-1">
         <div className="mb-6">
           <p className="font-display text-bronze-light text-center text-base tracking-[0.12em] sm:text-lg">
             {formatYear(event.year)}
@@ -92,7 +93,7 @@ export function TimelineInfoBox({
           </div>
         )}
 
-        <CitationList citations={event.citations} />
+        <CitationList citations={event.citations} className="mt-auto" />
       </div>
     </div>
   )
