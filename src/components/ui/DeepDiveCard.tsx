@@ -1,13 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import type { Citation } from "~/database/schema-citations"
+import { CitationList } from "./CitationList"
 import { ImageCarousel, type CarouselImage } from "./ImageCarousel"
-
-export type Source = {
-  quote?: string
-  quoteEnglish?: string
-  source: string
-}
 
 export type DeepDiveCardProps = {
   /** The main title of the card */
@@ -28,7 +24,8 @@ export type DeepDiveCardProps = {
   caption?: string
   /** Footer text (usually styled greyish) */
   footer?: string
-  sources?: Source[]
+  /** The sources behind the card, listed at the foot of its info area */
+  citations?: Citation[]
   /** Additional CSS classes */
   className?: string
   /** Whether the accordion is open by default */
@@ -50,6 +47,7 @@ export function DeepDiveCard({
   altText,
   caption,
   footer,
+  citations,
   className = "",
   defaultOpen = false,
 }: DeepDiveCardProps) {
@@ -62,7 +60,7 @@ export function DeepDiveCard({
       ? [{ src: image, alt: altText || "", caption }]
       : []
   const hasExpandableContent =
-    primaryInfo || secondaryInfo || pictures.length > 0
+    primaryInfo || secondaryInfo || pictures.length > 0 || citations?.length
 
   return (
     // Three rows: header, toggle with its content, footer. Inside the
@@ -137,6 +135,8 @@ export function DeepDiveCard({
               <ImageCarousel images={pictures} />
             </div>
           )}
+
+          <CitationList citations={citations} />
         </div>
       </div>
 

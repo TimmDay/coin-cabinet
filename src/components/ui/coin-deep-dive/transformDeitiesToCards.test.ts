@@ -65,4 +65,21 @@ describe("transformDeitiesToCards", () => {
     const [card] = transformDeitiesToCards(deity(), [])
     expect(card?.images).toBeUndefined()
   })
+
+  it("carries the deity's citations onto its card", () => {
+    const citation = {
+      id: 7,
+      author: "Ovid",
+      title: "Fasti",
+      locator: "1.637",
+      url: null,
+      note: null,
+    }
+    const [card] = transformDeitiesToCards(
+      deity(),
+      [],
+      new Map([[1, [citation]]]),
+    )
+    expect(card?.citations).toEqual([citation])
+  })
 })

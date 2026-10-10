@@ -19,9 +19,14 @@ export type Citation = {
   note: string | null
 }
 
+/** The Work cited, as one name: "Cassius Dio, Roman History". */
+export function workText(citation: Citation): string {
+  return `${citation.author}, ${citation.title}`
+}
+
 /** How a citation reads: "Cassius Dio, Roman History, 78.4.2". */
 export function citationText(citation: Citation): string {
-  return [citation.author, citation.title, citation.locator]
-    .filter((part) => part !== null && part !== "")
-    .join(", ")
+  return citation.locator
+    ? `${workText(citation)}, ${citation.locator}`
+    : workText(citation)
 }
