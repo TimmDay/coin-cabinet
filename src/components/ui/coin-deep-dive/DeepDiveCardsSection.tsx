@@ -1,6 +1,8 @@
 import { useArtifacts } from "~/api/artifacts"
+import { useDeities } from "~/api/deities"
 import { useMints } from "~/api/mints"
 import { MintDeepDiveCard } from "~/components/ui"
+import type { Citation } from "~/database/schema-citations"
 import { formatYearRange } from "~/lib/utils/date-formatting"
 import { formatPhysicalCharacteristics } from "~/lib/utils/physical-formatting"
 import type { CoinEnhanced } from "~/types/api"
@@ -15,6 +17,8 @@ type DeepDiveCardsSectionProps = {
 export function transformDeitiesToCards(
   deities: CoinEnhanced["deities"],
   artifacts: ReturnType<typeof useArtifacts>["data"],
+  /** Each deity's citations, by deity id (the coin's own deity data has none). */
+  citationsByDeityId?: Map<number, Citation[]>,
 ) {
   return (
     deities?.map((deity) => {
@@ -44,6 +48,7 @@ export function transformDeitiesToCards(
         primaryInfo: deity.flavour_text ?? "",
         footer: deity.features_coinage?.map((f) => f.name).join(", ") ?? "",
         images: images.length ? images : undefined,
+        citations: citationsByDeityId?.get(deity.id),
       }
     }) ?? []
   )
@@ -173,6 +178,7 @@ export function DeepDiveCardsSection({
 }: DeepDiveCardsSectionProps) {
   const { data: mints } = useMints()
   const { data: artifacts } = useArtifacts()
+  const { data: allDeities } = useDeities()
 
   // Helper function to get mint by ID
   const getMintById = (mintId: number | null | undefined) => {
@@ -181,7 +187,14 @@ export function DeepDiveCardsSection({
   }
 
   // Transform data to cards format
-  const matchingDeities = transformDeitiesToCards(deities, artifacts)
+  const deityCitations = new Map(
+    (allDeities ?? []).map((d) => [d.id, d.citations ?? []]),
+  )
+  const matchingDeities = transformDeitiesToCards(
+    deities,
+    artifacts,
+    deityCitations,
+  )
   const matchingHistoricalFigures = transformHistoricalFiguresToCards(
     historicalFigures,
     artifacts,

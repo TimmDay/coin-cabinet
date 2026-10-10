@@ -59,6 +59,7 @@ export function MintDeepDiveCard({ mintId }: MintDeepDiveCardProps) {
       primaryInfo={mint.flavour_text}
       images={images}
       footer={mintMarksFooter}
+      citations={mint.citations}
       defaultOpen={false}
     />
   )

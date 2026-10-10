@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { formatYear } from "~/lib/utils/date-formatting"
+import { CitationList } from "./CitationList"
 import type { Event as TimelineEvent } from "../../data/timelines/types"
 
 type TimelineInfoBoxProps = {
@@ -90,6 +91,8 @@ export function TimelineInfoBox({
             </p>
           </div>
         )}
+
+        <CitationList citations={event.citations} />
       </div>
     </div>
   )
