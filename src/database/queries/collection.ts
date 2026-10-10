@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
+import { fetchCitations } from "~/database/queries/citations"
 import { fetchClockNotes } from "~/database/queries/clock-notes"
 import {
   fetchDeityArtifactIds,
@@ -501,6 +502,15 @@ export async function fetchCollectionDetail(
   if (deityDeviceNames.error) {
     return { data: null, error: deityDeviceNames.error }
   }
+  // Like clock notes, a failure here costs only the figures' sources, not the page
+  const personCitations = await fetchCitations(
+    supabase,
+    "person_id",
+    (personsResult.data ?? []).map((p) => p.id),
+  )
+  if (personCitations.error) {
+    console.error("person citations query failed:", personCitations.error)
+  }
 
   const enhanced: CoinEnhanced = {
     ...base,
@@ -537,6 +547,7 @@ export async function fetchCollectionDetail(
       altNames: p.alt_names,
       flavour_text: p.flavour_text,
       artifact_ids: [],
+      citations: personCitations.data?.get(p.id) ?? [],
     })),
   }
 
