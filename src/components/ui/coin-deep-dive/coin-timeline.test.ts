@@ -97,13 +97,21 @@ describe("coinTimeline", () => {
     expect(names(timeline)).toEqual(["A", "B"])
   })
 
-  it("treats year zero as a real minting year", () => {
+  it("places a coin of 1 BC before one of AD 1", () => {
     const timeline = coinTimeline(
-      coin({ mint_year_earliest: 0, mint_year_latest: 0 }),
-      timelines(ev("Before", -5), ev("After", 5)),
+      coin({ mint_year_earliest: -1, mint_year_latest: -1 }),
+      timelines(ev("Before", -5), ev("After", 1)),
     )
     expect(names(timeline)).toEqual(["Before", "Coin Minted", "After"])
-    expect(timeline?.[1]?.description).toBe("This denarius was minted in 0")
+  })
+
+  // There is no year zero (1 BC is followed by AD 1), so a 0 is no year
+  it("adds no minting event to a coin dated 0", () => {
+    const timeline = coinTimeline(
+      coin({ mint_year_earliest: 0 }),
+      timelines(ev("Before", -5), ev("After", 5)),
+    )
+    expect(names(timeline)).toEqual(["Before", "After"])
   })
 
   it("names the mint and the years the coin was struck in", () => {

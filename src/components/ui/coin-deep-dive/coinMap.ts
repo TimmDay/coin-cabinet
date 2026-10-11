@@ -42,7 +42,8 @@ export type CoinMap = (
  * Which year a coin's map should show: the coin's own earliest minting year.
  *
  * A range collapses to its earliest year so the behaviour is predictable
- * rather than arbitrary. Null means no Jurisdiction layer at all, matching
+ * rather than arbitrary. There is no year zero (1 BC is followed by AD 1), so
+ * a 0 counts as no year. Null means no Jurisdiction layer at all, matching
  * `coinTimeline`, which likewise adds no minting event without a year:
  * drawing some other year's geography beside a coin would be worse than
  * drawing none.
@@ -53,9 +54,8 @@ export type CoinMap = (
 export function selectedYearForCoin(coin: {
   mint_year_earliest?: number | null
 }): number | null {
-  return typeof coin.mint_year_earliest === "number"
-    ? coin.mint_year_earliest
-    : null
+  const year = coin.mint_year_earliest
+  return typeof year === "number" && year !== 0 ? year : null
 }
 
 /**

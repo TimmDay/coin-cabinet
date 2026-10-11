@@ -203,12 +203,13 @@ describe("selectedYearForCoin", () => {
     expect(selectedYearForCoin({ mint_year_earliest: -44 })).toBe(-44)
   })
 
-  // A coin struck in AD 1 must not be mistaken for a coin with no date.
-  it("treats year zero as a real year", () => {
-    expect(selectedYearForCoin({ mint_year_earliest: 0 })).toBe(0)
+  it("treats AD 1 and 1 BC as real years", () => {
+    expect(selectedYearForCoin({ mint_year_earliest: 1 })).toBe(1)
+    expect(selectedYearForCoin({ mint_year_earliest: -1 })).toBe(-1)
   })
 
-  it.each([[null], [undefined]])(
+  // There is no year zero, so a 0 is no year rather than a guess at one
+  it.each([[null], [undefined], [0]])(
     "gives no year, and so no Jurisdiction layer, for %s",
     (value) => {
       expect(selectedYearForCoin({ mint_year_earliest: value })).toBeNull()

@@ -51,6 +51,13 @@ incomplete, not eternal.
 _Avoid_: Extent (which already means a spatial outline in this codebase),
 range, period, lifespan, validity
 
+**Year**:
+A year as the catalogue records it: negative for BC, positive for AD. There is
+no year zero, so 1 BC is followed by AD 1 and a 0 means no year. Counting the
+years between two dates goes through astronomical numbering (1 BC as 0), which
+is for arithmetic only.
+_Avoid_: Year 0
+
 **Selected year**:
 The single year the map is currently showing. Everything on the map is the
 state as at that year.

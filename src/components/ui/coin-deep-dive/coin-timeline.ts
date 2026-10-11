@@ -36,17 +36,17 @@ export function coinTimeline(
 
 function mintingEvent(coin: CoinEnhanced): Event | null {
   const earliest = coin.mint_year_earliest
-  // AD 1 is year 0 here, not a missing year
-  if (earliest == null) return null
+  // There is no year zero (1 BC is followed by AD 1), so 0 is no year at all
+  if (!earliest) return null
 
   const mint = coin.mint
   let description = `This ${coin.denomination} was minted`
   if (mint) description += ` at ${mint.name}`
 
   const latest = coin.mint_year_latest
-  if (latest != null && latest !== earliest) {
+  if (latest && latest !== earliest) {
     description += ` approximately ${earliest} to ${latest}`
-  } else if (latest != null) {
+  } else if (latest) {
     description += ` in ${earliest}`
   } else {
     description += ` around ${earliest}`
