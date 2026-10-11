@@ -39,6 +39,19 @@ describe("publicRoute", () => {
     expect(response.headers.get("Cache-Control")).toContain("max-age=300")
   })
 
+  it("never caches a partial read, even on a cached route", async () => {
+    const GET = publicRoute(
+      "deities",
+      () => Promise.resolve({ data: [], error: null, partial: true }),
+      { cache: true },
+    )
+    const response = await GET(request, undefined)
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get("Cache-Control")).toContain("no-store")
+    expect(response.headers.get("CDN-Cache-Control")).toBeNull()
+  })
+
   it("answers 404 when the loader finds nothing", async () => {
     const GET = publicRoute("coin", () =>
       Promise.resolve({ data: null, error: null }),

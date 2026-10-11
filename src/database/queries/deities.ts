@@ -1,37 +1,35 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
-import { fetchCitations } from "~/database/queries/citations"
+import { fetchCitations, noCitations } from "~/database/queries/citations"
+import { optionalParts } from "~/database/queries/optional-parts"
 import type { QueryResult } from "~/database/queries/types"
 import type { Deity } from "~/database/schema-deities"
 
 /**
  * The artifact ids that picture each deity, in artifact id order, as strings.
- * A failure here leaves the deities without pictures instead of failing the
- * whole read, so the site keeps working if this table is not there yet.
+ * Callers treat it as optional (see optionalParts): a failure leaves the
+ * deities without pictures.
  */
 export async function fetchDeityArtifactIds(
   supabase: SupabaseClient<Database>,
   deityIds: number[],
-): Promise<Map<number, string[]>> {
+): Promise<QueryResult<Map<number, string[]>>> {
   const byDeity = new Map<number, string[]>()
-  if (deityIds.length === 0) return byDeity
+  if (deityIds.length === 0) return { data: byDeity, error: null }
 
   const { data, error } = await supabase
     .from("deity_artifacts")
     .select("*")
     .in("deity_id", deityIds)
 
-  if (error) {
-    console.error("deity_artifacts query failed:", error)
-    return byDeity
-  }
+  if (error) return { data: null, error }
 
   for (const row of [...data].sort((a, b) => a.artifact_id - b.artifact_id)) {
     const list = byDeity.get(row.deity_id) ?? []
     list.push(String(row.artifact_id))
     byDeity.set(row.deity_id, list)
   }
-  return byDeity
+  return { data: byDeity, error: null }
 }
 
 /**
@@ -83,20 +81,28 @@ export async function fetchDeities(
 
   const deityIds = deities.map((d) => d.id)
 
-  const { data: deityPlaces, error: deityPlacesError } = await supabase
-    .from("deity_places")
-    .select("*")
-    .in("deity_id", deityIds)
-
-  if (deityPlacesError) return { data: null, error: deityPlacesError }
-
-  const artifactIdsByDeityId = await fetchDeityArtifactIds(supabase, deityIds)
-
-  const citations = await fetchCitations(supabase, "deity_id", deityIds)
-  if (citations.error) return { data: null, error: citations.error }
-
-  const deviceNames = await fetchDeityDeviceNames(supabase, deityIds)
-  if (deviceNames.error) return { data: null, error: deviceNames.error }
+  // Everything beyond the deities themselves is optional
+  const parts = optionalParts()
+  const deityPlaces = parts.take(
+    "deity_places",
+    await supabase.from("deity_places").select("*").in("deity_id", deityIds),
+    [] as { deity_id: number; place_id: number }[],
+  )
+  const artifactIdsByDeityId = parts.take(
+    "deity_artifacts",
+    await fetchDeityArtifactIds(supabase, deityIds),
+    new Map<number, string[]>(),
+  )
+  const citations = parts.take(
+    "deity citations",
+    await fetchCitations(supabase, "deity_id", deityIds),
+    noCitations(),
+  )
+  const deviceNames = parts.take(
+    "deity device names",
+    await fetchDeityDeviceNames(supabase, deityIds),
+    new Map<number, string[]>(),
+  )
 
   const placesByDeityId = new Map<number, number[]>()
   for (const dp of deityPlaces) {
@@ -113,11 +119,11 @@ export async function fetchDeities(
     similar_gods: row.similar_gods ?? undefined,
     flavour_text: row.flavour_text,
     secondary_info: row.secondary_info,
-    citations: citations.data.get(row.id) ?? [],
+    citations: citations.get(row.id) ?? [],
     god_of: row.god_of ?? [],
     // The card footer lists the devices linked through `device_deities`
     // (see docs/READ_PATH.md).
-    features_coinage: (deviceNames.data.get(row.id) ?? []).map((name) => ({
+    features_coinage: (deviceNames.get(row.id) ?? []).map((name) => ({
       name,
     })),
     legends_coinage: row.legends_coinage ?? [],
@@ -129,5 +135,5 @@ export async function fetchDeities(
     user_id: "",
   }))
 
-  return { data: result, error: null }
+  return { data: result, error: null, partial: parts.partial }
 }

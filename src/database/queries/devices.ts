@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
-import { fetchCitations } from "~/database/queries/citations"
+import { fetchCitations, noCitations } from "~/database/queries/citations"
+import { optionalParts } from "~/database/queries/optional-parts"
 import type { QueryResult } from "~/database/queries/types"
 import type { Citation } from "~/database/schema-citations"
 import type { Device } from "~/database/schema-devices"
@@ -32,15 +33,20 @@ export async function fetchDevices(
 
   if (error) return { data: null, error }
 
-  const citations = await fetchCitations(
-    supabase,
-    "device_id",
-    data.map((d) => d.id),
+  const parts = optionalParts()
+  const citations = parts.take(
+    "device citations",
+    await fetchCitations(
+      supabase,
+      "device_id",
+      data.map((d) => d.id),
+    ),
+    noCitations(),
   )
-  if (citations.error) return { data: null, error: citations.error }
 
   return {
-    data: data.map((row) => toDevice(row, citations.data.get(row.id) ?? [])),
+    data: data.map((row) => toDevice(row, citations.get(row.id) ?? [])),
     error: null,
+    partial: parts.partial,
   }
 }
