@@ -188,8 +188,7 @@ export default function MapPage() {
               layout="fullscreen"
               height="100%"
               initialBounds={TRAJAN_BOUNDS}
-              selectedYear={selectedYear}
-              tier={tier}
+              yearView={{ kind: "slider", year: selectedYear, tier }}
               outsiderRoles={outsiderRoles}
               onFitExtent={receiveFit}
               selectedProvinces={effectiveProvinces}

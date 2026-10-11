@@ -12,14 +12,8 @@ import { MAP_HEIGHT } from "~/lib/constants"
 import { formatYear } from "~/lib/utils/date-formatting"
 import { parseLatLng, parseZoom, ROME } from "./coordinates"
 import { useJurisdictionCorpus, useMapConfiguration } from "./hooks"
-import {
-  boundsOf,
-  labelPointOf,
-  resolveAtYear,
-  tierWithData,
-  type Role,
-  type Tier,
-} from "./jurisdictions"
+import { type Role, type Tier } from "./jurisdictions"
+import { mapAtYear } from "./mapAtYear"
 import {
   MAP_BOUNDS_LNGLAT,
   MAP_PAN_BOUNDS_LNGLAT,
@@ -106,36 +100,19 @@ export type MapProps = {
   /** 'fullscreen' makes the map fill its parent's height */
   layout?: "default" | "fullscreen"
   /**
-   * The year to draw. When set, the map shows the Jurisdictions of that year
-   * instead of the always-on province layer.
+   * The year whose Jurisdictions to draw, in place of the always-on province
+   * layer. On the year slider (`slider`) the page owns the Tier, and an empty
+   * Tier stays empty as a fact about that year. On a coin's map (`coin`) the
+   * map owns it: it opens on `initialTier`, falls back to a Tier with data
+   * (the opening Tier is chosen without knowing the year), offers its own Tier
+   * control, and names the year top left, since it is not otherwise on screen.
    */
-  selectedYear?: number
-  /** Which Tier to draw at the Selected year; all Tiers when omitted. */
-  tier?: Tier
+  yearView?: YearView
   /**
    * Which non-Roman Roles to draw alongside Rome. Empty by default: the map
    * is about the Roman world, and the rest is opt-in context.
    */
   outsiderRoles?: Role[]
-  /**
-   * Lets the visitor change Tier from a small control over the map itself.
-   * Supplied by pages with no room for a control panel; omitted leaves the
-   * Tier fixed by the `tier` prop.
-   */
-  onTierChange?: (tier: Tier) => void
-  /**
-   * When the `tier` asked for has nothing mapped at the Selected year, switch
-   * to one that does instead of leaving the map empty. For a coin's own map,
-   * which opens on a tier chosen without knowing its year. Off elsewhere: on
-   * the year slider an empty tier is meant to read as a fact about that year.
-   */
-  fallbackToTierWithData?: boolean
-  /**
-   * Name the Selected year in a "Map of [year]" label, top left, with a
-   * tooltip saying it is the year the coin was minted. For a coin's own map,
-   * where the year is not otherwise on screen.
-   */
-  showYearLabel?: boolean
   /**
    * Open framed on these bounds, [west, south, east, north], instead of a
    * centre and zoom. Fits whatever the viewport is, so the same ground is on
@@ -168,6 +145,10 @@ export type MapProps = {
   ) => void
 }
 
+export type YearView =
+  | { kind: "slider"; year: number; tier: Tier }
+  | { kind: "coin"; year: number; initialTier: Tier }
+
 /** Stable empty default, so the memo below is not invalidated every render. */
 const NO_OUTSIDERS: Role[] = []
 
@@ -179,12 +160,8 @@ export const Map: React.FC<MapProps> = ({
   width = "100%",
   className = "",
   layout = "default",
-  selectedYear,
-  tier,
+  yearView,
   outsiderRoles = NO_OUTSIDERS,
-  onTierChange,
-  fallbackToTierWithData = false,
-  showYearLabel = false,
   initialBounds,
   onFitExtent,
   selectedProvinces,
@@ -289,25 +266,38 @@ export const Map: React.FC<MapProps> = ({
     [openPopup],
   )
 
+  // Primitives, so an inline `yearView` object does not redo the memo below
+  const selectedYear = yearView?.year
+  const ownsTier = yearView?.kind === "coin"
+  const pageTier = yearView?.kind === "slider" ? yearView.tier : undefined
+  const [coinTier, setCoinTier] = useState(
+    yearView?.kind === "coin" ? yearView.initialTier : undefined,
+  )
   const showsYear = selectedYear !== undefined
 
   const corpus = useJurisdictionCorpus(showsYear)
 
-  const resolution = useMemo(
+  const atYear = useMemo(
     () =>
       corpus && selectedYear !== undefined
-        ? resolveAtYear(corpus, selectedYear, tier)
+        ? mapAtYear(corpus, {
+            year: selectedYear,
+            tier: ownsTier ? coinTier : pageTier,
+            fallback: ownsTier,
+            outsiderRoles,
+            selectedProvinces,
+          })
         : null,
-    [corpus, selectedYear, tier],
+    [
+      corpus,
+      selectedYear,
+      ownsTier,
+      coinTier,
+      pageTier,
+      outsiderRoles,
+      selectedProvinces,
+    ],
   )
-
-  const availableTiers = resolution?.availableTiers
-  useEffect(() => {
-    if (!fallbackToTierWithData || !tier || !onTierChange || !availableTiers)
-      return
-    const shown = tierWithData(tier, availableTiers)
-    if (shown !== tier) onTierChange(shown)
-  }, [fallbackToTierWithData, tier, onTierChange, availableTiers])
 
   // Built after mount: glColor reads the page's computed styles.
   const jurisdictionColour = useMemo(
@@ -320,62 +310,13 @@ export const Map: React.FC<MapProps> = ({
    * the band that is only legal alongside secondary encoding, and its contrast
    * over the map's land is under 3:1. The labels are what discharge both.
    */
-  const jurisdictionLabels = useMemo(() => {
-    if (!resolution) return []
-    return resolution.jurisdictions
-      .map((j) => {
-        const point = labelPointOf(j.feature)
-        return point
-          ? {
-              // An asterisk marks a Jurisdiction whose dates are assumed
-              // rather than sourced, so a reader can tell at a glance which
-              // of these the map is guessing about.
-              name: j.datesAssumed ? `${j.name}*` : j.name,
-              tier: j.tier,
-              lng: point[0],
-              lat: point[1],
-            }
-          : null
-      })
-      .filter(
-        (
-          label,
-        ): label is {
-          name: string
-          tier: Tier
-          lng: number
-          lat: number
-        } => Boolean(label),
-      )
-  }, [resolution])
-
-  const jurisdictionsGeoJSON = useMemo<GeoJSON.FeatureCollection | null>(() => {
-    if (!resolution || resolution.jurisdictions.length === 0) return null
-    // Which Jurisdictions to show is a separate axis from which ones existed,
-    // so the selection narrows what the year already resolved.
-    const features = resolution.jurisdictions
-      .filter((j) => j.role === "roman" || outsiderRoles.includes(j.role))
-      .filter(
-        (j) =>
-          !selectedProvinces ||
-          j.tier !== "province" ||
-          selectedProvinces.includes(j.name),
-      )
-      // `attested` has to reach MapLibre as a property: a reconstruction is
-      // drawn with a broken outline, and dasharray cannot be data-driven, so
-      // the two cases are split across two line layers filtered on this.
-      .map((j) => ({
-        ...j.feature,
-        properties: { ...j.feature.properties, attested: j.attested },
-      }))
-    if (features.length === 0) return null
-    return { type: "FeatureCollection", features }
-  }, [resolution, selectedProvinces, outsiderRoles])
+  const jurisdictionLabels = atYear?.labels ?? []
+  const jurisdictionsGeoJSON = atYear?.features ?? null
 
   // Framing is the visitor's business: the camera never moves on its own as
   // the year changes, so this is the escape hatch when they've panned away.
+  const bounds = atYear?.bounds
   const fitExtent = useCallback(() => {
-    const bounds = resolution ? boundsOf(resolution.jurisdictions) : null
     if (!bounds) return
     mapRef.current?.fitBounds(
       [
@@ -384,7 +325,7 @@ export const Map: React.FC<MapProps> = ({
       ],
       { padding: 40, duration: 600 },
     )
-  }, [resolution])
+  }, [bounds])
 
   useEffect(() => {
     onFitExtent?.(fitExtent)
@@ -733,7 +674,7 @@ export const Map: React.FC<MapProps> = ({
               />
             </MapGL>
 
-            {showYearLabel && selectedYear !== undefined && (
+            {ownsTier && selectedYear !== undefined && (
               <div className="group absolute top-3 left-3 z-10">
                 <span
                   tabIndex={0}
@@ -753,11 +694,11 @@ export const Map: React.FC<MapProps> = ({
             )}
 
             {/* Sits over the map, bottom left, for pages with no panel. */}
-            {onTierChange && tier && (
+            {ownsTier && atYear?.tier && (
               <TierControl
-                value={tier}
-                onChange={onTierChange}
-                available={resolution?.availableTiers ?? []}
+                value={atYear.tier}
+                onChange={setCoinTier}
+                available={atYear.availableTiers}
                 className="absolute bottom-3 left-3 z-10 shadow-lg"
               />
             )}
