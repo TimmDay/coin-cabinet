@@ -327,6 +327,11 @@ export function TimelineWithMap({
   ])
   /* eslint-enable react-hooks/refs */
 
+  // One Tier for all three maps, so a change in one survives a switch to
+  // another. Above the early return: a hook after it is only called on some
+  // renders, which changes hook order the moment the timeline loads and throws.
+  const [tier, setTier] = useState<Tier>(initialTier)
+
   // Don't render until we have data
   if (allEvents.length === 0) {
     return (
@@ -354,7 +359,8 @@ export function TimelineWithMap({
         yearView: {
           kind: "coin" as const,
           year: selectedYear,
-          initialTier,
+          tier,
+          onTierChange: setTier,
         },
       }),
   }

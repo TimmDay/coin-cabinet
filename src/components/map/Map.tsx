@@ -103,9 +103,10 @@ export type MapProps = {
    * The year whose Jurisdictions to draw, in place of the always-on province
    * layer. On the year slider (`slider`) the page owns the Tier, and an empty
    * Tier stays empty as a fact about that year. On a coin's map (`coin`) the
-   * map owns it: it opens on `initialTier`, falls back to a Tier with data
-   * (the opening Tier is chosen without knowing the year), offers its own Tier
-   * control, and names the year top left, since it is not otherwise on screen.
+   * map offers its own Tier control and names the year top left, since it is
+   * not otherwise on screen; and when `tier` is empty at that year it draws a
+   * Tier with data instead, since the opening Tier is chosen without knowing
+   * the year. The caller keeps `tier`, so maps of one coin stay in step.
    */
   yearView?: YearView
   /**
@@ -147,7 +148,12 @@ export type MapProps = {
 
 export type YearView =
   | { kind: "slider"; year: number; tier: Tier }
-  | { kind: "coin"; year: number; initialTier: Tier }
+  | {
+      kind: "coin"
+      year: number
+      tier: Tier
+      onTierChange: (tier: Tier) => void
+    }
 
 /** Stable empty default, so the memo below is not invalidated every render. */
 const NO_OUTSIDERS: Role[] = []
@@ -269,10 +275,8 @@ export const Map: React.FC<MapProps> = ({
   // Primitives, so an inline `yearView` object does not redo the memo below
   const selectedYear = yearView?.year
   const ownsTier = yearView?.kind === "coin"
-  const pageTier = yearView?.kind === "slider" ? yearView.tier : undefined
-  const [coinTier, setCoinTier] = useState(
-    yearView?.kind === "coin" ? yearView.initialTier : undefined,
-  )
+  const tier = yearView?.tier
+  const onTierChange = yearView?.kind === "coin" ? yearView.onTierChange : null
   const showsYear = selectedYear !== undefined
 
   const corpus = useJurisdictionCorpus(showsYear)
@@ -282,21 +286,13 @@ export const Map: React.FC<MapProps> = ({
       corpus && selectedYear !== undefined
         ? mapAtYear(corpus, {
             year: selectedYear,
-            tier: ownsTier ? coinTier : pageTier,
+            tier,
             fallback: ownsTier,
             outsiderRoles,
             selectedProvinces,
           })
         : null,
-    [
-      corpus,
-      selectedYear,
-      ownsTier,
-      coinTier,
-      pageTier,
-      outsiderRoles,
-      selectedProvinces,
-    ],
+    [corpus, selectedYear, ownsTier, tier, outsiderRoles, selectedProvinces],
   )
 
   // Built after mount: glColor reads the page's computed styles.
@@ -694,10 +690,10 @@ export const Map: React.FC<MapProps> = ({
             )}
 
             {/* Sits over the map, bottom left, for pages with no panel. */}
-            {ownsTier && atYear?.tier && (
+            {onTierChange && atYear?.tier && (
               <TierControl
                 value={atYear.tier}
-                onChange={setCoinTier}
+                onChange={onTierChange}
                 available={atYear.availableTiers}
                 className="absolute bottom-3 left-3 z-10 shadow-lg"
               />

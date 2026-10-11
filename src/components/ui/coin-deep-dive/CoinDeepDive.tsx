@@ -1,12 +1,13 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useDevices } from "~/api/devices"
 import { useFoldFill } from "~/hooks/useFoldFill"
 import { MAP_HEIGHT_DESKTOP } from "~/lib/constants"
 import { cn } from "~/lib/utils"
 import { deepDiveMapViewFor } from "~/components/map/deepDiveMapView"
+import { type Tier } from "~/components/map/jurisdictions"
 import { useInViewport } from "~/hooks/useInViewport"
 import type { CoinEnhanced } from "~/types/api"
 import { clockNoteRoom } from "./CoinClockTips"
@@ -67,6 +68,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
   const mapInView = useInViewport(mapSectionRef, { rootMargin: "400px" })
   // Where the map opens, which depends on the coin's culture or period
   const mapView = deepDiveMapViewFor(coin.civ, coinMap?.selectedYear)
+  const [tier, setTier] = useState<Tier>(mapView.tier)
 
   const clockNotes = coin.clock_notes ?? []
   const clockNotesFor = (side: "obverse" | "reverse") =>
@@ -174,7 +176,8 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                   yearView: {
                     kind: "coin",
                     year: coinMap.selectedYear,
-                    initialTier: mapView.tier,
+                    tier,
+                    onTierChange: setTier,
                   },
                 })}
               />
