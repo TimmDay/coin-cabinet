@@ -3,6 +3,8 @@
  */
 
 import type { Citation } from "~/database/schema-citations"
+import type { Deity } from "~/database/schema-deities"
+import type { Mint } from "~/database/schema-mints"
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
 
 /** A note pinned to a clock position on one face of a coin, ready to show. */
@@ -25,6 +27,35 @@ export type ClockNote = {
   linkKind: ClockNoteLinkKind | null
 }
 
+/** A deity on a coin, as its deep dive shows it. */
+export type CoinDeity = Pick<
+  Deity,
+  | "id"
+  | "name"
+  | "subtitle"
+  | "flavour_text"
+  | "artifact_ids"
+  | "place_ids"
+  | "features_coinage"
+> & { citations: Citation[] }
+
+/** A person on a coin, as its deep dive shows them. */
+export type CoinPerson = {
+  id: number
+  name: string
+  full_name: string | null
+  /** Their title, e.g. "Emperor". */
+  authority: string | null
+  reign_start: number | null
+  reign_end: number | null
+  birth: number | null
+  death: number | null
+  altNames: string[] | null
+  flavour_text: string | null
+  artifact_ids: string[]
+  citations: Citation[]
+}
+
 /**
  * Enhanced coin data with optional joined deity information
  * Used by API endpoints that support ?include=deities parameter
@@ -33,33 +64,10 @@ export type CoinEnhanced = SomnusCollection & {
   clock_notes?: ClockNote[]
   /** The mint mark stamped on this coin, e.g. "XXIR". Shown under the reverse legend. */
   mint_mark?: string | null
-  deities?: Array<{
-    id: number
-    name: string
-    subtitle?: string
-    flavour_text?: string | null
-    artifact_ids?: string[]
-    place_ids?: number[] | null
-    features_coinage?: Array<{
-      name: string
-      alt_name?: string
-      notes?: string
-    }>
-  }>
-  historical_figures?: Array<{
-    id: number
-    name: string
-    full_name?: string | null
-    authority?: string | null
-    reign_start?: number | null
-    reign_end?: number | null
-    birth?: number | null
-    death?: number | null
-    altNames?: string[] | null
-    flavour_text?: string | null
-    artifact_ids?: string[] | null
-    citations?: Citation[]
-  }>
+  /** The mint that struck this coin, or null when none is recorded. */
+  mint?: Mint | null
+  deities?: CoinDeity[]
+  historical_figures?: CoinPerson[]
   /**
    * Where/when the coin was found, sourced from its `provenance_events` row
    * of type "find" via the `public_find_events` view (the only slice of

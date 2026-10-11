@@ -2,8 +2,6 @@ import type { CustomMapMarker } from "~/components/map/Map"
 import { parseMapPosition } from "~/components/map/coordinates"
 import { pinStyle } from "~/components/map/pinStyle"
 import type { Artifact } from "~/database/schema-artifacts"
-import type { Deity } from "~/database/schema-deities"
-import type { Mint } from "~/database/schema-mints"
 import type { Place } from "~/database/schema-places"
 import type { Timeline } from "~/database/schema-timelines"
 import type { Timeline as TimelineEvents } from "~/data/timelines/types"
@@ -11,12 +9,13 @@ import { getArtifactLocationData } from "./artifact-helpers"
 import { coinTimeline } from "./coin-timeline"
 import type { CoinEnhanced } from "~/types/api"
 
-/** The reference data a coin's map is built from. Each may still be loading. */
+/**
+ * The reference data a coin's map is built from, beyond the coin itself. Each
+ * may still be loading.
+ */
 export type CoinMapReference = {
   timelines?: Timeline[]
-  mints?: Mint[]
   places?: Place[]
-  deities?: Deity[]
   artifacts?: Artifact[]
 }
 
@@ -79,28 +78,12 @@ function relatedArtifactIds(coin: CoinEnhanced) {
 function deityPlaceMarkers(
   coin: CoinEnhanced,
   places: Place[] | undefined,
-  allDeities: Deity[] | undefined,
 ): CustomMapMarker[] {
   if (!places) return []
 
-  const deityIds = (coin.deity_id ?? [])
-    .map((id) => Number.parseInt(id, 10))
-    .filter((id) => Number.isFinite(id))
-
-  const deities =
-    allDeities?.filter((deity) => deityIds.includes(deity.id)) ??
-    coin.deities ??
-    []
-
   const deityNamesByPlaceId = new globalThis.Map<number, Set<string>>()
-  for (const deity of deities) {
-    for (const rawPlaceId of deity.place_ids ?? []) {
-      const placeId =
-        typeof rawPlaceId === "number"
-          ? rawPlaceId
-          : Number.parseInt(String(rawPlaceId), 10)
-      if (!Number.isFinite(placeId)) continue
-
+  for (const deity of coin.deities ?? []) {
+    for (const placeId of deity.place_ids) {
       const names = deityNamesByPlaceId.get(placeId) ?? new Set<string>()
       names.add(deity.name)
       deityNamesByPlaceId.set(placeId, names)
@@ -184,10 +167,8 @@ function foundMarker(coin: CoinEnhanced): CustomMapMarker[] {
   ]
 }
 
-function mintMarker(coin: CoinEnhanced, mints: Mint[] | undefined) {
-  if (!coin.mint_id || !mints) return []
-
-  const mint = mints.find((candidate) => candidate.id === coin.mint_id)
+function mintMarker(coin: CoinEnhanced) {
+  const mint = coin.mint
   const position = mint && parseMapPosition(mint.lat, mint.lng)
   if (!mint?.name || !position) return []
 
@@ -212,19 +193,19 @@ function mintMarker(coin: CoinEnhanced, mints: Mint[] | undefined) {
 
 export function buildCoinMap(
   coin: CoinEnhanced,
-  { timelines, mints, places, deities, artifacts }: CoinMapReference,
+  { timelines, places, artifacts }: CoinMapReference,
 ): CoinMap | null {
   const related = [
-    ...deityPlaceMarkers(coin, places, deities),
+    ...deityPlaceMarkers(coin, places),
     ...artifactMarkers(coin, artifacts, places),
   ]
 
   const selectedYear = selectedYearForCoin(coin)
 
-  const timeline = coinTimeline(coin, timelines, mints)
+  const timeline = coinTimeline(coin, timelines)
   if (timeline)
     return { kind: "timeline", timeline, markers: related, selectedYear }
 
-  const markers = [...mintMarker(coin, mints), ...related, ...foundMarker(coin)]
+  const markers = [...mintMarker(coin), ...related, ...foundMarker(coin)]
   return markers.length > 0 ? { kind: "markers", markers, selectedYear } : null
 }

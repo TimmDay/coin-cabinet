@@ -117,10 +117,14 @@ The same base row as the list, plus:
 
 - `coin_catalogue_references` passed through.
 - `coin_devices` become `obv_device_ids` and `rev_device_ids` (strings).
-- `item_deities` with `deities` become `deities[]`.
+- `coins.mint_id` becomes `mint`, the full mint as `/api/mints` gives it
+  (named for its place, with operation periods and citations), or null.
+- `item_deities` with `deities` become `deities[]`, each with its places,
+  pictures (`deity_artifacts`), device names and citations.
 - `item_persons` with `persons` become `historical_figures[]`: `title` becomes
   `authority`, `birth_year` and `death_year` become `birth` and `death`, and
-  `alt_names` becomes `altNames`.
+  `alt_names` becomes `altNames`. Each carries its citations. Persons have no
+  artifact link, so `artifact_ids` is always empty.
 - `item_timelines` becomes `timelines_id`.
 - `supporting_images` with `artifacts` become `flavour_img`.
 - Every `coin_images` variant and side, in `sequence` order, becomes

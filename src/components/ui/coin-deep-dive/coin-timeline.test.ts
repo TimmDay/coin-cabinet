@@ -41,7 +41,6 @@ describe("coinTimeline", () => {
     const timeline = coinTimeline(
       coin({ mint_year_earliest: 150 }),
       timelines(ev("A", 100), ev("B", 200), ev("C", 300)),
-      [],
     )
     expect(names(timeline)).toEqual(["A", "Coin Minted", "B", "C"])
   })
@@ -50,7 +49,6 @@ describe("coinTimeline", () => {
     const timeline = coinTimeline(
       coin({ mint_year_earliest: 200 }),
       timelines(ev("Early", 200, 2), ev("Late", 200, 9)),
-      [],
     )
     expect(names(timeline)).toEqual(["Early", "Coin Minted", "Late"])
   })
@@ -63,7 +61,6 @@ describe("coinTimeline", () => {
         ev("Between", 200, 6.01),
         ev("Next", 200, 7),
       ),
-      [],
     )
     expect(names(timeline)).toEqual(["Same", "Coin Minted", "Between", "Next"])
   })
@@ -72,7 +69,6 @@ describe("coinTimeline", () => {
     const timeline = coinTimeline(
       coin({ mint_year_earliest: 50 }),
       timelines(ev("A", 100), ev("B", 200)),
-      [],
     )
     expect(names(timeline)).toEqual(["Coin Minted", "A", "B"])
   })
@@ -84,7 +80,6 @@ describe("coinTimeline", () => {
         found_event: { lat: 51.5, lng: -0.1, notes: null, event_date: "1999" },
       } as Partial<CoinEnhanced>),
       timelines(ev("A", 100), ev("B", 200)),
-      [],
     )
     expect(timeline?.map((e) => e.kind)).toEqual([
       "political",
@@ -98,7 +93,6 @@ describe("coinTimeline", () => {
     const timeline = coinTimeline(
       coin({ mint_year_earliest: null }),
       timelines(ev("A", 100), ev("B", 200)),
-      [],
     )
     expect(names(timeline)).toEqual(["A", "B"])
   })
@@ -107,7 +101,6 @@ describe("coinTimeline", () => {
     const timeline = coinTimeline(
       coin({ mint_year_earliest: 0, mint_year_latest: 0 }),
       timelines(ev("Before", -5), ev("After", 5)),
-      [],
     )
     expect(names(timeline)).toEqual(["Before", "Coin Minted", "After"])
     expect(timeline?.[1]?.description).toBe("This denarius was minted in 0")
@@ -115,9 +108,8 @@ describe("coinTimeline", () => {
 
   it("names the mint and the years the coin was struck in", () => {
     const timeline = coinTimeline(
-      coin({ mint_id: 1, mint_year_earliest: 193, mint_year_latest: 211 }),
+      coin({ mint: rome, mint_year_earliest: 193, mint_year_latest: 211 }),
       timelines(ev("A", 100)),
-      [rome],
     )
     expect(timeline?.find((e) => e.kind === "coin-minted")).toMatchObject({
       year: 193,
@@ -130,14 +122,12 @@ describe("coinTimeline", () => {
 
   it("does not change the timeline it is given", () => {
     const given = timelines(ev("B", 200), ev("A", 100))
-    coinTimeline(coin({ mint_year_earliest: 150 }), given, [])
+    coinTimeline(coin({ mint_year_earliest: 150 }), given)
     expect(names(given[0]!.timeline)).toEqual(["B", "A"])
   })
 
   it("is null when the coin has no timeline", () => {
-    expect(
-      coinTimeline(coin({ timelines_id: [99] }), timelines(), []),
-    ).toBeNull()
-    expect(coinTimeline(coin(), undefined, [])).toBeNull()
+    expect(coinTimeline(coin({ timelines_id: [99] }), timelines())).toBeNull()
+    expect(coinTimeline(coin(), undefined)).toBeNull()
   })
 })

@@ -187,11 +187,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       )}
 
       {/* DeepDive Cards Section */}
-      <DeepDiveCardsSection
-        coinData={coin}
-        deities={coin.deities}
-        historicalFigures={coin.historical_figures}
-      />
+      <DeepDiveCardsSection coin={coin} />
     </section>
   )
 }

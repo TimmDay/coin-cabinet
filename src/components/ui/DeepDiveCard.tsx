@@ -59,8 +59,10 @@ export function DeepDiveCard({
     : image
       ? [{ src: image, alt: altText || "", caption }]
       : []
-  const hasExpandableContent =
-    primaryInfo || secondaryInfo || pictures.length > 0 || citations?.length
+  // A boolean, not the last operand: a 0 from `citations.length` would render
+  const hasExpandableContent = Boolean(
+    primaryInfo || secondaryInfo || pictures.length > 0 || citations?.length,
+  )
 
   return (
     // Three rows: header, toggle with its content, footer. Inside the

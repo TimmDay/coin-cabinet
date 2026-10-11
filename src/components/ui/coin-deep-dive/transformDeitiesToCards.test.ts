@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import type { Artifact } from "~/database/schema-artifacts"
-import type { CoinEnhanced } from "~/types/api"
+import type { CoinDeity } from "~/types/api"
 import { transformDeitiesToCards } from "./DeepDiveCardsSection"
 
 const artifact = (id: string, over: Partial<Artifact> = {}) =>
@@ -15,8 +15,17 @@ const artifact = (id: string, over: Partial<Artifact> = {}) =>
     ...over,
   }) as Artifact
 
-const deity = (over: Record<string, unknown> = {}) =>
-  [{ id: 1, name: "Concordia", ...over }] as CoinEnhanced["deities"]
+const deity = (over: Partial<CoinDeity> = {}): CoinDeity[] => [
+  {
+    id: 1,
+    name: "Concordia",
+    artifact_ids: [],
+    place_ids: [],
+    features_coinage: [],
+    citations: [],
+    ...over,
+  },
+]
 
 describe("transformDeitiesToCards", () => {
   it("pictures a deity with its artifacts, each with alt text, name, location and credit", () => {
@@ -75,11 +84,7 @@ describe("transformDeitiesToCards", () => {
       url: null,
       note: null,
     }
-    const [card] = transformDeitiesToCards(
-      deity(),
-      [],
-      new Map([[1, [citation]]]),
-    )
+    const [card] = transformDeitiesToCards(deity({ citations: [citation] }), [])
     expect(card?.citations).toEqual([citation])
   })
 })

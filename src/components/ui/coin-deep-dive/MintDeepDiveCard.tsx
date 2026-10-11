@@ -1,26 +1,13 @@
-import { useMints } from "~/api/mints"
+import type { Mint } from "~/database/schema-mints"
 import { formatRomanDateRange } from "~/lib/utils/date-formatting"
 import { DeepDiveCard } from "../DeepDiveCard"
 
 type MintDeepDiveCardProps = {
-  mintId: number
+  mint: Mint
 }
 
-export function MintDeepDiveCard({ mintId }: MintDeepDiveCardProps) {
-  const { data: mints, isLoading, error } = useMints()
-
-  if (isLoading) {
-    return null // Don't show loading card, just wait for data
-  }
-
-  if (error || !mints) {
-    return null
-  }
-
-  // Find the mint data by ID
-  const mint = mints.find((m) => m.id === mintId)
-
-  if (!mint?.flavour_text) {
+export function MintDeepDiveCard({ mint }: MintDeepDiveCardProps) {
+  if (!mint.flavour_text) {
     return null
   }
 

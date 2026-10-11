@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
 import { fetchCitations } from "~/database/queries/citations"
 import { fetchClockNotes } from "~/database/queries/clock-notes"
+import { fetchMints } from "~/database/queries/mints"
 import {
   fetchDeityArtifactIds,
   fetchDeityDeviceNames,
@@ -502,20 +503,35 @@ export async function fetchCollectionDetail(
   if (deityDeviceNames.error) {
     return { data: null, error: deityDeviceNames.error }
   }
-  // Like clock notes, a failure here costs only the figures' sources, not the page
-  const personCitations = await fetchCitations(
-    supabase,
-    "person_id",
-    (personsResult.data ?? []).map((p) => p.id),
-  )
+  // Like clock notes, a failure in any of these costs only that part (the
+  // figures' or deities' sources, or the mint card), not the page
+  const mintId = coin?.mint_id
+  const [personCitations, deityCitations, mintResult] = await Promise.all([
+    fetchCitations(
+      supabase,
+      "person_id",
+      (personsResult.data ?? []).map((p) => p.id),
+    ),
+    fetchCitations(supabase, "deity_id", itemDeityIds),
+    mintId
+      ? fetchMints(supabase, [mintId])
+      : Promise.resolve({ data: [], error: null }),
+  ])
   if (personCitations.error) {
     console.error("person citations query failed:", personCitations.error)
+  }
+  if (deityCitations.error) {
+    console.error("deity citations query failed:", deityCitations.error)
+  }
+  if (mintResult.error) {
+    console.error("mint query failed:", mintResult.error)
   }
 
   const enhanced: CoinEnhanced = {
     ...base,
     clock_notes: clockNotesResult.data ?? [],
     mint_mark: coin?.mint_mark?.trim() || null,
+    mint: mintResult.data?.[0] ?? null,
     found_event: findEventRow
       ? {
           event_date: findEventRow.event_date,
@@ -534,6 +550,7 @@ export async function fetchCollectionDetail(
       features_coinage: (deityDeviceNames.data.get(d.id) ?? []).map((name) => ({
         name,
       })),
+      citations: deityCitations.data?.get(d.id) ?? [],
     })),
     historical_figures: (personsResult.data ?? []).map((p) => ({
       id: p.id,
@@ -546,6 +563,7 @@ export async function fetchCollectionDetail(
       death: p.death_year,
       altNames: p.alt_names,
       flavour_text: p.flavour_text,
+      // Persons have no artifact link table, so they are not pictured
       artifact_ids: [],
       citations: personCitations.data?.get(p.id) ?? [],
     })),

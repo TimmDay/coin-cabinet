@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
-import type { CoinEnhanced } from "~/types/api"
+import type { Mint } from "~/database/schema-mints"
+import type { CoinDeity, CoinEnhanced } from "~/types/api"
 import {
   buildCoinMap,
   selectedYearForCoin,
@@ -14,7 +15,9 @@ const coin = (overrides: Partial<CoinEnhanced> = {}) =>
     ...overrides,
   }) as CoinEnhanced
 
-const rome = { id: 1, name: "Rome mint", lat: 41.9, lng: 12.5 }
+const rome = { id: 1, name: "Rome mint", lat: 41.9, lng: 12.5 } as Mint
+const deity = (id: number, name: string, over: Partial<CoinDeity> = {}) =>
+  ({ id, name, place_ids: [], artifact_ids: [], ...over }) as CoinDeity
 const reference = (r: Record<string, unknown> = {}) => r as CoinMapReference
 
 const place = (id: number, lat: number, lng: number) => ({
@@ -28,14 +31,14 @@ describe("buildCoinMap", () => {
   it("is null when there is nothing to map", () => {
     expect(buildCoinMap(coin(), reference())).toBeNull()
     expect(
-      buildCoinMap(coin({ mint_id: 1 }), reference({ mints: [] })),
+      buildCoinMap(coin({ mint_id: 1, mint: null }), reference()),
     ).toBeNull()
   })
 
   it("pins where a coin was struck, with the year", () => {
     const map = buildCoinMap(
-      coin({ mint_id: 1, mint_year_earliest: 200 }),
-      reference({ mints: [rome] }),
+      coin({ mint: rome, mint_year_earliest: 200 }),
+      reference(),
     )
 
     expect(map?.kind).toBe("markers")
@@ -51,15 +54,15 @@ describe("buildCoinMap", () => {
   it("orders the mint pin first and the find pin last", () => {
     const map = buildCoinMap(
       coin({
-        mint_id: 1,
+        mint: rome,
         found_event: {
           lat: 51.5,
           lng: -0.1,
           notes: "A field",
           event_date: "1999",
         },
-      } as Partial<CoinEnhanced>),
-      reference({ mints: [rome] }),
+      }),
+      reference(),
     )
 
     expect(map?.markers.map((m) => m.id)).toEqual([
@@ -69,34 +72,33 @@ describe("buildCoinMap", () => {
   })
 
   it("leaves out a mint or find with unusable coordinates, and keeps a zero", () => {
-    const equator = { id: 2, name: "Equator mint", lat: 20, lng: 0 }
+    const equator = { id: 2, name: "Equator mint", lat: 20, lng: 0 } as Mint
     const map = buildCoinMap(
       coin({
-        mint_id: 2,
+        mint: equator,
         found_event: { lat: Number.NaN, lng: 3, notes: null, event_date: "1" },
-      } as Partial<CoinEnhanced>),
-      reference({ mints: [equator] }),
+      }),
+      reference(),
     )
 
     expect(map?.markers.map((m) => m.id)).toEqual(["coin-mint-7"])
     expect(
       buildCoinMap(
-        coin({ mint_id: 3 }),
-        reference({ mints: [{ ...rome, id: 3, lat: Number.NaN }] }),
+        coin({ mint: { ...rome, id: 3, lat: Number.NaN } }),
+        reference(),
       ),
     ).toBeNull()
   })
 
   it("pins a deity's places, naming every deity that shares one", () => {
     const map = buildCoinMap(
-      coin({ deity_id: ["1", "2"] }),
-      reference({
-        places: [place(10, 37.9, 23.7)],
+      coin({
         deities: [
-          { id: 1, name: "Athena", place_ids: [10] },
-          { id: 2, name: "Zeus", place_ids: [10] },
+          deity(1, "Athena", { place_ids: [10] }),
+          deity(2, "Zeus", { place_ids: [10] }),
         ],
       }),
+      reference({ places: [place(10, 37.9, 23.7)] }),
     )
 
     expect(map?.markers).toHaveLength(1)
@@ -105,11 +107,8 @@ describe("buildCoinMap", () => {
 
   it("leaves out a place outside the map's bounds", () => {
     const map = buildCoinMap(
-      coin({ deity_id: ["1"] }),
-      reference({
-        places: [place(10, -33.9, 151.2)],
-        deities: [{ id: 1, name: "Athena", place_ids: [10] }],
-      }),
+      coin({ deities: [deity(1, "Athena", { place_ids: [10] })] }),
+      reference({ places: [place(10, -33.9, 151.2)] }),
     )
 
     expect(map).toBeNull()
@@ -131,8 +130,8 @@ describe("buildCoinMap", () => {
     const map = buildCoinMap(
       coin({
         flavour_img: ["a1"],
-        deities: [{ id: 1, name: "Athena", artifact_ids: ["a1"] }],
-      } as Partial<CoinEnhanced>),
+        deities: [deity(1, "Athena", { artifact_ids: ["a1"] })],
+      }),
       reference({
         places: [place(5, 51.5, -0.12)],
         artifacts: [{ id: "a1", name: "Bust", place_id: "5" }],
@@ -150,13 +149,12 @@ describe("buildCoinMap", () => {
   it("uses the timeline map when the coin has a timeline", () => {
     const map = buildCoinMap(
       coin({
-        mint_id: 1,
+        mint: rome,
         mint_year_earliest: 200,
         timelines_id: [3],
         found_event: { lat: 51.5, lng: -0.1, notes: null, event_date: "1999" },
       } as Partial<CoinEnhanced>),
       reference({
-        mints: [rome],
         timelines: [
           {
             id: 3,
@@ -180,9 +178,8 @@ describe("buildCoinMap", () => {
 
   it("falls back to pins when the coin's timeline is not found", () => {
     const map = buildCoinMap(
-      coin({ mint_id: 1, timelines_id: [99] }),
+      coin({ mint: rome, timelines_id: [99] }),
       reference({
-        mints: [rome],
         timelines: [{ id: 3, name: "t", timeline: [] }],
       }),
     )

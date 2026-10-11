@@ -1,6 +1,5 @@
 import type { Event, Timeline as TimelineEvents } from "~/data/timelines/types"
 import { inEventOrder } from "~/data/timelines/universal"
-import type { Mint } from "~/database/schema-mints"
 import type { Timeline } from "~/database/schema-timelines"
 import type { CoinEnhanced } from "~/types/api"
 
@@ -19,7 +18,6 @@ const MINTING_SEQUENCE = 6
 export function coinTimeline(
   coin: CoinEnhanced,
   timelines: Timeline[] | undefined,
-  mints: Mint[] | undefined,
 ): TimelineEvents | null {
   if (!coin.timelines_id?.length || !timelines) return null
 
@@ -28,7 +26,7 @@ export function coinTimeline(
   )
   if (!found) return null
 
-  const minting = mintingEvent(coin, mints)
+  const minting = mintingEvent(coin)
   const ordered = inEventOrder(
     minting ? [...found.timeline, minting] : found.timeline,
   )
@@ -36,14 +34,12 @@ export function coinTimeline(
   return find ? [...ordered, find] : ordered
 }
 
-function mintingEvent(coin: CoinEnhanced, mints?: Mint[]): Event | null {
+function mintingEvent(coin: CoinEnhanced): Event | null {
   const earliest = coin.mint_year_earliest
   // AD 1 is year 0 here, not a missing year
   if (earliest == null) return null
 
-  const mint =
-    coin.mint_id && mints ? mints.find((m) => m.id === coin.mint_id) : undefined
-
+  const mint = coin.mint
   let description = `This ${coin.denomination} was minted`
   if (mint) description += ` at ${mint.name}`
 
