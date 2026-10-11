@@ -54,7 +54,7 @@ export function transformDeitiesToCards(
   )
 }
 
-function transformHistoricalFiguresToCards(
+export function transformHistoricalFiguresToCards(
   figures: CoinEnhanced["historical_figures"],
   artifacts: ReturnType<typeof useArtifacts>["data"],
 ) {
@@ -120,6 +120,9 @@ function transformHistoricalFiguresToCards(
           artifact?.img_alt ??
           (typeof figureAny.name === "string" ? figureAny.name : ""),
         caption: artifact?.flavour_text ?? undefined,
+        citations: Array.isArray(figureAny.citations)
+          ? (figureAny.citations as Citation[])
+          : undefined,
       }
     }) ?? []
   )
