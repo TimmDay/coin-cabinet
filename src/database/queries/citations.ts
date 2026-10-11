@@ -63,6 +63,9 @@ export function groupCitations(
   return byId
 }
 
+/** No citations: the fallback when an optional citations lookup fails. */
+export const noCitations = (): Map<number, Citation[]> => new Map()
+
 /**
  * The citations for a set of things (all places, say), as a map from each
  * thing's id to its list. A thing with no citations has no entry.

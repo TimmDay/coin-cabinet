@@ -42,7 +42,8 @@ export function publicRoute<T, Context = unknown>(
   return async (_request: Request, context: Context) => {
     try {
       const supabase = await createClient()
-      const { data, error } = await load(supabase, context)
+      const result = await load(supabase, context)
+      const { data, error } = result
 
       if (error) throw new Error(error.message)
 
@@ -56,13 +57,17 @@ export function publicRoute<T, Context = unknown>(
       return NextResponse.json(
         { success: true, data },
         {
-          headers: cache
-            ? {
-                "Cache-Control":
-                  "public, max-age=300, stale-while-revalidate=86400",
-                "CDN-Cache-Control": "public, max-age=86400",
-              }
-            : undefined,
+          // A read missing an optional part (see optionalParts) is served, but
+          // never cached, so the part comes back on the next request
+          headers: result.partial
+            ? { "Cache-Control": NO_STORE }
+            : cache
+              ? {
+                  "Cache-Control":
+                    "public, max-age=300, stale-while-revalidate=86400",
+                  "CDN-Cache-Control": "public, max-age=86400",
+                }
+              : undefined,
         },
       )
     } catch (error) {

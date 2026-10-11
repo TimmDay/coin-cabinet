@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
-import { fetchCitations } from "~/database/queries/citations"
+import { fetchCitations, noCitations } from "~/database/queries/citations"
+import { optionalParts } from "~/database/queries/optional-parts"
 import type { QueryResult } from "~/database/queries/types"
 import type { Mint } from "~/database/schema-mints"
 
@@ -25,16 +26,22 @@ export async function fetchMints(
 
   if (placesError) return { data: null, error: placesError }
 
+  // A mint is its place (name, position); the rest is optional
   const mintIds = mints.map((m) => m.id)
-  const { data: periods, error: periodsError } = await supabase
-    .from("mint_operation_periods")
-    .select("*")
-    .in("mint_id", mintIds)
-
-  if (periodsError) return { data: null, error: periodsError }
-
-  const citations = await fetchCitations(supabase, "mint_id", mintIds)
-  if (citations.error) return { data: null, error: citations.error }
+  const parts = optionalParts()
+  const periods = parts.take(
+    "mint_operation_periods",
+    await supabase
+      .from("mint_operation_periods")
+      .select("*")
+      .in("mint_id", mintIds),
+    [] as OperationPeriodRow[],
+  )
+  const citations = parts.take(
+    "mint citations",
+    await fetchCitations(supabase, "mint_id", mintIds),
+    noCitations(),
+  )
 
   const placeById = new Map(places.map((p) => [p.id, p]))
   const periodsByMintId = new Map<number, OperationPeriodRow[]>()
@@ -69,7 +76,7 @@ export async function fetchMints(
         image_url: mint.image_url,
         image_alt_text: mint.image_alt_text,
         image_credit: mint.image_credit,
-        citations: citations.data.get(mint.id) ?? [],
+        citations: citations.get(mint.id) ?? [],
         opened_by: mint.opened_by,
         operation_periods: operationPeriods.length ? operationPeriods : null,
         coinage_materials: mint.coinage_materials ?? undefined,
@@ -82,5 +89,5 @@ export async function fetchMints(
     .filter((m): m is Mint => m !== null)
     .sort((a, b) => a.name.localeCompare(b.name))
 
-  return { data: result, error: null }
+  return { data: result, error: null, partial: parts.partial }
 }
