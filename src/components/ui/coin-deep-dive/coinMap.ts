@@ -8,8 +8,7 @@ import type { Place } from "~/database/schema-places"
 import type { Timeline } from "~/database/schema-timelines"
 import type { Timeline as TimelineEvents } from "~/data/timelines/types"
 import { getArtifactLocationData } from "./artifact-helpers"
-import { addCoinMintingEventToTimeline } from "./coin-timeline"
-import { addFoundEventToTimeline } from "./provenance-helpers"
+import { coinTimeline } from "./coin-timeline"
 import type { CoinEnhanced } from "~/types/api"
 
 /** The reference data a coin's map is built from. Each may still be loading. */
@@ -45,7 +44,7 @@ export type CoinMap = (
  *
  * A range collapses to its earliest year so the behaviour is predictable
  * rather than arbitrary. Null means no Jurisdiction layer at all, matching
- * `createCoinMintingEvent`, which likewise produces nothing without a year:
+ * `coinTimeline`, which likewise adds no minting event without a year:
  * drawing some other year's geography beside a coin would be worse than
  * drawing none.
  *
@@ -209,31 +208,6 @@ function mintMarker(coin: CoinEnhanced, mints: Mint[] | undefined) {
       zIndexOffset: 1000,
     },
   ]
-}
-
-function coinTimeline(
-  coin: CoinEnhanced,
-  timelines: Timeline[] | undefined,
-  mints: Mint[] | undefined,
-): TimelineEvents | null {
-  if (!coin.timelines_id?.length || !timelines) return null
-
-  const found = timelines.find((timeline) =>
-    coin.timelines_id!.includes(timeline.id),
-  )
-  if (!found) return null
-
-  const withMint = addCoinMintingEventToTimeline(
-    found.timeline,
-    {
-      denomination: coin.denomination,
-      mint_id: coin.mint_id,
-      mint_year_earliest: coin.mint_year_earliest,
-      mint_year_latest: coin.mint_year_latest,
-    },
-    mints,
-  )
-  return addFoundEventToTimeline(withMint, coin.found_event)
 }
 
 export function buildCoinMap(

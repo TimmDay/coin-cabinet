@@ -169,7 +169,7 @@ an anonymous visitor, so the site shows no provenance chip or footer line.
 One narrow exception: the detail route reads `public_find_events`, a view that
 exposes only `item_id, event_date, find_lat, find_lng, notes` for events of type
 `find`. It powers the "found here" pin on the deep dive map and timeline
-(`CoinDeepDive.tsx`, `coin-deep-dive/provenance-helpers.ts`). If the view is missing
+(`coin-deep-dive/coinMap.ts`, `coin-deep-dive/coin-timeline.ts`). If the view is missing
 or errors, the coin loads without a found event instead of failing.
 
 ## Set names

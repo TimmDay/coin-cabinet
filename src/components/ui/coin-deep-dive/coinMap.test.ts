@@ -161,7 +161,7 @@ describe("buildCoinMap", () => {
           {
             id: 3,
             name: "t",
-            timeline: [{ kind: "event", name: "X", year: 193 }],
+            timeline: [{ kind: "event", name: "X", year: 193, sequence: 6 }],
           },
         ],
       }),

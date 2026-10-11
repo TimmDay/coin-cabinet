@@ -1,110 +1,100 @@
-import type { Timeline } from "~/data/timelines/types"
+import type { Event, Timeline as TimelineEvents } from "~/data/timelines/types"
+import { inEventOrder } from "~/data/timelines/universal"
 import type { Mint } from "~/database/schema-mints"
+import type { Timeline } from "~/database/schema-timelines"
+import type { CoinEnhanced } from "~/types/api"
 
-type CoinData = {
-  denomination: string
-  mint_id?: number | null
-  mint_year_earliest?: number | null
-  mint_year_latest?: number | null
-}
+/** Where a coin's minting sits among the events of its year, on the 1 to 12 scale. */
+const MINTING_SEQUENCE = 6
 
 /**
- * Creates a timeline event for the minting of a coin using available coin data
+ * A coin's timeline, in order: the events of its timeline, its minting placed
+ * among them by year and number like any other event, then its find. Null when
+ * the coin has no timeline, or its timeline is not loaded.
+ *
+ * The minting comes after any event that shares its year and number. The find
+ * always comes last: find dates are far later than anything historical, and
+ * Timeline.tsx draws it off the scaled axis.
  */
-export function createCoinMintingEvent(coin: CoinData, mints?: Mint[]) {
-  if (!coin.mint_year_earliest) {
-    return null
-  }
+export function coinTimeline(
+  coin: CoinEnhanced,
+  timelines: Timeline[] | undefined,
+  mints: Mint[] | undefined,
+): TimelineEvents | null {
+  if (!coin.timelines_id?.length || !timelines) return null
 
-  // Find the matching mint data by ID
-  const mintData =
+  const found = timelines.find((timeline) =>
+    coin.timelines_id!.includes(timeline.id),
+  )
+  if (!found) return null
+
+  const minting = mintingEvent(coin, mints)
+  const ordered = inEventOrder(
+    minting ? [...found.timeline, minting] : found.timeline,
+  )
+  const find = foundEvent(coin.found_event)
+  return find ? [...ordered, find] : ordered
+}
+
+function mintingEvent(coin: CoinEnhanced, mints?: Mint[]): Event | null {
+  const earliest = coin.mint_year_earliest
+  // AD 1 is year 0 here, not a missing year
+  if (earliest == null) return null
+
+  const mint =
     coin.mint_id && mints ? mints.find((m) => m.id === coin.mint_id) : undefined
 
-  // Build description
   let description = `This ${coin.denomination} was minted`
+  if (mint) description += ` at ${mint.name}`
 
-  if (mintData) {
-    description += ` at ${mintData.name}`
-  }
-
-  // Handle date range logic
-  if (coin.mint_year_earliest && coin.mint_year_latest) {
-    if (coin.mint_year_earliest === coin.mint_year_latest) {
-      // Same year - show just the year
-      description += ` in ${coin.mint_year_earliest}`
-    } else {
-      // Different years - show range
-      description += ` approximately ${coin.mint_year_earliest} to ${coin.mint_year_latest}`
-    }
-  } else if (coin.mint_year_earliest) {
-    description += ` around ${coin.mint_year_earliest}`
+  const latest = coin.mint_year_latest
+  if (latest != null && latest !== earliest) {
+    description += ` approximately ${earliest} to ${latest}`
+  } else if (latest != null) {
+    description += ` in ${earliest}`
+  } else {
+    description += ` around ${earliest}`
   }
 
   return {
-    kind: "coin-minted" as const,
+    kind: "coin-minted",
     name: "Coin Minted",
-    year: coin.mint_year_earliest,
+    year: earliest,
+    sequence: MINTING_SEQUENCE,
     description,
     source: "",
-    place: mintData?.name ?? "Unknown mint",
-    lat: mintData?.lat,
-    lng: mintData?.lng,
+    place: mint?.name ?? "Unknown mint",
+    lat: mint?.lat,
+    lng: mint?.lng,
   }
 }
 
+type FoundEvent = NonNullable<CoinEnhanced["found_event"]>
+
 /**
- * Adds a coin minting event to an existing timeline, sorted by year
+ * A rough year from provenance_events.event_date, which is fuzzy free text
+ * (e.g. "circa 1980s", "2019-05-01") rather than a structured date. Good enough
+ * to place the find on a timeline, not meant to be precise.
  */
-export function addCoinMintingEventToTimeline(
-  timeline: Timeline,
-  coin: CoinData,
-  mints?: Mint[],
-): Timeline {
-  const coinEvent = createCoinMintingEvent(coin, mints)
+function parseFuzzyYear(dateText: string | null): number | null {
+  if (!dateText) return null
+  const match = /-?\d{3,4}/.exec(dateText)
+  return match ? Number(match[0]) : null
+}
 
-  if (!coinEvent) {
-    return timeline
+function foundEvent(found: FoundEvent | null | undefined): Event | null {
+  if (!found) return null
+
+  const year = parseFuzzyYear(found.event_date)
+  if (year === null) return null
+
+  return {
+    kind: "found",
+    name: "Coin Found",
+    year,
+    sequence: 0,
+    description: found.notes ?? undefined,
+    lat: found.lat,
+    lng: found.lng,
   }
-
-  // Find the correct insertion point for the coin-minted event
-  const eventsWithCoin = [...timeline]
-
-  let insertIndex = eventsWithCoin.length // Default to end
-  let lastMadeEmperorIndex = -1
-  let firstEventInYearIndex = -1
-
-  // Find the position of events in the same year
-  for (let i = 0; i < eventsWithCoin.length; i++) {
-    const event = eventsWithCoin[i]!
-
-    if (event.year > coinEvent.year) {
-      // We've moved past the coin's year
-      break
-    }
-
-    if (event.year === coinEvent.year) {
-      // Track the first event in this year
-      if (firstEventInYearIndex === -1) {
-        firstEventInYearIndex = i
-      }
-
-      // Track the last made-emperor event in this year
-      if (event.kind === "made-emperor") {
-        lastMadeEmperorIndex = i
-      }
-    }
-  }
-
-  // Determine insert position
-  if (lastMadeEmperorIndex !== -1) {
-    // Found made-emperor in this year, insert right after the last one
-    insertIndex = lastMadeEmperorIndex + 1
-  } else if (firstEventInYearIndex !== -1) {
-    // No made-emperor, but found events in this year, insert before them
-    insertIndex = firstEventInYearIndex
-  }
-  // else insertIndex stays at end (coin's year not found in timeline)
-
-  eventsWithCoin.splice(insertIndex, 0, coinEvent)
-  return eventsWithCoin
 }

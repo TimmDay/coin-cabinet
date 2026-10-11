@@ -21,7 +21,12 @@ const universalTimeline = {
   created_at: "",
   updated_at: "",
 }
-const event = (id: number, name: string, year: number, timeline_id = 1) => ({
+const event = (
+  id: number,
+  name: string,
+  year: number | null,
+  timeline_id = 1,
+) => ({
   id,
   timeline_id,
   name,
@@ -83,6 +88,25 @@ describe("fetchTimelines", () => {
       "Born",
       "Proclaimed Emperor",
     ])
+  })
+
+  it("leaves out events without a year", async () => {
+    const { client } = fakeClient([
+      event(1, "Born", 214),
+      event(2, "Undated", null),
+      event(3, "Proclaimed Emperor", 270),
+    ])
+    const result = await fetchTimelines(client)
+    expect(result.data?.[0]?.timeline.map((e) => e.name)).toEqual([
+      "Born",
+      "Proclaimed Emperor",
+    ])
+  })
+
+  it("carries the number within the year onto each event", async () => {
+    const { client } = fakeClient([event(1, "Born", 214)])
+    const result = await fetchTimelines(client)
+    expect(result.data?.[0]?.timeline[0]?.sequence).toBe(6)
   })
 
   it("shows universal events on a timeline whose years contain them, in place", async () => {

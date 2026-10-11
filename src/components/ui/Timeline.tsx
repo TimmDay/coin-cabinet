@@ -37,7 +37,9 @@ export function Timeline({
   const [currentEventIndex, setCurrentEventIndex] = useState(0)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-  const events = timeline.sort((a, b) => a.year - b.year)
+  // Already in timeline order (see coinTimeline); never re-sorted here, so
+  // indices agree with TimelineWithMap's markers.
+  const events = timeline
 
   // The "found" event (where/when the coin was found in modern times) sits
   // far outside the historical timeline's scale -- excluded from the axis

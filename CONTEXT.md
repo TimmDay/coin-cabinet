@@ -61,6 +61,14 @@ A year in which at least one Jurisdiction begins, ends or succeeds another.
 Between Change years the map does not move.
 _Avoid_: Event, transition, milestone
 
+**Sequence**:
+The number that orders a timeline's events within one year, on a scale of 1
+to 12; decimals such as 6.01 fall between whole numbers. Events are ordered by
+year, then Sequence. A coin's minting sits at 6, after any event that shares
+its year and Sequence. An event without a year has no place on a timeline and
+is left off it.
+_Avoid_: Priority, rank, order, month
+
 ### Provenance
 
 **Attested**:
