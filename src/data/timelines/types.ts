@@ -16,6 +16,8 @@ export type Event = {
   kind: EventKind // To choose icon.
   name: string
   year: number
+  /** Orders events within one year, 1 to 12, decimals allowed. A coin's minting sits at 6. */
+  sequence: number
   yearEnd?: number
   description?: string
   /** A free-text source, for the hand-written timelines. */

@@ -16,6 +16,7 @@ old paper at sunset to sit with the rest of the site (`THEME.md`).
 | `TierControl.tsx` | Realm / Province / City selector; Tiers with no content at the Selected year are disabled |
 | `ProvenanceNote.tsx` | The derived line naming active Sources and admitting what is reconstructed |
 | `jurisdictions.ts` | Pure: resolves Jurisdictions, provenance, available Tiers and Change years for a year |
+| `mapAtYear.ts` | Pure: what `Map` draws for a Selected year (features, labels, bounds, the Tier shown after any fallback); `Map` takes it through its `yearView` prop, `slider` (the page owns the Tier) or `coin` (the map does, with its own Tier control) |
 | `TimelineWithMap.tsx` | A timeline's map with its event reader and the timeline strip underneath |
 | `mapConfig.ts` | Bounds, overlay and Realm layer styles, label styles, the deep dive opening view |
 | `mapTheme.ts` | Recolours the vendor base style as old paper |
@@ -24,7 +25,7 @@ old paper at sunset to sit with the rest of the site (`THEME.md`).
 | `mapMarkers.ts` | HTML for pins and cluster bubbles, and `markerPopup` (what a marker click opens) |
 | `mapMarkerClustering.ts` | Clustering and spiderfy maths |
 | `MintMarkerSvg.tsx` | The highlighted mint marker |
-| `hooks/` | `useMapConfiguration` (zoom limits), `useGeoJsonLayers` (one declarative loader, cached at module scope), `useJurisdictionCorpus` |
+| `hooks/` | `useMapConfiguration` (zoom limits), `useJurisdictionCorpus` (the corpus through React Query, fetched once per page) |
 
 ## Base map
 

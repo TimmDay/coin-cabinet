@@ -327,8 +327,9 @@ export function TimelineWithMap({
   ])
   /* eslint-enable react-hooks/refs */
 
-  // Above the early return: a hook after it is only called on some renders,
-  // which changes hook order the moment the timeline loads and throws.
+  // One Tier for all three maps, so a change in one survives a switch to
+  // another. Above the early return: a hook after it is only called on some
+  // renders, which changes hook order the moment the timeline loads and throws.
   const [tier, setTier] = useState<Tier>(initialTier)
 
   // Don't render until we have data
@@ -353,16 +354,15 @@ export function TimelineWithMap({
     customMarkers: combinedCustomMarkers,
     // A coin's map shows the geography of the coin's own year. Null leaves the
     // Jurisdiction layer off rather than drawing some other year's geography.
-    ...(selectedYear !== null && selectedYear !== undefined
-      ? {
-          selectedYear,
+    ...(selectedYear !== null &&
+      selectedYear !== undefined && {
+        yearView: {
+          kind: "coin" as const,
+          year: selectedYear,
           tier,
           onTierChange: setTier,
-          // Opened on a tier that may not exist yet in the coin's year
-          fallbackToTierWithData: true,
-          showYearLabel: true,
-        }
-      : {}),
+        },
+      }),
   }
 
   return (

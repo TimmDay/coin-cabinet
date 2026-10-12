@@ -172,14 +172,14 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
                 customMarkers={coinMap.markers}
                 height="400px"
                 desktopHeight={MAP_HEIGHT_DESKTOP}
-                {...(coinMap.selectedYear !== null
-                  ? {
-                      selectedYear: coinMap.selectedYear,
-                      tier,
-                      onTierChange: setTier,
-                      fallbackToTierWithData: true,
-                    }
-                  : {})}
+                {...(coinMap.selectedYear !== null && {
+                  yearView: {
+                    kind: "coin",
+                    year: coinMap.selectedYear,
+                    tier,
+                    onTierChange: setTier,
+                  },
+                })}
               />
             </div>
           )}
@@ -187,11 +187,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
       )}
 
       {/* DeepDive Cards Section */}
-      <DeepDiveCardsSection
-        coinData={coin}
-        deities={coin.deities}
-        historicalFigures={coin.historical_figures}
-      />
+      <DeepDiveCardsSection coin={coin} />
     </section>
   )
 }

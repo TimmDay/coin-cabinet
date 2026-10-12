@@ -133,7 +133,7 @@ export default function MapPage() {
   // freely; POI contains every city, and the map draws each place once.
   const [markers, setMarkers] = useState<MarkerLayer[]>([])
 
-  // Shared with the map through a module-level cache, so asking for it here
+  // Shared with the map through the React Query cache, so asking for it here
   // costs no second fetch.
   const corpus = useJurisdictionCorpus()
   const ticks = useMemo(() => (corpus ? changeYears(corpus) : []), [corpus])
@@ -188,8 +188,7 @@ export default function MapPage() {
               layout="fullscreen"
               height="100%"
               initialBounds={TRAJAN_BOUNDS}
-              selectedYear={selectedYear}
-              tier={tier}
+              yearView={{ kind: "slider", year: selectedYear, tier }}
               outsiderRoles={outsiderRoles}
               onFitExtent={receiveFit}
               selectedProvinces={effectiveProvinces}

@@ -5,6 +5,7 @@ import type {
   Event as TimelineEvent,
   Timeline as TimelineType,
 } from "../../data/timelines/types"
+import { toAstronomical, yearsBetween } from "~/lib/utils/years"
 import { MobileTimelineDrawer } from "./MobileTimelineDrawer"
 import {
   InvertedMarker,
@@ -37,7 +38,9 @@ export function Timeline({
   const [currentEventIndex, setCurrentEventIndex] = useState(0)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-  const events = timeline.sort((a, b) => a.year - b.year)
+  // Already in timeline order (see coinTimeline); never re-sorted here, so
+  // indices agree with TimelineWithMap's markers.
+  const events = timeline
 
   // The "found" event (where/when the coin was found in modern times) sits
   // far outside the historical timeline's scale -- excluded from the axis
@@ -51,7 +54,7 @@ export function Timeline({
   // Check if ALL events span 7 years or less
   const firstYear = scaledEvents[0]?.year ?? 0
   const lastYear = scaledEvents[scaledEvents.length - 1]?.year ?? 0
-  const totalSpan = lastYear - firstYear
+  const totalSpan = yearsBetween(firstYear, lastYear)
   const allEventsSpanSmallRange = totalSpan <= 7
 
   // Always show first and last events as sideline markers
@@ -87,21 +90,23 @@ export function Timeline({
 
   const firstEventYear = timelineEvents[0]?.year ?? 0
   const lastEventYear = timelineEvents[timelineEvents.length - 1]?.year ?? 0
-  const timelineMagnitude = lastEventYear - firstEventYear
+  const timelineMagnitude = yearsBetween(firstEventYear, lastEventYear)
 
   // Calculate the gap between sideline event and first timeline event
   const sideLineYear = sideLineEvent?.year ?? firstEventYear
-  const gapYears = firstEventYear - sideLineYear // Years between sideline and first event
+  const gapYears = yearsBetween(sideLineYear, firstEventYear) // Years between sideline and first event
 
   // Compress the gap by a factor of 3 (1 visual unit = 3 actual years in the gap)
   const compressionFactor = 10
   const compressedGapYears = gapYears / compressionFactor
 
-  // Calculate timeline bounds with compression applied to the initial gap
-  const startYear = firstEventYear - compressedGapYears - 1
+  // Calculate timeline bounds with compression applied to the initial gap.
+  // Bounds and positions are astronomical years, so 1 BC and AD 1 sit one
+  // year apart on the axis rather than two.
+  const startYear = toAstronomical(firstEventYear) - compressedGapYears - 1
   // For short timelines (< 6 years), use 1 year extension; otherwise use 3 years
   const endExtension = timelineMagnitude < 6 ? 1 : 3
-  const endYear = lastEventYear + endExtension
+  const endYear = toAstronomical(lastEventYear) + endExtension
   const totalYears = endYear - startYear
 
   // Group timeline events by year (excluding side line event)
@@ -135,7 +140,7 @@ export function Timeline({
 
     // Use linear positioning with compressed gap at the start
     // The compression is already applied in startYear calculation
-    return ((year - startYear) / totalYears) * 100
+    return ((toAstronomical(year) - startYear) / totalYears) * 100
   }
 
   const handleEventClick = (event: TimelineEvent) => {

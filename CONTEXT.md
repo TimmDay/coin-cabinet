@@ -51,6 +51,13 @@ incomplete, not eternal.
 _Avoid_: Extent (which already means a spatial outline in this codebase),
 range, period, lifespan, validity
 
+**Year**:
+A year as the catalogue records it: negative for BC, positive for AD. There is
+no year zero, so 1 BC is followed by AD 1 and a 0 means no year. Counting the
+years between two dates goes through astronomical numbering (1 BC as 0), which
+is for arithmetic only.
+_Avoid_: Year 0
+
 **Selected year**:
 The single year the map is currently showing. Everything on the map is the
 state as at that year.
@@ -60,6 +67,14 @@ _Avoid_: Date, time, position
 A year in which at least one Jurisdiction begins, ends or succeeds another.
 Between Change years the map does not move.
 _Avoid_: Event, transition, milestone
+
+**Sequence**:
+The number that orders a timeline's events within one year, on a scale of 1
+to 12; decimals such as 6.01 fall between whole numbers. Events are ordered by
+year, then Sequence. A coin's minting sits at 6, after any event that shares
+its year and Sequence. An event without a year has no place on a timeline and
+is left off it.
+_Avoid_: Priority, rank, order, month
 
 ### Provenance
 

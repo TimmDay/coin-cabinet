@@ -3,43 +3,34 @@
 // own first and last event, in chronological place, as if they were its own.
 // The admin app (somnus-data-ingestion) applies the same rule.
 
-type Orderable = {
-  id: number
-  event_year: number | null
-  year_sequence?: number | string | null
+type Orderable = { year: number; sequence: number }
+
+/** Year first, then the number within the year. */
+export function compareEventOrder(a: Orderable, b: Orderable): number {
+  return a.year - b.year || a.sequence - b.sequence
 }
 
-/** Year first (undated last), then the number within the year (missing counts as 0), then id. */
-export function compareEventOrder(a: Orderable, b: Orderable): number {
-  if (a.event_year !== b.event_year) {
-    if (a.event_year === null) return 1
-    if (b.event_year === null) return -1
-    return a.event_year - b.event_year
-  }
-  const aSeq = Number(a.year_sequence ?? 0)
-  const bSeq = Number(b.year_sequence ?? 0)
-  if (aSeq !== bSeq) return aSeq - bSeq
-  return a.id - b.id
+/**
+ * Events in timeline order. The sort is stable, so events that tie on year and
+ * number keep the order they were given in.
+ */
+export function inEventOrder<T extends Orderable>(events: T[]): T[] {
+  return [...events].sort(compareEventOrder)
 }
 
 /**
  * A timeline's own events plus the universal events dated from the year of its
  * first event to the year of its last, inclusive, in order. Whole years are
- * compared. A timeline with no dated events receives none.
+ * compared. A tie on year and number puts the timeline's own event first.
  */
-export function withUniversalEvents<T extends Orderable, U extends Orderable>(
+export function withUniversalEvents<T extends Orderable>(
   own: T[],
-  universal: U[],
-): (T | U)[] {
-  const years = own
-    .map((e) => e.event_year)
-    .filter((year): year is number => year !== null)
-  if (years.length === 0) return [...own].sort(compareEventOrder)
+  universal: T[],
+): T[] {
+  if (own.length === 0) return []
+  const years = own.map((e) => e.year)
   const first = Math.min(...years)
   const last = Math.max(...years)
-  const inside = universal.filter(
-    (e) =>
-      e.event_year !== null && e.event_year >= first && e.event_year <= last,
-  )
-  return [...own, ...inside].sort(compareEventOrder)
+  const inside = universal.filter((e) => e.year >= first && e.year <= last)
+  return inEventOrder([...own, ...inside])
 }

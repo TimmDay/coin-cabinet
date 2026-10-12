@@ -8,13 +8,15 @@ import type { Mint } from "~/database/schema-mints"
 type OperationPeriodRow =
   Database["public"]["Tables"]["mint_operation_periods"]["Row"]
 
+/** Every mint, or only those with the given ids. */
 export async function fetchMints(
   supabase: SupabaseClient<Database>,
+  ids?: number[],
 ): Promise<QueryResult<Mint[]>> {
-  const { data: mints, error: mintsError } = await supabase
-    .from("mints")
-    .select("*")
-    .order("id", { ascending: true })
+  const all = supabase.from("mints").select("*")
+  const { data: mints, error: mintsError } = await (
+    ids ? all.in("id", ids) : all
+  ).order("id", { ascending: true })
 
   if (mintsError) return { data: null, error: mintsError }
 

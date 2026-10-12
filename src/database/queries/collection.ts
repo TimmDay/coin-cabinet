@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
 import { fetchCitations, noCitations } from "~/database/queries/citations"
 import { fetchClockNotes } from "~/database/queries/clock-notes"
+import { fetchMints } from "~/database/queries/mints"
 import {
   fetchDeityArtifactIds,
   fetchDeityDeviceNames,
@@ -485,30 +486,56 @@ export async function fetchCollectionDetail(
   )
 
   const itemDeityIds = deityRows.map((d) => d.id)
-  const deityArtifactIds = parts.take(
-    "deity_artifacts",
-    await fetchDeityArtifactIds(supabase, itemDeityIds),
-    new Map<number, string[]>(),
-  )
-  const deityDeviceNames = parts.take(
-    "deity device names",
-    await fetchDeityDeviceNames(supabase, itemDeityIds),
-    new Map<number, string[]>(),
-  )
-  const personCitations = parts.take(
-    "person citations",
-    await fetchCitations(
+  const mintId = coin?.mint_id
+  const [
+    deityArtifactIdsResult,
+    deityDeviceNamesResult,
+    personCitationsResult,
+    deityCitationsResult,
+    mintResult,
+  ] = await Promise.all([
+    fetchDeityArtifactIds(supabase, itemDeityIds),
+    fetchDeityDeviceNames(supabase, itemDeityIds),
+    fetchCitations(
       supabase,
       "person_id",
       personRows.map((p) => p.id),
     ),
+    fetchCitations(supabase, "deity_id", itemDeityIds),
+    mintId
+      ? fetchMints(supabase, [mintId])
+      : Promise.resolve({ data: [], error: null }),
+  ])
+  const deityArtifactIds = parts.take(
+    "deity_artifacts",
+    deityArtifactIdsResult,
+    new Map<number, string[]>(),
+  )
+  const deityDeviceNames = parts.take(
+    "deity device names",
+    deityDeviceNamesResult,
+    new Map<number, string[]>(),
+  )
+  const personCitations = parts.take(
+    "person citations",
+    personCitationsResult,
     noCitations(),
   )
+  const deityCitations = parts.take(
+    "deity citations",
+    deityCitationsResult,
+    noCitations(),
+  )
+  // The mint card is optional too; a mint read without its own extras (its
+  // citations, say) makes this read partial as well, so it is not cached
+  const mint = parts.take("mint", mintResult, [])[0] ?? null
+  const mintPartial = "partial" in mintResult && mintResult.partial === true
 
   const enhanced: CoinEnhanced = {
     ...base,
     clock_notes: clockNotes,
     mint_mark: coin?.mint_mark?.trim() || null,
+    mint,
     found_event: findEventRow
       ? {
           event_date: findEventRow.event_date,
@@ -527,6 +554,7 @@ export async function fetchCollectionDetail(
       features_coinage: (deityDeviceNames.get(d.id) ?? []).map((name) => ({
         name,
       })),
+      citations: deityCitations.get(d.id) ?? [],
     })),
     historical_figures: personRows.map((p) => ({
       id: p.id,
@@ -539,10 +567,15 @@ export async function fetchCollectionDetail(
       death: p.death_year,
       altNames: p.alt_names,
       flavour_text: p.flavour_text,
+      // Persons have no artifact link table, so they are not pictured
       artifact_ids: [],
       citations: personCitations.get(p.id) ?? [],
     })),
   }
 
-  return { data: enhanced, error: null, partial: parts.partial }
+  return {
+    data: enhanced,
+    error: null,
+    partial: parts.partial || mintPartial,
+  }
 }

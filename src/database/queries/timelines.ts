@@ -11,15 +11,18 @@ import type { Timeline } from "~/database/schema-timelines"
 type TimelineEventRow = Database["public"]["Tables"]["timeline_events"]["Row"]
 type PlaceRow = Database["public"]["Tables"]["places"]["Row"]
 
+type DatedEventRow = TimelineEventRow & { event_year: number }
+
 function toEvent(
-  row: TimelineEventRow,
+  row: DatedEventRow,
   place: PlaceRow | undefined,
   citations: Citation[],
 ): Event {
   return {
     kind: row.event_type as EventKind,
     name: row.name,
-    year: row.event_year ?? 0,
+    year: row.event_year,
+    sequence: row.year_sequence,
     description: row.flavour_text ?? undefined,
     citations,
     place: place?.name ?? row.location_note ?? undefined,
@@ -40,7 +43,7 @@ export async function fetchTimelines(
   if (timelinesError) return { data: null, error: timelinesError }
 
   const timelineIds = timelines.map((t) => t.id)
-  const { data: events, error: eventsError } = await supabase
+  const { data: eventRows, error: eventsError } = await supabase
     .from("timeline_events")
     .select("*")
     .in("timeline_id", timelineIds)
@@ -50,6 +53,11 @@ export async function fetchTimelines(
     .order("id", { ascending: true })
 
   if (eventsError) return { data: null, error: eventsError }
+
+  // An event without a year is incomplete, and a timeline cannot place it.
+  const events = eventRows.filter(
+    (e): e is DatedEventRow => e.event_year !== null,
+  )
 
   const placeIds = [
     ...new Set(
@@ -76,35 +84,32 @@ export async function fetchTimelines(
   )
 
   const placeById = new Map(places.map((p) => [p.id, p]))
-  const eventsByTimelineId = new Map<number, TimelineEventRow[]>()
-  for (const event of events) {
-    const list = eventsByTimelineId.get(event.timeline_id) ?? []
+  const eventsByTimelineId = new Map<number, Event[]>()
+  for (const row of events) {
+    const event = toEvent(
+      row,
+      row.place_id ? placeById.get(row.place_id) : undefined,
+      citations.get(row.id) ?? [],
+    )
+    const list = eventsByTimelineId.get(row.timeline_id) ?? []
     list.push(event)
-    eventsByTimelineId.set(event.timeline_id, list)
+    eventsByTimelineId.set(row.timeline_id, list)
   }
 
   // Events of universal timelines also belong on every other timeline whose
   // first-to-last years contain them. A universal timeline keeps only its own.
-  const universalIds = new Set(
-    timelines.filter((t) => t.is_universal).map((t) => t.id),
-  )
-  const universalEvents = events.filter((e) => universalIds.has(e.timeline_id))
+  const universalEvents = timelines
+    .filter((t) => t.is_universal)
+    .flatMap((t) => eventsByTimelineId.get(t.id) ?? [])
 
   const result: Timeline[] = timelines.map((row) => {
     const own = eventsByTimelineId.get(row.id) ?? []
-    const shown = row.is_universal
-      ? own
-      : withUniversalEvents(own, universalEvents)
     return {
       id: row.id,
       name: row.name,
-      timeline: shown.map((event) =>
-        toEvent(
-          event,
-          event.place_id ? placeById.get(event.place_id) : undefined,
-          citations.get(event.id) ?? [],
-        ),
-      ),
+      timeline: row.is_universal
+        ? own
+        : withUniversalEvents(own, universalEvents),
       created_at: row.created_at,
       updated_at: row.updated_at,
       user_id: "",

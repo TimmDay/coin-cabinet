@@ -2,6 +2,7 @@
 
 import { Pause, Play } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
+import { fromAstronomical, nextYear, toAstronomical } from "~/lib/utils/years"
 import { formatYear, SLIDER_END, SLIDER_START } from "./jurisdictions"
 
 /**
@@ -40,9 +41,13 @@ type YearSliderProps<M extends Moment = Moment> = {
   className?: string
 }
 
-/** Where a year sits along the track, 0 to 1. */
+/**
+ * Where a year sits along the track, 0 to 1. The track runs in astronomical
+ * years, so it has no year zero and 1 BC sits one step before AD 1.
+ */
 function positionOf(year: number): number {
-  return (year - SLIDER_START) / (SLIDER_END - SLIDER_START)
+  const start = toAstronomical(SLIDER_START)
+  return (toAstronomical(year) - start) / (toAstronomical(SLIDER_END) - start)
 }
 
 const DECADE_MARKS = [-400, -200, 1, 300, 600, 900, 1200, 1453]
@@ -71,7 +76,7 @@ export function YearSlider<M extends Moment>({
     if (!playing) return
 
     const id = window.setInterval(() => {
-      const next = valueRef.current + 1
+      const next = nextYear(valueRef.current)
       if (next > SLIDER_END) {
         setPlaying(false)
         return
@@ -143,14 +148,14 @@ export function YearSlider<M extends Moment>({
             <input
               id="year-slider"
               type="range"
-              min={SLIDER_START}
-              max={SLIDER_END}
+              min={toAstronomical(SLIDER_START)}
+              max={toAstronomical(SLIDER_END)}
               step={1}
-              value={value}
+              value={toAstronomical(value)}
               onChange={(event) => {
                 // Taking hold of the slider stops playback, as on any player.
                 setPlaying(false)
-                onChange(Number(event.target.value))
+                onChange(fromAstronomical(Number(event.target.value)))
               }}
               className="accent-map-label relative mt-3 w-full cursor-pointer"
               aria-valuetext={formatYear(value)}

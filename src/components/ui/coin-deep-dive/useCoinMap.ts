@@ -2,8 +2,6 @@
 
 import { useMemo } from "react"
 import { useArtifacts } from "~/api/artifacts"
-import { useDeities } from "~/api/deities"
-import { useMints } from "~/api/mints"
 import { usePlaces } from "~/api/places"
 import { useTimelines } from "~/api/timelines"
 import type { CoinEnhanced } from "~/types/api"
@@ -17,13 +15,11 @@ import { buildCoinMap, type CoinMap } from "./coinMap"
  */
 export function useCoinMap(coin: CoinEnhanced): CoinMap | null {
   const { data: timelines } = useTimelines()
-  const { data: deities } = useDeities()
-  const { data: mints } = useMints()
   const { data: artifacts } = useArtifacts()
   const { data: places } = usePlaces()
 
   return useMemo(
-    () => buildCoinMap(coin, { timelines, mints, places, deities, artifacts }),
-    [coin, timelines, mints, places, deities, artifacts],
+    () => buildCoinMap(coin, { timelines, places, artifacts }),
+    [coin, timelines, places, artifacts],
   )
 }

@@ -6,13 +6,7 @@ import { useEffect, useRef, useState } from "react"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { useFeatureFlagQuery } from "~/lib/hooks/useFeatureFlagQuery"
 import { cn } from "~/lib/utils"
-import {
-  articlesSubmenu,
-  cabinetRomanSubmenu,
-  cabinetSubmenu,
-  navigationItems,
-  type SubmenuTypes,
-} from "./navigation-schema"
+import { visibleNavigation } from "./navigation-schema"
 
 const HOVER_DELAY = 200 // milliseconds
 
@@ -42,7 +36,7 @@ export function DesktopNav({
   const router = useRouter()
   const isArticlesMode = useTypedFeatureFlag("articles")
   const withFeatureQuery = useFeatureFlagQuery()
-  const [openSubmenu, setOpenSubmenu] = useState<SubmenuTypes | null>(null)
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
   const [openMainDropdown, setOpenMainDropdown] = useState<string | null>(null)
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const mainDropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -61,7 +55,7 @@ export function DesktopNav({
     }, HOVER_DELAY)
   }
 
-  const handleSubmenuEnter = (itemName: SubmenuTypes) => {
+  const handleSubmenuEnter = (itemName: string) => {
     if (submenuTimeoutRef.current) {
       clearTimeout(submenuTimeoutRef.current)
     }
@@ -113,7 +107,7 @@ export function DesktopNav({
 
   const handleSubmenuKeyDown = (
     event: React.KeyboardEvent,
-    itemName: SubmenuTypes,
+    itemName: string,
   ) => {
     switch (event.key) {
       case "Enter":
@@ -157,36 +151,6 @@ export function DesktopNav({
     }
   }
 
-  // Helper function to get the appropriate submenu items for nested submenus
-  const getNestedSubmenuItems = (submenuType: SubmenuTypes) => {
-    switch (submenuType) {
-      case "cabinetRoman":
-        return cabinetRomanSubmenu
-      default:
-        return []
-    }
-  }
-
-  // Helper function to determine submenu type from item name
-  const getSubmenuType = (itemName: string): SubmenuTypes | null => {
-    switch (itemName) {
-      case "Roman":
-        return "cabinetRoman"
-      default:
-        return null
-    }
-  }
-  const getMainSubmenuItems = (itemName: string) => {
-    switch (itemName) {
-      case "Cabinet":
-        return cabinetSubmenu
-      case "Articles":
-        return articlesSubmenu
-      default:
-        return []
-    }
-  }
-
   // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
@@ -227,14 +191,7 @@ export function DesktopNav({
     }
   }, [openMainDropdown])
 
-  // Filter navigation items based on feature flags
-  const visibleNavItems = navigationItems.filter((item) => {
-    // "Articles" (and everything under it) is gated by its own flag
-    if (item.name === "Articles") {
-      return isArticlesMode
-    }
-    return true
-  })
+  const visibleNavItems = visibleNavigation({ articles: isArticlesMode })
 
   return (
     <div className={className}>
@@ -242,7 +199,7 @@ export function DesktopNav({
         {visibleNavItems.map((item) => {
           const itemIsActive = pathname === item.href
 
-          if (item.hasSubmenu) {
+          if (item.children) {
             return (
               <div
                 key={item.name}
@@ -287,30 +244,19 @@ export function DesktopNav({
                     onMouseLeave={handleMainDropdownLeave}
                   >
                     <div className="flex flex-col gap-1 p-4">
-                      {getMainSubmenuItems(item.name).map((submenuItem) => (
+                      {item.children.map((submenuItem) => (
                         <div key={submenuItem.name} className="relative">
-                          {"hasSubmenu" in submenuItem &&
-                          submenuItem.hasSubmenu ? (
+                          {submenuItem.children ? (
                             <NextLink
                               href={withFeatureQuery(submenuItem.href)}
                               className="font-display text-ink hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
-                              onMouseEnter={() => {
-                                const submenuType = getSubmenuType(
-                                  submenuItem.name,
-                                )
-                                if (submenuType) {
-                                  handleSubmenuEnter(submenuType)
-                                }
-                              }}
+                              onMouseEnter={() =>
+                                handleSubmenuEnter(submenuItem.name)
+                              }
                               onMouseLeave={handleSubmenuLeave}
-                              onKeyDown={(e) => {
-                                const submenuType = getSubmenuType(
-                                  submenuItem.name,
-                                )
-                                if (submenuType) {
-                                  handleSubmenuKeyDown(e, submenuType)
-                                }
-                              }}
+                              onKeyDown={(e) =>
+                                handleSubmenuKeyDown(e, submenuItem.name)
+                              }
                               onClick={(e) => {
                                 if (e.button === 0) {
                                   e.preventDefault()
@@ -322,9 +268,7 @@ export function DesktopNav({
                                 }
                               }}
                               aria-haspopup="menu"
-                              aria-expanded={
-                                openSubmenu === getSubmenuType(submenuItem.name)
-                              }
+                              aria-expanded={openSubmenu === submenuItem.name}
                             >
                               <span>{submenuItem.name}</span>
                               <ChevronRight
@@ -354,51 +298,42 @@ export function DesktopNav({
                             </NextLink>
                           )}
 
-                          {"hasSubmenu" in submenuItem &&
-                          submenuItem.hasSubmenu &&
-                          getSubmenuType(submenuItem.name) &&
-                          openSubmenu === getSubmenuType(submenuItem.name) ? (
+                          {submenuItem.children &&
+                          openSubmenu === submenuItem.name ? (
                             <div
                               className={`bg-dusk border-dusk-edge/60 z-dropdown absolute top-0 ${openToward === "left" ? "right-full mr-1" : "left-full ml-1"} min-w-max rounded-lg border shadow-lg`}
-                              onMouseEnter={() => {
-                                const submenuType = getSubmenuType(
-                                  submenuItem.name,
-                                )
-                                if (submenuType) {
-                                  handleSubmenuEnter(submenuType)
-                                }
-                              }}
+                              onMouseEnter={() =>
+                                handleSubmenuEnter(submenuItem.name)
+                              }
                               onMouseLeave={handleSubmenuLeave}
                               aria-label={`${submenuItem.name} submenu`}
                             >
                               <div className="flex flex-col gap-1 p-4">
-                                {getNestedSubmenuItems(openSubmenu!).map(
-                                  (nestedItem) => (
-                                    <NextLink
-                                      key={nestedItem.name}
-                                      href={withFeatureQuery(nestedItem.href)}
-                                      className="font-display text-ink hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
-                                      onClick={(e) => {
-                                        if (e.button === 0) {
-                                          e.preventDefault()
-                                          router.push(
-                                            withFeatureQuery(nestedItem.href),
-                                          )
-                                          setOpenMainDropdown(null)
-                                          setOpenSubmenu(null)
-                                        }
-                                      }}
-                                      onKeyDown={(e) =>
-                                        handleSubmenuItemKeyDown(
-                                          e,
-                                          nestedItem.href,
+                                {submenuItem.children.map((nestedItem) => (
+                                  <NextLink
+                                    key={nestedItem.name}
+                                    href={withFeatureQuery(nestedItem.href)}
+                                    className="font-display text-ink hover:bg-dusk-edge/30 hover:text-bronze-light focus:bg-dusk-edge/30 focus:text-bronze-light block w-full cursor-pointer rounded-md px-3 py-2 text-left text-base font-normal tracking-widest whitespace-nowrap uppercase transition-colors duration-150 focus:outline-none"
+                                    onClick={(e) => {
+                                      if (e.button === 0) {
+                                        e.preventDefault()
+                                        router.push(
+                                          withFeatureQuery(nestedItem.href),
                                         )
+                                        setOpenMainDropdown(null)
+                                        setOpenSubmenu(null)
                                       }
-                                    >
-                                      {nestedItem.name}
-                                    </NextLink>
-                                  ),
-                                )}
+                                    }}
+                                    onKeyDown={(e) =>
+                                      handleSubmenuItemKeyDown(
+                                        e,
+                                        nestedItem.href,
+                                      )
+                                    }
+                                  >
+                                    {nestedItem.name}
+                                  </NextLink>
+                                ))}
                               </div>
                             </div>
                           ) : null}
