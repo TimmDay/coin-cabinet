@@ -47,9 +47,8 @@ export default function HomePage() {
           <div className="max-w-[580px]">
             {homePageText(text.why)}
             {homePageText(text.welcome)}
+            {homePageText(text.thanks)}
           </div>
-
-          <div className="max-w-[580px]">{homePageText(text.thanks)}</div>
           {/* <div> */}
           {/* \TODO: contact form */}
           {/* </div> */}
