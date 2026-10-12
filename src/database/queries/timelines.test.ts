@@ -1,11 +1,17 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import type { Database } from "~/database/database.types"
 import { fetchTimelines } from "~/database/queries/timelines"
 
+let citationsResult: unknown = { data: new Map(), error: null }
 vi.mock("~/database/queries/citations", () => ({
-  fetchCitations: () => Promise.resolve({ data: new Map(), error: null }),
+  fetchCitations: () => Promise.resolve(citationsResult),
+  noCitations: () => new Map(),
 }))
+afterEach(() => {
+  citationsResult = { data: new Map(), error: null }
+  vi.restoreAllMocks()
+})
 
 const timeline = {
   id: 1,
@@ -113,5 +119,30 @@ describe("fetchTimelines", () => {
     const result = await fetchTimelines(client)
     const universal = result.data?.find((t) => t.id === 9)
     expect(universal?.timeline.map((e) => e.name)).toEqual(["Plague begins"])
+  })
+})
+
+describe("fetchTimelines when an optional part fails", () => {
+  it("still answers the timelines, without citations, marked partial", async () => {
+    const logged = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined)
+    citationsResult = { data: null, error: { message: "boom" } }
+    const { client } = fakeClient([event(1, "Born", 214)])
+
+    const result = await fetchTimelines(client)
+
+    expect(result.error).toBeNull()
+    expect(result.partial).toBe(true)
+    expect(result.data?.[0]?.timeline[0]).toMatchObject({
+      name: "Born",
+      citations: [],
+    })
+    expect(logged).toHaveBeenCalled()
+  })
+
+  it("is not partial when everything loads", async () => {
+    const { client } = fakeClient([event(1, "Born", 214)])
+    expect((await fetchTimelines(client)).partial).toBe(false)
   })
 })
