@@ -109,4 +109,20 @@ describe("fetchCollectionDetail", () => {
     )
     expect(data?.mint).toBeNull()
   })
+
+  // Only the mint read touches mint_operation_periods, so this is the mint's
+  // own partial read reaching the coin's
+  it("keeps the mint but is partial when the mint's own extras fail", async () => {
+    const result = await fetchCollectionDetail(
+      fakeSupabase(tables, ["mint_operation_periods"]).client,
+      7,
+    )
+    expect(result.data?.mint).toMatchObject({ id: 2, name: "Rome" })
+    expect(result.partial).toBe(true)
+  })
+
+  it("is whole when nothing optional fails", async () => {
+    const result = await fetchCollectionDetail(fakeSupabase(tables).client, 7)
+    expect(result.partial).toBe(false)
+  })
 })

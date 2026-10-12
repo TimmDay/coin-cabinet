@@ -7,16 +7,22 @@ type Row = Record<string, unknown>
  * A stand-in for the Supabase client in query tests: each table answers with
  * the rows given for it, narrowed by any `eq` and `in` filters on plain
  * columns. Selects, joins and ordering are not applied, so give rows already
- * shaped and ordered as the query expects them. `orders` records each
- * `order` call per table.
+ * shaped and ordered as the query expects them. Tables named in `failing`
+ * answer with an error instead. `orders` records each `order` call per table.
  */
-export function fakeSupabase(tables: Record<string, Row[]>) {
+export function fakeSupabase(
+  tables: Record<string, Row[]>,
+  failing: string[] = [],
+) {
   const orders: Record<string, [string, unknown][]> = {}
 
   const from = (table: string) => {
     const filters: ((row: Row) => boolean)[] = []
     let single = false
     const result = () => {
+      if (failing.includes(table)) {
+        return { data: null, error: { message: `${table} is down` } }
+      }
       const rows = (tables[table] ?? []).filter((row) =>
         filters.every((keep) => keep(row)),
       )

@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
-import { fetchCitations } from "~/database/queries/citations"
+import { fetchCitations, noCitations } from "~/database/queries/citations"
+import { optionalParts } from "~/database/queries/optional-parts"
 import type { QueryResult } from "~/database/queries/types"
 import type { Artifact } from "~/database/schema-artifacts"
 
@@ -24,19 +25,24 @@ export async function fetchArtifacts(
     ),
   ]
 
-  const { data: places, error: placesError } =
+  // The places only add an institution name and a position
+  const parts = optionalParts()
+  const places = parts.take(
+    "artifact places",
     placeIds.length > 0
       ? await supabase.from("places").select("*").in("id", placeIds)
-      : { data: [] as PlaceRow[], error: null }
-
-  if (placesError) return { data: null, error: placesError }
-
-  const citations = await fetchCitations(
-    supabase,
-    "artifact_id",
-    artifacts.map((a) => a.id),
+      : { data: [] as PlaceRow[], error: null },
+    [] as PlaceRow[],
   )
-  if (citations.error) return { data: null, error: citations.error }
+  const citations = parts.take(
+    "artifact citations",
+    await fetchCitations(
+      supabase,
+      "artifact_id",
+      artifacts.map((a) => a.id),
+    ),
+    noCitations(),
+  )
 
   const placeById = new Map(places.map((p) => [p.id, p]))
 
@@ -58,11 +64,11 @@ export async function fetchArtifacts(
       year_of_creation_estimate: row.year_of_creation_estimate,
       flavour_text: row.flavour_text,
       historical_notes: row.historical_notes,
-      citations: citations.data.get(row.id) ?? [],
+      citations: citations.get(row.id) ?? [],
       created_at: row.created_at,
       updated_at: row.updated_at,
     }
   })
 
-  return { data: result, error: null }
+  return { data: result, error: null, partial: parts.partial }
 }

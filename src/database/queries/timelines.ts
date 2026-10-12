@@ -2,7 +2,8 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Event, EventKind } from "~/data/timelines/types"
 import { withUniversalEvents } from "~/data/timelines/universal"
 import type { Database } from "~/database/database.types"
-import { fetchCitations } from "~/database/queries/citations"
+import { fetchCitations, noCitations } from "~/database/queries/citations"
+import { optionalParts } from "~/database/queries/optional-parts"
 import type { QueryResult } from "~/database/queries/types"
 import type { Citation } from "~/database/schema-citations"
 import type { Timeline } from "~/database/schema-timelines"
@@ -63,19 +64,24 @@ export async function fetchTimelines(
       events.map((e) => e.place_id).filter((id): id is number => id !== null),
     ),
   ]
-  const { data: places, error: placesError } =
+  // The places only name an event's place and stand in for its position
+  const parts = optionalParts()
+  const places = parts.take(
+    "timeline event places",
     placeIds.length > 0
       ? await supabase.from("places").select("*").in("id", placeIds)
-      : { data: [] as PlaceRow[], error: null }
-
-  if (placesError) return { data: null, error: placesError }
-
-  const citations = await fetchCitations(
-    supabase,
-    "timeline_event_id",
-    events.map((e) => e.id),
+      : { data: [] as PlaceRow[], error: null },
+    [] as PlaceRow[],
   )
-  if (citations.error) return { data: null, error: citations.error }
+  const citations = parts.take(
+    "timeline event citations",
+    await fetchCitations(
+      supabase,
+      "timeline_event_id",
+      events.map((e) => e.id),
+    ),
+    noCitations(),
+  )
 
   const placeById = new Map(places.map((p) => [p.id, p]))
   const eventsByTimelineId = new Map<number, Event[]>()
@@ -83,7 +89,7 @@ export async function fetchTimelines(
     const event = toEvent(
       row,
       row.place_id ? placeById.get(row.place_id) : undefined,
-      citations.data.get(row.id) ?? [],
+      citations.get(row.id) ?? [],
     )
     const list = eventsByTimelineId.get(row.timeline_id) ?? []
     list.push(event)
@@ -110,5 +116,5 @@ export async function fetchTimelines(
     }
   })
 
-  return { data: result, error: null }
+  return { data: result, error: null, partial: parts.partial }
 }
