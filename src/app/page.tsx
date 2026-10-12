@@ -7,6 +7,7 @@ import { PageTitle } from "~/components/ui/PageTitle"
 import { withQuips } from "~/components/ui/Quip"
 import { featuredSets } from "~/data/sets"
 import { useRandomCoins } from "~/hooks/useRandomCoins"
+import { cn } from "~/lib/utils"
 import text from "./translations/homepage"
 
 export default function HomePage() {
@@ -38,7 +39,7 @@ export default function HomePage() {
           </div>
 
           <div className="max-w-[580px] lg:max-w-[640px]">
-            {homePageText(text.what)}
+            {homePageText(text.what, "mb-0")}
           </div>
 
           {/* Featured Sets Section */}
@@ -60,9 +61,14 @@ export default function HomePage() {
   )
 }
 
-function homePageText(copy: string) {
+function homePageText(copy: string, className?: string) {
   return (
-    <p className="mx-auto mb-6 text-left text-[1.125rem] leading-[1.8] tracking-[0.015em]">
+    <p
+      className={cn(
+        "mx-auto mb-6 text-left text-[1.125rem] leading-[1.8] tracking-[0.015em]",
+        className,
+      )}
+    >
       {withQuips(copy, text)}
     </p>
   )
