@@ -37,14 +37,16 @@ export default function HomePage() {
             />
           </div>
 
-          <div className="max-w-[580px]">{homePageText(text.what)}</div>
+          <div className="max-w-[580px] lg:max-w-[640px]">
+            {homePageText(text.what)}
+          </div>
 
           {/* Featured Sets Section */}
           <div className="w-full max-w-4xl">
             <FeaturedSets sets={featuredSets} />
           </div>
 
-          <div className="max-w-[580px]">
+          <div className="max-w-[580px] lg:max-w-[640px]">
             {homePageText(text.why)}
             {homePageText(text.welcome)}
             {homePageText(text.thanks)}
