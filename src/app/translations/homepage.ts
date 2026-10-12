@@ -1,12 +1,17 @@
 // {quip1} etc. place an info icon that shows the matching quipN string.
 const text = {
-  what: `This site shows a collection of ancient coins. `,
-  welcome: `I can hold a coin that someone else held 2000 years ago. 
-  Someone who lived a different life, but not entirely different. We both held this coin. 
+  what: `The Somnus Collection is a website dedicated to my private collection of ancient coins.
+  Here I combine my interests of history, photography, software engineering and travel.
+  Though I have worked professionally as a software engineer and manager, my other interests are all hobbies.
+  Thus, if you see a mistake or have a suggestion I would love to hear about it.
+  Always learning. These are particularly fun topics to learn about.`,
+  why: `History can be a refreshing holiday from current events. The stories are real (or real-based) and we imagine ourselves in them, in a time before modern religion but among human social dynamics that are all too familiar. The safety of distance lets us consider a side of ourselves in different conditions, with some knowledge about outcomes.`,
+  welcome: `I can hold a coin that someone else held 2000 years ago.
+  Someone who lived a different life, but not entirely different. We both held this coin.
   They remind me that I am a blip on a timeline of people who are buying lunch at the market, getting through tough times.
-  Ancient coins scratch a travel itch{quip0}. 
-  They are an echo of a distant society that I am not in but have inherited from. 
-  They still deliver propaganda that I can ponder, perhaps even fall for in some cases, with some sense of how things turned out.  
+  Ancient coins scratch a travel itch{quip0}.
+  They are an echo of a distant society that I am not in but have inherited from.
+  They still deliver propaganda that I can ponder, perhaps even fall for in some cases, with some sense of how things turned out.
   They are the first newspapers, a tool of survival{quip1}, an object of suspicion{quip2}, and a store of hope{quip3}.
   This site began while I was on paternity leave with my first child - hence the appeal to Somnus the god of sleep {quip4}.
    I enjoy history and photos, but I am not a historian or photographer. Hence, any errors are Caracallas{quip5}.`,
