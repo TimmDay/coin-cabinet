@@ -9,23 +9,11 @@ import { createPortal } from "react-dom"
 import { useTypedFeatureFlag } from "~/lib/hooks/useFeatureFlag"
 import { useFeatureFlagQuery } from "~/lib/hooks/useFeatureFlagQuery"
 import { cn } from "~/lib/utils"
-import {
-  articlesSubmenu,
-  cabinetRomanSubmenu,
-  cabinetSubmenu,
-  navigationItems,
-  type SubmenuTypes,
-} from "./navigation-schema"
-
-type MenuItem = {
-  name: string
-  href: string
-  hasSubmenu?: boolean
-}
+import { visibleNavigation, type NavItem } from "./navigation-schema"
 
 type MenuLevel = {
   title: string
-  items: MenuItem[]
+  items: NavItem[]
   parentName?: string
 }
 
@@ -41,53 +29,12 @@ export function MobileNavigation() {
   const mounted = useIsClient()
   const [animatingInIndex, setAnimatingInIndex] = useState<number | null>(null)
 
-  // Helper functions to get submenu items (same as desktop navbar)
-  const getMainSubmenuItems = (itemName: string): MenuItem[] => {
-    switch (itemName) {
-      case "Cabinet":
-        return cabinetSubmenu
-      case "Articles":
-        return articlesSubmenu
-      default:
-        return []
-    }
-  }
-
-  const getNestedSubmenuItems = (submenuType: SubmenuTypes): MenuItem[] => {
-    switch (submenuType) {
-      case "cabinetRoman":
-        return cabinetRomanSubmenu
-      default:
-        return []
-    }
-  }
-
-  const getSubmenuType = (itemName: string): SubmenuTypes | null => {
-    switch (itemName) {
-      case "Roman":
-        return "cabinetRoman"
-      default:
-        return null
-    }
-  }
-
-  // Filter navigation items based on feature flags
-  const visibleNavItems = navigationItems.filter((item) => {
-    if (item.name === "Articles") return isArticlesMode
-    return true
-  })
-
-  // Initialize with main menu using useMemo to prevent re-creation
   const mainMenu: MenuLevel = useMemo(
     () => ({
       title: "Menu",
-      items: visibleNavItems.map((item) => ({
-        name: item.name,
-        href: item.href,
-        hasSubmenu: item.hasSubmenu,
-      })),
+      items: visibleNavigation({ articles: isArticlesMode }),
     }),
-    [visibleNavItems],
+    [isArticlesMode],
   )
 
   // Initialize menu stack on first open. The stack is only meaningful while
@@ -113,29 +60,19 @@ export function MobileNavigation() {
     }, 300)
   }
 
-  const navigateToSubmenu = async (item: MenuItem) => {
-    if (!item.hasSubmenu) {
+  const navigateToSubmenu = async (item: NavItem) => {
+    if (!item.children) {
       // Navigate to the page and close menu
       router.push(withFeatureQuery(item.href))
       closeMenu()
       return
     }
 
-    let submenuItems: MenuItem[] = []
-    const submenuType = getSubmenuType(item.name)
-
-    if (submenuType) {
-      submenuItems = getNestedSubmenuItems(submenuType)
-    } else {
-      submenuItems = getMainSubmenuItems(item.name)
-    }
-
     setIsAnimating(true)
 
-    // Get submenu items...
     const newLevel: MenuLevel = {
       title: item.name,
-      items: submenuItems,
+      items: item.children,
       parentName: menuStack[menuStack.length - 1]?.title,
     }
 
@@ -165,8 +102,8 @@ export function MobileNavigation() {
     setTimeout(() => setIsAnimating(false), 300)
   }
 
-  const handleItemClick = (item: MenuItem) => {
-    if (item.hasSubmenu) {
+  const handleItemClick = (item: NavItem) => {
+    if (item.children) {
       void navigateToSubmenu(item)
     } else {
       router.push(withFeatureQuery(item.href))
@@ -304,7 +241,7 @@ export function MobileNavigation() {
                         <span className="font-display text-base font-medium tracking-widest uppercase">
                           {item.name}
                         </span>
-                        {item.hasSubmenu && (
+                        {item.children && (
                           <ChevronRight className="text-bronze h-4 w-4" />
                         )}
                       </NextLink>
