@@ -37,15 +37,16 @@ export default function HomePage() {
             />
           </div>
 
-          <div className="max-w-[580px]">
-            <div className="mx-auto max-w-3xl justify-center lg:max-w-4xl">
-              {homePageText(text.welcome)}
-            </div>
-          </div>
+          <div className="max-w-[580px]">{homePageText(text.what)}</div>
 
           {/* Featured Sets Section */}
           <div className="w-full max-w-4xl">
             <FeaturedSets sets={featuredSets} />
+          </div>
+
+          <div className="max-w-[580px]">
+            {homePageText(text.why)}
+            {homePageText(text.welcome)}
           </div>
 
           <div className="max-w-[580px]">{homePageText(text.thanks)}</div>
