@@ -385,6 +385,16 @@ export function TimelineWithMap({
                 {!isMobileModalOpen && isMapInViewport ? (
                   <Map
                     {...sharedMapProps}
+                    // A preview cannot be used until it is opened, so it has
+                    // no Realms / Admin areas toggle
+                    {...(selectedYear !== null &&
+                      selectedYear !== undefined && {
+                        yearView: {
+                          kind: "coin" as const,
+                          year: selectedYear,
+                          tier,
+                        },
+                      })}
                     center={previewCenter ?? mobilePreviewCenter}
                     height={MAP_HEIGHT}
                   />
