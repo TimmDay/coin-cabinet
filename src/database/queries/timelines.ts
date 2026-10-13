@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Event, EventKind } from "~/data/timelines/types"
-import { withUniversalEvents } from "~/data/timelines/universal"
+import { type Span, withUniversalEvents } from "~/data/timelines/universal"
 import type { Database } from "~/database/database.types"
 import { fetchCitations, noCitations } from "~/database/queries/citations"
 import { optionalParts } from "~/database/queries/optional-parts"
@@ -10,8 +10,17 @@ import type { Timeline } from "~/database/schema-timelines"
 
 type TimelineEventRow = Database["public"]["Tables"]["timeline_events"]["Row"]
 type PlaceRow = Database["public"]["Tables"]["places"]["Row"]
+type TimelineRow = Database["public"]["Tables"]["timelines"]["Row"]
+type RemovedRow =
+  Database["public"]["Tables"]["timeline_hidden_universal_events"]["Row"]
 
 type DatedEventRow = TimelineEventRow & { event_year: number }
+
+/** The years a timeline covers, or null if either end is unset. */
+function spanOf(row: TimelineRow): Span | null {
+  if (row.start_year === null || row.end_year === null) return null
+  return { start: row.start_year, end: row.end_year }
+}
 
 function toEvent(
   row: DatedEventRow,
@@ -82,9 +91,26 @@ export async function fetchTimelines(
     ),
     noCitations(),
   )
+  // The universal events the curator removed from each timeline. If this
+  // fails they show for now, and the read is not cached.
+  const removedRows = parts.take(
+    "timeline removed universal events",
+    await supabase
+      .from("timeline_hidden_universal_events")
+      .select("*")
+      .in("timeline_id", timelineIds),
+    [] as RemovedRow[],
+  )
+  const removedByTimelineId = new Map<number, Set<number>>()
+  for (const row of removedRows) {
+    const ids = removedByTimelineId.get(row.timeline_id) ?? new Set<number>()
+    ids.add(row.timeline_event_id)
+    removedByTimelineId.set(row.timeline_id, ids)
+  }
 
   const placeById = new Map(places.map((p) => [p.id, p]))
-  const eventsByTimelineId = new Map<number, Event[]>()
+  // Kept with their ids, to leave out the removed universal ones
+  const eventsByTimelineId = new Map<number, { id: number; event: Event }[]>()
   for (const row of events) {
     const event = toEvent(
       row,
@@ -92,24 +118,30 @@ export async function fetchTimelines(
       citations.get(row.id) ?? [],
     )
     const list = eventsByTimelineId.get(row.timeline_id) ?? []
-    list.push(event)
+    list.push({ id: row.id, event })
     eventsByTimelineId.set(row.timeline_id, list)
   }
+  const eventsOf = (timelineId: number) =>
+    (eventsByTimelineId.get(timelineId) ?? []).map((e) => e.event)
 
-  // Events of universal timelines also belong on every other timeline whose
-  // first-to-last years contain them. A universal timeline keeps only its own.
-  const universalEvents = timelines
-    .filter((t) => t.is_universal)
-    .flatMap((t) => eventsByTimelineId.get(t.id) ?? [])
-
+  // A timeline also shows the events of the universal timeline it links to,
+  // inside its years, less the removed ones. A universal timeline keeps only
+  // its own.
   const result: Timeline[] = timelines.map((row) => {
-    const own = eventsByTimelineId.get(row.id) ?? []
+    const own = eventsOf(row.id)
+    const removed = removedByTimelineId.get(row.id)
+    const universal =
+      row.universal_timeline_id === null
+        ? []
+        : (eventsByTimelineId.get(row.universal_timeline_id) ?? [])
+            .filter((e) => !removed?.has(e.id))
+            .map((e) => e.event)
     return {
       id: row.id,
       name: row.name,
       timeline: row.is_universal
         ? own
-        : withUniversalEvents(own, universalEvents),
+        : withUniversalEvents(own, universal, spanOf(row)),
       created_at: row.created_at,
       updated_at: row.updated_at,
       user_id: "",
