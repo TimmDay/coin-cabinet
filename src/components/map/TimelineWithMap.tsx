@@ -407,7 +407,9 @@ export function TimelineWithMap({
                 )}
               </div>
               <div className="from-night/60 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
-              <div className="bg-night/80 text-moonlight-bright pointer-events-none absolute right-3 bottom-3 rounded-full px-3 py-1 text-sm font-medium backdrop-blur-sm">
+              {/* Left of MapLibre's ⓘ (24px, 10px in from the corner), with the
+                  same middle: 22px up */}
+              <div className="bg-night/80 text-moonlight-bright pointer-events-none absolute right-[42px] bottom-2 rounded-full px-3 py-1 text-sm font-medium backdrop-blur-sm">
                 Open interactive map
               </div>
             </button>
