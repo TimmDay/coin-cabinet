@@ -138,7 +138,7 @@ export function DeepDiveCard({
             </div>
           )}
 
-          <CitationList citations={citations} />
+          <CitationList citations={citations} plain />
         </div>
       </div>
 
@@ -146,7 +146,7 @@ export function DeepDiveCard({
       <div>
         {footer && (
           <div className="border-line flex items-center justify-center border-t pt-5 pb-5">
-            <p className="text-moonlight text-center text-sm whitespace-pre-line">
+            <p className="text-moonlight font-display text-center text-sm whitespace-pre-line">
               {footer}
             </p>
           </div>
