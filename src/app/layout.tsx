@@ -9,7 +9,15 @@ import "~/styles/globals.css"
 export const metadata: Metadata = {
   title: "Somnus Collection",
   description: "The Somnus Coin Collection",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  // A white crescent on black: icon.svg, with favicon.ico and the Apple icon
+  // rendered from it for browsers that want those
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
 }
 
 // Roman inscriptional capitals for headings (variable font, so every weight

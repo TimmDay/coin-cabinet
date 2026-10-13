@@ -86,6 +86,7 @@ export function CoinClockTips({ notes }: { notes: ClockNote[] }) {
           label={note.title ?? `Note at ${note.position} o'clock`}
           interactive={note.linkUrl !== null}
           icon={<ClockNoteIcon kind={note.linkKind} />}
+          centerOnPhone
           className="absolute z-10 -translate-x-1/2 -translate-y-1/2 [--clock-gap:24px] sm:[--clock-gap:33px]"
           style={clockOffset(note.position)}
           popoverClassName={cn(

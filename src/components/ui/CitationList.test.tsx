@@ -37,4 +37,11 @@ describe("CitationList", () => {
     const { container } = render(<CitationList citations={[]} />)
     expect(container).toBeEmptyDOMElement()
   })
+
+  it("has a Sources heading, and none when plain", () => {
+    const { rerender } = render(<CitationList citations={[dio]} />)
+    expect(screen.getByRole("heading", { name: "Sources" })).toBeInTheDocument()
+    rerender(<CitationList citations={[dio]} plain />)
+    expect(screen.queryByRole("heading")).not.toBeInTheDocument()
+  })
 })

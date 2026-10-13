@@ -58,7 +58,10 @@ export function CoinDetailPage({ coinId }: CoinDetailPageProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
+    // Bleeds into main's px-6 gutter (and .wide puts it back as padding), so the
+    // clock buttons that hang outside the coin are clipped at the screen edge,
+    // not 24px in from it
+    <div className="-mx-6 flex min-h-screen flex-col items-center justify-center overflow-x-hidden">
       <div className="content-wrapper wide">
         <div>
           <header className="mb-4 md:mb-6">

@@ -152,7 +152,8 @@ export type YearView =
       kind: "coin"
       year: number
       tier: Tier
-      onTierChange: (tier: Tier) => void
+      /** Shows the Realms / Admin areas toggle. Left off where the map cannot be used yet (the phone preview). */
+      onTierChange?: (tier: Tier) => void
     }
 
 /** Stable empty default, so the memo below is not invalidated every render. */
@@ -276,7 +277,8 @@ export const Map: React.FC<MapProps> = ({
   const selectedYear = yearView?.year
   const ownsTier = yearView?.kind === "coin"
   const tier = yearView?.tier
-  const onTierChange = yearView?.kind === "coin" ? yearView.onTierChange : null
+  const onTierChange =
+    yearView?.kind === "coin" ? (yearView.onTierChange ?? null) : null
   const showsYear = selectedYear !== undefined
 
   const corpus = useJurisdictionCorpus(showsYear)

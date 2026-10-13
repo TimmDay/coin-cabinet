@@ -33,7 +33,16 @@ type TipIconProps = {
   interactive?: boolean
   /** Drawn inside the circle. Without one the circle is empty. */
   icon?: ReactNode
+  /**
+   * On phones, centre the popover across the screen, as wide as its text needs
+   * up to the screen less a gutter each side, wherever the button is.
+   */
+  centerOnPhone?: boolean
 }
+
+// Below Tailwind's sm breakpoint
+const PHONE_QUERY = "(max-width: 639.98px)"
+const PHONE_GUTTER = 16
 
 /** The horizontal span in which an element can be seen: the screen, narrowed by the nearest ancestor that clips sideways. */
 function visibleBounds(element: HTMLElement) {
@@ -69,6 +78,7 @@ export function TipIcon({
   popoverClassName,
   interactive = false,
   icon,
+  centerOnPhone = false,
 }: TipIconProps) {
   const [open, setOpen] = useState(false)
   const popoverId = useId()
@@ -99,6 +109,23 @@ export function TipIcon({
     popover.style.maxWidth = ""
 
     const bounds = visibleBounds(popover)
+    if (centerOnPhone && window.matchMedia(PHONE_QUERY).matches) {
+      // Undo the placement's sideways classes, then shift so its middle is
+      // the middle of what can be seen
+      const available = bounds.right - bounds.left - 2 * PHONE_GUTTER
+      Object.assign(popover.style, {
+        width: "max-content",
+        maxWidth: `${Math.max(0, available)}px`,
+        left: "0px",
+        right: "auto",
+        translate: "none",
+      })
+      const rect = popover.getBoundingClientRect()
+      const middle = (bounds.left + bounds.right) / 2
+      popover.style.left = `${middle - rect.width / 2 - rect.left}px`
+      return
+    }
+
     const margin = 8
     const { left, right, width } = popover.getBoundingClientRect()
     if (left < bounds.left + margin) {
@@ -109,7 +136,7 @@ export function TipIcon({
         Math.min(width, bounds.right - margin - left),
       )}px`
     }
-  }, [open])
+  }, [open, centerOnPhone])
 
   useEffect(() => {
     if (!open) return

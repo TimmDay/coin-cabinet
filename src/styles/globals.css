@@ -504,6 +504,9 @@ main {
 /* Modifier for the coin page: room for two large coins side by side. */
 .content-wrapper.wide {
   max-width: 1600px;
+  /* px-4 plus the px-6 gutter of main that CoinDetailPage bleeds into */
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
 }
 
 /* Modifier for home page - adds top padding */
