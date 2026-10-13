@@ -1,7 +1,8 @@
 // A universal timeline (for example "Universal Timeline Roman") holds events of
-// the wider world. Every other timeline shows the ones that fall between its
-// own first and last event, in chronological place, as if they were its own.
-// The admin app (somnus-data-ingestion) applies the same rule.
+// the wider world. A timeline links to one, and shows its events dated from the
+// timeline's start year to its end year, in chronological place, as if they
+// were its own, less any the curator removed from it. The admin app
+// (somnus-data-ingestion) applies the same rule.
 
 type Orderable = { year: number; sequence: number }
 
@@ -18,19 +19,22 @@ export function inEventOrder<T extends Orderable>(events: T[]): T[] {
   return [...events].sort(compareEventOrder)
 }
 
+/** The years a timeline covers, inclusive. */
+export type Span = { start: number; end: number }
+
 /**
- * A timeline's own events plus the universal events dated from the year of its
- * first event to the year of its last, inclusive, in order. Whole years are
- * compared. A tie on year and number puts the timeline's own event first.
+ * A timeline's own events plus the universal events dated inside its span,
+ * inclusive, in order. Whole years are compared. Without a span it takes none.
+ * A tie on year and number puts the timeline's own event first.
  */
 export function withUniversalEvents<T extends Orderable>(
   own: T[],
   universal: T[],
+  span: Span | null,
 ): T[] {
-  if (own.length === 0) return []
-  const years = own.map((e) => e.year)
-  const first = Math.min(...years)
-  const last = Math.max(...years)
-  const inside = universal.filter((e) => e.year >= first && e.year <= last)
+  if (!span) return inEventOrder(own)
+  const inside = universal.filter(
+    (e) => e.year >= span.start && e.year <= span.end,
+  )
   return inEventOrder([...own, ...inside])
 }

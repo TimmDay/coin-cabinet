@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -808,78 +808,7 @@ export type Database = {
           timeline_event_id?: number | null
           timeline_id?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "entity_sources_artifact_id_fkey"
-            columns: ["artifact_id"]
-            isOneToOne: false
-            referencedRelation: "artifacts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "entity_sources_calendar_id_fkey"
-            columns: ["calendar_id"]
-            isOneToOne: false
-            referencedRelation: "calendar"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "entity_sources_deity_id_fkey"
-            columns: ["deity_id"]
-            isOneToOne: false
-            referencedRelation: "deities"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "entity_sources_device_id_fkey"
-            columns: ["device_id"]
-            isOneToOne: false
-            referencedRelation: "devices"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "entity_sources_mint_id_fkey"
-            columns: ["mint_id"]
-            isOneToOne: false
-            referencedRelation: "mints"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "entity_sources_person_id_fkey"
-            columns: ["person_id"]
-            isOneToOne: false
-            referencedRelation: "persons"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "entity_sources_place_id_fkey"
-            columns: ["place_id"]
-            isOneToOne: false
-            referencedRelation: "places"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "entity_sources_source_id_fkey"
-            columns: ["source_id"]
-            isOneToOne: false
-            referencedRelation: "sources_legacy"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "entity_sources_timeline_event_id_fkey"
-            columns: ["timeline_event_id"]
-            isOneToOne: false
-            referencedRelation: "timeline_events"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "entity_sources_timeline_id_fkey"
-            columns: ["timeline_id"]
-            isOneToOne: false
-            referencedRelation: "timelines"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       item_artifacts: {
         Row: {
@@ -1827,38 +1756,80 @@ export type Database = {
           },
         ]
       }
+      timeline_hidden_universal_events: {
+        Row: {
+          created_at: string
+          timeline_event_id: number
+          timeline_id: number
+        }
+        Insert: {
+          created_at?: string
+          timeline_event_id: number
+          timeline_id: number
+        }
+        Update: {
+          created_at?: string
+          timeline_event_id?: number
+          timeline_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "timeline_hidden_universal_events_timeline_event_id_fkey"
+            columns: ["timeline_event_id"]
+            isOneToOne: false
+            referencedRelation: "timeline_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timeline_hidden_universal_events_timeline_id_fkey"
+            columns: ["timeline_id"]
+            isOneToOne: false
+            referencedRelation: "timelines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       timelines: {
         Row: {
           created_at: string
           description: string | null
+          end_year: number | null
           id: number
           is_hidden: boolean
           is_universal: boolean
           name: string
           page_route: string | null
           person_id: number | null
+          start_year: number | null
+          universal_timeline_id: number | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           description?: string | null
+          end_year?: number | null
           id?: never
           is_hidden?: boolean
           is_universal?: boolean
           name: string
           page_route?: string | null
           person_id?: number | null
+          start_year?: number | null
+          universal_timeline_id?: number | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           description?: string | null
+          end_year?: number | null
           id?: never
           is_hidden?: boolean
           is_universal?: boolean
           name?: string
           page_route?: string | null
           person_id?: number | null
+          start_year?: number | null
+          universal_timeline_id?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -1867,6 +1838,13 @@ export type Database = {
             columns: ["person_id"]
             isOneToOne: false
             referencedRelation: "persons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timelines_universal_timeline_id_fkey"
+            columns: ["universal_timeline_id"]
+            isOneToOne: false
+            referencedRelation: "timelines"
             referencedColumns: ["id"]
           },
         ]

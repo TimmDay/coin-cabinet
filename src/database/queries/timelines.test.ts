@@ -17,6 +17,9 @@ const timeline = {
   id: 1,
   name: "aurelian",
   is_universal: false,
+  start_year: 214,
+  end_year: 275,
+  universal_timeline_id: 9,
   created_at: "",
   updated_at: "",
 }
@@ -24,6 +27,9 @@ const universalTimeline = {
   id: 9,
   name: "Universal Timeline Roman",
   is_universal: true,
+  start_year: null,
+  end_year: null,
+  universal_timeline_id: null,
   created_at: "",
   updated_at: "",
 }
@@ -47,12 +53,17 @@ const event = (
 })
 
 /** A client whose queries resolve to the given rows and record how events were ordered */
-function fakeClient(events: unknown[], timelines: unknown[] = [timeline]) {
+function fakeClient(
+  events: unknown[],
+  timelines: unknown[] = [timeline],
+  removed: unknown[] = [],
+) {
   const eventOrder: [string, unknown][] = []
   const rowsFor: Record<string, unknown[]> = {
     timelines,
     timeline_events: events,
     places: [],
+    timeline_hidden_universal_events: removed,
   }
   const from = (table: string) => {
     const chain: Record<string, unknown> = {
@@ -115,7 +126,7 @@ describe("fetchTimelines", () => {
     expect(result.data?.[0]?.timeline[0]?.sequence).toBe(6)
   })
 
-  it("shows universal events on a timeline whose years contain them, in place", async () => {
+  it("shows its universal timeline's events inside its start and end years, in place", async () => {
     const { client } = fakeClient(
       [
         event(1, "Born", 214),
@@ -123,6 +134,7 @@ describe("fetchTimelines", () => {
         event(10, "Plague begins", 249, 9),
         event(11, "Before Aurelian was born", 100, 9),
         event(12, "After Aurelian", 300, 9),
+        event(13, "Aurelian assassinated", 275, 9),
       ],
       [timeline, universalTimeline],
     )
@@ -132,7 +144,36 @@ describe("fetchTimelines", () => {
       "Born",
       "Plague begins",
       "Proclaimed Emperor",
+      "Aurelian assassinated",
     ])
+  })
+
+  it("leaves out the universal events removed from the timeline", async () => {
+    const { client } = fakeClient(
+      [
+        event(1, "Born", 214),
+        event(10, "Plague begins", 249, 9),
+        event(11, "Gallienus assassinated", 268, 9),
+      ],
+      [timeline, universalTimeline],
+      [{ timeline_id: 1, timeline_event_id: 10, created_at: "" }],
+    )
+    const result = await fetchTimelines(client)
+    const aurelian = result.data?.find((t) => t.name === "aurelian")
+    expect(aurelian?.timeline.map((e) => e.name)).toEqual([
+      "Born",
+      "Gallienus assassinated",
+    ])
+  })
+
+  it("shows no universal events on a timeline that links to none", async () => {
+    const { client } = fakeClient(
+      [event(1, "Born", 214), event(10, "Plague begins", 249, 9)],
+      [{ ...timeline, universal_timeline_id: null }, universalTimeline],
+    )
+    const result = await fetchTimelines(client)
+    const aurelian = result.data?.find((t) => t.name === "aurelian")
+    expect(aurelian?.timeline.map((e) => e.name)).toEqual(["Born"])
   })
 
   it("leaves the universal timeline with only its own events", async () => {
