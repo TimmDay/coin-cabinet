@@ -5,6 +5,8 @@
 // Everything here is pure. Loading lives in the map's layer hook, rendering in
 // Map.tsx, so the whole behaviour of the year slider is testable without a map.
 
+import { formatYear } from "~/lib/utils/years"
+
 /**
  * A City Tier existed briefly and was removed: the only territory that
  * qualified was Roma, about 5km across, which is sub-pixel at the zooms this
@@ -193,11 +195,6 @@ function buildSentence(
 export function joinList(items: string[]): string {
   if (items.length <= 1) return items[0] ?? ""
   return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`
-}
-
-/** 200 BC / AD 1453, with no year zero implied. */
-export function formatYear(year: number): string {
-  return year < 0 ? `${Math.abs(year)} BC` : `AD ${year}`
 }
 
 /**

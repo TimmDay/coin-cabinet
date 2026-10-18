@@ -36,6 +36,21 @@ describe("MintDeepDiveCard", () => {
     expect(screen.getByText(/2026-TimDay-SonyRX10/)).toBeTruthy()
   })
 
+  it("dates each working period, saying from when it has no end", () => {
+    render(
+      <MintDeepDiveCard
+        mint={mint({
+          operation_periods: [
+            [-260, 0, "Republic"],
+            [195, 197, "Clodius Albinus"],
+          ],
+        })}
+      />,
+    )
+    expect(screen.getByText(/from 260 BCE \(Republic\)/)).toBeTruthy()
+    expect(screen.getByText(/195—197 CE \(Clodius Albinus\)/)).toBeTruthy()
+  })
+
   it("shows nothing for a mint with no text", () => {
     const { container } = render(
       <MintDeepDiveCard mint={mint({ flavour_text: null })} />,

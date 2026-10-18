@@ -1,8 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { useMints } from "~/api/mints"
-import { formatYearRange } from "~/lib/utils/date-formatting"
+import { formatYearRange } from "~/lib/utils/years"
 import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
 import type { CoinEnhanced } from "~/types/api"
 
@@ -16,7 +15,6 @@ type CoinFlipInfoProps = {
  * civilization, reference, mint, and minting year.
  */
 export function CoinFlipInfo({ coin, className = "" }: CoinFlipInfoProps) {
-  const { data: mints } = useMints()
   const lines: ReactNode[] = []
 
   // Line 1: diameter | mass | die axis
@@ -57,25 +55,12 @@ export function CoinFlipInfo({ coin, className = "" }: CoinFlipInfoProps) {
   }
 
   // Line 4: Mint year and name (year first, then mint name on same line)
-  let mintYearName = ""
-
-  // Get mint year/range with AD/BCE formatting
-  const yearDisplay = formatYearRange(
-    coin.mint_year_earliest,
-    coin.mint_year_latest,
-  )
-  if (yearDisplay) {
-    // Remove parentheses from formatYearRange output
-    mintYearName = yearDisplay.replace(/[()]/g, "")
-  }
-
-  // Get mint name
-  if (coin.mint_id && mints) {
-    const mint = mints.find((m) => m.id === coin.mint_id)
-    if (mint?.name) {
-      mintYearName = mintYearName ? `${mintYearName}  ${mint.name}` : mint.name
-    }
-  }
+  const mintYearName = [
+    formatYearRange(coin.mint_year_earliest, coin.mint_year_latest),
+    coin.mint?.name,
+  ]
+    .filter(Boolean)
+    .join("  ")
 
   if (mintYearName) lines.push(mintYearName)
 

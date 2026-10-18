@@ -48,7 +48,7 @@ const MARKER_OPTIONS = [
 /**
  * Moments worth jumping to, each with the Tier that actually shows it. Setting
  * the year alone would not be enough: Diocletian's reorganisation is invisible
- * at Realm level, where AD 293 looks like any other year, and the Gallic and
+ * at Realm level, where 293 CE looks like any other year, and the Gallic and
  * Palmyrene breakaways are invisible among the administrative areas.
  *
  * Years checked against the committed corpus, not from memory.
@@ -59,7 +59,7 @@ const MOMENTS = [
     year: -241,
     tier: "province" as Tier,
     title:
-      "241 BC. Sicily, taken from Carthage, becomes the first province Rome ever had. Until now the map shows only Italy, which was never one.",
+      "241 BCE. Sicily, taken from Carthage, becomes the first province Rome ever had. Until now the map shows only Italy, which was never one.",
   },
   {
     // 197, not 201. The war ended in 201, but Rome did not organise the Spains
@@ -68,46 +68,46 @@ const MOMENTS = [
     year: -197,
     tier: "province" as Tier,
     title:
-      "197 BC. Rome organises the Spains into provinces, four years after the war ended.",
+      "197 BCE. Rome organises the Spains into provinces, four years after the war ended.",
   },
   {
     label: "Augustus",
     year: 7,
     tier: "province" as Tier,
     title:
-      "AD 7. Augustus divides Italy into eleven numbered districts: the administrative areas jump from 32 to 42 in a single year.",
+      "7 CE. Augustus divides Italy into eleven numbered districts: the administrative areas jump from 32 to 42 in a single year.",
   },
   {
     label: "Four Emperors",
     year: 69,
     tier: "province" as Tier,
     title:
-      "AD 69. Galba, Otho, Vitellius, Vespasian. A succession crisis rather than a territorial one, so the borders barely move.",
+      "69 CE. Galba, Otho, Vitellius, Vespasian. A succession crisis rather than a territorial one, so the borders barely move.",
   },
   {
     label: "Trajan's peak",
     year: 117,
     tier: "realm" as Tier,
-    title: "AD 117. The empire at its greatest extent.",
+    title: "117 CE. The empire at its greatest extent.",
   },
   {
     label: "Three empires",
     year: 265,
     tier: "realm" as Tier,
-    title: "AD 265. The Gallic and Palmyrene breakaways, either side of Rome.",
+    title: "265 CE. The Gallic and Palmyrene breakaways, either side of Rome.",
   },
   {
     label: "Diocletian",
     year: 293,
     tier: "province" as Tier,
     title:
-      "AD 293. The reorganisation. The eleven Italian districts end here; the provinces he created are not in this map, so the count falls where it should rise.",
+      "293 CE. The reorganisation. The eleven Italian districts end here; the provinces he created are not in this map, so the count falls where it should rise.",
   },
   {
     label: "East and West",
     year: 395,
     tier: "realm" as Tier,
-    title: "AD 395. The empire divided for the last time.",
+    title: "395 CE. The empire divided for the last time.",
   },
 ] as const
 

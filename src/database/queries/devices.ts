@@ -23,12 +23,15 @@ function toDevice(row: DeviceRow, citations: Citation[]): Device {
   }
 }
 
+/** The devices with the given ids. */
 export async function fetchDevices(
   supabase: SupabaseClient<Database>,
+  ids: number[],
 ): Promise<QueryResult<Device[]>> {
   const { data, error } = await supabase
     .from("devices")
     .select("*")
+    .in("id", ids)
     .order("name", { ascending: true })
 
   if (error) return { data: null, error }

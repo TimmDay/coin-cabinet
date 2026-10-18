@@ -2,7 +2,6 @@
 
 import dynamic from "next/dynamic"
 import { useRef, useState } from "react"
-import { useDevices } from "~/api/devices"
 import { useFoldFill } from "~/hooks/useFoldFill"
 import { MAP_HEIGHT_DESKTOP } from "~/lib/constants"
 import { cn } from "~/lib/utils"
@@ -48,15 +47,6 @@ type CoinDeepDiveProps = {
 const FOLD_PEEK_PX = 32
 
 export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
-  const { data: allDevices = [] } = useDevices()
-
-  const obvDevices = allDevices.filter((d) =>
-    coin.obv_device_ids?.includes(d.id),
-  )
-  const revDevices = allDevices.filter((d) =>
-    coin.rev_device_ids?.includes(d.id),
-  )
-
   const coinMap = useCoinMap(coin)
 
   // The map sits below the fold, and mounting it pulls maplibre (about 280KB
@@ -101,7 +91,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             legendTranslation={coin.legend_o_translation}
             description={coin.desc_o}
             flavourText={coin.flavour_obv}
-            devices={obvDevices}
+            devices={coin.obv_devices ?? []}
             clockNotes={clockNotesFor("obverse")}
             reserveTop={clockRoom.top}
             reserveBottom={clockRoom.bottom}
@@ -120,7 +110,7 @@ export function CoinDeepDive({ coin }: CoinDeepDiveProps) {
             mintMark={coin.mint_mark}
             description={coin.desc_r}
             flavourText={coin.flavour_rev}
-            devices={revDevices}
+            devices={coin.rev_devices ?? []}
             clockNotes={clockNotesFor("reverse")}
             reserveTop={clockRoom.top}
             reserveBottom={clockRoom.bottom}

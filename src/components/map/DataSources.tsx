@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useId, useRef, useState } from "react"
-import { formatYear, type Corpus, type Provenance } from "./jurisdictions"
+import { formatYear } from "~/lib/utils/years"
+import { type Corpus, type Provenance } from "./jurisdictions"
 
 type DataSourcesProps = {
   provenance: Provenance | null

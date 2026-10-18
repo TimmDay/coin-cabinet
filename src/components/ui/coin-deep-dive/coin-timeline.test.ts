@@ -124,8 +124,22 @@ describe("coinTimeline", () => {
       place: "Rome",
       lat: 41.9,
       lng: 12.5,
-      description: "This denarius was minted at Rome approximately 193 to 211",
+      description: "This denarius was minted at Rome approximately 193—211 CE",
     })
+  })
+
+  it.each([
+    [-44, null, "around 44 BCE"],
+    [-44, -44, "in 44 BCE"],
+    [-27, 14, "approximately 27 BCE—14 CE"],
+  ])("says when a coin of %s to %s was minted", (earliest, latest, when) => {
+    const timeline = coinTimeline(
+      coin({ mint_year_earliest: earliest, mint_year_latest: latest }),
+      timelines(ev("A", 100)),
+    )
+    expect(timeline?.find((e) => e.kind === "coin-minted")?.description).toBe(
+      `This denarius was minted ${when}`,
+    )
   })
 
   it("does not change the timeline it is given", () => {

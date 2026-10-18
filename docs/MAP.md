@@ -12,7 +12,7 @@ old paper at sunset to sit with the rest of the site (`THEME.md`).
 | `CustomMarkerLayer.tsx` | Draws a set of markers inside the map: clusters, the fan of a cluster at one spot, the markers |
 | `useMarkerClusters.ts` | The layer's logic: clustering for the current view, what a cluster click does, when the fan closes |
 | `MapControls.tsx` | The province selection and display panel on the `/map` page (behind the `dev` flag); `Map` itself has no controls and is driven by props |
-| `YearSlider.tsx` | The year slider, 200 BC to AD 1453, with Change year ticks and the fit-to-extent button |
+| `YearSlider.tsx` | The year slider, 200 BCE to 1453 CE, with Change year ticks and the fit-to-extent button |
 | `TierControl.tsx` | Realm / Province / City selector; Tiers with no content at the Selected year are disabled |
 | `ProvenanceNote.tsx` | The derived line naming active Sources and admitting what is reconstructed |
 | `jurisdictions.ts` | Pure: resolves Jurisdictions, provenance, available Tiers and Change years for a year |
@@ -87,7 +87,7 @@ Basis year) is defined in `CONTEXT.md`.
   outline and a lighter fill, in a separate line layer because MapLibre cannot
   vary a dash pattern by data.
 
-Every province outline is one AD 117-ish snapshot reused across every Span, so a
+Every province outline is one 117 CE-ish snapshot reused across every Span, so a
 Jurisdiction's existence can be Attested while its shape is not. `basisYear`
 records which year the geometry actually depicts.
 

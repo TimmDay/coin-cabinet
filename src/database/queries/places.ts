@@ -26,13 +26,15 @@ function toPlace(row: PlaceRow, citations: Citation[]): Place {
   }
 }
 
+/** Every place, or only those with the given ids. */
 export async function fetchPlaces(
   supabase: SupabaseClient<Database>,
+  ids?: number[],
 ): Promise<QueryResult<Place[]>> {
-  const { data, error } = await supabase
-    .from("places")
-    .select("*")
-    .order("name", { ascending: true })
+  const all = supabase.from("places").select("*")
+  const { data, error } = await (ids ? all.in("id", ids) : all).order("name", {
+    ascending: true,
+  })
 
   if (error) return { data: null, error }
 

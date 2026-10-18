@@ -3,46 +3,55 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { CoinEnhanced } from "~/types/api"
 import { useCoinMap } from "./useCoinMap"
 
-const data = vi.hoisted(() => ({ places: undefined as unknown }))
+const data = vi.hoisted(() => ({ timelines: undefined as unknown }))
 
-vi.mock("~/api/timelines", () => ({ useTimelines: () => ({}) }))
-vi.mock("~/api/artifacts", () => ({ useArtifacts: () => ({}) }))
-vi.mock("~/api/places", () => ({ usePlaces: () => ({ data: data.places }) }))
+vi.mock("~/api/timelines", () => ({
+  useTimelines: () => ({ data: data.timelines }),
+}))
 
 const coin = {
   id: 7,
   denomination: "denarius",
+  mint_year_earliest: 200,
+  timelines_id: [3],
   deities: [
     {
       id: 1,
       name: "Athena",
-      place_ids: [10],
-      artifact_ids: [],
+      places: [{ id: 10, name: "Athens", lat: 37.9, lng: 23.7 }],
+      artifacts: [],
       features_coinage: [],
       citations: [],
     },
   ],
 } as unknown as CoinEnhanced
 
-const athens = [{ id: 10, name: "Athens", lat: 37.9, lng: 23.7 }]
+const timelines = [
+  {
+    id: 3,
+    name: "t",
+    timeline: [{ kind: "event", name: "X", year: 193, sequence: 6 }],
+  },
+]
 
 describe("useCoinMap", () => {
   beforeEach(() => {
-    data.places = undefined
+    data.timelines = undefined
   })
 
-  it("is null while the reference data loads, then fills in", () => {
+  it("pins what comes with the coin, then becomes a timeline map once timelines load", () => {
     const { result, rerender } = renderHook(() => useCoinMap(coin))
-    expect(result.current).toBeNull()
+    expect(result.current?.kind).toBe("markers")
+    expect(result.current?.markers.map((m) => m.id)).toEqual(["deity-place-10"])
 
-    data.places = athens
+    data.timelines = timelines
     rerender()
 
-    expect(result.current?.markers.map((m) => m.id)).toEqual(["deity-place-10"])
+    expect(result.current?.kind).toBe("timeline")
   })
 
-  it("returns the same map until the coin or its data changes", () => {
-    data.places = athens
+  it("returns the same map until the coin or the timelines change", () => {
+    data.timelines = timelines
     const { result, rerender } = renderHook(() => useCoinMap(coin))
     const first = result.current
 

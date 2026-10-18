@@ -1,6 +1,7 @@
 import type { Event, Timeline as TimelineEvents } from "~/data/timelines/types"
 import { inEventOrder } from "~/data/timelines/universal"
 import type { Timeline } from "~/database/schema-timelines"
+import { formatYear, formatYearRange, isYear } from "~/lib/utils/years"
 import type { CoinEnhanced } from "~/types/api"
 
 /** Where a coin's minting sits among the events of its year, on the 1 to 12 scale. */
@@ -34,6 +35,20 @@ export function coinTimeline(
   return find ? [...ordered, find] : ordered
 }
 
+/**
+ * When a coin was minted, for a sentence: "approximately 193—211 CE" for a
+ * range, "in 193 CE" when both ends agree, and "around 193 CE" when only the
+ * earliest year is known.
+ */
+export function whenMinted(
+  earliest: number,
+  latest: number | null | undefined,
+): string {
+  if (!isYear(latest)) return `around ${formatYear(earliest)}`
+  if (latest === earliest) return `in ${formatYear(earliest)}`
+  return `approximately ${formatYearRange(earliest, latest)}`
+}
+
 function mintingEvent(coin: CoinEnhanced): Event | null {
   const earliest = coin.mint_year_earliest
   // There is no year zero (1 BC is followed by AD 1), so 0 is no year at all
@@ -43,14 +58,7 @@ function mintingEvent(coin: CoinEnhanced): Event | null {
   let description = `This ${coin.denomination} was minted`
   if (mint) description += ` at ${mint.name}`
 
-  const latest = coin.mint_year_latest
-  if (latest && latest !== earliest) {
-    description += ` approximately ${earliest} to ${latest}`
-  } else if (latest) {
-    description += ` in ${earliest}`
-  } else {
-    description += ` around ${earliest}`
-  }
+  description += ` ${whenMinted(earliest, coin.mint_year_latest)}`
 
   return {
     kind: "coin-minted",

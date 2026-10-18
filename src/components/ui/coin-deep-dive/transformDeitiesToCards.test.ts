@@ -19,8 +19,8 @@ const deity = (over: Partial<CoinDeity> = {}): CoinDeity[] => [
   {
     id: 1,
     name: "Concordia",
-    artifact_ids: [],
-    place_ids: [],
+    artifacts: [],
+    places: [],
     features_coinage: [],
     citations: [],
     ...over,
@@ -28,10 +28,9 @@ const deity = (over: Partial<CoinDeity> = {}): CoinDeity[] => [
 ]
 
 describe("transformDeitiesToCards", () => {
-  it("pictures a deity with its artifacts, each with alt text, name, location and credit", () => {
+  it("pictures a deity with its artifacts, each with alt text, name, where it is held and credit", () => {
     const [card] = transformDeitiesToCards(
-      deity({ artifact_ids: ["3", "5"] }),
-      [artifact("3"), artifact("5")],
+      deity({ artifacts: [artifact("3"), artifact("5")] }),
     )
 
     expect(card?.images).toEqual([
@@ -39,31 +38,35 @@ describe("transformDeitiesToCards", () => {
         src: "https://img/3.jpg",
         alt: "Alt 3",
         name: "Artifact 3",
-        location: "Location 3",
+        location: "Museum 3, Location 3",
         credit: "Credit 3",
       },
       {
         src: "https://img/5.jpg",
         alt: "Alt 5",
         name: "Artifact 5",
-        location: "Location 5",
+        location: "Museum 5, Location 5",
         credit: "Credit 5",
       },
     ])
   })
 
   it("uses the museum when there is no location note", () => {
-    const [card] = transformDeitiesToCards(deity({ artifact_ids: ["3"] }), [
-      artifact("3", { location_name: null }),
-    ])
+    const [card] = transformDeitiesToCards(
+      deity({ artifacts: [artifact("3", { location_name: null })] }),
+    )
 
     expect(card?.images?.[0]?.location).toBe("Museum 3")
   })
 
   it("names the artifact when it has no alt text, and skips one with no image", () => {
     const [card] = transformDeitiesToCards(
-      deity({ artifact_ids: ["3", "4"] }),
-      [artifact("3", { img_alt: null }), artifact("4", { img_src: null })],
+      deity({
+        artifacts: [
+          artifact("3", { img_alt: null }),
+          artifact("4", { img_src: null }),
+        ],
+      }),
     )
 
     expect(card?.images).toHaveLength(1)
@@ -71,7 +74,7 @@ describe("transformDeitiesToCards", () => {
   })
 
   it("has no images for a deity with nothing", () => {
-    const [card] = transformDeitiesToCards(deity(), [])
+    const [card] = transformDeitiesToCards(deity())
     expect(card?.images).toBeUndefined()
   })
 
@@ -84,7 +87,7 @@ describe("transformDeitiesToCards", () => {
       url: null,
       note: null,
     }
-    const [card] = transformDeitiesToCards(deity({ citations: [citation] }), [])
+    const [card] = transformDeitiesToCards(deity({ citations: [citation] }))
     expect(card?.citations).toEqual([citation])
   })
 })

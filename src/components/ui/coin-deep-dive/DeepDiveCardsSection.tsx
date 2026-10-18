@@ -1,6 +1,11 @@
-import { useArtifacts } from "~/api/artifacts"
 import { MintDeepDiveCard } from "~/components/ui"
-import { formatYearRange } from "~/lib/utils/date-formatting"
+import { artifactLocation } from "~/database/schema-artifacts"
+import {
+  formatOpenYearRange,
+  formatYear,
+  formatYearRange,
+  isYear,
+} from "~/lib/utils/years"
 import { formatPhysicalCharacteristics } from "~/lib/utils/physical-formatting"
 import type { CoinDeity, CoinEnhanced, CoinPerson } from "~/types/api"
 import { DeepDiveCard } from "../DeepDiveCard"
@@ -9,35 +14,34 @@ type DeepDiveCardsSectionProps = {
   coin: CoinEnhanced
 }
 
-/** A year range without its brackets, e.g. "214 - 275", or "" for none. */
-const bareYearRange = (start?: number | null, end?: number | null) =>
-  formatYearRange(start, end).replace(/[()]/g, "")
+/** "lived 214—275 CE", "born 214 CE", "died 275 CE", or "" for neither. */
+function lifeYears(birth?: number | null, death?: number | null): string {
+  if (isYear(birth) && isYear(death)) {
+    return `lived ${formatYearRange(birth, death)}`
+  }
+  if (isYear(birth)) return `born ${formatYear(birth)}`
+  if (isYear(death)) return `died ${formatYear(death)}`
+  return ""
+}
 
-export function transformDeitiesToCards(
-  deities: CoinDeity[] | undefined,
-  artifacts: ReturnType<typeof useArtifacts>["data"],
-) {
+export function transformDeitiesToCards(deities: CoinDeity[] | undefined) {
   return (
     deities?.map((deity) => {
       // A deity is pictured by its artifacts, which carry the alt text and
       // caption.
-      const images = deity.artifact_ids.flatMap((id) => {
-        const artifact = artifacts?.find((a) => a.id === id)
-        return artifact?.img_src
+      const images = deity.artifacts.flatMap((artifact) =>
+        artifact.img_src
           ? [
               {
                 src: artifact.img_src,
                 alt: artifact.img_alt ?? artifact.name,
                 name: artifact.name,
-                location:
-                  artifact.location_name ??
-                  artifact.institution_name ??
-                  undefined,
+                location: artifactLocation(artifact),
                 credit: artifact.img_credit ?? undefined,
               },
             ]
-          : []
-      })
+          : [],
+      )
 
       return {
         title: deity.name,
@@ -53,20 +57,13 @@ export function transformDeitiesToCards(
 
 export function transformHistoricalFiguresToCards(
   figures: CoinPerson[] | undefined,
-  artifacts: ReturnType<typeof useArtifacts>["data"],
 ) {
   return (
     figures?.map((figure) => {
-      const artifactId = figure.artifact_ids[0]
-      const artifact = artifactId
-        ? artifacts?.find((a) => a.id === artifactId)
-        : undefined
-
-      const lived = bareYearRange(figure.birth, figure.death)
-      const reigned = bareYearRange(figure.reign_start, figure.reign_end)
+      const reigned = formatOpenYearRange(figure.reign_start, figure.reign_end)
       const subtitle = [
         figure.authority,
-        lived && `lived ${lived}`,
+        lifeYears(figure.birth, figure.death),
         reigned && `reigned ${reigned}`,
       ]
         .filter(Boolean)
@@ -80,19 +77,13 @@ export function transformHistoricalFiguresToCards(
         footer: figure.altNames?.length
           ? figure.altNames.join(", ")
           : (figure.full_name ?? ""),
-        image: artifact?.img_src ?? undefined,
-        altText: artifact?.img_alt ?? figure.name,
-        caption: artifact?.flavour_text ?? undefined,
         citations: figure.citations,
       }
     }) ?? []
   )
 }
 
-function createCoinFlip(
-  coin: CoinEnhanced,
-  artifacts: ReturnType<typeof useArtifacts>["data"],
-) {
+function createCoinFlip(coin: CoinEnhanced) {
   // Build civilization text
   const civText = coin.civ_specific
     ? `${coin.civ.toUpperCase()}, ${coin.civ_specific}`
@@ -107,15 +98,12 @@ function createCoinFlip(
   const footerText = [
     civText,
     coin.mint?.name,
-    bareYearRange(coin.mint_year_earliest, coin.mint_year_latest),
+    formatYearRange(coin.mint_year_earliest, coin.mint_year_latest),
   ]
     .filter(Boolean)
     .join(" ")
 
-  // Look up artifact for flavour image
-  const artifactId = coin.flavour_img?.[0]
-  const artifact =
-    artifactId && artifacts ? artifacts.find((a) => a.id === artifactId) : null
+  const artifact = coin.supporting_artifacts?.[0]
 
   return {
     title: coin.reference ?? "Unknown Reference",
@@ -129,12 +117,9 @@ function createCoinFlip(
 }
 
 export function DeepDiveCardsSection({ coin }: DeepDiveCardsSectionProps) {
-  const { data: artifacts } = useArtifacts()
-
-  const matchingDeities = transformDeitiesToCards(coin.deities, artifacts)
+  const matchingDeities = transformDeitiesToCards(coin.deities)
   const matchingHistoricalFigures = transformHistoricalFiguresToCards(
     coin.historical_figures,
-    artifacts,
   )
   // Helper to create a DeepDive card
   const createCard = (
@@ -149,7 +134,7 @@ export function DeepDiveCardsSection({ coin }: DeepDiveCardsSectionProps) {
 
   const cardsToRender = [
     // This Coin Card (always shown)
-    createCard("coin", createCoinFlip(coin, artifacts)),
+    createCard("coin", createCoinFlip(coin)),
 
     // Deity cards
     ...matchingDeities

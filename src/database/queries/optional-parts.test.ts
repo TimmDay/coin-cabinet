@@ -32,4 +32,12 @@ describe("optionalParts", () => {
     )
     expect(parts.partial).toBe(false)
   })
+
+  it("turns partial when a lookup is itself a partial read", () => {
+    const parts = optionalParts()
+    expect(
+      parts.take("mint", { data: [1], error: null, partial: true }, []),
+    ).toEqual([1])
+    expect(parts.partial).toBe(true)
+  })
 })

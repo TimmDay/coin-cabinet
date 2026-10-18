@@ -8,7 +8,7 @@ import { useMints } from "~/api/mints"
 import { prefetchCloudinaryImage } from "~/components/CloudinaryImage"
 import { useDragPan } from "~/hooks/useDragPan"
 import { useViewport } from "~/hooks/useViewport"
-import { formatYearRange } from "~/lib/utils/date-formatting"
+import { formatYearRange } from "~/lib/utils/years"
 import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
 import { generateCoinUrl } from "~/lib/utils/url-helpers"
 import { Button } from "./Button"
@@ -82,6 +82,7 @@ export function BrowseCoinsModal({
   // Get mint name from mint_id lookup
   const mint =
     mint_id && mints ? mints.find((m) => m.id === mint_id)?.name : undefined
+  const mintYears = formatYearRange(mint_year_earliest, mint_year_latest)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
     null,
@@ -559,7 +560,7 @@ export function BrowseCoinsModal({
               )}
 
               <h2 className="text-moonlight-bright text-l mb-3">
-                {`${civ?.toUpperCase()}${civ_specific ? ` (${civ_specific})` : ""}${denomination ? ` ${denomination}` : ""}. ${mint}. ${formatYearRange(mint_year_earliest, mint_year_latest)}`}
+                {`${civ?.toUpperCase()}${civ_specific ? ` (${civ_specific})` : ""}${denomination ? ` ${denomination}` : ""}. ${mint}. ${mintYears && `(${mintYears})`}`}
               </h2>
 
               {/* Physical Properties Line */}

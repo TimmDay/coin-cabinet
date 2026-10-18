@@ -1,6 +1,6 @@
 import CloudinaryImage from "~/components/CloudinaryImage"
 import { useViewport } from "~/hooks/useViewport"
-import { formatYearRange } from "~/lib/utils/date-formatting"
+import { formatYearRange } from "~/lib/utils/years"
 
 type CoinCardGridItemProps = {
   /** Civilization of the coin */
@@ -114,6 +114,8 @@ export function CoinCardGridItem({
 
   const zigzagOffset = getZigzagOffset()
 
+  const mintYears = formatYearRange(mintYearEarliest, mintYearLatest)
+
   return (
     <div
       className={`group focus-visible:ring-moonlight/70 w-fit cursor-pointer rounded-lg text-center transition-all duration-300 outline-none focus-visible:ring-2 ${zigzagOffset}`}
@@ -167,7 +169,7 @@ export function CoinCardGridItem({
             {nickname && `. ${nickname}`}
           </p>
           <p className="text-moonlight-bright text-sm whitespace-nowrap">
-            {denomination} {formatYearRange(mintYearEarliest, mintYearLatest)}
+            {denomination} {mintYears && `(${mintYears})`}
           </p>
         </div>
       )}
