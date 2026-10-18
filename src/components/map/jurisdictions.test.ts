@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
+import { formatYear } from "~/lib/utils/years"
 import {
   changeYears,
   COIN_PAGE_TIER,
@@ -8,7 +9,6 @@ import {
   labelPointOf,
   REALM_COLOUR_SLOT,
   SLIDER_START,
-  formatYear,
   joinList,
   resolveAtYear,
   SLIDER_END,
@@ -260,7 +260,7 @@ describe("resolveAtYear", () => {
 
     it("says so when nothing is mapped", () => {
       expect(resolveAtYear(corpus([]), 700).provenance.sentence).toBe(
-        "Nothing mapped for AD 700.",
+        "Nothing mapped for 700 CE.",
       )
     })
   })
@@ -316,15 +316,6 @@ describe("helpers", () => {
     [["a", "b", "c"], "a, b and c"],
   ])("joins %s", (items, expected) => {
     expect(joinList(items)).toBe(expected)
-  })
-
-  it.each([
-    [-200, "200 BC"],
-    [-1, "1 BC"],
-    [117, "AD 117"],
-    [1453, "AD 1453"],
-  ])("formats %s as %s", (year, expected) => {
-    expect(formatYear(year)).toBe(expected)
   })
 })
 

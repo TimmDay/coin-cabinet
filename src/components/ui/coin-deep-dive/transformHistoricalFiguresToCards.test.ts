@@ -51,6 +51,15 @@ describe("transformHistoricalFiguresToCards", () => {
     expect(card?.subtitle).toBe("Emperor, lived 214—275 CE, reigned 270—275 CE")
   })
 
+  it("says born or died when only one end of a life is known", () => {
+    const [born, died] = transformHistoricalFiguresToCards(
+      [person({ birth: -63 }), person({ death: 14 })],
+      [],
+    )
+    expect(born?.subtitle).toBe("born 63 BCE")
+    expect(died?.subtitle).toBe("died 14 CE")
+  })
+
   it("leaves out the parts of a subtitle that are unknown", () => {
     const [card] = transformHistoricalFiguresToCards([person()], [])
     expect(card?.subtitle).toBe("")

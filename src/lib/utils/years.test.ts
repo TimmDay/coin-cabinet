@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 import {
+  formatTimelineYear,
+  formatYear,
+  formatYearRange,
   fromAstronomical,
+  isYear,
   nextYear,
   toAstronomical,
   yearsBetween,
@@ -32,5 +36,42 @@ describe("years", () => {
     // Augustus' reign: 27 BC to AD 14 is 40 years, not 41
     expect(yearsBetween(-27, 14)).toBe(40)
     expect(yearsBetween(100, 117)).toBe(17)
+  })
+
+  it.each([
+    [-200, "200 BCE"],
+    [-1, "1 BCE"],
+    [1, "1 CE"],
+    [117, "117 CE"],
+  ])("formats %s as %s", (year, expected) => {
+    expect(formatYear(year)).toBe(expected)
+  })
+
+  it("leaves CE bare on timeline markers, where space is tight", () => {
+    expect(formatTimelineYear(117)).toBe("117")
+    expect(formatTimelineYear(-44)).toBe("44 BCE")
+  })
+
+  it("treats 0, null and undefined as no year", () => {
+    expect(isYear(0)).toBe(false)
+    expect(isYear(null)).toBe(false)
+    expect(isYear(undefined)).toBe(false)
+    expect(isYear(-1)).toBe(true)
+  })
+
+  it.each([
+    [193, 211, "193—211 CE"],
+    [-336, -323, "336—323 BCE"],
+    [-27, 14, "27 BCE—14 CE"],
+    [117, 117, "117 CE"],
+  ])("formats %s to %s as %s", (earliest, latest, expected) => {
+    expect(formatYearRange(earliest, latest)).toBe(expected)
+  })
+
+  it("shows the known end when the other is missing", () => {
+    expect(formatYearRange(-44, null)).toBe("44 BCE")
+    expect(formatYearRange(-44, 0)).toBe("44 BCE")
+    expect(formatYearRange(undefined, 14)).toBe("14 CE")
+    expect(formatYearRange(0, null)).toBe("")
   })
 })

@@ -47,8 +47,16 @@ describe("buildCoinMap", () => {
       id: "coin-mint-7",
       title: "Rome mint",
       subtitle: "This coin was minted here",
-      description: "Minted around 200",
+      description: "Minted around 200 CE",
     })
+  })
+
+  it("writes a BCE minting year as BCE, not as a negative number", () => {
+    const map = buildCoinMap(
+      coin({ mint: rome, mint_year_earliest: -44, mint_year_latest: -42 }),
+      reference(),
+    )
+    expect(map?.markers[0]?.description).toBe("Minted approximately 44—42 BCE")
   })
 
   it("orders the mint pin first and the find pin last", () => {

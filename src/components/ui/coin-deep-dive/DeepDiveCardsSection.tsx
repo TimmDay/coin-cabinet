@@ -1,6 +1,6 @@
 import { useArtifacts } from "~/api/artifacts"
 import { MintDeepDiveCard } from "~/components/ui"
-import { formatYearRange } from "~/lib/utils/date-formatting"
+import { formatYear, formatYearRange, isYear } from "~/lib/utils/years"
 import { formatPhysicalCharacteristics } from "~/lib/utils/physical-formatting"
 import type { CoinDeity, CoinEnhanced, CoinPerson } from "~/types/api"
 import { DeepDiveCard } from "../DeepDiveCard"
@@ -9,9 +9,15 @@ type DeepDiveCardsSectionProps = {
   coin: CoinEnhanced
 }
 
-/** A year range without its brackets, e.g. "214 - 275", or "" for none. */
-const bareYearRange = (start?: number | null, end?: number | null) =>
-  formatYearRange(start, end).replace(/[()]/g, "")
+/** "lived 214—275 CE", "born 214 CE", "died 275 CE", or "" for neither. */
+function lifeYears(birth?: number | null, death?: number | null): string {
+  if (isYear(birth) && isYear(death)) {
+    return `lived ${formatYearRange(birth, death)}`
+  }
+  if (isYear(birth)) return `born ${formatYear(birth)}`
+  if (isYear(death)) return `died ${formatYear(death)}`
+  return ""
+}
 
 export function transformDeitiesToCards(
   deities: CoinDeity[] | undefined,
@@ -62,11 +68,10 @@ export function transformHistoricalFiguresToCards(
         ? artifacts?.find((a) => a.id === artifactId)
         : undefined
 
-      const lived = bareYearRange(figure.birth, figure.death)
-      const reigned = bareYearRange(figure.reign_start, figure.reign_end)
+      const reigned = formatYearRange(figure.reign_start, figure.reign_end)
       const subtitle = [
         figure.authority,
-        lived && `lived ${lived}`,
+        lifeYears(figure.birth, figure.death),
         reigned && `reigned ${reigned}`,
       ]
         .filter(Boolean)
@@ -107,7 +112,7 @@ function createCoinFlip(
   const footerText = [
     civText,
     coin.mint?.name,
-    bareYearRange(coin.mint_year_earliest, coin.mint_year_latest),
+    formatYearRange(coin.mint_year_earliest, coin.mint_year_latest),
   ]
     .filter(Boolean)
     .join(" ")

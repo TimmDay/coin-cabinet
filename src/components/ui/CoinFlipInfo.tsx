@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import { useMints } from "~/api/mints"
-import { formatYearRange } from "~/lib/utils/date-formatting"
+import { formatYearRange } from "~/lib/utils/years"
 import { formatPhysicalCharacteristicsCompact } from "~/lib/utils/physical-formatting"
 import type { CoinEnhanced } from "~/types/api"
 
@@ -59,15 +59,11 @@ export function CoinFlipInfo({ coin, className = "" }: CoinFlipInfoProps) {
   // Line 4: Mint year and name (year first, then mint name on same line)
   let mintYearName = ""
 
-  // Get mint year/range with AD/BCE formatting
   const yearDisplay = formatYearRange(
     coin.mint_year_earliest,
     coin.mint_year_latest,
   )
-  if (yearDisplay) {
-    // Remove parentheses from formatYearRange output
-    mintYearName = yearDisplay.replace(/[()]/g, "")
-  }
+  if (yearDisplay) mintYearName = yearDisplay
 
   // Get mint name
   if (coin.mint_id && mints) {

@@ -2,8 +2,13 @@
 
 import { Pause, Play } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { fromAstronomical, nextYear, toAstronomical } from "~/lib/utils/years"
-import { formatYear, SLIDER_END, SLIDER_START } from "./jurisdictions"
+import {
+  formatYear,
+  fromAstronomical,
+  nextYear,
+  toAstronomical,
+} from "~/lib/utils/years"
+import { SLIDER_END, SLIDER_START } from "./jurisdictions"
 
 /**
  * One year every twenty-fourth of a second, so a full run from 200 BC takes

@@ -1,7 +1,7 @@
 "use client"
 
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { formatYear } from "~/lib/utils/date-formatting"
+import { formatYear } from "~/lib/utils/years"
 import { CitationList } from "./CitationList"
 import type { Event as TimelineEvent } from "../../data/timelines/types"
 

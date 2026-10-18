@@ -1,4 +1,4 @@
-import { formatTimelineYear } from "~/lib/utils/date-formatting"
+import { formatTimelineYear } from "~/lib/utils/years"
 import { EventLogo } from "../EventLogo"
 import type { StackedMarkersProps } from "../types"
 import { markerBorder } from "../markerBorder"

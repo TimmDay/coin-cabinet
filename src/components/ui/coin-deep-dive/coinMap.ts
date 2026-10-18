@@ -6,7 +6,8 @@ import type { Place } from "~/database/schema-places"
 import type { Timeline } from "~/database/schema-timelines"
 import type { Timeline as TimelineEvents } from "~/data/timelines/types"
 import { getArtifactLocationData } from "./artifact-helpers"
-import { coinTimeline } from "./coin-timeline"
+import { isYear } from "~/lib/utils/years"
+import { coinTimeline, whenMinted } from "./coin-timeline"
 import type { CoinEnhanced } from "~/types/api"
 
 /**
@@ -179,11 +180,9 @@ function mintMarker(coin: CoinEnhanced) {
       lng: position[1],
       title: mint.name,
       subtitle: "This coin was minted here",
-      description:
-        coin.mint_year_earliest !== null &&
-        coin.mint_year_earliest !== undefined
-          ? `Minted around ${coin.mint_year_earliest}`
-          : undefined,
+      description: isYear(coin.mint_year_earliest)
+        ? `Minted ${whenMinted(coin.mint_year_earliest, coin.mint_year_latest)}`
+        : undefined,
       ...pinStyle("minted"),
       showPopup: true,
       zIndexOffset: 1000,

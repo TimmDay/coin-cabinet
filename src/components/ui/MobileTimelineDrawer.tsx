@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
-import { formatYear } from "~/lib/utils/date-formatting"
+import { formatYear } from "~/lib/utils/years"
 import type { Event as TimelineEvent } from "../../data/timelines/types"
 
 export type MobileTimelineDrawerProps = {

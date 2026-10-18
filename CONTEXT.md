@@ -52,11 +52,11 @@ _Avoid_: Extent (which already means a spatial outline in this codebase),
 range, period, lifespan, validity
 
 **Year**:
-A year as the catalogue records it: negative for BC, positive for AD. There is
-no year zero, so 1 BC is followed by AD 1 and a 0 means no year. Counting the
-years between two dates goes through astronomical numbering (1 BC as 0), which
-is for arithmetic only.
-_Avoid_: Year 0
+A year as the catalogue records it: negative for BCE, positive for CE, and shown
+to readers as "336 BCE" or "27 CE". There is no year zero, so 1 BCE is followed
+by 1 CE and a 0 means no year. Counting the years between two dates goes
+through astronomical numbering (1 BCE as 0), which is for arithmetic only.
+_Avoid_: Year 0, BC/AD
 
 **Selected year**:
 The single year the map is currently showing. Everything on the map is the
@@ -95,6 +95,6 @@ _Avoid_: Scope, applicability, validity
 
 **Basis year**:
 The year a piece of geometry depicts, which is often not the Selected year it
-is being drawn for. Province outlines drawn from an AD 117 map have a Basis
+is being drawn for. Province outlines drawn from a 117 CE map have a Basis
 year of 117 whatever year the slider shows.
 _Avoid_: Source year, snapshot date, as-of
