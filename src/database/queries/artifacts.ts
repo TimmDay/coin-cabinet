@@ -7,15 +7,16 @@ import type { Artifact } from "~/database/schema-artifacts"
 
 type PlaceRow = Database["public"]["Tables"]["places"]["Row"]
 
-/** Every artifact, or only those with the given ids. */
+/** The artifacts with the given ids. */
 export async function fetchArtifacts(
   supabase: SupabaseClient<Database>,
-  ids?: number[],
+  ids: number[],
 ): Promise<QueryResult<Artifact[]>> {
-  const all = supabase.from("artifacts").select("*")
-  const { data: artifacts, error: artifactsError } = await (
-    ids ? all.in("id", ids) : all
-  ).order("name", { ascending: true })
+  const { data: artifacts, error: artifactsError } = await supabase
+    .from("artifacts")
+    .select("*")
+    .in("id", ids)
+    .order("name", { ascending: true })
 
   if (artifactsError) return { data: null, error: artifactsError }
 

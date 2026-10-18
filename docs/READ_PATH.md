@@ -24,7 +24,7 @@ React hook (src/api/*.ts, createPublicQuery)
   caller can tell a 404 from an outage. The hook modules are client modules
   because they build their hooks at import.
 - **Routes** (`src/app/api/_lib/public-route.ts`): `publicRoute(label, load,
-  { cache })` is every route's whole body. It makes the Supabase client, runs the
+{ cache })` is every route's whole body. It makes the Supabase client, runs the
   loader, and answers `{ success, data }`.
   - A loader that returns `data: null` answers 404.
   - A `PublicRouteError` thrown by a loader (a bad id) answers with its own
@@ -33,7 +33,7 @@ React hook (src/api/*.ts, createPublicQuery)
     `Failed to load <label>` message. The database error is never sent to the
     visitor. Outside production the cause is attached as `error` for debugging.
   - `cache: true` adds `Cache-Control: public, max-age=300,
-    stale-while-revalidate=86400` and a CDN header for a day. The coin list,
+stale-while-revalidate=86400` and a CDN header for a day. The coin list,
     deities and timelines use it.
 - **Queries** (`src/database/queries/*.ts`): each returns a `QueryResult<T>`,
   either `{ data, error: null }` or `{ data: null, error }`.
@@ -57,20 +57,19 @@ them, so components never see the table layout.
 ## Field mapping by route
 
 ### `/api/places` from `places`
+
 `place_type` becomes `kind`.
 
 ### `/api/mints` from `mints`, `places`, `mint_operation_periods`
+
 A mint has no name or coordinates of its own: `name`, `lat` and `lng` come from
 its place. `mint_operation_periods` rows become the `[start, end,
 authority_label][]` tuples that `MintDeepDiveCard` reads. The mint's own
 `image_url`, `image_alt_text` and `image_credit` are the picture on its card, with
 the credit as its caption. A mint whose place is missing is left out.
 
-### `/api/devices` from `devices`
-`image_url` becomes `img`. The numeric `id` is sent as a string, because
-`CoinDeepDive` and `DescriptionWithDeviceHighlights` compare and key on it as one.
-
 ### `/api/deities` from `deities`, `deity_places`, `device_deities`, `devices`
+
 `deity_places` becomes `place_ids`. The names of the devices linked through
 `device_deities` fill the card footer. `deity_artifacts` becomes `artifact_ids`
 (strings, in artifact id order): the artifacts that picture the deity. The open
@@ -81,19 +80,13 @@ there are several. If the `deity_artifacts` read fails
 failing.
 
 ### `/api/timelines` from `timelines`, `timeline_events`, `places`
+
 The `timeline: Event[]` array is rebuilt from the event rows in `sequence`
 order: `event_type` becomes `kind` and `flavour_text` becomes `description`. An
 event's position is `COALESCE(event.lat, place.lat)`, and likewise for longitude.
 
-### `/api/artifacts` from `artifacts`, `places`
-The institution name and coordinates come from the joined place and are
-flattened onto `institution_name`, `lat` and `lng`. `image_url`
-becomes `img_src`, `image_alt_text` becomes `img_alt`, `image_credit` becomes
-`img_credit` and `location_note` becomes `location_name`. The numeric `id` is sent as a string.
-Where an artifact is held reads as the place then the location note, e.g. "J
-Paul Getty Museum, California USA" (`artifactLocation` in `schema-artifacts.ts`).
-
 ### `/api/somnus-collection` (list) from `public_items` and its children
+
 `public_items` is the only anon-readable source of `collection` and `coins`
 fields. It does not expose `coins.id`, so `coins` is queried separately for the
 `item_id` to `coin_id` join key.
@@ -115,14 +108,17 @@ Hidden and unconfirmed items never reach the site: row level security excludes
 them for anon, so there is nothing to filter in code.
 
 ### `/api/somnus-collection/[id]` (detail)
+
 The same base row as the list, plus everything the coin page draws, already
 resolved, so the page loads no reference lists of its own (only timelines,
 which it fetches separately):
 
 - `coin_catalogue_references` passed through.
 - `coin_devices` become `obv_device_ids` and `rev_device_ids` (strings), and
-  the devices themselves, as `/api/devices` gives them, become `obv_devices`
-  and `rev_devices`, by name.
+  the devices themselves become `obv_devices` and `rev_devices`, by name. A
+  device's `image_url` becomes `img`, and its numeric `id` is sent as a string,
+  because `CoinDeepDive` and `DescriptionWithDeviceHighlights` compare and key
+  on it as one.
 - `coins.mint_id` becomes `mint`, the full mint as `/api/mints` gives it
   (named for its place, with operation periods and citations), or null.
 - `item_deities` with `deities` become `deities[]`, each with its `places`
@@ -133,8 +129,14 @@ which it fetches separately):
   `alt_names` becomes `altNames`. Each carries its citations.
 - `item_timelines` becomes `timelines_id`.
 - `supporting_images` with `artifacts` become `flavour_img` (ids), and the
-  artifacts themselves, as `/api/artifacts` gives them, become
-  `supporting_artifacts`.
+  artifacts themselves become `supporting_artifacts`.
+- An artifact (supporting, or picturing a deity) takes its institution name and
+  coordinates from its place, flattened onto `institution_name`, `lat` and
+  `lng`. `image_url` becomes `img_src`, `image_alt_text` becomes `img_alt`,
+  `image_credit` becomes `img_credit` and `location_note` becomes
+  `location_name`. The numeric `id` is sent as a string. Where an artifact is
+  held reads as the place then the location note, e.g. "J Paul Getty Museum,
+  California USA" (`artifactLocation` in `schema-artifacts.ts`).
 - A failure in any of these reads (or in their own citations) leaves that part
   out and makes the read partial, so it is not cached.
 - Every `coin_images` variant and side, in `sequence` order, becomes
