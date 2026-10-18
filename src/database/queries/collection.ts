@@ -282,34 +282,13 @@ export async function fetchCollectionDetail(
   supabase: SupabaseClient<Database>,
   itemId: number,
 ): Promise<QueryResult<CoinEnhanced | null>> {
-  const { data: item, error: itemError } = await supabase
-    .from("public_items")
-    .select("*")
-    .eq("id", itemId)
-    .maybeSingle()
-    .overrideTypes<PublicItemRow, { merge: false }>()
-
-  if (itemError) return { data: null, error: itemError }
-  if (!item?.id) return { data: null, error: null }
-
-  const { data: coin, error: coinError } = await supabase
-    .from("coins")
-    .select("id, mint_id, mint_mark")
-    .eq("item_id", item.id)
-    .maybeSingle()
-    .overrideTypes<
-      Pick<CoinRow, "id" | "mint_id" | "mint_mark">,
-      { merge: false }
-    >()
-
-  if (coinError) return { data: null, error: coinError }
-
-  const coinId = coin?.id
-
+  // Each Supabase round trip costs about as much as the whole query, so the
+  // reads go in three waves: what needs only the item id, then what needs ids
+  // from the first wave, then the devices, places and artifacts those name.
+  // A hidden item's links may be read too, but nothing is returned for it.
   const [
-    imagesResult,
-    catalogueRefsResult,
-    coinDevicesResult,
+    itemResult,
+    coinResult,
     itemSetsResult,
     itemDeitiesResult,
     itemPersonsResult,
@@ -317,6 +296,100 @@ export async function fetchCollectionDetail(
     presentationResult,
     findEventsResult,
     clockNotesResult,
+  ] = await Promise.all([
+    supabase
+      .from("public_items")
+      .select("*")
+      .eq("id", itemId)
+      .maybeSingle()
+      .overrideTypes<PublicItemRow, { merge: false }>(),
+    supabase
+      .from("coins")
+      .select("id, mint_id, mint_mark")
+      .eq("item_id", itemId)
+      .maybeSingle()
+      .overrideTypes<
+        Pick<CoinRow, "id" | "mint_id" | "mint_mark">,
+        { merge: false }
+      >(),
+    supabase
+      .from("item_sets")
+      .select("*, sets(name)")
+      .eq("item_id", itemId)
+      .returns<(ItemSetRow & { sets: { name: string } | null })[]>(),
+    supabase
+      .from("item_deities")
+      .select("*")
+      .eq("item_id", itemId)
+      .returns<ItemDeityRow[]>(),
+    supabase
+      .from("item_persons")
+      .select("*")
+      .eq("item_id", itemId)
+      .returns<ItemPersonRow[]>(),
+    supabase
+      .from("item_timelines")
+      .select("*")
+      .eq("item_id", itemId)
+      .returns<ItemTimelineRow[]>(),
+    supabase
+      .from("item_presentation")
+      .select("id")
+      .eq("item_id", itemId)
+      .maybeSingle()
+      .overrideTypes<Pick<ItemPresentationRow, "id">, { merge: false }>(),
+    supabase
+      .from("public_find_events")
+      .select("*")
+      .eq("item_id", itemId)
+      .returns<PublicFindEventRow[]>(),
+    fetchClockNotes(supabase, itemId),
+  ])
+
+  const { data: item, error: itemError } = itemResult
+  if (itemError) return { data: null, error: itemError }
+  if (!item?.id) return { data: null, error: null }
+
+  const { data: coin, error: coinError } = coinResult
+  if (coinError) return { data: null, error: coinError }
+
+  const coinId = coin?.id
+
+  // Everything but the item, its coin row and its photos is optional (see
+  // optionalParts): a failure leaves that part out.
+  const parts = optionalParts()
+  const sets = parts
+    .take("item_sets", itemSetsResult, [])
+    .map((s) => s.sets?.name)
+    .filter((name): name is string => !!name)
+  const itemDeityRows = parts.take("item_deities", itemDeitiesResult, [])
+  const itemPersonRows = parts.take("item_persons", itemPersonsResult, [])
+  const itemTimelineRows = parts.take("item_timelines", itemTimelinesResult, [])
+  const presentationId = parts.take(
+    "item_presentation",
+    presentationResult,
+    null,
+  )?.id
+  // public_find_events may not exist yet (2026-09-11_public_find_events_view.sql)
+  const findEvents = parts.take("public_find_events", findEventsResult, [])
+  const clockNotes = parts.take("item_clock_notes", clockNotesResult, [])
+
+  const itemDeityIds = itemDeityRows.map((d) => d.deity_id)
+  const itemPersonIds = itemPersonRows.map((p) => p.person_id)
+  const mintId = coin?.mint_id
+
+  const [
+    imagesResult,
+    catalogueRefsResult,
+    coinDevicesResult,
+    deitiesResult,
+    personsResult,
+    supportingImagesResult,
+    deityArtifactIdsResult,
+    deityDeviceNamesResult,
+    personCitationsResult,
+    deityCitationsResult,
+    mintResult,
   ] = await Promise.all([
     coinId
       ? supabase
@@ -339,119 +412,60 @@ export async function fetchCollectionDetail(
           .eq("coin_id", coinId)
           .returns<CoinDeviceRow[]>()
       : Promise.resolve({ data: [] as CoinDeviceRow[], error: null }),
-    supabase
-      .from("item_sets")
-      .select("*, sets(name)")
-      .eq("item_id", item.id)
-      .returns<(ItemSetRow & { sets: { name: string } | null })[]>(),
-    supabase
-      .from("item_deities")
-      .select("*")
-      .eq("item_id", item.id)
-      .returns<ItemDeityRow[]>(),
-    supabase
-      .from("item_persons")
-      .select("*")
-      .eq("item_id", item.id)
-      .returns<ItemPersonRow[]>(),
-    supabase
-      .from("item_timelines")
-      .select("*")
-      .eq("item_id", item.id)
-      .returns<ItemTimelineRow[]>(),
-    supabase
-      .from("item_presentation")
-      .select("id")
-      .eq("item_id", item.id)
-      .maybeSingle()
-      .overrideTypes<Pick<ItemPresentationRow, "id">, { merge: false }>(),
-    supabase
-      .from("public_find_events")
-      .select("*")
-      .eq("item_id", item.id)
-      .returns<PublicFindEventRow[]>(),
-    fetchClockNotes(supabase, item.id),
+    itemDeityIds.length > 0
+      ? supabase
+          .from("deities")
+          .select(
+            "id, name, subtitle, flavour_text, secondary_info, place_ids:deity_places(place_id)",
+          )
+          .in("id", itemDeityIds)
+          .returns<
+            (Pick<
+              DeityRow,
+              "id" | "name" | "subtitle" | "flavour_text" | "secondary_info"
+            > & { place_ids: { place_id: number }[] })[]
+          >()
+      : Promise.resolve({ data: [], error: null }),
+    itemPersonIds.length > 0
+      ? supabase
+          .from("persons")
+          .select("*")
+          .in("id", itemPersonIds)
+          .returns<PersonRow[]>()
+      : Promise.resolve({ data: [] as PersonRow[], error: null }),
+    presentationId
+      ? supabase
+          .from("supporting_images")
+          .select("*, artifacts(id)")
+          .eq("presentation_id", presentationId)
+          .order("sequence", { ascending: true })
+          .returns<
+            (SupportingImageRow & { artifacts: { id: number } | null })[]
+          >()
+      : Promise.resolve({
+          data: [] as (SupportingImageRow & {
+            artifacts: { id: number } | null
+          })[],
+          error: null,
+        }),
+    fetchDeityArtifactIds(supabase, itemDeityIds),
+    fetchDeityDeviceNames(supabase, itemDeityIds),
+    fetchCitations(supabase, "person_id", itemPersonIds),
+    fetchCitations(supabase, "deity_id", itemDeityIds),
+    mintId
+      ? fetchMints(supabase, [mintId])
+      : Promise.resolve({ data: [], error: null }),
   ])
 
-  // The item, its coin row and its photos are the page. Everything else on it
-  // is optional (see optionalParts): a failure leaves that part out.
   if (imagesResult.error) return { data: null, error: imagesResult.error }
   const images = imagesResult.data ?? []
 
-  const parts = optionalParts()
   const catalogueRefs = parts.take(
     "coin_catalogue_references",
     catalogueRefsResult,
     [],
   )
   const coinDevices = parts.take("coin_devices", coinDevicesResult, [])
-  const sets = parts
-    .take("item_sets", itemSetsResult, [])
-    .map((s) => s.sets?.name)
-    .filter((name): name is string => !!name)
-  const itemDeityRows = parts.take("item_deities", itemDeitiesResult, [])
-  const itemPersonRows = parts.take("item_persons", itemPersonsResult, [])
-  const itemTimelineRows = parts.take("item_timelines", itemTimelinesResult, [])
-  const presentationId = parts.take(
-    "item_presentation",
-    presentationResult,
-    null,
-  )?.id
-  // public_find_events may not exist yet (2026-09-11_public_find_events_view.sql)
-  const findEvents = parts.take("public_find_events", findEventsResult, [])
-  const clockNotes = parts.take("item_clock_notes", clockNotesResult, [])
-
-  const deviceIds = [...new Set(coinDevices.map((d) => d.device_id))]
-
-  const [deitiesResult, personsResult, supportingImagesResult, devicesResult] =
-    await Promise.all([
-      itemDeityRows.length > 0
-        ? supabase
-            .from("deities")
-            .select(
-              "id, name, subtitle, flavour_text, secondary_info, place_ids:deity_places(place_id)",
-            )
-            .in(
-              "id",
-              itemDeityRows.map((d) => d.deity_id),
-            )
-            .returns<
-              (Pick<
-                DeityRow,
-                "id" | "name" | "subtitle" | "flavour_text" | "secondary_info"
-              > & { place_ids: { place_id: number }[] })[]
-            >()
-        : Promise.resolve({ data: [], error: null }),
-      itemPersonRows.length > 0
-        ? supabase
-            .from("persons")
-            .select("*")
-            .in(
-              "id",
-              itemPersonRows.map((p) => p.person_id),
-            )
-            .returns<PersonRow[]>()
-        : Promise.resolve({ data: [] as PersonRow[], error: null }),
-      presentationId
-        ? supabase
-            .from("supporting_images")
-            .select("*, artifacts(id)")
-            .eq("presentation_id", presentationId)
-            .order("sequence", { ascending: true })
-            .returns<
-              (SupportingImageRow & { artifacts: { id: number } | null })[]
-            >()
-        : Promise.resolve({
-            data: [] as (SupportingImageRow & {
-              artifacts: { id: number } | null
-            })[],
-            error: null,
-          }),
-      deviceIds.length > 0
-        ? fetchDevices(supabase, deviceIds)
-        : Promise.resolve({ data: [], error: null }),
-    ])
-
   const deityRows = parts.take("deities", deitiesResult, [])
   const personRows = parts.take("persons", personsResult, [])
   const supportingImages = parts.take(
@@ -459,77 +473,6 @@ export async function fetchCollectionDetail(
     supportingImagesResult,
     [],
   )
-  const devices = parts.take("devices", devicesResult, [])
-  const devicesOn = (side: "obverse" | "reverse") => {
-    const ids = new Set(
-      coinDevices
-        .filter((d) => d.side === side)
-        .map((d) => String(d.device_id)),
-    )
-    return devices.filter((d) => ids.has(d.id))
-  }
-
-  const obvDeviceIds = coinDevices
-    .filter((d) => d.side === "obverse")
-    .map((d) => String(d.device_id))
-  const revDeviceIds = coinDevices
-    .filter((d) => d.side === "reverse")
-    .map((d) => String(d.device_id))
-
-  const primaryRef = catalogueRefs.find((r) => r.is_primary) ?? catalogueRefs[0]
-
-  const base = toBaseCoin(
-    item,
-    images,
-    sets,
-    itemDeityRows.map((d) => d.deity_id),
-  )
-  base.mint_id = coin?.mint_id ?? null
-  base.reference = primaryRef
-    ? `${primaryRef.system} ${primaryRef.reference_code}`
-    : null
-  base.reference_link = primaryRef?.external_uri ?? null
-  base.obv_device_ids = obvDeviceIds
-  base.rev_device_ids = revDeviceIds
-  base.historical_figures_id = itemPersonRows.map((p) => String(p.person_id))
-  base.timelines_id = itemTimelineRows.map((t) => t.timeline_id)
-  base.flavour_img = supportingImages
-    .map((s) => s.artifacts?.id)
-    .filter((id): id is number => id !== undefined && id !== null)
-    .map(String)
-
-  const findEventRow = findEvents.find(
-    (row) => row.find_lat !== null && row.find_lng !== null,
-  )
-
-  const itemDeityIds = deityRows.map((d) => d.id)
-  const deityPlaceIds = [
-    ...new Set(deityRows.flatMap((d) => d.place_ids.map((p) => p.place_id))),
-  ]
-  const mintId = coin?.mint_id
-  const [
-    deityArtifactIdsResult,
-    deityDeviceNamesResult,
-    personCitationsResult,
-    deityCitationsResult,
-    mintResult,
-    deityPlacesResult,
-  ] = await Promise.all([
-    fetchDeityArtifactIds(supabase, itemDeityIds),
-    fetchDeityDeviceNames(supabase, itemDeityIds),
-    fetchCitations(
-      supabase,
-      "person_id",
-      personRows.map((p) => p.id),
-    ),
-    fetchCitations(supabase, "deity_id", itemDeityIds),
-    mintId
-      ? fetchMints(supabase, [mintId])
-      : Promise.resolve({ data: [], error: null }),
-    deityPlaceIds.length > 0
-      ? fetchPlaces(supabase, deityPlaceIds)
-      : Promise.resolve({ data: [], error: null }),
-  ])
   const deityArtifactIds = parts.take(
     "deity_artifacts",
     deityArtifactIdsResult,
@@ -553,12 +496,41 @@ export async function fetchCollectionDetail(
   // The mint card is optional too; a mint read without its own extras (its
   // citations, say) makes this read partial as well, so it is not cached
   const mint = parts.take("mint", mintResult, [])[0] ?? null
-  const placeById = new Map(
-    parts.take("deity places", deityPlacesResult, []).map((p) => [p.id, p]),
+
+  const obvDeviceIds = coinDevices
+    .filter((d) => d.side === "obverse")
+    .map((d) => String(d.device_id))
+  const revDeviceIds = coinDevices
+    .filter((d) => d.side === "reverse")
+    .map((d) => String(d.device_id))
+
+  const primaryRef = catalogueRefs.find((r) => r.is_primary) ?? catalogueRefs[0]
+
+  const base = toBaseCoin(item, images, sets, itemDeityIds)
+  base.mint_id = coin?.mint_id ?? null
+  base.reference = primaryRef
+    ? `${primaryRef.system} ${primaryRef.reference_code}`
+    : null
+  base.reference_link = primaryRef?.external_uri ?? null
+  base.obv_device_ids = obvDeviceIds
+  base.rev_device_ids = revDeviceIds
+  base.historical_figures_id = itemPersonIds.map(String)
+  base.timelines_id = itemTimelineRows.map((t) => t.timeline_id)
+  base.flavour_img = supportingImages
+    .map((s) => s.artifacts?.id)
+    .filter((id): id is number => id !== undefined && id !== null)
+    .map(String)
+
+  const findEventRow = findEvents.find(
+    (row) => row.find_lat !== null && row.find_lng !== null,
   )
 
-  // The artifacts the page shows: the coin's supporting images and its
-  // deities' pictures, read once, with their institution and position
+  // The coin's devices, its deities' places, and the artifacts the page shows
+  // (the coin's supporting images and its deities' pictures), each read once
+  const deviceIds = [...new Set(coinDevices.map((d) => d.device_id))]
+  const deityPlaceIds = [
+    ...new Set(deityRows.flatMap((d) => d.place_ids.map((p) => p.place_id))),
+  ]
   const artifactIds = [
     ...new Set(
       [
@@ -567,16 +539,34 @@ export async function fetchCollectionDetail(
       ].map(Number),
     ),
   ]
+  const [devicesResult, deityPlacesResult, artifactsResult] = await Promise.all(
+    [
+      deviceIds.length > 0
+        ? fetchDevices(supabase, deviceIds)
+        : Promise.resolve({ data: [], error: null }),
+      deityPlaceIds.length > 0
+        ? fetchPlaces(supabase, deityPlaceIds)
+        : Promise.resolve({ data: [], error: null }),
+      artifactIds.length > 0
+        ? fetchArtifacts(supabase, artifactIds)
+        : Promise.resolve({ data: [], error: null }),
+    ],
+  )
+
+  const devices = parts.take("devices", devicesResult, [])
+  const devicesOn = (side: "obverse" | "reverse") => {
+    const ids = new Set(
+      coinDevices
+        .filter((d) => d.side === side)
+        .map((d) => String(d.device_id)),
+    )
+    return devices.filter((d) => ids.has(d.id))
+  }
+  const placeById = new Map(
+    parts.take("deity places", deityPlacesResult, []).map((p) => [p.id, p]),
+  )
   const artifactById = new Map(
-    parts
-      .take(
-        "artifacts",
-        artifactIds.length > 0
-          ? await fetchArtifacts(supabase, artifactIds)
-          : { data: [], error: null },
-        [],
-      )
-      .map((a) => [a.id, a]),
+    parts.take("artifacts", artifactsResult, []).map((a) => [a.id, a]),
   )
   const artifactsFor = (ids: string[]) =>
     ids.flatMap((id) => artifactById.get(id) ?? [])
