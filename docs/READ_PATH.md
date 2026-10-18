@@ -33,8 +33,9 @@ React hook (src/api/*.ts, createPublicQuery)
     `Failed to load <label>` message. The database error is never sent to the
     visitor. Outside production the cause is attached as `error` for debugging.
   - `cache: true` adds `Cache-Control: public, max-age=300,
-stale-while-revalidate=86400` and a CDN header for a day. The coin list,
-    deities and timelines use it.
+stale-while-revalidate=86400` and a CDN header for a day. Every route uses
+    it, so a change made in the ingestion app can take up to a day to show;
+    `vercel cache purge --type cdn` clears it sooner.
 - **Queries** (`src/database/queries/*.ts`): each returns a `QueryResult<T>`,
   either `{ data, error: null }` or `{ data: null, error }`.
 - **Coin ids:** `/api/somnus-collection/[id]` accepts only plain positive

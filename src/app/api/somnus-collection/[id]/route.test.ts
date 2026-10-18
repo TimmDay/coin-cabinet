@@ -31,4 +31,19 @@ describe("GET /api/somnus-collection/[id]", () => {
     expect(response.status).toBe(200)
     expect(fetchCollectionDetail).toHaveBeenCalledWith({}, 7)
   })
+
+  it("lets the CDN keep a whole coin, but not a partial one", async () => {
+    fetchCollectionDetail.mockResolvedValue({ data: { id: 7 }, error: null })
+    const whole = await GET(request, withId("7"))
+    expect(whole.headers.get("CDN-Cache-Control")).toContain("max-age")
+
+    fetchCollectionDetail.mockResolvedValue({
+      data: { id: 7 },
+      error: null,
+      partial: true,
+    })
+    const partial = await GET(request, withId("7"))
+    expect(partial.headers.get("CDN-Cache-Control")).toBeNull()
+    expect(partial.headers.get("Cache-Control")).toContain("no-store")
+  })
 })

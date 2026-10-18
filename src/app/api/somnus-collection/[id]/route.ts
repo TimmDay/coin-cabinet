@@ -11,4 +11,5 @@ export const GET = publicRoute(
     }
     return fetchCollectionDetail(supabase, Number(id))
   },
+  { cache: true },
 )
