@@ -13,7 +13,6 @@ const person = (over: Partial<CoinPerson> = {}): CoinPerson => ({
   death: null,
   altNames: null,
   flavour_text: null,
-  artifact_ids: [],
   citations: [],
   ...over,
 })
@@ -28,62 +27,54 @@ describe("transformHistoricalFiguresToCards", () => {
       url: null,
       note: null,
     }
-    const [card] = transformHistoricalFiguresToCards(
-      [person({ citations: [citation] })],
-      [],
-    )
+    const [card] = transformHistoricalFiguresToCards([
+      person({ citations: [citation] }),
+    ])
     expect(card?.citations).toEqual([citation])
   })
 
   it("subtitles a figure with their title, life and reign", () => {
-    const [card] = transformHistoricalFiguresToCards(
-      [
-        person({
-          authority: "Emperor",
-          birth: 214,
-          death: 275,
-          reign_start: 270,
-          reign_end: 275,
-        }),
-      ],
-      [],
-    )
+    const [card] = transformHistoricalFiguresToCards([
+      person({
+        authority: "Emperor",
+        birth: 214,
+        death: 275,
+        reign_start: 270,
+        reign_end: 275,
+      }),
+    ])
     expect(card?.subtitle).toBe("Emperor, lived 214—275 CE, reigned 270—275 CE")
   })
 
   it("says born or died when only one end of a life is known", () => {
-    const [born, died] = transformHistoricalFiguresToCards(
-      [person({ birth: -63 }), person({ death: 14 })],
-      [],
-    )
+    const [born, died] = transformHistoricalFiguresToCards([
+      person({ birth: -63 }),
+      person({ death: 14 }),
+    ])
     expect(born?.subtitle).toBe("born 63 BCE")
     expect(died?.subtitle).toBe("died 14 CE")
   })
 
   it("says from when a reign has no recorded end", () => {
-    const [card] = transformHistoricalFiguresToCards(
-      [person({ reign_start: 270 })],
-      [],
-    )
+    const [card] = transformHistoricalFiguresToCards([
+      person({ reign_start: 270 }),
+    ])
     expect(card?.subtitle).toBe("reigned from 270 CE")
   })
 
   it("leaves out the parts of a subtitle that are unknown", () => {
-    const [card] = transformHistoricalFiguresToCards([person()], [])
+    const [card] = transformHistoricalFiguresToCards([person()])
     expect(card?.subtitle).toBe("")
   })
 
   it("footers a figure with their other names, else their full name", () => {
-    const [named, full] = transformHistoricalFiguresToCards(
-      [
-        person({
-          altNames: ["Restitutor Orbis"],
-          full_name: "L. D. Aurelianus",
-        }),
-        person({ full_name: "L. D. Aurelianus" }),
-      ],
-      [],
-    )
+    const [named, full] = transformHistoricalFiguresToCards([
+      person({
+        altNames: ["Restitutor Orbis"],
+        full_name: "L. D. Aurelianus",
+      }),
+      person({ full_name: "L. D. Aurelianus" }),
+    ])
     expect(named?.footer).toBe("Restitutor Orbis")
     expect(full?.footer).toBe("L. D. Aurelianus")
   })

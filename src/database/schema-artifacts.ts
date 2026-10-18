@@ -22,6 +22,20 @@ export type Artifact = {
   updated_at: string
 }
 
+/**
+ * Where an artifact is, for a reader: the place that holds it, after the finer
+ * locator within that place when there is one ("Room 70, British Museum").
+ */
+export function artifactLocation(
+  artifact: Pick<Artifact, "institution_name" | "location_name">,
+): string | undefined {
+  return (
+    [artifact.location_name, artifact.institution_name]
+      .filter(Boolean)
+      .join(", ") || undefined
+  )
+}
+
 export type ArtifactInsert = {
   name: string
   img_src?: string | null

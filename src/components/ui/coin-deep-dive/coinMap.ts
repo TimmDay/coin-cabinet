@@ -1,23 +1,20 @@
 import type { CustomMapMarker } from "~/components/map/Map"
 import { parseMapPosition } from "~/components/map/coordinates"
 import { pinStyle } from "~/components/map/pinStyle"
-import type { Artifact } from "~/database/schema-artifacts"
+import { artifactLocation, type Artifact } from "~/database/schema-artifacts"
 import type { Place } from "~/database/schema-places"
 import type { Timeline } from "~/database/schema-timelines"
 import type { Timeline as TimelineEvents } from "~/data/timelines/types"
-import { getArtifactLocationData } from "./artifact-helpers"
 import { isYear } from "~/lib/utils/years"
 import { coinTimeline, whenMinted } from "./coin-timeline"
 import type { CoinEnhanced } from "~/types/api"
 
 /**
- * The reference data a coin's map is built from, beyond the coin itself. Each
+ * The reference data a coin's map is built from, beyond the coin itself, which
  * may still be loading.
  */
 export type CoinMapReference = {
   timelines?: Timeline[]
-  places?: Place[]
-  artifacts?: Artifact[]
 }
 
 /**
@@ -60,41 +57,36 @@ export function selectedYearForCoin(coin: {
 }
 
 /**
- * The artifacts tied to this coin: the ones in its own supporting images
- * (`flavour_img`), and any a deity or person on it points at.
+ * The artifacts tied to this coin, each once: the ones in its own supporting
+ * images, and the ones that picture a deity on it.
  */
-function relatedArtifactIds(coin: CoinEnhanced) {
-  const ids = new Set<string>(coin.flavour_img ?? [])
-
-  for (const deity of coin.deities ?? []) {
-    for (const id of deity.artifact_ids ?? []) ids.add(id)
+function relatedArtifacts(coin: CoinEnhanced): Artifact[] {
+  const byId = new globalThis.Map<string, Artifact>()
+  for (const artifact of [
+    ...(coin.supporting_artifacts ?? []),
+    ...(coin.deities ?? []).flatMap((deity) => deity.artifacts),
+  ]) {
+    byId.set(artifact.id, artifact)
   }
-  for (const figure of coin.historical_figures ?? []) {
-    for (const id of figure.artifact_ids ?? []) ids.add(id)
-  }
-
-  return [...ids]
+  return [...byId.values()]
 }
 
-function deityPlaceMarkers(
-  coin: CoinEnhanced,
-  places: Place[] | undefined,
-): CustomMapMarker[] {
-  if (!places) return []
-
-  const deityNamesByPlaceId = new globalThis.Map<number, Set<string>>()
+function deityPlaceMarkers(coin: CoinEnhanced): CustomMapMarker[] {
+  const byPlaceId = new globalThis.Map<
+    number,
+    { place: Place; names: Set<string> }
+  >()
   for (const deity of coin.deities ?? []) {
-    for (const placeId of deity.place_ids) {
-      const names = deityNamesByPlaceId.get(placeId) ?? new Set<string>()
-      names.add(deity.name)
-      deityNamesByPlaceId.set(placeId, names)
+    for (const place of deity.places) {
+      const entry = byPlaceId.get(place.id) ?? { place, names: new Set() }
+      entry.names.add(deity.name)
+      byPlaceId.set(place.id, entry)
     }
   }
 
-  return [...deityNamesByPlaceId.entries()].flatMap(([placeId, names]) => {
-    const place = places.find((candidate) => Number(candidate.id) === placeId)
-    const position = place && parseMapPosition(place.lat, place.lng)
-    if (!place || !position) return []
+  return [...byPlaceId.values()].flatMap(({ place, names }) => {
+    const position = parseMapPosition(place.lat, place.lng)
+    if (!position) return []
     const [lat, lng] = position
 
     return [
@@ -116,17 +108,9 @@ function deityPlaceMarkers(
   })
 }
 
-function artifactMarkers(
-  coin: CoinEnhanced,
-  artifacts: Artifact[] | undefined,
-  places: Place[] | undefined,
-): CustomMapMarker[] {
-  return relatedArtifactIds(coin).flatMap((artifactId) => {
-    const artifact = artifacts?.find((candidate) => candidate.id === artifactId)
-    if (!artifact) return []
-
-    const location = getArtifactLocationData(artifact, places)
-    const position = parseMapPosition(location.lat, location.lng)
+function artifactMarkers(coin: CoinEnhanced): CustomMapMarker[] {
+  return relatedArtifacts(coin).flatMap((artifact) => {
+    const position = parseMapPosition(artifact.lat, artifact.lng)
     if (!position) return []
     const [lat, lng] = position
 
@@ -136,8 +120,7 @@ function artifactMarkers(
         lat,
         lng,
         title: artifact.name,
-        subtitle:
-          location.institutionName ?? artifact.location_name ?? undefined,
+        subtitle: artifactLocation(artifact),
         description:
           artifact.flavour_text ?? artifact.historical_notes ?? undefined,
         ...pinStyle("artifact"),
@@ -192,12 +175,9 @@ function mintMarker(coin: CoinEnhanced) {
 
 export function buildCoinMap(
   coin: CoinEnhanced,
-  { timelines, places, artifacts }: CoinMapReference,
+  { timelines }: CoinMapReference,
 ): CoinMap | null {
-  const related = [
-    ...deityPlaceMarkers(coin, places),
-    ...artifactMarkers(coin, artifacts, places),
-  ]
+  const related = [...deityPlaceMarkers(coin), ...artifactMarkers(coin)]
 
   const selectedYear = selectedYearForCoin(coin)
 

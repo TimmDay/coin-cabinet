@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
+import type { Artifact } from "~/database/schema-artifacts"
 import type { Mint } from "~/database/schema-mints"
+import type { Place } from "~/database/schema-places"
 import type { CoinDeity, CoinEnhanced } from "~/types/api"
 import {
   buildCoinMap,
@@ -17,15 +19,20 @@ const coin = (overrides: Partial<CoinEnhanced> = {}) =>
 
 const rome = { id: 1, name: "Rome mint", lat: 41.9, lng: 12.5 } as Mint
 const deity = (id: number, name: string, over: Partial<CoinDeity> = {}) =>
-  ({ id, name, place_ids: [], artifact_ids: [], ...over }) as CoinDeity
+  ({ id, name, places: [], artifacts: [], ...over }) as CoinDeity
 const reference = (r: Record<string, unknown> = {}) => r as CoinMapReference
 
-const place = (id: number, lat: number, lng: number) => ({
-  id,
-  name: `Place ${id}`,
-  lat,
-  lng,
-})
+const place = (id: number, lat: number, lng: number) =>
+  ({ id, name: `Place ${id}`, lat, lng }) as Place
+
+const bust = {
+  id: "a1",
+  name: "Bust",
+  institution_name: "British Museum",
+  location_name: "Room 70",
+  lat: 51.5,
+  lng: -0.12,
+} as Artifact
 
 describe("buildCoinMap", () => {
   it("is null when there is nothing to map", () => {
@@ -102,11 +109,11 @@ describe("buildCoinMap", () => {
     const map = buildCoinMap(
       coin({
         deities: [
-          deity(1, "Athena", { place_ids: [10] }),
-          deity(2, "Zeus", { place_ids: [10] }),
+          deity(1, "Athena", { places: [place(10, 37.9, 23.7)] }),
+          deity(2, "Zeus", { places: [place(10, 37.9, 23.7)] }),
         ],
       }),
-      reference({ places: [place(10, 37.9, 23.7)] }),
+      reference(),
     )
 
     expect(map?.markers).toHaveLength(1)
@@ -115,35 +122,35 @@ describe("buildCoinMap", () => {
 
   it("leaves out a place outside the map's bounds", () => {
     const map = buildCoinMap(
-      coin({ deities: [deity(1, "Athena", { place_ids: [10] })] }),
-      reference({ places: [place(10, -33.9, 151.2)] }),
+      coin({
+        deities: [deity(1, "Athena", { places: [place(10, -33.9, 151.2)] })],
+      }),
+      reference(),
     )
 
     expect(map).toBeNull()
   })
 
-  it("pins an artifact from the coin's supporting images", () => {
+  it("pins an artifact from the coin's supporting images, where it is held", () => {
     const map = buildCoinMap(
-      coin({ flavour_img: ["a1"] }),
-      reference({
-        places: [place(5, 51.5, -0.12)],
-        artifacts: [{ id: "a1", name: "Bust", place_id: "5" }],
-      }),
+      coin({ supporting_artifacts: [bust] }),
+      reference(),
     )
 
-    expect(map?.markers[0]).toMatchObject({ id: "artifact-a1", title: "Bust" })
+    expect(map?.markers[0]).toMatchObject({
+      id: "artifact-a1",
+      title: "Bust",
+      subtitle: "Room 70, British Museum",
+    })
   })
 
   it("pins an artifact a deity points at, once even if the coin has it too", () => {
     const map = buildCoinMap(
       coin({
-        flavour_img: ["a1"],
-        deities: [deity(1, "Athena", { artifact_ids: ["a1"] })],
+        supporting_artifacts: [bust],
+        deities: [deity(1, "Athena", { artifacts: [bust] })],
       }),
-      reference({
-        places: [place(5, 51.5, -0.12)],
-        artifacts: [{ id: "a1", name: "Bust", place_id: "5" }],
-      }),
+      reference(),
     )
 
     expect(map?.markers).toHaveLength(1)

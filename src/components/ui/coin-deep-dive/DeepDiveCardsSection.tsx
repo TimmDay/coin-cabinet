@@ -1,5 +1,5 @@
-import { useArtifacts } from "~/api/artifacts"
 import { MintDeepDiveCard } from "~/components/ui"
+import { artifactLocation } from "~/database/schema-artifacts"
 import {
   formatOpenYearRange,
   formatYear,
@@ -24,31 +24,24 @@ function lifeYears(birth?: number | null, death?: number | null): string {
   return ""
 }
 
-export function transformDeitiesToCards(
-  deities: CoinDeity[] | undefined,
-  artifacts: ReturnType<typeof useArtifacts>["data"],
-) {
+export function transformDeitiesToCards(deities: CoinDeity[] | undefined) {
   return (
     deities?.map((deity) => {
       // A deity is pictured by its artifacts, which carry the alt text and
       // caption.
-      const images = deity.artifact_ids.flatMap((id) => {
-        const artifact = artifacts?.find((a) => a.id === id)
-        return artifact?.img_src
+      const images = deity.artifacts.flatMap((artifact) =>
+        artifact.img_src
           ? [
               {
                 src: artifact.img_src,
                 alt: artifact.img_alt ?? artifact.name,
                 name: artifact.name,
-                location:
-                  artifact.location_name ??
-                  artifact.institution_name ??
-                  undefined,
+                location: artifactLocation(artifact),
                 credit: artifact.img_credit ?? undefined,
               },
             ]
-          : []
-      })
+          : [],
+      )
 
       return {
         title: deity.name,
@@ -64,15 +57,9 @@ export function transformDeitiesToCards(
 
 export function transformHistoricalFiguresToCards(
   figures: CoinPerson[] | undefined,
-  artifacts: ReturnType<typeof useArtifacts>["data"],
 ) {
   return (
     figures?.map((figure) => {
-      const artifactId = figure.artifact_ids[0]
-      const artifact = artifactId
-        ? artifacts?.find((a) => a.id === artifactId)
-        : undefined
-
       const reigned = formatOpenYearRange(figure.reign_start, figure.reign_end)
       const subtitle = [
         figure.authority,
@@ -90,19 +77,13 @@ export function transformHistoricalFiguresToCards(
         footer: figure.altNames?.length
           ? figure.altNames.join(", ")
           : (figure.full_name ?? ""),
-        image: artifact?.img_src ?? undefined,
-        altText: artifact?.img_alt ?? figure.name,
-        caption: artifact?.flavour_text ?? undefined,
         citations: figure.citations,
       }
     }) ?? []
   )
 }
 
-function createCoinFlip(
-  coin: CoinEnhanced,
-  artifacts: ReturnType<typeof useArtifacts>["data"],
-) {
+function createCoinFlip(coin: CoinEnhanced) {
   // Build civilization text
   const civText = coin.civ_specific
     ? `${coin.civ.toUpperCase()}, ${coin.civ_specific}`
@@ -122,10 +103,7 @@ function createCoinFlip(
     .filter(Boolean)
     .join(" ")
 
-  // Look up artifact for flavour image
-  const artifactId = coin.flavour_img?.[0]
-  const artifact =
-    artifactId && artifacts ? artifacts.find((a) => a.id === artifactId) : null
+  const artifact = coin.supporting_artifacts?.[0]
 
   return {
     title: coin.reference ?? "Unknown Reference",
@@ -139,12 +117,9 @@ function createCoinFlip(
 }
 
 export function DeepDiveCardsSection({ coin }: DeepDiveCardsSectionProps) {
-  const { data: artifacts } = useArtifacts()
-
-  const matchingDeities = transformDeitiesToCards(coin.deities, artifacts)
+  const matchingDeities = transformDeitiesToCards(coin.deities)
   const matchingHistoricalFigures = transformHistoricalFiguresToCards(
     coin.historical_figures,
-    artifacts,
   )
   // Helper to create a DeepDive card
   const createCard = (
@@ -159,7 +134,7 @@ export function DeepDiveCardsSection({ coin }: DeepDiveCardsSectionProps) {
 
   const cardsToRender = [
     // This Coin Card (always shown)
-    createCard("coin", createCoinFlip(coin, artifacts)),
+    createCard("coin", createCoinFlip(coin)),
 
     // Deity cards
     ...matchingDeities

@@ -55,6 +55,34 @@ const tables = {
   places: [
     { id: 9, name: "Rome", lat: 41.9, lng: 12.5 },
     { id: 10, name: "Siscia", lat: 45.5, lng: 16.4 },
+    { id: 11, name: "British Museum", lat: 51.5, lng: -0.12 },
+  ],
+  deity_artifacts: [
+    { deity_id: 5, artifact_id: 31 },
+    { deity_id: 5, artifact_id: 30 },
+  ],
+  item_presentation: [{ id: 100, item_id: 7 }],
+  supporting_images: [
+    { presentation_id: 100, sequence: 1, artifacts: { id: 30 } },
+  ],
+  artifacts: [
+    {
+      id: 30,
+      name: "Bust of Aurelian",
+      place_id: 11,
+      location_note: "Room 70",
+    },
+    { id: 31, name: "Sol relief", place_id: null, location_note: null },
+    { id: 32, name: "Unrelated", place_id: 11, location_note: null },
+  ],
+  coin_devices: [
+    { coin_id: 70, device_id: 40, side: "obverse" },
+    { coin_id: 70, device_id: 41, side: "reverse" },
+  ],
+  devices: [
+    { id: 40, name: "Radiate bust" },
+    { id: 41, name: "Sol standing" },
+    { id: 42, name: "Unrelated" },
   ],
   citations: [
     citation(1, { deity_id: 5 }),
@@ -70,11 +98,47 @@ describe("fetchCollectionDetail", () => {
       expect.objectContaining({
         id: 5,
         name: "Sol",
-        place_ids: [9],
+        places: [expect.objectContaining({ id: 9, name: "Rome" })],
         citations: [expect.objectContaining({ id: 1, title: "New History" })],
       }),
     ])
   })
+
+  it("gives each deity the artifacts that picture it, in id order", async () => {
+    const { data } = await fetchCollectionDetail(fakeSupabase(tables).client, 7)
+    expect(data?.deities?.[0]?.artifacts.map((a) => a.id)).toEqual(["30", "31"])
+  })
+
+  it("resolves the coin's supporting artifacts with where they are held", async () => {
+    const { data } = await fetchCollectionDetail(fakeSupabase(tables).client, 7)
+    expect(data?.supporting_artifacts).toEqual([
+      expect.objectContaining({
+        id: "30",
+        name: "Bust of Aurelian",
+        institution_name: "British Museum",
+        location_name: "Room 70",
+        lat: 51.5,
+      }),
+    ])
+  })
+
+  it("gives each face only its own devices", async () => {
+    const { data } = await fetchCollectionDetail(fakeSupabase(tables).client, 7)
+    expect(data?.obv_devices?.map((d) => d.name)).toEqual(["Radiate bust"])
+    expect(data?.rev_devices?.map((d) => d.name)).toEqual(["Sol standing"])
+  })
+
+  it.each(["artifacts", "devices"])(
+    "still loads the coin when its %s fail, but is partial",
+    async (table) => {
+      const result = await fetchCollectionDetail(
+        fakeSupabase(tables, [table]).client,
+        7,
+      )
+      expect(result.data?.id).toBe(7)
+      expect(result.partial).toBe(true)
+    },
+  )
 
   it("gives the coin's persons their citations", async () => {
     const { data } = await fetchCollectionDetail(fakeSupabase(tables).client, 7)

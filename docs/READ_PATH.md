@@ -87,9 +87,11 @@ event's position is `COALESCE(event.lat, place.lat)`, and likewise for longitude
 
 ### `/api/artifacts` from `artifacts`, `places`
 The institution name and coordinates come from the joined place and are
-flattened onto the output fields `coin-deep-dive/artifact-helpers.ts` reads. `image_url`
+flattened onto `institution_name`, `lat` and `lng`. `image_url`
 becomes `img_src`, `image_alt_text` becomes `img_alt`, `image_credit` becomes
 `img_credit` and `location_note` becomes `location_name`. The numeric `id` is sent as a string.
+Where an artifact is held reads as the locator then the place, e.g. "Room 70,
+British Museum" (`artifactLocation` in `schema-artifacts.ts`).
 
 ### `/api/somnus-collection` (list) from `public_items` and its children
 `public_items` is the only anon-readable source of `collection` and `coins`
@@ -113,20 +115,28 @@ Hidden and unconfirmed items never reach the site: row level security excludes
 them for anon, so there is nothing to filter in code.
 
 ### `/api/somnus-collection/[id]` (detail)
-The same base row as the list, plus:
+The same base row as the list, plus everything the coin page draws, already
+resolved, so the page loads no reference lists of its own (only timelines,
+which it fetches separately):
 
 - `coin_catalogue_references` passed through.
-- `coin_devices` become `obv_device_ids` and `rev_device_ids` (strings).
+- `coin_devices` become `obv_device_ids` and `rev_device_ids` (strings), and
+  the devices themselves, as `/api/devices` gives them, become `obv_devices`
+  and `rev_devices`, by name.
 - `coins.mint_id` becomes `mint`, the full mint as `/api/mints` gives it
   (named for its place, with operation periods and citations), or null.
-- `item_deities` with `deities` become `deities[]`, each with its places,
-  pictures (`deity_artifacts`), device names and citations.
+- `item_deities` with `deities` become `deities[]`, each with its `places`
+  (from `deity_places`), the `artifacts` that picture it (from
+  `deity_artifacts`, in artifact id order), device names and citations.
 - `item_persons` with `persons` become `historical_figures[]`: `title` becomes
   `authority`, `birth_year` and `death_year` become `birth` and `death`, and
-  `alt_names` becomes `altNames`. Each carries its citations. Persons have no
-  artifact link, so `artifact_ids` is always empty.
+  `alt_names` becomes `altNames`. Each carries its citations.
 - `item_timelines` becomes `timelines_id`.
-- `supporting_images` with `artifacts` become `flavour_img`.
+- `supporting_images` with `artifacts` become `flavour_img` (ids), and the
+  artifacts themselves, as `/api/artifacts` gives them, become
+  `supporting_artifacts`.
+- A failure in any of these reads (or in their own citations) leaves that part
+  out and makes the read partial, so it is not cached.
 - Every `coin_images` variant and side, in `sequence` order, becomes
   `image_link_altlight_o/_r`, `image_link_sketch_o/_r`, `image_link_zoom_o/_r`
   and `image_rotation`.
@@ -198,9 +208,8 @@ in `src/data`. Nothing on the site displays citations yet.
 ## Known limitations
 
 - A person's card shows no photo, and a person brings no artifact pins to the map:
-  `artifact_ids` has no home in the normalised schema for persons. A deity's
-  artifacts (`deity_artifacts`) and a coin's own supporting images (`flavour_img`)
-  do get a pin.
+  persons have no artifact link in the normalised schema. A deity's artifacts
+  and a coin's own supporting images do get a pin.
 - What appears on the site depends on the data: items and sets with
   `is_hidden = TRUE` are invisible, and a set page is empty until its set is
   made visible in the data-maintenance app.

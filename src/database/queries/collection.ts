@@ -2,7 +2,10 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/database/database.types"
 import { fetchCitations, noCitations } from "~/database/queries/citations"
 import { fetchClockNotes } from "~/database/queries/clock-notes"
+import { fetchArtifacts } from "~/database/queries/artifacts"
+import { fetchDevices } from "~/database/queries/devices"
 import { fetchMints } from "~/database/queries/mints"
+import { fetchPlaces } from "~/database/queries/places"
 import {
   fetchDeityArtifactIds,
   fetchDeityDeviceNames,
@@ -398,7 +401,9 @@ export async function fetchCollectionDetail(
   const findEvents = parts.take("public_find_events", findEventsResult, [])
   const clockNotes = parts.take("item_clock_notes", clockNotesResult, [])
 
-  const [deitiesResult, personsResult, supportingImagesResult] =
+  const deviceIds = [...new Set(coinDevices.map((d) => d.device_id))]
+
+  const [deitiesResult, personsResult, supportingImagesResult, devicesResult] =
     await Promise.all([
       itemDeityRows.length > 0
         ? supabase
@@ -442,6 +447,9 @@ export async function fetchCollectionDetail(
             })[],
             error: null,
           }),
+      deviceIds.length > 0
+        ? fetchDevices(supabase, deviceIds)
+        : Promise.resolve({ data: [], error: null }),
     ])
 
   const deityRows = parts.take("deities", deitiesResult, [])
@@ -451,6 +459,15 @@ export async function fetchCollectionDetail(
     supportingImagesResult,
     [],
   )
+  const devices = parts.take("devices", devicesResult, [])
+  const devicesOn = (side: "obverse" | "reverse") => {
+    const ids = new Set(
+      coinDevices
+        .filter((d) => d.side === side)
+        .map((d) => String(d.device_id)),
+    )
+    return devices.filter((d) => ids.has(d.id))
+  }
 
   const obvDeviceIds = coinDevices
     .filter((d) => d.side === "obverse")
@@ -486,6 +503,9 @@ export async function fetchCollectionDetail(
   )
 
   const itemDeityIds = deityRows.map((d) => d.id)
+  const deityPlaceIds = [
+    ...new Set(deityRows.flatMap((d) => d.place_ids.map((p) => p.place_id))),
+  ]
   const mintId = coin?.mint_id
   const [
     deityArtifactIdsResult,
@@ -493,6 +513,7 @@ export async function fetchCollectionDetail(
     personCitationsResult,
     deityCitationsResult,
     mintResult,
+    deityPlacesResult,
   ] = await Promise.all([
     fetchDeityArtifactIds(supabase, itemDeityIds),
     fetchDeityDeviceNames(supabase, itemDeityIds),
@@ -504,6 +525,9 @@ export async function fetchCollectionDetail(
     fetchCitations(supabase, "deity_id", itemDeityIds),
     mintId
       ? fetchMints(supabase, [mintId])
+      : Promise.resolve({ data: [], error: null }),
+    deityPlaceIds.length > 0
+      ? fetchPlaces(supabase, deityPlaceIds)
       : Promise.resolve({ data: [], error: null }),
   ])
   const deityArtifactIds = parts.take(
@@ -529,13 +553,42 @@ export async function fetchCollectionDetail(
   // The mint card is optional too; a mint read without its own extras (its
   // citations, say) makes this read partial as well, so it is not cached
   const mint = parts.take("mint", mintResult, [])[0] ?? null
-  const mintPartial = "partial" in mintResult && mintResult.partial === true
+  const placeById = new Map(
+    parts.take("deity places", deityPlacesResult, []).map((p) => [p.id, p]),
+  )
+
+  // The artifacts the page shows: the coin's supporting images and its
+  // deities' pictures, read once, with their institution and position
+  const artifactIds = [
+    ...new Set(
+      [
+        ...(base.flavour_img ?? []),
+        ...[...deityArtifactIds.values()].flat(),
+      ].map(Number),
+    ),
+  ]
+  const artifactById = new Map(
+    parts
+      .take(
+        "artifacts",
+        artifactIds.length > 0
+          ? await fetchArtifacts(supabase, artifactIds)
+          : { data: [], error: null },
+        [],
+      )
+      .map((a) => [a.id, a]),
+  )
+  const artifactsFor = (ids: string[]) =>
+    ids.flatMap((id) => artifactById.get(id) ?? [])
 
   const enhanced: CoinEnhanced = {
     ...base,
     clock_notes: clockNotes,
     mint_mark: coin?.mint_mark?.trim() || null,
     mint,
+    supporting_artifacts: artifactsFor(base.flavour_img ?? []),
+    obv_devices: devicesOn("obverse"),
+    rev_devices: devicesOn("reverse"),
     found_event: findEventRow
       ? {
           event_date: findEventRow.event_date,
@@ -549,8 +602,8 @@ export async function fetchCollectionDetail(
       name: d.name,
       subtitle: d.subtitle ?? undefined,
       flavour_text: d.flavour_text,
-      artifact_ids: deityArtifactIds.get(d.id) ?? [],
-      place_ids: d.place_ids.map((p) => p.place_id),
+      artifacts: artifactsFor(deityArtifactIds.get(d.id) ?? []),
+      places: d.place_ids.flatMap((p) => placeById.get(p.place_id) ?? []),
       features_coinage: (deityDeviceNames.get(d.id) ?? []).map((name) => ({
         name,
       })),
@@ -567,8 +620,6 @@ export async function fetchCollectionDetail(
       death: p.death_year,
       altNames: p.alt_names,
       flavour_text: p.flavour_text,
-      // Persons have no artifact link table, so they are not pictured
-      artifact_ids: [],
       citations: personCitations.get(p.id) ?? [],
     })),
   }
@@ -576,6 +627,6 @@ export async function fetchCollectionDetail(
   return {
     data: enhanced,
     error: null,
-    partial: parts.partial || mintPartial,
+    partial: parts.partial,
   }
 }

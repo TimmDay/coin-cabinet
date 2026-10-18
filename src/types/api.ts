@@ -2,9 +2,12 @@
  * Shared API types for consistent data structures across the application
  */
 
+import type { Artifact } from "~/database/schema-artifacts"
 import type { Citation } from "~/database/schema-citations"
 import type { Deity } from "~/database/schema-deities"
+import type { Device } from "~/database/schema-devices"
 import type { Mint } from "~/database/schema-mints"
+import type { Place } from "~/database/schema-places"
 import type { SomnusCollection } from "~/database/schema-somnus-collection"
 
 /** A note pinned to a clock position on one face of a coin, ready to show. */
@@ -30,14 +33,14 @@ export type ClockNote = {
 /** A deity on a coin, as its deep dive shows it. */
 export type CoinDeity = Pick<
   Deity,
-  | "id"
-  | "name"
-  | "subtitle"
-  | "flavour_text"
-  | "artifact_ids"
-  | "place_ids"
-  | "features_coinage"
-> & { citations: Citation[] }
+  "id" | "name" | "subtitle" | "flavour_text" | "features_coinage"
+> & {
+  citations: Citation[]
+  /** The places tied to the deity, such as its temples, pinned on the map. */
+  places: Place[]
+  /** The artifacts that picture the deity, in artifact id order. */
+  artifacts: Artifact[]
+}
 
 /** A person on a coin, as its deep dive shows them. */
 export type CoinPerson = {
@@ -52,13 +55,12 @@ export type CoinPerson = {
   death: number | null
   altNames: string[] | null
   flavour_text: string | null
-  artifact_ids: string[]
   citations: Citation[]
 }
 
 /**
- * Enhanced coin data with optional joined deity information
- * Used by API endpoints that support ?include=deities parameter
+ * A coin as its detail read gives it: everything its page draws, already
+ * resolved, so the page loads no reference lists of its own.
  */
 export type CoinEnhanced = SomnusCollection & {
   clock_notes?: ClockNote[]
@@ -68,6 +70,11 @@ export type CoinEnhanced = SomnusCollection & {
   mint?: Mint | null
   deities?: CoinDeity[]
   historical_figures?: CoinPerson[]
+  /** The artifacts in the coin's own supporting images, in their order. */
+  supporting_artifacts?: Artifact[]
+  /** The devices on each face, by name. */
+  obv_devices?: Device[]
+  rev_devices?: Device[]
   /**
    * Where/when the coin was found, sourced from its `provenance_events` row
    * of type "find" via the `public_find_events` view (the only slice of
