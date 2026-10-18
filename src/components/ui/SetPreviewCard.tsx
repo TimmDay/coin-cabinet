@@ -18,6 +18,8 @@ type SetPreviewCardProps = {
   fullDescription?: boolean
   /** Sizing from the parent (a grid cell, or a flex item in a row) */
   className?: string
+  /** The card name's heading level: 3 under a section heading, 2 without one */
+  headingLevel?: 2 | 3
 }
 
 /**
@@ -34,7 +36,9 @@ export function SetPreviewCard({
   image,
   fullDescription = false,
   className = "",
+  headingLevel = 3,
 }: SetPreviewCardProps) {
+  const Heading = headingLevel === 2 ? "h2" : "h3"
   const candidates = typeof image === "string" ? [image] : (image ?? [])
   const [shown, setShown] = useState<string | undefined>(candidates[0])
   // With several candidates, hold the image back until the random pick is
@@ -81,7 +85,9 @@ export function SetPreviewCard({
           )}
         </div>
         <div className="text-center">
-          <h3 className="mb-2 text-base tracking-widest uppercase">{name}</h3>
+          <Heading className="mb-2 text-base tracking-widest uppercase">
+            {name}
+          </Heading>
           <p
             className={`text-ink/75 text-base leading-relaxed ${fullDescription ? "" : "line-clamp-3 min-h-[4.875rem]"}`}
           >

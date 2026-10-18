@@ -8,16 +8,11 @@ export function InvertedMarker({
   event,
   onEventClick,
   onEventKeyDown,
-  tabIndex,
+  eventIndex,
   isSelected = false,
 }: MarkerProps) {
   return (
     <div key={`${year}-0`}>
-      {/* Screen reader only labels - accessible but visually hidden */}
-      <span className="sr-only">
-        {event.name} - {formatTimelineYear(year)}
-      </span>
-
       {/* Event marker - below timeline */}
       <div
         className={`focus:ring-bronze-light relative transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:outline-none ${
@@ -25,7 +20,8 @@ export function InvertedMarker({
         }`}
         onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
         onKeyDown={(e) => onEventKeyDown?.(event, e)}
-        tabIndex={tabIndex}
+        tabIndex={0}
+        data-event-index={eventIndex}
         role="button"
         aria-label={`${event.name} - ${formatTimelineYear(year)}`}
       >

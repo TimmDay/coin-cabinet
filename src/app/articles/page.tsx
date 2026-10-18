@@ -1,11 +1,8 @@
-import { PageTitle } from "~/components/ui/PageTitle"
-
 export default function ArticlesPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12 text-center">
-          <PageTitle className="mb-6">Articles</PageTitle>
           <p className="text-ink-soft text-xl leading-[1.7]">
             Coming soon - insights and stories from the world of numismatics
           </p>

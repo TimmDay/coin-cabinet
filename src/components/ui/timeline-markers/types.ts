@@ -9,7 +9,8 @@ export type MarkerProps = {
     clientY?: number,
   ) => void
   onEventKeyDown?: (event: TimelineEvent, e: React.KeyboardEvent) => void
-  tabIndex?: number
+  /** Its place in the timeline, for the arrow keys */
+  eventIndex?: number
   isSelected?: boolean
 }
 
@@ -22,7 +23,8 @@ export type SideLineMarkerProps = {
     clientY?: number,
   ) => void
   onEventKeyDown?: (event: TimelineEvent, e: React.KeyboardEvent) => void
-  tabIndex?: number
+  /** Its place in the timeline, for the arrow keys */
+  eventIndex?: number
   isSelected?: boolean
 }
 
@@ -35,7 +37,7 @@ export type StackedMarkersProps = {
     clientY?: number,
   ) => void
   onEventKeyDown?: (event: TimelineEvent, e: React.KeyboardEvent) => void
-  getEventTabIndex?: (event: TimelineEvent) => number
+  getEventIndex?: (event: TimelineEvent) => number
   selectedEventIndex?: number
   allEventsChronological?: TimelineEvent[]
 }

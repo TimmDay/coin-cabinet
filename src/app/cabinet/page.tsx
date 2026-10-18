@@ -17,6 +17,7 @@ export default function CabinetPage() {
             description={set.description}
             image={set.image}
             fullDescription
+            headingLevel={2}
           />
         ))}
       </div>

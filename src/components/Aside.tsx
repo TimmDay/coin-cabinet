@@ -22,7 +22,9 @@ export function Aside({
   }
 
   return (
-    <aside className="relative my-12 font-sans">
+    // role="note", not <aside>: inside the article an <aside> is a page
+    // landmark, so screen readers would list every callout beside the page's own
+    <div role="note" className="relative my-12 font-sans">
       {/* Main content box with cut-out corner */}
       <div className="aside-cutout-box border-line bg-surface-raised rounded-lg border p-5 pl-12">
         <div className="mb-3">
@@ -41,6 +43,6 @@ export function Aside({
           className={iconFiddleClass}
         />
       </div>
-    </aside>
+    </div>
   )
 }

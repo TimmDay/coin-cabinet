@@ -80,13 +80,13 @@ export function Timeline({
     return eventIndex === selectedEventIndex
   }
 
-  // Function to get tab index for an event based on chronological order
-  const getEventTabIndex = (event: TimelineEvent): number => {
-    const index = allEventsChronological.findIndex(
+  // An event's place in chronological order. Each marker carries it as
+  // data-event-index so the arrow keys can find the next one; Tab follows the
+  // page order, as a positive tabindex would put the markers before the navbar.
+  const getEventIndex = (event: TimelineEvent): number =>
+    allEventsChronological.findIndex(
       (e) => e.name === event.name && e.year === event.year,
     )
-    return index + 1 // Start from 1 for better accessibility
-  }
 
   const firstEventYear = timelineEvents[0]?.year ?? 0
   const lastEventYear = timelineEvents[timelineEvents.length - 1]?.year ?? 0
@@ -194,13 +194,11 @@ export function Timeline({
 
         const nextEvent = allEventsChronological[nextIndex]
         if (nextEvent) {
-          // Find the element with the corresponding tabIndex and focus it
-          const targetElement = document.querySelector(
-            `[tabindex="${nextIndex + 1}"]`,
-          ) as HTMLElement
-          if (targetElement) {
-            targetElement.focus()
-          }
+          // Look only in this timeline: a page can show more than one
+          e.currentTarget
+            .closest("[data-timeline]")
+            ?.querySelector<HTMLElement>(`[data-event-index="${nextIndex}"]`)
+            ?.focus()
         }
       }
     }
@@ -253,7 +251,10 @@ export function Timeline({
   )
 
   return (
-    <div className={`flex items-start ${foundEvent ? "gap-4 md:gap-8" : ""}`}>
+    <div
+      data-timeline
+      className={`flex items-start ${foundEvent ? "gap-4 md:gap-8" : ""}`}
+    >
       <div
         className={`relative w-full min-w-0 flex-1 ${className}`}
         style={{
@@ -271,7 +272,7 @@ export function Timeline({
               event={sideLineEvent}
               onEventClick={handleEventClick}
               onEventKeyDown={handleEventKeyDown}
-              tabIndex={getEventTabIndex(sideLineEvent)}
+              eventIndex={getEventIndex(sideLineEvent)}
               isSelected={isEventSelected(sideLineEvent)}
             />
           </div>
@@ -318,7 +319,7 @@ export function Timeline({
                       events={yearEvents}
                       onEventClick={handleEventClick}
                       onEventKeyDown={handleEventKeyDown}
-                      getEventTabIndex={getEventTabIndex}
+                      getEventIndex={getEventIndex}
                       selectedEventIndex={selectedEventIndex}
                       allEventsChronological={allEventsChronological}
                     />
@@ -328,7 +329,7 @@ export function Timeline({
                       events={yearEvents}
                       onEventClick={handleEventClick}
                       onEventKeyDown={handleEventKeyDown}
-                      getEventTabIndex={getEventTabIndex}
+                      getEventIndex={getEventIndex}
                       selectedEventIndex={selectedEventIndex}
                       allEventsChronological={allEventsChronological}
                     />
@@ -339,7 +340,7 @@ export function Timeline({
                     event={yearEvents[0]!}
                     onEventClick={handleEventClick}
                     onEventKeyDown={handleEventKeyDown}
-                    tabIndex={getEventTabIndex(yearEvents[0]!)}
+                    eventIndex={getEventIndex(yearEvents[0]!)}
                     isSelected={isEventSelected(yearEvents[0]!)}
                   />
                 ) : (
@@ -348,7 +349,7 @@ export function Timeline({
                     event={yearEvents[0]!}
                     onEventClick={handleEventClick}
                     onEventKeyDown={handleEventKeyDown}
-                    tabIndex={getEventTabIndex(yearEvents[0]!)}
+                    eventIndex={getEventIndex(yearEvents[0]!)}
                     isSelected={isEventSelected(yearEvents[0]!)}
                   />
                 )}
@@ -368,7 +369,7 @@ export function Timeline({
               position="end"
               onEventClick={handleEventClick}
               onEventKeyDown={handleEventKeyDown}
-              tabIndex={getEventTabIndex(sideLineEndEvent)}
+              eventIndex={getEventIndex(sideLineEndEvent)}
               isSelected={isEventSelected(sideLineEndEvent)}
             />
           </div>
@@ -408,7 +409,7 @@ export function Timeline({
               position="end"
               onEventClick={handleEventClick}
               onEventKeyDown={handleEventKeyDown}
-              tabIndex={getEventTabIndex(foundEvent)}
+              eventIndex={getEventIndex(foundEvent)}
               isSelected={isEventSelected(foundEvent)}
             />
           </div>

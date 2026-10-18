@@ -25,6 +25,8 @@ type CoinCardGridItemProps = {
   view?: "obverse" | "reverse" | "both"
   /** Click handler for opening modal */
   onClick?: () => void
+  /** The click opens a dialog (browse mode) rather than the coin's page */
+  opensDialog?: boolean
   /** Grid item index (1-based) for zigzag effect */
   index?: number
 }
@@ -41,6 +43,7 @@ export function CoinCardGridItem({
   diameter,
   view = "both",
   onClick,
+  opensDialog = false,
   index = 1,
 }: CoinCardGridItemProps) {
   const { isMobile } = useViewport()
@@ -115,11 +118,18 @@ export function CoinCardGridItem({
   const zigzagOffset = getZigzagOffset()
 
   const mintYears = formatYearRange(mintYearEarliest, mintYearLatest)
+  const civLabel = civ === "Roman Provincial" && civSpecific ? civSpecific : civ
+  // The hover text, read out: on phones there is no text, only the photos
+  const label = [civLabel, nickname, denomination, mintYears]
+    .filter(Boolean)
+    .join(", ")
 
   return (
     <div
       className={`group focus-visible:ring-moonlight/70 w-fit cursor-pointer rounded-lg text-center transition-all duration-300 outline-none focus-visible:ring-2 ${zigzagOffset}`}
-      role="link"
+      role={opensDialog ? "button" : "link"}
+      aria-haspopup={opensDialog ? "dialog" : undefined}
+      aria-label={label}
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={(e) => {
@@ -163,9 +173,7 @@ export function CoinCardGridItem({
           className={`${textMarginClass} flex w-0 min-w-full flex-col items-center opacity-0 transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100`}
         >
           <p className="text-moonlight-bright text-sm whitespace-nowrap">
-            {civ === "Roman Provincial" && civSpecific
-              ? civSpecific.toUpperCase()
-              : civ.toUpperCase()}
+            {civLabel.toUpperCase()}
             {nickname && `. ${nickname}`}
           </p>
           <p className="text-moonlight-bright text-sm whitespace-nowrap">

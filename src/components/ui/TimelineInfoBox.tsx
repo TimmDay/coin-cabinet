@@ -54,9 +54,9 @@ export function TimelineInfoBox({
           <ChevronLeft className="text-moonlight h-4 w-4" />
         </button>
 
-        <h3 className="font-display text-moonlight-bright pt-1 text-center text-lg leading-tight font-medium tracking-[0.12em] uppercase sm:text-xl">
+        <h2 className="font-display text-moonlight-bright pt-1 text-center text-lg leading-tight font-medium tracking-[0.12em] uppercase sm:text-xl">
           {event.name}
-        </h3>
+        </h2>
 
         <button
           onClick={onNext}

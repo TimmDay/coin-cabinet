@@ -8,7 +8,7 @@ export function StackedMarkers({
   events,
   onEventClick,
   onEventKeyDown,
-  getEventTabIndex,
+  getEventIndex,
   selectedEventIndex,
   allEventsChronological = [],
 }: StackedMarkersProps) {
@@ -35,11 +35,6 @@ export function StackedMarkers({
 
         return (
           <div key={`${year}-${eventIndex}`}>
-            {/* Screen reader only labels - accessible but visually hidden */}
-            <span className="sr-only">
-              {event.name} - {formatTimelineYear(year)}
-            </span>
-
             {/* Event marker */}
             <div
               className={`focus:ring-bronze-light absolute -translate-x-1/2 transform cursor-pointer rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:outline-none ${
@@ -51,7 +46,8 @@ export function StackedMarkers({
               }} // Stack vertically, top to bottom order
               onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
               onKeyDown={(e) => onEventKeyDown?.(event, e)}
-              tabIndex={getEventTabIndex ? getEventTabIndex(event) : undefined}
+              tabIndex={0}
+              data-event-index={getEventIndex?.(event)}
               role="button"
               aria-label={`${event.name} - ${formatTimelineYear(year)}`}
             >
