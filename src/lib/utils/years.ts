@@ -65,3 +65,18 @@ export function formatYearRange(
   }
   return `${formatYear(from)}—${formatYear(to)}`
 }
+
+/**
+ * A run of years that may be open at one end, such as a reign or a mint's
+ * working life: "270—275 CE", "from 260 BCE" or "until 14 CE", and "" when
+ * neither end is known. Unlike `formatYearRange`, one known end is never shown
+ * as if it were a single year.
+ */
+export function formatOpenYearRange(
+  earliest: number | null | undefined,
+  latest: number | null | undefined,
+): string {
+  if (isYear(earliest) && !isYear(latest)) return `from ${formatYear(earliest)}`
+  if (!isYear(earliest) && isYear(latest)) return `until ${formatYear(latest)}`
+  return formatYearRange(earliest, latest)
+}

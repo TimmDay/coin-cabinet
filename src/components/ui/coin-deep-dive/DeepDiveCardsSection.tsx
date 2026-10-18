@@ -1,6 +1,11 @@
 import { useArtifacts } from "~/api/artifacts"
 import { MintDeepDiveCard } from "~/components/ui"
-import { formatYear, formatYearRange, isYear } from "~/lib/utils/years"
+import {
+  formatOpenYearRange,
+  formatYear,
+  formatYearRange,
+  isYear,
+} from "~/lib/utils/years"
 import { formatPhysicalCharacteristics } from "~/lib/utils/physical-formatting"
 import type { CoinDeity, CoinEnhanced, CoinPerson } from "~/types/api"
 import { DeepDiveCard } from "../DeepDiveCard"
@@ -68,7 +73,7 @@ export function transformHistoricalFiguresToCards(
         ? artifacts?.find((a) => a.id === artifactId)
         : undefined
 
-      const reigned = formatYearRange(figure.reign_start, figure.reign_end)
+      const reigned = formatOpenYearRange(figure.reign_start, figure.reign_end)
       const subtitle = [
         figure.authority,
         lifeYears(figure.birth, figure.death),

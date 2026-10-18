@@ -60,6 +60,14 @@ describe("transformHistoricalFiguresToCards", () => {
     expect(died?.subtitle).toBe("died 14 CE")
   })
 
+  it("says from when a reign has no recorded end", () => {
+    const [card] = transformHistoricalFiguresToCards(
+      [person({ reign_start: 270 })],
+      [],
+    )
+    expect(card?.subtitle).toBe("reigned from 270 CE")
+  })
+
   it("leaves out the parts of a subtitle that are unknown", () => {
     const [card] = transformHistoricalFiguresToCards([person()], [])
     expect(card?.subtitle).toBe("")

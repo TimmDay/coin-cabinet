@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
+  formatOpenYearRange,
   formatTimelineYear,
   formatYear,
   formatYearRange,
@@ -73,5 +74,12 @@ describe("years", () => {
     expect(formatYearRange(-44, 0)).toBe("44 BCE")
     expect(formatYearRange(undefined, 14)).toBe("14 CE")
     expect(formatYearRange(0, null)).toBe("")
+  })
+
+  it("says from or until when a run of years is open at one end", () => {
+    expect(formatOpenYearRange(-260, 0)).toBe("from 260 BCE")
+    expect(formatOpenYearRange(null, 14)).toBe("until 14 CE")
+    expect(formatOpenYearRange(270, 275)).toBe("270—275 CE")
+    expect(formatOpenYearRange(0, 0)).toBe("")
   })
 })

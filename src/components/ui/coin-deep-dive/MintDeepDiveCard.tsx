@@ -1,5 +1,5 @@
 import type { Mint } from "~/database/schema-mints"
-import { formatYearRange } from "~/lib/utils/years"
+import { formatOpenYearRange } from "~/lib/utils/years"
 import { DeepDiveCard } from "../DeepDiveCard"
 
 type MintDeepDiveCardProps = {
@@ -16,7 +16,7 @@ export function MintDeepDiveCard({ mint }: MintDeepDiveCardProps) {
     mint.operation_periods && mint.operation_periods.length > 0
       ? mint.operation_periods
           .map(([startYear, endYear, emperor]) => {
-            const years = formatYearRange(startYear, endYear)
+            const years = formatOpenYearRange(startYear, endYear)
             return years && emperor ? `${years} (${emperor})` : years || emperor
           })
           .join("\n")
