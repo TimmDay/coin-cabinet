@@ -38,14 +38,14 @@ describe("transformDeitiesToCards", () => {
         src: "https://img/3.jpg",
         alt: "Alt 3",
         name: "Artifact 3",
-        location: "Location 3, Museum 3",
+        location: "Museum 3, Location 3",
         credit: "Credit 3",
       },
       {
         src: "https://img/5.jpg",
         alt: "Alt 5",
         name: "Artifact 5",
-        location: "Location 5, Museum 5",
+        location: "Museum 5, Location 5",
         credit: "Credit 5",
       },
     ])

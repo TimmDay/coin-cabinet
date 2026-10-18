@@ -140,7 +140,7 @@ describe("buildCoinMap", () => {
     expect(map?.markers[0]).toMatchObject({
       id: "artifact-a1",
       title: "Bust",
-      subtitle: "Room 70, British Museum",
+      subtitle: "British Museum, Room 70",
     })
   })
 

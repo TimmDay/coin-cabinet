@@ -23,14 +23,14 @@ export type Artifact = {
 }
 
 /**
- * Where an artifact is, for a reader: the place that holds it, after the finer
- * locator within that place when there is one ("Room 70, British Museum").
+ * Where an artifact is, for a reader: the place that holds it, then the
+ * location note when there is one ("J Paul Getty Museum, California USA").
  */
 export function artifactLocation(
   artifact: Pick<Artifact, "institution_name" | "location_name">,
 ): string | undefined {
   return (
-    [artifact.location_name, artifact.institution_name]
+    [artifact.institution_name, artifact.location_name]
       .filter(Boolean)
       .join(", ") || undefined
   )

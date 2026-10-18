@@ -90,8 +90,8 @@ The institution name and coordinates come from the joined place and are
 flattened onto `institution_name`, `lat` and `lng`. `image_url`
 becomes `img_src`, `image_alt_text` becomes `img_alt`, `image_credit` becomes
 `img_credit` and `location_note` becomes `location_name`. The numeric `id` is sent as a string.
-Where an artifact is held reads as the locator then the place, e.g. "Room 70,
-British Museum" (`artifactLocation` in `schema-artifacts.ts`).
+Where an artifact is held reads as the place then the location note, e.g. "J
+Paul Getty Museum, California USA" (`artifactLocation` in `schema-artifacts.ts`).
 
 ### `/api/somnus-collection` (list) from `public_items` and its children
 `public_items` is the only anon-readable source of `collection` and `coins`
