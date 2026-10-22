@@ -326,6 +326,7 @@ export function CoinGrid({
               diameter={coin.diameter}
               view={viewMode}
               onClick={() => handleCoinClick(index)}
+              opensDialog={clickMode === "browse"}
               index={index + 1}
             />
           ))}

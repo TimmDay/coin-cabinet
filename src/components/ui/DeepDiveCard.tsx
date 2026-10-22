@@ -74,9 +74,9 @@ export function DeepDiveCard({
     >
       {/* Header Section */}
       <div>
-        <h3 className="mb-4 text-center text-xl font-bold tracking-widest uppercase">
+        <h2 className="mb-4 text-center text-xl font-bold tracking-widest uppercase">
           {title}
-        </h3>
+        </h2>
         {subtitle && (
           <p className="text-moonlight mb-4 text-center text-base whitespace-pre-line">
             {subtitle}

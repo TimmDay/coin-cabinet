@@ -8,16 +8,11 @@ export function SideLineMarker({
   position = "start",
   onEventClick,
   onEventKeyDown,
-  tabIndex,
+  eventIndex,
   isSelected = false,
 }: SideLineMarkerProps) {
   return (
     <div>
-      {/* Screen reader only labels - accessible but visually hidden */}
-      <span className="sr-only">
-        {event.name} - {formatTimelineYear(event.year)}
-      </span>
-
       {/* Year label only - visible */}
       <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform">
         <div className="text-moonlight text-center font-mono text-sm whitespace-nowrap">
@@ -30,7 +25,8 @@ export function SideLineMarker({
         className="focus:ring-bronze-light relative cursor-pointer rounded-full focus:ring-2 focus:outline-none"
         onClick={(e) => onEventClick(event, e.clientX, e.clientY)}
         onKeyDown={(e) => onEventKeyDown?.(event, e)}
-        tabIndex={tabIndex}
+        tabIndex={0}
+        data-event-index={eventIndex}
         role="button"
         aria-label={`${event.name} - ${formatTimelineYear(event.year)}`}
       >

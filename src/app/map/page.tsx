@@ -168,6 +168,8 @@ export default function MapPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      {/* The map is the heading, visually; screen readers need one to land on */}
+      <h1 className="sr-only">Map</h1>
       {/* An explicit height, not flex-1: the page is min-h-screen, so its
           height comes from content, and a flex child of it has no definite
           height for these h-full children to resolve against, which collapsed

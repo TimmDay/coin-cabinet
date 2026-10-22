@@ -42,7 +42,7 @@ export function MapControls({
     <div className="border-line bg-surface-raised space-y-4 rounded-lg border p-4 shadow-sm">
       <div className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-ink text-sm font-medium">Administrative areas</h3>
+          <h2 className="text-ink text-sm font-medium">Administrative areas</h2>
           <label className="flex cursor-pointer items-center gap-2">
             <input
               type="checkbox"
