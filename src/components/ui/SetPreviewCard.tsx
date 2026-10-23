@@ -62,7 +62,7 @@ export function SetPreviewCard({
   return (
     <Link
       href={href}
-      className={`group focus-visible:ring-moonlight/70 rounded-lg transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:outline-none motion-reduce:transition-none motion-reduce:hover:scale-100 ${className}`}
+      className={`group focus-visible:ring-moonlight/70 rounded-lg transition-transform duration-300 hover:scale-105 focus-visible:ring-2 focus-visible:outline-none motion-reduce:transition-none motion-reduce:hover:scale-100 ${className}`}
     >
       <div className="bg-night border-line group-hover:border-moonlight/50 flex h-full flex-col rounded-lg border p-4 transition-colors">
         <div className="from-line/50 to-field mb-3 flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br">
@@ -73,7 +73,7 @@ export function SetPreviewCard({
                 alt={`${name} collection preview`}
                 width={400}
                 height={400}
-                className={`h-full w-full object-cover transition-[transform,opacity] duration-300 group-hover:scale-105 ${ready ? "opacity-100" : "opacity-0"}`}
+                className={`h-full w-full object-cover transition-opacity duration-300 ${ready ? "opacity-100" : "opacity-0"}`}
               />
               {/* 40% dark overlay to dim the image */}
               <div className="absolute inset-0 bg-black/40" />
